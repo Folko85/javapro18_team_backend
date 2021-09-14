@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "Post_comment")
@@ -24,20 +25,26 @@ public class PostComment {
     @Column
     private LocalDateTime time;
 
-    @Column(name = "post_id")
-    private Integer postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    @Column
-    private Integer parent_id;
+    @Column (name = "parent_id")                    // хз, как это обыгрывать
+    private Integer parentId;
 
-    @Column(name = "autor_id")
-    private int autorId;
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Person person;
 
     @Column(name = "comment_text")
     private String commentText;
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "comment")
+    @ToString.Exclude
+    private Set<BlockHistory> blocks;
 
     @Override
     public boolean equals(Object o) {
