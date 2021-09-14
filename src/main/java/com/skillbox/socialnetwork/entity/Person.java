@@ -7,8 +7,8 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "Person")
@@ -70,10 +70,17 @@ public class Person {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    @Column (insertable = false, updatable = false)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     @ToString.Exclude
-    private List<Post> posts;
+    private Set<Post> posts;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    @ToString.Exclude
+    private Set<PostComment> comments;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    @ToString.Exclude
+    private Set<BlockHistory> blocks;
 
     @Override
     public boolean equals(Object o) {

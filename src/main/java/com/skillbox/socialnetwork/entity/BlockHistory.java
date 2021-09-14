@@ -24,14 +24,17 @@ public class BlockHistory {
     @Column
     private LocalDateTime time;
 
-    @Column(name = "person_id")
-    private Integer personId;
+    @ManyToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
 
-    @Column(name = "post_id")
-    private Integer postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    @Column(name = "comment_id")
-    private Integer commentId;
+    @ManyToOne
+    @JoinColumn(name = "comment_id")
+    private PostComment comment;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action", length = 50, columnDefinition = "enum")

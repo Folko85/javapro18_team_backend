@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "Post")
@@ -20,7 +21,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
+    @Column (name = "time")
     private LocalDateTime datetime;
 
     @ManyToOne
@@ -35,6 +36,14 @@ public class Post {
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
+    @ToString.Exclude
+    private Set<PostComment> comments;
+
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
+    @ToString.Exclude
+    private Set<BlockHistory> blocks;
 
     @Override
     public boolean equals(Object o) {
