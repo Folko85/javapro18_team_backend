@@ -1,25 +1,24 @@
 package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.UserType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "User")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
 public class User {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @PrimaryKeyJoinColumn
     private long id;
 
     @Column(name = "name", length = 50, unique = true)
@@ -35,4 +34,16 @@ public class User {
     @Column(name = "type", length = 50, columnDefinition = "enum")
     private UserType type;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

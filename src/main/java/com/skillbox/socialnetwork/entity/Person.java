@@ -1,27 +1,27 @@
 package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Person")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
 public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @PrimaryKeyJoinColumn
     private Integer id;
 
     @Column(name = "first_name", length = 50)
@@ -69,4 +69,22 @@ public class Person {
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @Column (insertable = false, updatable = false)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    @ToString.Exclude
+    private List<Post> posts;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Person person = (Person) o;
+        return Objects.equals(id, person.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }
