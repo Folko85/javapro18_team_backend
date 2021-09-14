@@ -1,34 +1,31 @@
 package com.skillbox.socialnetwork.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Post")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @PrimaryKeyJoinColumn
-    @OneToOne
     private Integer id;
 
     @Column
     private LocalDateTime datetime;
 
-    @Column(name = "autor_id")
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
-    private Person autorId;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Person person;
 
     @Column
     private String title;
@@ -38,4 +35,17 @@ public class Post {
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Post post = (Post) o;
+        return Objects.equals(id, post.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }
