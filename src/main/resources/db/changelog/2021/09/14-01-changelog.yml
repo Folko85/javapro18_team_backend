@@ -1,0 +1,116 @@
+databaseChangeLog:
+  - changeSet:
+      id: '2021091301'
+      author: m.gutorov
+      changes:
+        - createTable:
+            tableName: Post
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: time
+                  type: datetime
+              - column:
+                  name: autor_id
+                  type: int
+                  constraints:
+                    foreignKeyName: person_post_id
+                    referencedTableName: Person
+                    referencedColumnNames: id
+              - column:
+                  name: title
+                  type: mediumtext
+              - column:
+                  name: post_text
+                  type: clob
+              - column:
+                  name: is_blocked
+                  type: boolean
+
+        - createSequence:
+            sequenceName: Post_seq
+            minValue: 1
+
+        - createTable:
+            tableName: Post_comment
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: time
+                  type: datetime
+              - column:
+                  name: post_id
+                  type: int
+                  constraints:
+                    foreignKeyName: post_id
+                    referencedTableName: Post
+                    referencedColumnNames: id
+              - column:
+                  name: parent_id
+                  type: int
+              - column:
+                  name: autor_id
+                  type: int
+                  constraints:
+                    foreignKeyName: person_comment_id
+                    referencedTableName: Person
+                    referencedColumnNames: id
+              - column:
+                  name: comment_text
+                  type: mediumtext
+              - column:
+                  name: is_blocked
+                  type: boolean
+
+        - createSequence:
+            sequenceName: Post_coment_seq
+            minValue: 1
+
+        - createTable:
+            tableName: Block_history
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: time
+                  type: datetime
+              - column:
+                  name: person_id
+                  type: int
+                  constraints:
+                    foreignKeyName: person_block_id
+                    referencedTableName: Person
+                    referencedColumnNames: id
+              - column:
+                  name: post_id
+                  type: int
+                  constraints:
+                    foreignKeyName: post_block_id
+                    referencedTableName: Post
+                    referencedColumnNames: id
+              - column:
+                  name: comment_id
+                  type: int
+                  constraints:
+                    foreignKeyName: comment_id
+                    referencedTableName: Post_comment
+                    referencedColumnNames: id
+              - column:
+                  name: action
+                  type: varchar(10)
+        - createSequence:
+            sequenceName: Block_history_seq
+            minValue: 1
