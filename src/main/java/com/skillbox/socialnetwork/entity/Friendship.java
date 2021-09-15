@@ -25,7 +25,7 @@ public class Friendship {
     private Person srcPerson;
 
     @ManyToOne
-    @JoinColumn (name = "src_person_id")
+    @JoinColumn (name = "dst_person_id")
     private Person dstPerson;
 
     @Override
