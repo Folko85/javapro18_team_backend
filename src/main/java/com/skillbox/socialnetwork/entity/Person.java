@@ -14,9 +14,6 @@ import java.util.Set;
 @Table(name = "Person")
 @Getter
 @Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
-@ToString
 public class Person {
 
     @Id
@@ -55,7 +52,7 @@ public class Person {
     private String town;
 
     @Column(name = "confirmation_code", length = 50)
-    private short confirmationCode;
+    private String confirmationCode;
 
     @Column(name = "is_approved")
     private boolean isApproved;
@@ -71,15 +68,12 @@ public class Person {
     private boolean isBlocked;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    @ToString.Exclude
     private Set<Post> posts;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    @ToString.Exclude
     private Set<PostComment> comments;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    @ToString.Exclude
     private Set<BlockHistory> blocks;
 
     @Override

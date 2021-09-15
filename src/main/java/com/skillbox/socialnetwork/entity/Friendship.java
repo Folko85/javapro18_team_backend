@@ -1,47 +1,38 @@
 package com.skillbox.socialnetwork.entity;
 
-import com.skillbox.socialnetwork.entity.enums.ActionType;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Block_history")
+@Table (name = "Friendship")
 @Getter
 @Setter
-public class BlockHistory {
+public class Friendship {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
-    private LocalDateTime time;
+    @JoinColumn (columnDefinition = "status_id")
+    @OneToOne
+    private FriendshipStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
+    @JoinColumn (name = "src_person_id")
+    private Person srcPerson;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    @ManyToOne
-    @JoinColumn(name = "comment_id")
-    private PostComment comment;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "action", length = 50, columnDefinition = "enum")
-    private ActionType action;
+    @JoinColumn (name = "dst_person_id")
+    private Person dstPerson;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        BlockHistory that = (BlockHistory) o;
+        Friendship that = (Friendship) o;
         return Objects.equals(id, that.id);
     }
 

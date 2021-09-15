@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -12,9 +13,6 @@ import java.util.Set;
 @Table(name = "Post")
 @Getter
 @Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
-@ToString
 public class Post {
 
     @Id
@@ -38,12 +36,16 @@ public class Post {
     private boolean isBlocked;
 
     @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
-    @ToString.Exclude
     private Set<PostComment> comments;
 
     @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
-    @ToString.Exclude
     private Set<BlockHistory> blocks;
+
+    @ManyToMany (fetch = FetchType.LAZY)
+    @JoinTable (name = "Post2Tag",
+    joinColumns = {@JoinColumn(name = "tag_id")},
+    inverseJoinColumns = {@JoinColumn(name = "post_id")})
+    private Set<Tag> tags;
 
     @Override
     public boolean equals(Object o) {
