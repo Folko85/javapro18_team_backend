@@ -12,3 +12,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         ddl-auto: none
+  mail:
+    host: smtp.yandex.ru
+    username: ivan.zukkel.mailsender@yandex.ru
+    password: vdgclvhfzrqcjqvc
+    port: 465
+    protocol: smtps
+mail:
+  debug: true
