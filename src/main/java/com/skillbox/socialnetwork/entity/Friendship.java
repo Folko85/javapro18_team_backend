@@ -10,24 +10,22 @@ import java.util.Objects;
 @Table (name = "Friendship")
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
 public class Friendship {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
     @JoinColumn (columnDefinition = "status_id")
+    @OneToOne
     private FriendshipStatus status;
 
     @ManyToOne
-    @JoinColumn (columnDefinition = "src_person_id")
+    @JoinColumn (name = "src_person_id")
     private Person srcPerson;
 
     @ManyToOne
-    @JoinColumn (columnDefinition = "dst_person_id")
+    @JoinColumn (name = "src_person_id")
     private Person dstPerson;
 
     @Override

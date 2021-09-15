@@ -14,9 +14,6 @@ import java.util.Set;
 @Table(name = "Person")
 @Getter
 @Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
-@ToString
 public class Person {
 
     @Id
@@ -71,15 +68,12 @@ public class Person {
     private boolean isBlocked;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    @ToString.Exclude
     private Set<Post> posts;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    @ToString.Exclude
     private Set<PostComment> comments;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    @ToString.Exclude
     private Set<BlockHistory> blocks;
 
     @Override
