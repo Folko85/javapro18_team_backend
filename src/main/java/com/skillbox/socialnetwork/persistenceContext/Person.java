@@ -1,27 +1,25 @@
-package com.skillbox.socialnetwork.entity;
+package com.skillbox.socialnetwork.persistenceContext;
 
-import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import com.skillbox.socialnetwork.persistenceContext.enums.MessagesPermission;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "Person")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
-@ToString
 @EqualsAndHashCode
+@ToString
 public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @PrimaryKeyJoinColumn
     private Integer id;
 
     @Column(name = "first_name", length = 50)
@@ -55,7 +53,7 @@ public class Person {
     private String town;
 
     @Column(name = "confirmation_code", length = 50)
-    private short confirmationCode;
+    private String confirmationCode;
 
     @Column(name = "is_approved")
     private boolean isApproved;
@@ -69,4 +67,19 @@ public class Person {
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<Post> post;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<PostComment> comments;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<BlockHistory> blockHistories;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<PostLike> likes;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<Notification> notifications;
 }

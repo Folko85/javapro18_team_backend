@@ -1,25 +1,22 @@
-package com.skillbox.socialnetwork.entity;
+package com.skillbox.socialnetwork.persistenceContext;
 
-import com.skillbox.socialnetwork.entity.enums.UserType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import com.skillbox.socialnetwork.persistenceContext.enums.UserType;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "User")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
-@ToString
 @EqualsAndHashCode
+@ToString
 public class User {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @PrimaryKeyJoinColumn
     private long id;
 
     @Column(name = "name", length = 50, unique = true)

@@ -1,9 +1,6 @@
-package com.skillbox.socialnetwork.entity;
+package com.skillbox.socialnetwork.persistenceContext;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,27 +9,28 @@ import java.time.LocalDateTime;
 @Table(name = "Post_comment")
 @Data
 @AllArgsConstructor
-@ToString
 @EqualsAndHashCode
+@ToString
 public class PostComment {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @PrimaryKeyJoinColumn
     private Integer id;
 
     @Column
     private LocalDateTime time;
 
-    @Column(name = "post_id")
-    private Integer postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    @Column
-    private Integer parent_id;
+    @Column(name = "parent_id")
+    private Integer parentId;
 
-    @Column(name = "autor_id")
-    private int autorId;
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Person person;
 
     @Column(name = "comment_text")
     private String commentText;
