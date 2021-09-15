@@ -52,7 +52,7 @@ public class Person {
     private String town;
 
     @Column(name = "confirmation_code", length = 50)
-    private short confirmationCode;
+    private String confirmationCode;
 
     @Column(name = "is_approved")
     private boolean isApproved;
