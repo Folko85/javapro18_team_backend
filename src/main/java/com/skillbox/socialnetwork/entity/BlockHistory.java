@@ -12,13 +12,10 @@ import java.util.Objects;
 @Table(name = "Block_history")
 @Getter
 @Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
-@ToString
 public class BlockHistory {
 
     @Id
-    @Column
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column

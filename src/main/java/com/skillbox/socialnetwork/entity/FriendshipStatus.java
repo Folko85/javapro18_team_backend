@@ -17,8 +17,6 @@ import java.util.Objects;
 @Table(name = "Friendship_status")
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
 public class FriendshipStatus {
 
     @Id
