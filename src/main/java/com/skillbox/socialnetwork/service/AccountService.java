@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.RegisterRequest;
-import com.skillbox.socialnetwork.api.response.RegisterResponse;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.RegisterUserExistException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
@@ -23,10 +23,10 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public RegisterResponse register(RegisterRequest registerRequest) throws RegisterUserExistException {
+    public AccountResponse register(RegisterRequest registerRequest) throws RegisterUserExistException {
         if (accountRepository.findByEMail(registerRequest.getEMail()).isPresent())
             throw new RegisterUserExistException();
-        RegisterResponse registerResponse = new RegisterResponse();
+        AccountResponse registerResponse = new AccountResponse();
         Person person = new Person();
         person.setEMail(registerRequest.getEMail());
         person.setFirstName(registerRequest.getFirstName());
