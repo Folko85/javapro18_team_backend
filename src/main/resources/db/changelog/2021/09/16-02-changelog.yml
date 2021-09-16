@@ -1,0 +1,149 @@
+databaseChangeLog:
+  - changeSet:
+      id: '2021091601'
+      author: m.gutorov
+      changes:
+        - createTable:
+            tableName: Message
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: time
+                  type: datetime
+              - column:
+                  name: author_id
+                  type: int
+                  constraints:
+                    foreignKeyName: author_id
+                    referencedTableName: Person
+                    referencedColumnNames: id
+              - column:
+                  name: recepient_id
+                  type: int
+                  constraints:
+                    foreignKeyName: recepient_id
+                    referencedTableName: Person
+                    referencedColumnNames: id
+              - column:
+                  name: message_text
+                  type: mediumtext
+              - column:
+                  name: read_status
+                  type: varchar(5)
+
+        - createSequence:
+            sequenceName: Message_seq
+            startValue: 1
+
+        - createTable:
+            tableName: Tag
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: tag
+                  type: varchar(20)
+
+        - createSequence:
+            sequenceName: Tag_seq
+            startValue: 1
+
+        - createTable:
+            tableName: Post2Tag
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: post_id
+                  type: int
+                  constraints:
+                    foreignKeyName: post_id
+                    referencedTableName: Post
+                    referencedColumnNames: id
+              - column:
+                  name: tag_id
+                  type: int
+                  constraints:
+                    foreignKeyName: tag_id
+                    referencedTableName: Tag
+                    referencedColumnNames: id
+
+        - createSequence:
+            sequenceName: Post2Tag_seq
+            startValue: 1
+
+        - createTable:
+            tableName: Post_like
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: time
+                  type: datetime
+              - column:
+                  name: person_id
+                  type: int
+                  constraints:
+                    foreignKeyName: person_like
+                    referencedTableName: Person
+                    referencedColumnNames: id
+              - column:
+                  name: post_id
+                  type: int
+                  constraints:
+                    foreignKeyName: post_like
+                    referencedTableName: Post
+                    referencedColumnNames: id
+
+        - createSequence:
+            sequenceName: Post_like_seq
+            startValue: 1
+
+        - createTable:
+            tableName: Post_file
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: post_id
+                  type: int
+                  constraints:
+                    foreignKeyName: post_file
+                    referencedTableName: Post
+                    referencedColumnNames: id
+              - column:
+                  name: name
+                  type: varchar(50)
+              - column:
+                  name: path
+                  type: varchar(255)
+
+        - createSequence:
+            sequenceName: Post_file_seq
+            startValue: 1
