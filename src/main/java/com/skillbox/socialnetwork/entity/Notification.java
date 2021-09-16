@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "Notification")
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class Notification {

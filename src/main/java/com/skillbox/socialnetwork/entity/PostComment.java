@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Post_comment")
 @Data
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class PostComment {

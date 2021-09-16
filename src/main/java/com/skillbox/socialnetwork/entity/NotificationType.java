@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "Notification_type")
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class NotificationType {

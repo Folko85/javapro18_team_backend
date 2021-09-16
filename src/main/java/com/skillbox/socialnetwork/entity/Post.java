@@ -10,7 +10,6 @@ import java.util.Set;
 @Table(name = "Post")
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class Post {

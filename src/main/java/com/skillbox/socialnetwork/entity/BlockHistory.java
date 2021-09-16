@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Table(name = "Block_history")
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class BlockHistory {

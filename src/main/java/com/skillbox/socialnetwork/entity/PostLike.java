@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Table(name = "Post_like")
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class PostLike {

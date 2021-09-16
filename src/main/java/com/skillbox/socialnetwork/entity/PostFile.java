@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "Post_file")
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class PostFile {

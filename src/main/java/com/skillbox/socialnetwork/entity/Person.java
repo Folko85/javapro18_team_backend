@@ -12,7 +12,6 @@ import java.util.Set;
 @Table(name = "Person")
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class Person {
