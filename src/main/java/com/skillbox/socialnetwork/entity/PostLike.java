@@ -15,7 +15,7 @@ public class PostLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(nullable = false)
     private Integer id;
 
     @Column
