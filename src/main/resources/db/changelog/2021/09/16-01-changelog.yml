@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: '2021091601'
+      author: m.gutorov
+      changes:
+        - createTable:
+            tableName: Friendship_status
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: time
+                  type: datetime
+              - column:
+                  name: name
+                  type: varchar(50)
+              - column:
+                  name: code
+                  type: varchar(50)
+
+        - createSequence:
+            sequenceName: Friendship_status_seq
+            minValue: 1
+
+        - createTable:
+            tableName: Friendship
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: int
+                  constraints:
+                    foreignKeyName: friendship_status_id
+                    referencedTableName: Friendship_status
+                    referencedColumnNames: id
+              - column:
+                  name: src_person_id
+                  type: int
+                  constraints:
+                    foreignKeyName: src_person_id
+                    referencedTableName: Person
+                    referencedColumnNames: id
+              - column:
+                  name: dst_person_id
+                  type: int
+                  constraints:
+                    foreignKeyName: dst_person_id
+                    referencedTableName: Person
+                    referencedColumnNames: id
+        - createSequence:
+            sequenceName: Friendship_seq
+            minValue: 1
+
