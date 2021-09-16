@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: '2021091601'
+      id: '2021091602'
       author: m.gutorov
       changes:
         - createTable:
