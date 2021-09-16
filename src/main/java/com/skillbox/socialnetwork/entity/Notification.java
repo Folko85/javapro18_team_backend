@@ -1,8 +1,8 @@
-package com.skillbox.socialnetwork.persistenceContext;
+package com.skillbox.socialnetwork.entity;
 
-import com.skillbox.socialnetwork.persistenceContext.enums.Contact;
-import com.skillbox.socialnetwork.persistenceContext.enums.EntityId;
-import com.skillbox.socialnetwork.persistenceContext.enums.NotificationType;
+import com.skillbox.socialnetwork.entity.enums.Contact;
+import com.skillbox.socialnetwork.entity.enums.EntityId;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.persistenceContext;
+package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
 
@@ -20,7 +20,7 @@ public class NotificationType {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "code", columnDefinition = "enum")
-    private com.skillbox.socialnetwork.persistenceContext.enums.NotificationType code;
+    private com.skillbox.socialnetwork.entity.enums.NotificationType code;
 
     @Column
     private String name;

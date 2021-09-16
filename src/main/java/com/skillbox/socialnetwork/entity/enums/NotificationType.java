@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.persistenceContext.enums;
+package com.skillbox.socialnetwork.entity.enums;
 
 public enum NotificationType {
     POST,
