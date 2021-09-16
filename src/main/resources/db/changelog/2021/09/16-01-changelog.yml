@@ -4,7 +4,7 @@ databaseChangeLog:
       author: m.gutorov
       changes:
         - createTable:
-            tableName: Friendship_status
+            tableName: friendship_status
             columns:
               - column:
                   name: id
@@ -23,11 +23,11 @@ databaseChangeLog:
                   type: varchar(50)
 
         - createSequence:
-            sequenceName: Friendship_status_seq
+            sequenceName: friendship_status_seq
             minValue: 1
 
         - createTable:
-            tableName: Friendship
+            tableName: friendship
             columns:
               - column:
                   name: id
@@ -40,23 +40,23 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: friendship_status_id
-                    referencedTableName: Friendship_status
+                    referencedTableName: friendship_status
                     referencedColumnNames: id
               - column:
                   name: src_person_id
                   type: int
                   constraints:
                     foreignKeyName: src_person_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: dst_person_id
                   type: int
                   constraints:
                     foreignKeyName: dst_person_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
         - createSequence:
-            sequenceName: Friendship_seq
+            sequenceName: friendship_seq
             minValue: 1
 

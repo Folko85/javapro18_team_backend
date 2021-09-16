@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name = "Tag")
+@Table(name = "tag")
 public class Tag {
 
     @Id

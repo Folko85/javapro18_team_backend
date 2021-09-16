@@ -4,7 +4,7 @@ databaseChangeLog:
       author: m.gutorov
       changes:
         - createTable:
-            tableName: Notification_type
+            tableName: notification_type
             columns:
               - column:
                   name: id
@@ -21,11 +21,11 @@ databaseChangeLog:
                   type: varchar(50)
 
         - createSequence:
-            sequenceName: Notification_type_seq
+            sequenceName: notification_type_seq
             minValue: 1
 
         - createTable:
-            tableName: Notification
+            tableName: notification
             columns:
               - column:
                   name: id
@@ -35,11 +35,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: typy_id
+                  name: type_id
                   type: int
                   constraints:
                     foreignKeyName: type_notyfy_id
-                    referencedTableName: Notification_type
+                    referencedTableName: notification_type
                     referencedColumnNames: id
               - column:
                   name: send_time
@@ -49,15 +49,15 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: person_notify_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: entity_id
-                  type: int
+                  type: varchar(50)
               - column:
                   name: contact
                   type: varchar(50)
         - createSequence:
-            sequenceName: Notification_seq
+            sequenceName: notification_seq
             minValue: 1
 

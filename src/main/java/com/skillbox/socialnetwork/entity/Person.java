@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "Person")
+@Table(name = "person")
 @Getter
 @Setter
 public class Person {
@@ -45,7 +45,7 @@ public class Person {
     @Column(name = "photo", length = 50)
     private String photo;
 
-    @Column
+    @Column (columnDefinition = "text")
     private String about;
 
     @Column(name = "town", length = 50)

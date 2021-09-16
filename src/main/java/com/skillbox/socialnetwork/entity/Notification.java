@@ -2,32 +2,34 @@ package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.Contact;
 import com.skillbox.socialnetwork.entity.enums.EntityId;
-import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "Notification")
+@Table(name = "notification")
 @Getter
 @Setter
 @AllArgsConstructor
-@EqualsAndHashCode
 @ToString
+@NoArgsConstructor
 public class Notification {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", columnDefinition = "enum")
+    @JoinColumn(name = "type_id")
+    @ManyToOne
     private NotificationType type;
 
-    @Column(name = "sent_time")
-    private LocalDateTime sentTime;
+    @Column(name = "send_time")
+    private LocalDateTime sendTime;
 
     @ManyToOne
     @JoinColumn(name = "person_id")
@@ -41,5 +43,16 @@ public class Notification {
     @Column(name = "contact", columnDefinition = "enum")
     private Contact contact;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Notification that = (Notification) o;
+        return Objects.equals(id, that.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

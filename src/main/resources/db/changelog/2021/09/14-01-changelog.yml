@@ -4,7 +4,7 @@ databaseChangeLog:
       author: m.gutorov
       changes:
         - createTable:
-            tableName: Post
+            tableName: post
             columns:
               - column:
                   name: id
@@ -20,7 +20,7 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: person_post_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: title
@@ -33,11 +33,11 @@ databaseChangeLog:
                   type: boolean
 
         - createSequence:
-            sequenceName: Post_seq
+            sequenceName: post_seq
             minValue: 1
 
         - createTable:
-            tableName: Post_comment
+            tableName: post_comment
             columns:
               - column:
                   name: id
@@ -53,7 +53,7 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: post_id
-                    referencedTableName: Post
+                    referencedTableName: post
                     referencedColumnNames: id
               - column:
                   name: parent_id
@@ -63,7 +63,7 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: person_comment_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: comment_text
@@ -73,11 +73,11 @@ databaseChangeLog:
                   type: boolean
 
         - createSequence:
-            sequenceName: Post_coment_seq
+            sequenceName: post_coment_seq
             minValue: 1
 
         - createTable:
-            tableName: Block_history
+            tableName: block_history
             columns:
               - column:
                   name: id
@@ -92,25 +92,25 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: person_block_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: post_id
                   type: int
                   constraints:
                     foreignKeyName: post_block_id
-                    referencedTableName: Post
+                    referencedTableName: post
                     referencedColumnNames: id
               - column:
                   name: comment_id
                   type: int
                   constraints:
                     foreignKeyName: comment_id
-                    referencedTableName: Post_comment
+                    referencedTableName: post_comment
                     referencedColumnNames: id
               - column:
                   name: action
                   type: varchar(10)
         - createSequence:
-            sequenceName: Block_history_seq
+            sequenceName: block_history_seq
             minValue: 1
