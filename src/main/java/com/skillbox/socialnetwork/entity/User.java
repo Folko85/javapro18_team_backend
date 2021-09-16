@@ -1,6 +1,6 @@
-package com.skillbox.socialnetwork.persistenceContext;
+package com.skillbox.socialnetwork.entity;
 
-import com.skillbox.socialnetwork.persistenceContext.enums.UserType;
+import com.skillbox.socialnetwork.entity.enums.UserType;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,6 +1,6 @@
-package com.skillbox.socialnetwork.persistenceContext;
+package com.skillbox.socialnetwork.entity;
 
-import com.skillbox.socialnetwork.persistenceContext.enums.MessagesPermission;
+import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.*;
 
 import javax.persistence.*;

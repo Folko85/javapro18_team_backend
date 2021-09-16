@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.persistenceContext;
+package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
 
