@@ -4,7 +4,7 @@ databaseChangeLog:
       author: m.gutorov
       changes:
         - createTable:
-            tableName: Person
+            tableName: person
             columns:
               - column:
                   name: id
@@ -63,11 +63,11 @@ databaseChangeLog:
                   type: boolean
 
         - createSequence:
-            sequenceName: Person_seq
+            sequenceName: person_seq
             minValue: 1
 
         - createTable:
-            tableName: User
+            tableName: user
             columns:
               - column:
                   name: id
@@ -93,5 +93,5 @@ databaseChangeLog:
                   type: varchar(50)
 
         - createSequence:
-            sequenceName: User_seq
+            sequenceName: user_seq
             minValue: 1

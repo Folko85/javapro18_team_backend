@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "Post_comment")
+@Table(name = "post_comment")
 @Getter
 @Setter
 public class PostComment {
@@ -33,7 +33,7 @@ public class PostComment {
     @JoinColumn(name = "autor_id")
     private Person person;
 
-    @Column(name = "comment_text")
+    @Column(name = "comment_text", columnDefinition = "mediumtext")
     private String commentText;
 
     @Column(name = "is_blocked")

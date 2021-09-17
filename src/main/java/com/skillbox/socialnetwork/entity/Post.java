@@ -1,16 +1,16 @@
 package com.skillbox.socialnetwork.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "Post")
+@Table(name = "post")
 @Getter
 @Setter
 public class Post {
@@ -23,13 +23,13 @@ public class Post {
     private LocalDateTime datetime;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "autor_id")
     private Person person;
 
-    @Column
+    @Column (columnDefinition = "mediumtext")
     private String title;
 
-    @Column(name = "post_text")
+    @Column(name = "post_text", columnDefinition = "longtext")
     private String postText;
 
     @Column(name = "is_blocked")

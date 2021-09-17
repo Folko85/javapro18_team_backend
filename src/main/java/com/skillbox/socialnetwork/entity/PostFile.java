@@ -5,30 +5,37 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
+@Table(name = "post_file")
 @Getter
 @Setter
-@Table(name = "tag")
-public class Tag {
+@AllArgsConstructor
+@ToString
+@NoArgsConstructor
+public class PostFile {
 
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @Column
-    private String tag;
+    private String name;
 
-    @ManyToMany (mappedBy = "tags", fetch = FetchType.LAZY)
-    private Set<Post> posts;
+    @Column
+    private String path;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Tag tag = (Tag) o;
-        return Objects.equals(id, tag.id);
+        PostFile postFile = (PostFile) o;
+        return Objects.equals(id, postFile.id);
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Friendship_status")
+@Table(name = "friendship_status")
 @Getter
 @Setter
 public class FriendshipStatus {
