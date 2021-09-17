@@ -5,6 +5,8 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.RegisterUserExistException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,7 +34,8 @@ public class AccountService {
         person.setFirstName(registerRequest.getFirstName());
         person.setLastName(registerRequest.getLastName());
         person.setConfirmationCode(registerRequest.getCode());
-        person.setPassword(registerRequest.getPassword1());
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+        person.setPassword(passwordEncoder.encode(registerRequest.getPassword1()));
         person.setDateAndTimeOfRegistration(LocalDateTime.now(UTC));
         registerResponse.setTimestamp(ZonedDateTime.now(UTC).toEpochSecond());
         Map<String, String> dateMap = new HashMap<>();

@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.config;
 
-import com.skillbox.socialnetwork.api.security.TokenAuthenticationFilter;
-import com.skillbox.socialnetwork.api.security.TokenAuthenticationManager;
+
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,25 +12,24 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailServiceImpl userDetailsService;
-    //private final TokenAuthenticationManager tokenAuthenticationManager;
+
 
     public SecurityConfig(UserDetailServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
-       // this.tokenAuthenticationManager = tokenAuthenticationManager;
+
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable()
-                //.addFilterAfter(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .anyRequest()
@@ -60,10 +58,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-//    @Bean(name = "TokenAuthenticationFilter")
-//    public TokenAuthenticationFilter tokenAuthenticationFilter() {
-//        TokenAuthenticationFilter tokenAuthenticationFilter = new TokenAuthenticationFilter();
-//        tokenAuthenticationFilter.setAuthenticationManager(tokenAuthenticationManager);
-//        return tokenAuthenticationFilter;
-//    }
+
 }

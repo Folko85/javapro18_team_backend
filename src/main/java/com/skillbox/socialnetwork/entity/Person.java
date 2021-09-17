@@ -2,7 +2,6 @@ package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.entity.enums.Role;
-import com.skillbox.socialnetwork.entity.enums.UserType;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -41,7 +40,7 @@ public class Person {
     @Column(name = "phone", length = 12, unique = true)
     private String phone;
 
-    @Column(name = "password", length = 50)
+    @Column(name = "password")
     private String password;
 
     @Column(name = "photo", length = 50)
@@ -90,6 +89,7 @@ public class Person {
     public int hashCode() {
         return 0;
     }
+
     public Role getRole()
     {
         return Role.USER;

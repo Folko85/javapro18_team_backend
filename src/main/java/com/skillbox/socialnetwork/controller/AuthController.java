@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
-import com.skillbox.socialnetwork.api.response.LoginResponse;
+import com.skillbox.socialnetwork.api.response.AuthResponse;
 
 
 import com.skillbox.socialnetwork.service.AuthService;
@@ -20,8 +20,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
-        return new ResponseEntity<>(authService.getToken(loginRequest), HttpStatus.OK);
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
