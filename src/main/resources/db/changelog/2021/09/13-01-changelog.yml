@@ -36,7 +36,7 @@ databaseChangeLog:
                     unique: true
               - column:
                   name: password
-                  type: varchar(50)
+                  type: varchar(255)
               - column:
                   name: photo
                   type: varchar(50)

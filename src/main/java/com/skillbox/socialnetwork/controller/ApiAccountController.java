@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.exception.RegisterUserExistException;
 import com.skillbox.socialnetwork.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,8 +25,10 @@ public class ApiAccountController {
 
         return new ResponseEntity<>(accountService.register(registerRequest), HttpStatus.OK);
     }
+
     @PutMapping("/recovery")
-    public ResponseEntity<AccountResponse> recovery(@RequestBody RecoveryRequest recoveryRequest)
+    @PreAuthorize("hasAuthority('user:moderate')")
+    public ResponseEntity<AccountResponse> recovery()
     {
         return new ResponseEntity<>(HttpStatus.OK);
     }

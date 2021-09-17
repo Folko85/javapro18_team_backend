@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth/")
 public class AuthController {
 
     private AuthService authService;
@@ -21,7 +21,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(authService.auth(loginRequest),HttpStatus.OK);
     }
 
 }
