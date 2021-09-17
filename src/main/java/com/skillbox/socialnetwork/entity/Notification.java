@@ -7,25 +7,24 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "Notification")
+@Table(name = "notification")
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
 public class Notification {
 
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", columnDefinition = "enum")
     private NotificationType type;
 
-    @Column(name = "sent_time")
+    @Column(name = "send_time")
     private LocalDateTime sentTime;
 
     @ManyToOne
@@ -40,5 +39,16 @@ public class Notification {
     @Column(name = "contact", columnDefinition = "enum")
     private Contact contact;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Notification that = (Notification) o;
+        return id == that.id && type == that.type && Objects.equals(sentTime, that.sentTime) && Objects.equals(person, that.person) && entityId == that.entityId && contact == that.contact;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type, sentTime, person, entityId, contact);
+    }
 }

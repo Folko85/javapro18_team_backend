@@ -13,7 +13,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table (name = "Message")
+@Table (name = "message")
 public class Message {
 
     @Id
@@ -29,7 +29,7 @@ public class Message {
     private Person author;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "recipient_id", nullable = false)
+    @JoinColumn(name = "recepient_id", nullable = false)
     private Person recipient;
 
     @Column(name = "message_text", nullable = false)

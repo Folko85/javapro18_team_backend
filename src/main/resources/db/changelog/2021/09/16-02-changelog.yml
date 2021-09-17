@@ -4,7 +4,7 @@ databaseChangeLog:
       author: m.gutorov
       changes:
         - createTable:
-            tableName: Message
+            tableName: message
             columns:
               - column:
                   name: id
@@ -21,14 +21,14 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: author_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: recepient_id
                   type: int
                   constraints:
                     foreignKeyName: recepient_id
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: message_text
@@ -38,7 +38,7 @@ databaseChangeLog:
                   type: varchar(5)
 
         - createSequence:
-            sequenceName: Message_seq
+            sequenceName: message_seq
             startValue: 1
 
         - createTable:
@@ -56,11 +56,11 @@ databaseChangeLog:
                   type: varchar(20)
 
         - createSequence:
-            sequenceName: Tag_seq
+            sequenceName: tag_seq
             startValue: 1
 
         - createTable:
-            tableName: Post2Tag
+            tableName: post2Tag
             columns:
               - column:
                   name: id
@@ -74,22 +74,22 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: post_id
-                    referencedTableName: Post
+                    referencedTableName: post
                     referencedColumnNames: id
               - column:
                   name: tag_id
                   type: int
                   constraints:
                     foreignKeyName: tag_id
-                    referencedTableName: Tag
+                    referencedTableName: tag
                     referencedColumnNames: id
 
         - createSequence:
-            sequenceName: Post2Tag_seq
+            sequenceName: post2Tag_seq
             startValue: 1
 
         - createTable:
-            tableName: Post_like
+            tableName: post_like
             columns:
               - column:
                   name: id
@@ -106,22 +106,22 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: person_like
-                    referencedTableName: Person
+                    referencedTableName: person
                     referencedColumnNames: id
               - column:
                   name: post_id
                   type: int
                   constraints:
                     foreignKeyName: post_like
-                    referencedTableName: Post
+                    referencedTableName: post
                     referencedColumnNames: id
 
         - createSequence:
-            sequenceName: Post_like_seq
+            sequenceName: post_like_seq
             startValue: 1
 
         - createTable:
-            tableName: Post_file
+            tableName: post_file
             columns:
               - column:
                   name: id
@@ -135,7 +135,7 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: post_file
-                    referencedTableName: Post
+                    referencedTableName: post
                     referencedColumnNames: id
               - column:
                   name: name
@@ -145,5 +145,5 @@ databaseChangeLog:
                   type: varchar(255)
 
         - createSequence:
-            sequenceName: Post_file_seq
+            sequenceName: post_file_seq
             startValue: 1

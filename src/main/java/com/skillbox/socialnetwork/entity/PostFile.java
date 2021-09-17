@@ -3,13 +3,12 @@ package com.skillbox.socialnetwork.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
-@Table(name = "Post_file")
+@Table(name = "post_file")
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
 public class PostFile {
 
     @Id
@@ -26,4 +25,17 @@ public class PostFile {
 
     @Column
     private String path;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PostFile postFile = (PostFile) o;
+        return id == postFile.id && Objects.equals(post, postFile.post) && Objects.equals(name, postFile.name) && Objects.equals(path, postFile.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, post, name, path);
+    }
 }

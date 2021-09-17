@@ -4,12 +4,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "Post_comment")
-@Data
-@EqualsAndHashCode
-@ToString
+@Table(name = "post_comment")
+@Getter
+@Setter
 public class PostComment {
 
     @Id
@@ -36,4 +36,17 @@ public class PostComment {
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PostComment that = (PostComment) o;
+        return isBlocked == that.isBlocked && Objects.equals(id, that.id) && Objects.equals(time, that.time) && Objects.equals(post, that.post) && Objects.equals(parentId, that.parentId) && Objects.equals(person, that.person) && Objects.equals(commentText, that.commentText);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, time, post, parentId, person, commentText, isBlocked);
+    }
 }

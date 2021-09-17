@@ -5,13 +5,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "Block_history")
+@Table(name = "block_history")
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
 public class BlockHistory {
 
     @Id
@@ -36,4 +35,17 @@ public class BlockHistory {
     @Enumerated(EnumType.STRING)
     @Column(name = "action", length = 50, columnDefinition = "enum")
     private ActionType action;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlockHistory that = (BlockHistory) o;
+        return Objects.equals(id, that.id) && Objects.equals(time, that.time) && Objects.equals(person, that.person) && Objects.equals(post, that.post) && Objects.equals(postComment, that.postComment) && action == that.action;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, time, person, post, postComment, action);
+    }
 }
