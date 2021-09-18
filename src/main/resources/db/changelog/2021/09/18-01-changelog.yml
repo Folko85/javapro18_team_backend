@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - modifyDataType:
+      - changeSet:
+        id: '2021091801'
+          author: k.artem
+            tableName: person
+            columns:
+              - column:
+                name: photo
+                type: varchar(255)
+              - column:
+                name: password
+                type: varchar(255)
