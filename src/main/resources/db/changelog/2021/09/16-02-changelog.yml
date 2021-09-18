@@ -42,7 +42,7 @@ databaseChangeLog:
             startValue: 1
 
         - createTable:
-            tableName: Tag
+            tableName: tag
             columns:
               - column:
                   name: id
@@ -60,7 +60,7 @@ databaseChangeLog:
             startValue: 1
 
         - createTable:
-            tableName: post2Tag
+            tableName: post2tag
             columns:
               - column:
                   name: id
@@ -73,7 +73,7 @@ databaseChangeLog:
                   name: post_id
                   type: int
                   constraints:
-                    foreignKeyName: post_id
+                    foreignKeyName: post_tag_id
                     referencedTableName: post
                     referencedColumnNames: id
               - column:
@@ -85,7 +85,7 @@ databaseChangeLog:
                     referencedColumnNames: id
 
         - createSequence:
-            sequenceName: post2Tag_seq
+            sequenceName: post2tag_seq
             startValue: 1
 
         - createTable:

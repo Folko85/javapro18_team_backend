@@ -35,7 +35,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: typy_id
+                  name: type_id
                   type: int
                   constraints:
                     foreignKeyName: type_notyfy_id
@@ -53,7 +53,7 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: entity_id
-                  type: int
+                  type: varchar(50)
               - column:
                   name: contact
                   type: varchar(50)

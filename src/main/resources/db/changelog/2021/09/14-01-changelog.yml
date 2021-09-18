@@ -77,7 +77,7 @@ databaseChangeLog:
             minValue: 1
 
         - createTable:
-            tableName: plock_history
+            tableName: block_history
             columns:
               - column:
                   name: id

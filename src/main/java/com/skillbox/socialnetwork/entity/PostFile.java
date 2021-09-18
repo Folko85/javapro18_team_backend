@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -9,12 +10,15 @@ import java.util.Objects;
 @Table(name = "post_file")
 @Getter
 @Setter
+@AllArgsConstructor
+@ToString
+@NoArgsConstructor
 public class PostFile {
 
     @Id
-    @Column(nullable = false)
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
@@ -29,13 +33,13 @@ public class PostFile {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         PostFile postFile = (PostFile) o;
-        return id == postFile.id && Objects.equals(post, postFile.post) && Objects.equals(name, postFile.name) && Objects.equals(path, postFile.path);
+        return Objects.equals(id, postFile.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, post, name, path);
+        return 0;
     }
 }

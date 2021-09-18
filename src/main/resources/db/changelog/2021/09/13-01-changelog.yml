@@ -67,7 +67,7 @@ databaseChangeLog:
             minValue: 1
 
         - createTable:
-            tableName: User
+            tableName: user
             columns:
               - column:
                   name: id

@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,11 +11,14 @@ import java.util.Objects;
 @Table(name = "post_like")
 @Getter
 @Setter
+@AllArgsConstructor
+@ToString
+@NoArgsConstructor
 public class PostLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column
     private Integer id;
 
     @Column
@@ -31,13 +35,13 @@ public class PostLike {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         PostLike postLike = (PostLike) o;
-        return Objects.equals(id, postLike.id) && Objects.equals(time, postLike.time) && Objects.equals(person, postLike.person) && Objects.equals(post, postLike.post);
+        return Objects.equals(id, postLike.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, time, person, post);
+        return 0;
     }
 }

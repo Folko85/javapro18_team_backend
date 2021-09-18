@@ -3,7 +3,6 @@ package com.skillbox.socialnetwork.entity;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -32,7 +31,8 @@ public class Message {
     @JoinColumn(name = "recepient_id", nullable = false)
     private Person recipient;
 
-    @Column(name = "message_text", nullable = false)
+
+    @Column(name = "message_text", nullable = false, columnDefinition = "mediumtext")
     private String text;
 
     @Column(name = "read_status")

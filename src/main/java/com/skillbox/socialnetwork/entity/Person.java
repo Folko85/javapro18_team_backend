@@ -44,7 +44,7 @@ public class Person {
     @Column(name = "photo")
     private String photo;
 
-    @Column
+    @Column (columnDefinition = "text")
     private String about;
 
     @Column(name = "town", length = 50)

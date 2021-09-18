@@ -31,7 +31,7 @@ public class PostComment {
     @JoinColumn(name = "autor_id")
     private Person person;
 
-    @Column(name = "comment_text")
+    @Column(name = "comment_text", columnDefinition = "mediumtext")
     private String commentText;
 
     @Column(name = "is_blocked")
