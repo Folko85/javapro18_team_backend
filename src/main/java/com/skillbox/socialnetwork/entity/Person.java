@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
+import com.skillbox.socialnetwork.entity.enums.Role;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -87,5 +88,10 @@ public class Person {
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    public Role getRole()
+    {
+        return Role.USER;
     }
 }

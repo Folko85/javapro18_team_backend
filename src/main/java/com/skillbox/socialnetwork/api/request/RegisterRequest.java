@@ -7,7 +7,9 @@ import lombok.Data;
 public class RegisterRequest {
     @JsonProperty("email")
     private String eMail;
+    @JsonProperty("passwd1")
     private String password1;
+    @JsonProperty("passwd2")
     private String password2;
     private String firstName;
     private String lastName;
