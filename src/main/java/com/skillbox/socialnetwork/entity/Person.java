@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
+import com.skillbox.socialnetwork.entity.enums.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -92,5 +93,10 @@ public class Person {
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, dateAndTimeOfRegistration, birthday, eMail, phone, password, photo, about, town, confirmationCode, isApproved, messagesPermission, lastOnlineTime, isBlocked, post, comments, blockHistories, likes, notifications);
+    }
+
+    public Role getRole()
+    {
+        return Role.USER;
     }
 }
