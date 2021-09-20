@@ -27,9 +27,20 @@ public class ApiAccountController {
     }
     @PutMapping("/recovery")
     //@PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<String> recovery(@RequestBody RecoveryRequest recoveryRequest)
+    public ResponseEntity<String> recoverySend(@RequestBody RecoveryRequest recoveryRequest)
     {
         return new ResponseEntity<>(accountService.sendRecoveryMessage(recoveryRequest),HttpStatus.OK);
     }
-
+    @GetMapping("/recovery_complete")
+    public ResponseEntity<String> recoveryComplete(@RequestParam String key,
+                                                   @RequestParam String eMail)
+    {
+        return new ResponseEntity<>(accountService.recoveryComplete(key,eMail),HttpStatus.OK);
+    }
+    @GetMapping("/registration_complete")
+    public ResponseEntity<String> registrationComplete(@RequestParam String key,
+                                                   @RequestParam String eMail)
+    {
+        return new ResponseEntity<>(accountService.registrationComplete(key,eMail),HttpStatus.OK);
+    }
 }
