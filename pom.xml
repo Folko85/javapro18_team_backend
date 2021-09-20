@@ -81,6 +81,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <outputDirectory>./jars</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

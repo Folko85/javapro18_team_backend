@@ -1,6 +1,7 @@
 version: '3.7'
 services:
   mysql_db_container:
+    container_name: database
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -11,6 +12,7 @@ services:
     ports:
       - "3307:3306"
   vue_js_container:
+    container_name: front
     image: nginx:latest
     volumes:
       - ./dist:/usr/share/nginx/html
