@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response;
+package com.skillbox.socialnetwork.api.response.AuthDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -10,5 +10,5 @@ import java.util.Map;
 public class AuthResponse {
     private String error;
     private long timestamp;
-    private Map<String,String> data;
+    private AuthData data;
 }

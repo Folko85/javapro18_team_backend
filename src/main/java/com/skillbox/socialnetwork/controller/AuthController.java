@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
-import com.skillbox.socialnetwork.api.response.AuthResponse;
+import com.skillbox.socialnetwork.api.response.AuthDTO.AuthResponse;
 
 
 import com.skillbox.socialnetwork.service.AuthService;
