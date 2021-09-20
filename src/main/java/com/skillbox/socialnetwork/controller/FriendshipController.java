@@ -42,6 +42,7 @@ public class FriendshipController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
+        friendshipRepository.save(friendship);
         return new ResponseEntity<>(friendshipRepository.findById(id), HttpStatus.OK);
     }
 
