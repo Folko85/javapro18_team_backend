@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.request.RecoveryRequest;
 import com.skillbox.socialnetwork.api.request.RegisterRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.entity.Person;
@@ -43,5 +44,11 @@ public class AccountService {
         registerResponse.setData(dateMap);
         accountRepository.save(person);
         return registerResponse;
+    }
+    public String sendRecoveryMessage(RecoveryRequest recoveryRequest)
+    {
+
+
+        return "Complete";
     }
 }

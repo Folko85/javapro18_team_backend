@@ -25,11 +25,11 @@ public class ApiAccountController {
 
         return new ResponseEntity<>(accountService.register(registerRequest), HttpStatus.OK);
     }
-
     @PutMapping("/recovery")
-    @PreAuthorize("hasAuthority('user:moderate')")
-    public ResponseEntity<AccountResponse> recovery()
+    //@PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<String> recovery(@RequestBody RecoveryRequest recoveryRequest)
     {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(accountService.sendRecoveryMessage(recoveryRequest),HttpStatus.OK);
     }
+
 }
