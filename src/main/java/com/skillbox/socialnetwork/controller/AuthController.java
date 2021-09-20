@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@CrossOrigin
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 

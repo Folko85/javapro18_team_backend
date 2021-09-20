@@ -1,12 +1,10 @@
 package com.skillbox.socialnetwork.api.security;
 
 import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 
 @Component
