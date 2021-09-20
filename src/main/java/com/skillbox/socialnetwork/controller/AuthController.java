@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.AuthResponse;
 
 
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -25,7 +28,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
         log.info("Сюда что-то дошло с фронта");
-        return new ResponseEntity<>(authService.auth(loginRequest),HttpStatus.OK);
+        return new ResponseEntity<>(authService.auth(loginRequest), HttpStatus.OK);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<AccountResponse> logout() throws Exception {
+        return new ResponseEntity<>(authService.logout(), HttpStatus.OK);
+
+    }
 }

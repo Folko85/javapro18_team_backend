@@ -1,19 +1,25 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.AuthResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.time.ZoneOffset.UTC;
 
 @Service
 public class AuthService {
@@ -40,7 +46,7 @@ public class AuthService {
         UserDetails userDetails = userDetailService.loadUserByUsername(loginRequest.getEMail());
         String token;
         if (passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
-             token = jwtProvider.generateToken(loginRequest.getEMail());
+            token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
         AuthResponse authResponse = new AuthResponse();
         authResponse.setTimestamp(new Date().getTime() / 1000);
@@ -51,5 +57,15 @@ public class AuthService {
         return authResponse;
     }
 
+    public AccountResponse logout()
+    {
+        SecurityContextHolder.clearContext();
+        AccountResponse logoutResponse = new AccountResponse();
+        logoutResponse.setTimestamp(ZonedDateTime.now(UTC).toEpochSecond());
+        Map<String, String> dateMap = new HashMap<>();
+        dateMap.put("message", "ok");
+        logoutResponse.setData(dateMap);
+        return logoutResponse;
+    }
 
 }
