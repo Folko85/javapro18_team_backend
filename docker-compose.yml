@@ -9,4 +9,13 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - 3307:3306
+      - "3307:3306"
+  vue_js_container:
+    image: nginx:latest
+    volumes:
+      - ./dist:/usr/share/nginx/html
+    environment:
+      NGINX_HOST: localhost
+      NGINX_PORT: 80
+    ports:
+      - "8080:80"

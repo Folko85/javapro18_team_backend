@@ -7,14 +7,19 @@ import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.time.ZoneOffset.UTC;
 
 @Service
 public class AuthService {
@@ -52,5 +57,15 @@ public class AuthService {
         return authResponse;
     }
 
+    public AccountResponse logout()
+    {
+        SecurityContextHolder.clearContext();
+        AccountResponse logoutResponse = new AccountResponse();
+        logoutResponse.setTimestamp(ZonedDateTime.now(UTC).toEpochSecond());
+        Map<String, String> dateMap = new HashMap<>();
+        dateMap.put("message", "ok");
+        logoutResponse.setData(dateMap);
+        return logoutResponse;
+    }
 
 }
