@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.AuthDTO.AuthData;
 import com.skillbox.socialnetwork.api.response.AuthDTO.AuthResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
@@ -13,7 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
