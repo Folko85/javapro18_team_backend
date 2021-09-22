@@ -1,9 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.request.EMailChangeRequest;
-import com.skillbox.socialnetwork.api.request.PasswdChangeRequest;
-import com.skillbox.socialnetwork.api.request.RecoveryRequest;
-import com.skillbox.socialnetwork.api.request.RegisterRequest;
+import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
@@ -105,7 +102,11 @@ public class AccountService {
         return getAccountResponse(UTC);
 
     }
-
+    public AccountResponse setNotifications(NotificationsRequest notificationsRequest, Principal principal)
+    {
+        Person person = findPerson(principal.getName());
+        return getAccountResponse(UTC);
+    }
     public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {
         Person person = findPerson(jwtProvider.getLoginFromToken(passwdChangeRequest.getToken()));
         person.setPassword(passwdChangeRequest.getPassword());

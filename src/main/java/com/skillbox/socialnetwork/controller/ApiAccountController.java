@@ -1,9 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.request.EMailChangeRequest;
-import com.skillbox.socialnetwork.api.request.PasswdChangeRequest;
-import com.skillbox.socialnetwork.api.request.RecoveryRequest;
-import com.skillbox.socialnetwork.api.request.RegisterRequest;
+import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.service.AccountService;
@@ -60,5 +57,11 @@ public class ApiAccountController {
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> passwdChange(@RequestBody PasswdChangeRequest passwdChangeRequest) {
         return new ResponseEntity<>(accountService.changePasswd(passwdChangeRequest), HttpStatus.OK);
+    }
+    @PutMapping("/notifications")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<AccountResponse> notifications(@RequestBody NotificationsRequest notificationsRequest, Principal principal)
+    {
+        return new ResponseEntity<>(accountService.setNotifications(notificationsRequest,principal),HttpStatus.OK);
     }
 }
