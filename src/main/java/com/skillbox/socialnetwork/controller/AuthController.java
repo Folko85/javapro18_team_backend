@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-
 @Slf4j
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -30,7 +28,8 @@ public class AuthController {
         return new ResponseEntity<>(authService.auth(loginRequest),HttpStatus.OK);
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
+    //@PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> logout() throws Exception {
         return new ResponseEntity<>(authService.logout(), HttpStatus.OK);
 

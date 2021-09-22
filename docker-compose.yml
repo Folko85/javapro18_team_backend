@@ -14,7 +14,7 @@ services:
   vue_js_container:
     image: nginx:latest
     volumes:
-      - ./dist:/usr/share/nginx/html
+      - ./:/usr/share/nginx/html
     environment:
       NGINX_HOST: localhost
       NGINX_PORT: 80
