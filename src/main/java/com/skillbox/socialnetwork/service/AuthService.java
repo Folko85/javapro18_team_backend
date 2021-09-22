@@ -53,6 +53,7 @@ public class AuthService {
         if (passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
+
         AuthResponse authResponse = new AuthResponse();
         authResponse.setTimestamp(new Date().getTime() / 1000);
         AuthData authData;
