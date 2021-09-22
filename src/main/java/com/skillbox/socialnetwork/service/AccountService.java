@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.request.RegisterRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,6 +54,8 @@ public class AccountService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
         person.setPassword(passwordEncoder.encode(registerRequest.getPassword1()));
         person.setDateAndTimeOfRegistration(LocalDateTime.now(UTC));
+        person.setMessagesPermission(MessagesPermission.ALL);
+        person.setLastOnlineTime(ZonedDateTime.now(UTC).toLocalDateTime());
         String code = UUID.randomUUID().toString().replace("-", "");
         mailSender.send(registerRequest.getEMail(), REGISTRATION_URL + "key=" + code + "&eMail=" + registerRequest.getEMail());
         person.setConfirmationCode(code);
@@ -102,8 +105,8 @@ public class AccountService {
         return getAccountResponse(UTC);
 
     }
-    public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest)
-    {
+
+    public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {
         Person person = findPerson(jwtProvider.getLoginFromToken(passwdChangeRequest.getToken()));
         person.setPassword(passwdChangeRequest.getPassword());
         accountRepository.save(person);

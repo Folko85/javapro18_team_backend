@@ -49,26 +49,39 @@ public class AuthService {
         UserDetails userDetails = userDetailService.loadUserByUsername(loginRequest.getEMail());
         String token;
         Person person = accountRepository.findByEMail(loginRequest.getEMail())
-                .orElseThrow(()->new UsernameNotFoundException(loginRequest.getEMail()));
+                .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
         if (passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
         AuthResponse authResponse = new AuthResponse();
         authResponse.setTimestamp(new Date().getTime() / 1000);
-        AuthData authData = new AuthData();
+        AuthData authData;
+        authData = setAuthData(person);
         authData.setToken(token);
-//        authData.setEMail(person.getEMail());
-//        authData.setAbout(person.getAbout());
-//        authData.setBirthDate(person.getBirthday().toEpochDay());
         authResponse.setData(authData);
         return authResponse;
     }
 
-    public AccountResponse logout()
-    {
+    public AccountResponse logout() {
         SecurityContextHolder.clearContext();
         return getAccountResponse(UTC);
 
+    }
+
+    private AuthData setAuthData(Person person) {
+        AuthData authData = new AuthData();
+        authData.setEMail(person.getEMail());
+        authData.setAbout(person.getAbout());
+        if (person.getBirthday() != null)
+            authData.setBirthDate(person.getBirthday().toEpochDay());
+        authData.setFirstName(person.getFirstName());
+        authData.setLastName(person.getLastName());
+        authData.setId(person.getId());
+        authData.setRegDate(person.getDateAndTimeOfRegistration().toEpochSecond(UTC));
+        authData.setPhone(person.getPhone());
+        authData.setMessagesPermission(person.getMessagesPermission().toString());
+        authData.setBlocked(person.isBlocked());
+        return authData;
     }
 
 }
