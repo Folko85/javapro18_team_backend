@@ -109,7 +109,8 @@ public class AccountService {
     }
     public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {
         Person person = findPerson(jwtProvider.getLoginFromToken(passwdChangeRequest.getToken()));
-        person.setPassword(passwdChangeRequest.getPassword());
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+        person.setPassword(passwordEncoder.encode(passwdChangeRequest.getPassword()));
         accountRepository.save(person);
         return getAccountResponse(UTC);
     }
