@@ -46,7 +46,7 @@ public class Person {
     @Column(name = "photo")
     private String photo;
 
-    @Column (columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String about;
 
     @Column(name = "town", length = 50)
@@ -77,6 +77,12 @@ public class Person {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<BlockHistory> blocks;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "friendship",
+            joinColumns = {@JoinColumn(name = "src_person_id")},
+            inverseJoinColumns = {@JoinColumn(name = "dst_person_id")})
+    private Set<Person> friends;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,8 +96,7 @@ public class Person {
         return 0;
     }
 
-    public Role getRole()
-    {
+    public Role getRole() {
         return Role.USER;
     }
 }
