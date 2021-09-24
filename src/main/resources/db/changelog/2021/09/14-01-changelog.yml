@@ -16,7 +16,7 @@ databaseChangeLog:
                   name: time
                   type: datetime
               - column:
-                  name: autor_id
+                  name: author_id
                   type: int
                   constraints:
                     foreignKeyName: person_post_id

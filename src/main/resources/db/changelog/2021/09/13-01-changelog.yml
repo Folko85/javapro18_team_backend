@@ -39,7 +39,7 @@ databaseChangeLog:
                   type: varchar(255)
               - column:
                   name: photo
-                  type: varchar(50)
+                  type: varchar(255)
               - column:
                   name: about
                   type: text
