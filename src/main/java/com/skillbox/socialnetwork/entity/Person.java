@@ -77,12 +77,6 @@ public class Person {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<BlockHistory> blocks;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "friendship",
-            joinColumns = {@JoinColumn(name = "src_person_id")},
-            inverseJoinColumns = {@JoinColumn(name = "dst_person_id")})
-    private Set<Person> friends;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

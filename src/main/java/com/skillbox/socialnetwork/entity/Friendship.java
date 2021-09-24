@@ -20,11 +20,11 @@ public class Friendship {
     @OneToOne
     private FriendshipStatus status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn (name = "src_person_id")
     private Person srcPerson;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn (name = "dst_person_id")
     private Person dstPerson;
 

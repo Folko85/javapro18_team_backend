@@ -42,7 +42,7 @@ public class Post {
     private Set<BlockHistory> blocks;
 
     @ManyToMany (fetch = FetchType.LAZY)
-    @JoinTable (name = "post2tag",
+    @JoinTable (name = "Post2tag",
     joinColumns = {@JoinColumn(name = "tag_id")},
     inverseJoinColumns = {@JoinColumn(name = "post_id")})
     private Set<Tag> tags;
