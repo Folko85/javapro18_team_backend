@@ -29,7 +29,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 50, columnDefinition = "enum")
+    @Column(name = "type", columnDefinition = "enum('MODERATOR','ADMIN')")
     private UserType type;
 
     @Override
