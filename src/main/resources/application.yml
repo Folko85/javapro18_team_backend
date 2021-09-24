@@ -9,7 +9,7 @@ spring:
   liquibase:
     change-log: /db/changelog/changelog.yml
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: validate

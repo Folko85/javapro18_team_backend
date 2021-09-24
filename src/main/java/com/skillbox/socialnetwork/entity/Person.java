@@ -58,7 +58,7 @@ public class Person {
     private boolean isApproved;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "messages_permission", length = 50, columnDefinition = "enum")
+    @Column(name = "messages_permission", columnDefinition = "enum('ALL','FRIENDS')")
     private MessagesPermission messagesPermission;
 
     @Column(name = "last_online_time")

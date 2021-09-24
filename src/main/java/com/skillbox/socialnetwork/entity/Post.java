@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,14 +20,14 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column (name = "time")
+    @Column(name = "time")
     private LocalDateTime datetime;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Person person;
 
-    @Column (columnDefinition = "mediumtext")
+    @Column(columnDefinition = "mediumtext")
     private String title;
 
     @Column(name = "post_text", columnDefinition = "longtext")
@@ -35,17 +36,21 @@ public class Post {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<PostComment> comments;
 
-    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<BlockHistory> blocks;
 
-    @ManyToMany (fetch = FetchType.LAZY)
-    @JoinTable (name = "Post2Tag",
-    joinColumns = {@JoinColumn(name = "tag_id")},
-    inverseJoinColumns = {@JoinColumn(name = "post_id")})
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Post2Tag",
+            joinColumns = {@JoinColumn(name = "tag_id")},
+            inverseJoinColumns = {@JoinColumn(name = "post_id")})
     private Set<Tag> tags;
+
+    @OneToMany
+    @JoinColumn(name = "post_id")
+    private Set<PostLike> postLikes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
