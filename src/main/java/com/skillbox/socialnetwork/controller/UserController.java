@@ -29,5 +29,4 @@ public class UserController {
         return userService.updateUserByEmail(email, userUpdated);
     }
 
-
 }
