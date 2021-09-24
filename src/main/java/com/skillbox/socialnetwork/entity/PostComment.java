@@ -39,7 +39,7 @@ public class PostComment {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "comment")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "postComment")
     private Set<BlockHistory> blocks;
 
     @Override

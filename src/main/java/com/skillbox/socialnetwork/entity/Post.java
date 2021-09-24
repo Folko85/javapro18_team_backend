@@ -24,7 +24,7 @@ public class Post {
     private LocalDateTime datetime;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "autor_id")
     private Person person;
 
     @Column(columnDefinition = "mediumtext")
