@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.Friends;
+package com.skillbox.socialnetwork.api.response.FriendsDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
