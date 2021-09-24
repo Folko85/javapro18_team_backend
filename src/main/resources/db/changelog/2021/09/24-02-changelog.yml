@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021091803
+      author: a.baranov
+      changes:
+        - insert:
+            tableName: post
+            columns:
+              - column:
+                  name: time
+                  valueDate: 2021-08-04 06:50:11
+              - column:
+                  name: title
+                  value: lorem vitae
+              - column:
+                  name: post_text
+                  value: "Aenean lectus. Pellentesque eget nunc. Donec quis orci eget orci vehicula condimentum."
+              - column:
+                  name: autor_id
+                  value: 1
+              - column:
+                  name: is_blocked
+                  valueBoolean: false
+        - insert:
+            tableName: post
+            columns:
+              - column:
+                  name: time
+                  valueDate: 2021-08-13 13:02:51
+              - column:
+                  name: title
+                  value: vestibulum proin eu mi
+              - column:
+                  name: post_text
+                  value: "Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.
+
+Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.
+
+Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem."
+              - column:
+                  name: autor_id
+                  value: 1
+              - column:
+                  name: is_blocked
+                  valueBoolean: false
+        - insert:
+            tableName: post
+            columns:
+              - column:
+                  name: time
+                  valueDate: 2021-08-06 21:57:48
+              - column:
+                  name: title
+                  value: ante ipsum primis
+              - column:
+                  name: post_text
+                  value: "Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti.
+
+Nullam porttitor lacus at turpis. Donec posuere metus vitae ipsum. Aliquam non mauris."
+              - column:
+                  name: autor_id
+                  value: 1
+              - column:
+                  name: is_blocked
+                  valueBoolean: false
