@@ -14,3 +14,10 @@ databaseChangeLog:
   - include:
       file: 2021/09/16-03-changelog.yml
       relativeToChangelogFile: true
+  - include:
+      file: 2021/09/20-01-changelog.yml
+      relativeToChangelogFile: true
+  - include:
+      file: 2021/09/22-01-changelog.yml
+      relativeToChangelogFile: true
+

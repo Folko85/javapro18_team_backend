@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: '2021092201'
+      author: a.kot
+      changes:
+        - delete:
+            tableName: friendship_status
+            columnName: name

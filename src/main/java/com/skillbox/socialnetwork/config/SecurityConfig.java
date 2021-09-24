@@ -51,8 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
-                .and()
-                .logout().logoutUrl("/api/v1/auth/logout")
+//                .and()
+//                .logout().logoutUrl("/api/v1/auth/logout")
                 .and()
                 .formLogin().disable()
                 .httpBasic()
@@ -61,17 +61,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    protected DaoAuthenticationProvider daoAuthenticationProvider()
-    {
+    protected DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         return daoAuthenticationProvider;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
+
     @Override
 
     @Bean

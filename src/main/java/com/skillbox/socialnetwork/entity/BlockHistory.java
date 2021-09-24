@@ -2,20 +2,19 @@ package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.ActionType;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Block_history")
+@Table(name = "block_history")
 @Getter
 @Setter
 public class BlockHistory {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column
@@ -31,7 +30,7 @@ public class BlockHistory {
 
     @ManyToOne
     @JoinColumn(name = "comment_id")
-    private PostComment comment;
+    private PostComment postComment;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action", length = 50, columnDefinition = "enum")
@@ -40,13 +39,13 @@ public class BlockHistory {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         BlockHistory that = (BlockHistory) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) && Objects.equals(time, that.time) && Objects.equals(person, that.person) && Objects.equals(post, that.post) && Objects.equals(postComment, that.postComment) && action == that.action;
     }
 
     @Override
     public int hashCode() {
-        return 0;
+        return Objects.hash(id, time, person, post, postComment, action);
     }
 }
