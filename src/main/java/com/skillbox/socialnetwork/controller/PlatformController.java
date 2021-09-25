@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.response.CityDTO;
 import com.skillbox.socialnetwork.service.PlatformService;
 import com.vk.api.sdk.objects.base.Country;
-import com.vk.api.sdk.objects.database.City;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +29,7 @@ public class PlatformController {
     }
 
     @GetMapping("/platform/cities")
-    List<City> getCities(@RequestParam int countryId, @RequestParam String city, @RequestParam int itemPerPage) throws Exception {
+    List<CityDTO> getCities(@RequestParam int countryId, @RequestParam String city, @RequestParam int itemPerPage) throws Exception {
         return platformService.getCities(countryId, city, itemPerPage);
     }
 }
