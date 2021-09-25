@@ -19,7 +19,7 @@ public class PostController {
     }
 
     @GetMapping("/post")
-    public ResponseEntity<PostResponse> getPosts(@RequestParam(name = "text") String text,
+    public ResponseEntity<PostResponse> getPosts(@RequestParam(name = "text", defaultValue = "") String text,
                                                  @RequestParam(name = "date_from") long dateFrom,
                                                  @RequestParam(name = "date_to") long dateTo,
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
