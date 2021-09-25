@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.api.response.AuthDTO.Place;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import liquibase.pro.packaged.U;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,6 +45,20 @@ public class UserServiceImpl {
         userRest.setCity(city);
         return userRest;
 
+    }
+    public  UserRest updateUser(UserRest updates){
+       Person person = accountRepository.findByEMail(updates.getEMail())
+                .orElseThrow(() -> new UsernameNotFoundException(""+updates.getEMail()));
+       person.setFirstName(updates.getFirstName());
+       person.setLastName(updates.getLastName());
+       person.setBirthday(updates.getBirthday());
+       person.setPhone(updates.getPhone());
+       person.setAbout(updates.getAbout());
+       person.setMessagesPermission(updates.getMessagesPermission());
+       Person updatedPerson = accountRepository.save(person);
+       UserRest updated= new UserRest();
+       BeanUtils.copyProperties(updatedPerson, updated);
+       return updated;
     }
 
 }

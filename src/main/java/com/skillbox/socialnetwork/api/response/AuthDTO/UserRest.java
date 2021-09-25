@@ -7,9 +7,9 @@ import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
 import lombok.Setter;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -55,5 +55,10 @@ public class UserRest {
         this.lastOnlineTime = lastOnlineTime.toEpochSecond(UTC);
     }
 
+    public LocalDate getBirthday() {
+        Date date = new Date(birthday*1000);
+        LocalDate localDate = date.toLocalDate();
+        return localDate;
 
+    }
 }
