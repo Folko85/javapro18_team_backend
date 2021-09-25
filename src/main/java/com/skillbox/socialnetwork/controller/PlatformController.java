@@ -29,7 +29,7 @@ public class PlatformController {
     }
 
     @GetMapping("/platform/cities")
-    List<City> getCities(@RequestParam int countryId) throws Exception {
-        return platformService.getCities(countryId);
+    List<City> getCities(@RequestParam int countryId, @RequestParam String city, @RequestParam int itemPerPage) throws Exception {
+        return platformService.getCities(countryId, city, itemPerPage);
     }
 }
