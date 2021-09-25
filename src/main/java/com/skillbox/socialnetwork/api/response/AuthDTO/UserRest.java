@@ -2,10 +2,8 @@ package com.skillbox.socialnetwork.api.response.AuthDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnetwork.entity.Message;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
-import lombok.Setter;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -57,8 +55,7 @@ public class UserRest {
 
     public LocalDate getBirthday() {
         Date date = new Date(birthday*1000);
-        LocalDate localDate = date.toLocalDate();
-        return localDate;
+        return date.toLocalDate();
 
     }
 }
