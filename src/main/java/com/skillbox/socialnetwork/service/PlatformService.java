@@ -9,7 +9,6 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.base.Country;
-import com.vk.api.sdk.objects.database.City;
 import com.vk.api.sdk.objects.database.responses.GetCitiesResponse;
 import com.vk.api.sdk.objects.database.responses.GetCountriesResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +51,7 @@ public class PlatformService {
             throw new ApiException("Need more 0 letters");
         }
 
-        GetCitiesResponse response = vk.database().getCities(actor, countryId).count(count).q(city).needAll(true).lang(Lang.RU).execute();
+        GetCitiesResponse response = vk.database().getCities(actor, countryId).count(count).q(city).lang(Lang.RU).execute();
         return response.getItems().stream().map(x -> {
             CityDTO result = new CityDTO();
             BeanUtils.copyProperties(x, result);
