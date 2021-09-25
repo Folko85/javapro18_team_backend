@@ -8,10 +8,10 @@ public interface PersonRepository extends CrudRepository<Person, Integer> {
     @Query("SELECT p " +
             "FROM Person p " +
             "WHERE p.id = ?1 ")
-    Person findByPersonId(Integer id);
+    Person findPersonById(Integer id);
 
     @Query("SELECT p " +
             "FROM Person p " +
             "WHERE p.firstName = ?1 ")
-    Person findByName(String name);
+    Person findPersonByName(String name);
 }

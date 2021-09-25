@@ -30,7 +30,7 @@ public class FriendshipController {
     @GetMapping("/api/v1/friends")
     public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {
 
-        Person per = personRepository.findByName(getFriendsListRequest.getName());
+        Person per = personRepository.findPersonByName(getFriendsListRequest.getName());
         List<Person> personList = friendshipRepository.findByName(per);
 
         FriendsList response = new FriendsList();
@@ -84,7 +84,7 @@ public class FriendshipController {
 
     @PostMapping("/api/v1/friends/{id}")
     public ResponseEntity<?> add(@PathVariable int id) {
-        Person newFriend = personRepository.findByPersonId(id);
+        Person newFriend = personRepository.findPersonById(id);
 
         FriendshipStatus friendshipStatus = new FriendshipStatus();
         friendshipStatus.setTime(LocalDateTime.now());
@@ -94,6 +94,8 @@ public class FriendshipController {
         friendship.setStatus(friendshipStatus);
         friendship.setSrcPerson(new Person()); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         friendship.setDstPerson(newFriend);
+
+        friendshipRepository.save(friendship);
 
         FriendResponse addFriend = new FriendResponse();
         addFriend.setError("not error"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

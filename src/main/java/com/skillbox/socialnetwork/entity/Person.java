@@ -82,6 +82,25 @@ public class Person {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<Notification> notifications;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "dstPerson")
+    private Set<Friendship> friends;
+
+    public Set<Friendship> getFriends() {
+        return friends;
+    }
+
+    public void addFriend(Friendship friendship) {
+        addFriend(friendship, false);
+    }
+
+    public void addFriend(Friendship friendship, boolean otherSideHasBeenSet) {
+        getFriends().add(friendship);
+        if (otherSideHasBeenSet) {
+            return;
+        }
+        friendship.setSrcPerson(this, true);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
