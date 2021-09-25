@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.response.AuthDTO.UserDeleteResponse;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -76,6 +79,26 @@ public class UserController {
         userRestResponse.setTimestamp(new Date().getTime() / 1000);
         userRestResponse.setError("null");
         return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/me")
+    public  ResponseEntity<UserDeleteResponse> deleteUser(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        try{
+            userService.deleteUser(email);
+        }
+        catch (UsernameNotFoundException e){
+            throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+        }
+        UserDeleteResponse userDeleteResponse = new UserDeleteResponse();
+        userDeleteResponse.setTimestamp(new Date().getTime() / 1000);
+        userDeleteResponse.setError("string");
+        Map<String, String> dateMap = new HashMap<>();
+        dateMap.put("message", "ok");
+        userDeleteResponse.setData(dateMap);
+        SecurityContextHolder.clearContext();
+        return new ResponseEntity<>(userDeleteResponse, HttpStatus.OK);
 
     }
 
