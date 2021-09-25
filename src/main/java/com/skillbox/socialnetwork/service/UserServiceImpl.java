@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDate;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -51,7 +52,9 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(""+updates.getEMail()));
        person.setFirstName(updates.getFirstName());
        person.setLastName(updates.getLastName());
-       person.setBirthday(updates.getBirthday());
+       java.sql.Date date = new Date(updates.getBirthday());
+       LocalDate localDate = date.toLocalDate();
+       person.setBirthday(localDate);
        person.setPhone(updates.getPhone());
        person.setAbout(updates.getAbout());
        person.setMessagesPermission(updates.getMessagesPermission());

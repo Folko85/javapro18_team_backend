@@ -54,11 +54,4 @@ public class UserRest {
     public void setLastOnlineTime(LocalDateTime lastOnlineTime) {
         this.lastOnlineTime = lastOnlineTime.toEpochSecond(UTC);
     }
-
-    public LocalDate getBirthday() {
-        Date date = new Date(birthday*1000);
-        LocalDate localDate = date.toLocalDate();
-        return localDate;
-
-    }
 }
