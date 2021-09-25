@@ -43,7 +43,7 @@
             <column name="author_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="recepient_id" type="INT">
+            <column name="recipient_id" type="INT">
                 <constraints nullable="false"/>
             </column>
             <column name="message_text" type="mediumtext">
@@ -97,7 +97,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_post"/>
             </column>
             <column name="time" type="DATETIME"/>
-            <column name="autor_id" type="INT"/>
+            <column name="author_id" type="INT"/>
             <column name="title" type="mediumtext"/>
             <column name="post_text" type="longtext"/>
             <column name="is_blocked" type="BOOLEAN"/>
@@ -119,7 +119,7 @@
             <column name="time" type="DATETIME"/>
             <column name="post_id" type="INT"/>
             <column name="parent_id" type="INT"/>
-            <column name="autor_id" type="INT"/>
+            <column name="author_id" type="INT"/>
             <column name="comment_text" type="mediumtext"/>
             <column name="is_blocked" type="BOOLEAN"/>
         </createTable>
@@ -195,8 +195,8 @@
                                  constraintName="FK_MESSAGE_ON_AUTHOR" referencedColumnNames="id"
                                  referencedTableName="person"/>
 
-        <addForeignKeyConstraint baseColumnNames="recepient_id" baseTableName="message"
-                                 constraintName="FK_MESSAGE_ON_RECEPIENT" referencedColumnNames="id"
+        <addForeignKeyConstraint baseColumnNames="recipient_id" baseTableName="message"
+                                 constraintName="FK_MESSAGE_ON_RECIPIENT" referencedColumnNames="id"
                                  referencedTableName="person"/>
 
         <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="notification"
@@ -207,8 +207,8 @@
                                  constraintName="FK_NOTIFICATION_ON_TYPE" referencedColumnNames="id"
                                  referencedTableName="notification_type"/>
 
-        <addForeignKeyConstraint baseColumnNames="autor_id" baseTableName="post_comment"
-                                 constraintName="FK_POST_COMMENT_ON_AUTOR" referencedColumnNames="id"
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="post_comment"
+                                 constraintName="FK_POST_COMMENT_ON_AUTHOR" referencedColumnNames="id"
                                  referencedTableName="person"/>
 
         <addForeignKeyConstraint baseColumnNames="parent_id" baseTableName="post_comment"
@@ -231,7 +231,7 @@
                                  constraintName="FK_POST_LIKE_ON_POST" referencedColumnNames="id"
                                  referencedTableName="post"/>
 
-        <addForeignKeyConstraint baseColumnNames="autor_id" baseTableName="post" constraintName="FK_POST_ON_AUTOR"
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="post" constraintName="FK_POST_ON_AUTHOR"
                                  referencedColumnNames="id" referencedTableName="person"/>
 
         <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="post2tag" constraintName="fk_post2tag_on_post"

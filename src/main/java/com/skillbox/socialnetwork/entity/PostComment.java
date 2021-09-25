@@ -30,7 +30,7 @@ public class PostComment {
     private PostComment parent;
 
     @ManyToOne
-    @JoinColumn(name = "autor_id")
+    @JoinColumn(name = "author_id")
     private Person person;
 
     @Column(name = "comment_text", columnDefinition = "mediumtext")
