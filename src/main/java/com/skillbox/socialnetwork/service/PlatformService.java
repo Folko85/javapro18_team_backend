@@ -1,15 +1,39 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.CountryDTO;
-import org.springframework.http.ResponseEntity;
+import com.vk.api.sdk.client.TransportClient;
+import com.vk.api.sdk.client.VkApiClient;
+import com.vk.api.sdk.client.actors.UserActor;
+import com.vk.api.sdk.httpclient.HttpTransportClient;
+import com.vk.api.sdk.objects.base.Country;
+import com.vk.api.sdk.objects.database.responses.GetCountriesResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
+@Slf4j
 public class PlatformService {
 
-    public ResponseEntity<CountryDTO[]> getCountries() {
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForEntity("http://api.vk.com/method/database.getCountries?v=5.81&need_all=1&access_token=6a54fa386a54fa386a54fa38f06a3d0ed966a546a54fa3836e63c76572f39c9753d8adb", CountryDTO[].class);
+    @Value("${vk.id}")
+    private String id;
+
+    @Value("${vk.token}")
+    private String token;
+
+    public List<Country> getCountries() throws Exception {
+
+        TransportClient transportClient = new HttpTransportClient();
+        VkApiClient vk = new VkApiClient(transportClient);
+
+
+
+        UserActor actor = new UserActor(Integer.valueOf(id),token);
+
+        GetCountriesResponse response = vk.database().getCountries(actor).needAll(true).execute();
+        return response.getItems();
+
     }
+
 }
