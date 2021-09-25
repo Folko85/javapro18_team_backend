@@ -61,4 +61,11 @@ public class UserServiceImpl {
        return updated;
     }
 
+    public void deleteUser(String email){
+        Person person = accountRepository.findByEMail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+        accountRepository.delete(person);
+    }
+
+
 }
