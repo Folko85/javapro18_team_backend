@@ -18,7 +18,7 @@ import static org.springframework.util.StringUtils.hasText;
 @Component
 public class JwtFilter extends GenericFilterBean {
 
-    public static final String AUTHORIZATION_KEY = "Authorization"; //узнаю ответ на вопрос, поменяю
+    public static final String AUTHORIZATION_KEY = "Authorization";
 
     private final JwtProvider jwtProvider;
 
