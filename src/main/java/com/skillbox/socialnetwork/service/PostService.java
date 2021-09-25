@@ -15,7 +15,7 @@ import java.util.List;
 
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
-import static com.skillbox.socialnetwork.service.CommentService.getCommentData;
+import static com.skillbox.socialnetwork.service.CommentService.getCommentData4Response;
 import static java.time.ZoneOffset.UTC;
 
 
@@ -59,18 +59,23 @@ public class PostService {
     private List<PostData> getPost4Response(List<Post> posts) {
         List<PostData> postDataList = new ArrayList<>();
         posts.forEach(post -> {
-            PostData postData = new PostData();
-            postData.setPostText(post.getPostText());
-            postData.setAuthor(setAuthData(post.getPerson()));
-            postData.setComments(getCommentData(post.getComments()));
-            postData.setId(post.getId());
-            postData.setLikes(post.getPostLikes().size());
-            postData.setTime(post.getDatetime().toEpochSecond(UTC));
-            postData.setTitle(post.getTitle());
-            postData.setBlocked(post.isBlocked());
+            PostData postData = getPostData(post);
             postDataList.add(postData);
         });
         return postDataList;
+    }
+
+    private PostData getPostData(Post post) {
+        PostData postData = new PostData();
+        postData.setPostText(post.getPostText());
+        postData.setAuthor(setAuthData(post.getPerson()));
+        postData.setComments(getCommentData4Response(post.getComments()));
+        postData.setId(post.getId());
+        postData.setLikes(post.getPostLikes().size());
+        postData.setTime(post.getDatetime().toEpochSecond(UTC));
+        postData.setTitle(post.getTitle());
+        postData.setBlocked(post.isBlocked());
+        return postData;
     }
 
 }
