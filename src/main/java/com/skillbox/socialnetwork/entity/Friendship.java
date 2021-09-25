@@ -21,11 +21,11 @@ public class Friendship {
     private FriendshipStatus status;
 
     @ManyToOne
-    @JoinColumn (name = "person_id", nullable = false)
+    @JoinColumn (name = "src_person_id", nullable = false)
     private Person srcPerson;
 
     @ManyToOne
-    @JoinColumn (name = "person_id", nullable = false)
+    @JoinColumn (name = "dst_person_id", nullable = false)
     private Person dstPerson;
 
     public Person getSrcPerson() {

@@ -42,7 +42,7 @@ public class Person {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "photo")
+    @Column(name = "photo", length = 255)
     private String photo;
 
     @Column (columnDefinition = "text")
