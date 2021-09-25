@@ -2,7 +2,16 @@ package com.skillbox.socialnetwork.api.response.AuthDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skillbox.socialnetwork.entity.Message;
+import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import static java.time.ZoneOffset.UTC;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -15,7 +24,7 @@ public class UserRest {
     @JsonProperty("reg_date")
     private long dateAndTimeOfRegistration;
     @JsonProperty("birth_date")
-    private long birthDate;
+    private long birthday;
     @JsonProperty("email")
     private String eMail;
     private String phone;
@@ -24,11 +33,27 @@ public class UserRest {
     private Place city;
     private Place country;
     @JsonProperty("messages_permission")
-    private String messagesPermission;
+    private MessagesPermission messagesPermission;
     @JsonProperty("last_online_time")
     private long lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private String error;
-    private long timestamp;
+
+    public void setBirthday(LocalDate birthday) {
+        if(birthday!= null) {
+            java.sql.Date date = java.sql.Date.valueOf(birthday);
+            this.birthday = date.getTime() / 1000;
+        }
+    }
+
+    public void setDateAndTimeOfRegistration(LocalDateTime dateAndTimeOfRegistration) {
+        this.dateAndTimeOfRegistration = dateAndTimeOfRegistration.toEpochSecond(UTC);
+    }
+
+    public void setLastOnlineTime(LocalDateTime lastOnlineTime) {
+        this.lastOnlineTime = lastOnlineTime.toEpochSecond(UTC);
+    }
+
+
 }
