@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,27 +70,37 @@ public class FriendshipController {
     }
 
     @PostMapping("/api/v1/friends/{id}")
-    public ResponseEntity<?> add(@PathVariable int id) {
-        // ищем пользователя в БД
-        Person newFriend = personRepository.findPersonById(id);
+    public ResponseEntity<?> add(@PathVariable int id, Principal principal) {
+        //ищем пользователя в БД
+        Person srcPerson = personRepository.findPersonById(((Person) principal).getId());
+        Person dstPerson = personRepository.findPersonById(id);
 
-        FriendshipStatus friendshipStatus = new FriendshipStatus();
-        friendshipStatus.setTime(LocalDateTime.now());
-        friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
+        if (dstPerson != null) {
 
-        Friendship friendship = new Friendship();
-        friendship.setStatus(friendshipStatus);
-        friendship.setSrcPerson(new Person()); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        friendship.setDstPerson(newFriend);
+            //создаем статус дружбы
+            FriendshipStatus friendshipStatus = new FriendshipStatus();
+            friendshipStatus.setTime(LocalDateTime.now());
+            friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
 
-        friendshipRepository.save(friendship);
+            //создаем дружбу
+            Friendship friendship = new Friendship();
+            friendship.setStatus(friendshipStatus);
+            friendship.setSrcPerson(srcPerson);
+            friendship.setDstPerson(dstPerson);
 
-        FriendResponse addFriend = new FriendResponse();
-        addFriend.setError("not error"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        addFriend.setTimestamp(LocalDateTime.now());
-        addFriend.setMessage("ok");
+            // сохраняем в БД
+            friendshipRepository.save(friendship);
 
-        return new ResponseEntity<>(addFriend, HttpStatus.OK);
+            //формируем ответ
+            FriendResponse addFriend = new FriendResponse();
+            addFriend.setError("not error");
+            addFriend.setTimestamp(LocalDateTime.now());
+            addFriend.setMessage("ok");
+
+            return new ResponseEntity<>(addFriend, HttpStatus.OK);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
 }
