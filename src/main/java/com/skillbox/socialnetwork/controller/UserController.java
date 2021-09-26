@@ -37,7 +37,7 @@ public class UserController {
             userRestResponse.setData(userService.getUserByEmail(email));
         System.out.println("####Principal##########:");
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return new ResponseEntity<UserRestResponse>(userRestResponse, HttpStatus.OK);
+        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
@@ -99,7 +99,6 @@ public class UserController {
         userDeleteResponse.setData(dateMap);
         SecurityContextHolder.clearContext();
         return new ResponseEntity<>(userDeleteResponse, HttpStatus.OK);
-
     }
 
 }
