@@ -37,7 +37,8 @@ public class FriendshipController {
     public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest, Principal principal) {
 
         Person me = (Person) principal;
-        Set<Person> myFriends = friendshipRepository.findMyFriendByName(getFriendsListRequest.getName(), me);
+        Set<Friendship> myFriendship = friendshipRepository.findMyFriendByName(getFriendsListRequest.getName(), me);
+        Set<Person> myFriends = myFriendship.stream().map(Friendship::getDstPerson).collect(Collectors.toSet());
 
         FriendsList response = new FriendsList();
         response.setTotal(myFriends.size());
@@ -77,7 +78,7 @@ public class FriendshipController {
         Person srcPerson = personRepository.findPersonById(src.getId());
         Person dstPerson = personRepository.findPersonById(id);
 
-        if (dstPerson != null && friendshipRepository.findMyFriendById(id, srcPerson) == null) {
+        if (dstPerson != null && friendshipRepository.findMyFriendById(id, srcPerson).getDstPerson() == null) {
 
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
