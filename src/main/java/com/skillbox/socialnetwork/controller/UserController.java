@@ -101,4 +101,27 @@ public class UserController {
         return new ResponseEntity<>(userDeleteResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/wall")
+    public  void getUserWall(@PathVariable String id){
+        Integer userId;
+        try{
+            userId = Integer.valueOf(id);
+
+        } catch (NumberFormatException e){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
+        }
+        UserRestResponse userRestResponse = new UserRestResponse();
+        try {
+            userService.getUserWall(userId);
+        }
+        catch (UsernameNotFoundException e){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+        }
+
+    }
+
+
+
+
+
 }

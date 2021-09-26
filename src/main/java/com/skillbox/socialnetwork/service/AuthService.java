@@ -69,7 +69,7 @@ public class AuthService {
 
     }
 
-    private AuthData setAuthData(Person person) {
+    static AuthData setAuthData(Person person) {
         AuthData authData = new AuthData();
         authData.setEMail(person.getEMail());
         authData.setAbout(person.getAbout());

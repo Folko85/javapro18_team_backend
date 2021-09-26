@@ -24,10 +24,10 @@ databaseChangeLog:
                     referencedTableName: person
                     referencedColumnNames: id
               - column:
-                  name: recepient_id
+                  name: recipient_id
                   type: int
                   constraints:
-                    foreignKeyName: recepient_id
+                    foreignKeyName: recipient_id
                     referencedTableName: person
                     referencedColumnNames: id
               - column:

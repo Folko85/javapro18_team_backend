@@ -61,8 +61,15 @@ public class UserServiceImpl {
        UserRest updated= new UserRest();
        BeanUtils.copyProperties(updatedPerson, updated);
        updated.setBirthday(convertLocalDate(updatedPerson.getBirthday()));
-
+       updated.setDateAndTimeOfRegistration(convertLocalDateTime(updatedPerson.getDateAndTimeOfRegistration()));
        return updated;
+    }
+    public void getUserWall(Integer id){
+        Person person = accountRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(""+id));
+        System.out.println(person.getPosts());
+
+
     }
 
     public void deleteUser(String email){
@@ -73,15 +80,21 @@ public class UserServiceImpl {
 
 
     public static long convertLocalDate(LocalDate localDate){
+
+       if(localDate==null) return 0;
        java.sql.Date date = java.sql.Date.valueOf(localDate);
        return date.getTime() / 1000;
 
     }
     public static LocalDate covertToLocalDate(long day) {
+        if(day==0) return null;
+
         java.sql.Date date = new Date(day*1000);
         return date.toLocalDate();
     }
     public  static  long convertLocalDateTime(LocalDateTime localDateTime){
+       if(localDateTime==null )
+           return 0;
        return localDateTime.toEpochSecond(UTC);
 
    }
