@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -27,5 +27,5 @@ public class FriendsList {
     private Integer perPage;
 
     @JsonProperty("data")
-    private List<Friends> friends;
+    private Set<FriendsPojo> friends;
 }

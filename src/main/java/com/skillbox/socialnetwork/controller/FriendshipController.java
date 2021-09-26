@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
 import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendResponse;
-import com.skillbox.socialnetwork.api.response.FriendsDTO.Friends;
+import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendsPojo;
 import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendsList;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
@@ -10,59 +10,45 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.utils.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class FriendshipController {
 
+    private final FriendshipRepository friendshipRepository;
+    private final PersonRepository personRepository;
+
     @Autowired
-    private FriendshipRepository friendshipRepository;
-    @Autowired
-    private PersonRepository personRepository;
+    public FriendshipController(FriendshipRepository friendshipRepository, PersonRepository personRepository) {
+        this.friendshipRepository = friendshipRepository;
+        this.personRepository = personRepository;
+    }
 
     @GetMapping("/api/v1/friends")
     public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {
 
-        Person per = personRepository.findPersonByName(getFriendsListRequest.getName());
-        List<Person> personList = friendshipRepository.findByName(per);
+        Person person = personRepository.findPersonByName(getFriendsListRequest.getName());
+        Set<Person> personList = friendshipRepository.findByName(person);
 
         FriendsList response = new FriendsList();
         response.setTotal(personList.size());
         response.setTimestamp(LocalDateTime.now());
 
-        List<Friends> friendsList = new ArrayList<>();
-
         if (personList.size() > 0) {
-            for (Person p : personList) {
+            Set<FriendsPojo> friendsList = personList
+                    .stream()
+                    .map(Converter::friendsToPojo)
+                    .collect(Collectors.toSet());
 
-                Friends friends = new Friends();
-
-                friends.setId(p.getId());
-                friends.setFirstName(p.getFirstName());
-                friends.setLastName(p.getLastName());
-                friends.setRegDate(p.getDateAndTimeOfRegistration());
-                friends.setBirthDate(p.getBirthday());
-                friends.setEMail(p.getEMail());
-                friends.setPhone(p.getPhone());
-                friends.setPhoto(p.getPhoto());
-                friends.setAbout(p.getAbout());
-                friends.setCity("Город");
-                friends.setCountry("Страна");
-                friends.setMessagesPermission(p.getMessagesPermission());
-                friends.setLastOnlineTime(p.getLastOnlineTime());
-                friends.setBlocked(p.isBlocked());
-
-                friendsList.add(friends);
-            }
-
-            return new ResponseEntity<>(personList, HttpStatus.OK);
+            return new ResponseEntity<>(friendsList, HttpStatus.OK);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -84,6 +70,7 @@ public class FriendshipController {
 
     @PostMapping("/api/v1/friends/{id}")
     public ResponseEntity<?> add(@PathVariable int id) {
+        // ищем пользователя в БД
         Person newFriend = personRepository.findPersonById(id);
 
         FriendshipStatus friendshipStatus = new FriendshipStatus();

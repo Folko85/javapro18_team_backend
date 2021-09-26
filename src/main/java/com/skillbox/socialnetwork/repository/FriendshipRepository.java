@@ -8,11 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface FriendshipRepository extends CrudRepository<Friendship, Integer> {
     @Query("SELECT f " +
             "FROM Friendship f " +
             "WHERE f.dstPerson = ?1 ")
-    List<Person> findByName(Person name);
+    Set<Person> findByName(Person name);
 }
