@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.api.response.AuthDTO.Place;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.sun.xml.bind.v2.TODO;
 import liquibase.pro.packaged.U;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -29,6 +31,7 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         UserRest userRest = new UserRest();
         BeanUtils.copyProperties(person,userRest );
+        convertionsFromPersonTimesToUserRest(person, userRest);
         Place city= new Place();
         city.setId(1);
         city.setTitle(person.getTown());
@@ -40,6 +43,7 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(""+id));
         UserRest userRest = new UserRest();
         BeanUtils.copyProperties(person,userRest );
+        convertionsFromPersonTimesToUserRest(person, userRest);
         Place city= new Place();
         city.setId(1);
         city.setTitle(person.getTown());
@@ -52,15 +56,12 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(""+updates.getEMail()));
        person.setFirstName(updates.getFirstName());
        person.setLastName(updates.getLastName());
-       java.sql.Date date = new Date(updates.getBirthday());
-       LocalDate localDate = date.toLocalDate();
-       person.setBirthday(localDate);
-       person.setPhone(updates.getPhone());
-       person.setAbout(updates.getAbout());
        person.setMessagesPermission(updates.getMessagesPermission());
        Person updatedPerson = accountRepository.save(person);
        UserRest updated= new UserRest();
        BeanUtils.copyProperties(updatedPerson, updated);
+       updated.setBirthday(convertLocalDate(updatedPerson.getBirthday()));
+
        return updated;
     }
 
@@ -69,6 +70,29 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         accountRepository.delete(person);
     }
+
+
+    public static long convertLocalDate(LocalDate localDate){
+       java.sql.Date date = java.sql.Date.valueOf(localDate);
+       return date.getTime() / 1000;
+
+    }
+    public static LocalDate covertToLocalDate(long day) {
+        java.sql.Date date = new Date(day*1000);
+        return date.toLocalDate();
+    }
+    public  static  long convertLocalDateTime(LocalDateTime localDateTime){
+       return localDateTime.toEpochSecond(UTC);
+
+   }
+
+   public static  void convertionsFromPersonTimesToUserRest(Person person, UserRest userRest){
+      userRest.setLastOnlineTime(convertLocalDateTime(person.getLastOnlineTime()));
+      userRest.setDateAndTimeOfRegistration(convertLocalDateTime(person.getDateAndTimeOfRegistration()));
+      userRest.setBirthday(convertLocalDate(person.getBirthday()));
+
+   }
+
 
 
 }

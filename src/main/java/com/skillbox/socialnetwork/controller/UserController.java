@@ -5,7 +5,6 @@ import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.service.UserServiceImpl;
-import liquibase.pro.packaged.U;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +29,12 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserRestResponse> getMe() throws Exception {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            UserRestResponse userRestResponse = new UserRestResponse();
-            userRestResponse.setTimestamp(new Date().getTime() / 1000);
-            userRestResponse.setError("null");
-            userRestResponse.setData(userService.getUserByEmail(email));
-        System.out.println("####Principal##########:");
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return new ResponseEntity<UserRestResponse>(userRestResponse, HttpStatus.OK);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserRestResponse userRestResponse = new UserRestResponse();
+        userRestResponse.setTimestamp(new Date().getTime() / 1000);
+        userRestResponse.setError("null");
+        userRestResponse.setData(userService.getUserByEmail(email));
+        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
