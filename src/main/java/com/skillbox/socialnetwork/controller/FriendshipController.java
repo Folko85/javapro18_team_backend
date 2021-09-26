@@ -34,17 +34,17 @@ public class FriendshipController {
     }
 
     @GetMapping("/api/v1/friends")
-    public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {
+    public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest, Principal principal) {
 
-        Person person = personRepository.findPersonByName(getFriendsListRequest.getName());
-        Set<Person> personList = friendshipRepository.findByName(person);
+        Person me = (Person) principal;
+        Set<Person> myFriends = friendshipRepository.findMyFriendByName(getFriendsListRequest.getName(), me);
 
         FriendsList response = new FriendsList();
-        response.setTotal(personList.size());
+        response.setTotal(myFriends.size());
         response.setTimestamp(LocalDateTime.now());
 
-        if (personList.size() > 0) {
-            Set<FriendsPojo> friendsList = personList
+        if (myFriends.size() > 0) {
+            Set<FriendsPojo> friendsList = myFriends
                     .stream()
                     .map(Converter::friendsToPojo)
                     .collect(Collectors.toSet());
@@ -71,24 +71,23 @@ public class FriendshipController {
 
     @PostMapping("/api/v1/friends/{id}")
     public ResponseEntity<?> add(@PathVariable int id, Principal principal) {
-        //ищем пользователя в БД
-        Person srcPerson = personRepository.findPersonById(((Person) principal).getId());
+
+        Person src = (Person) principal;
+
+        Person srcPerson = personRepository.findPersonById(src.getId());
         Person dstPerson = personRepository.findPersonById(id);
 
-        if (dstPerson != null) {
+        if (dstPerson != null && friendshipRepository.findMyFriendById(id, srcPerson) == null) {
 
-            //создаем статус дружбы
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
             friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
 
-            //создаем дружбу
             Friendship friendship = new Friendship();
             friendship.setStatus(friendshipStatus);
             friendship.setSrcPerson(srcPerson);
             friendship.setDstPerson(dstPerson);
 
-            // сохраняем в БД
             friendshipRepository.save(friendship);
 
             //формируем ответ
