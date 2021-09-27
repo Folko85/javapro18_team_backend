@@ -13,12 +13,23 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: validate
-
   mail:
-    host: smtp.yandex.ru
-    username: ivan.zukkel.mailsender@yandex.ru
-    password: vdgclvhfzrqcjqvc
-    port: 465
-    protocol: smtps
+    host: smtp.gmail.com
+    username: senderEmailDev1@gmail.com
+    password: nftzdhqxlainhtoa
+    port: 587
 mail:
+  transport:
+    protocol: smtp
+  smtp:
+    auth: true
+    starttls:
+      enable: true
   debug: true
+
+
+
+#  props.put("mail.transport.protocol", "smtp");
+#  props.put("mail.smtp.auth", "true");
+#  props.put("mail.smtp.starttls.enable", "true");
+#  props.put("mail.debug", "true");

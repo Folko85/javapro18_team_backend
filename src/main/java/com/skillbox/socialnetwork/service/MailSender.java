@@ -21,12 +21,10 @@ public class MailSender {
 
     public void send(String emailTo, String message) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-
         mailMessage.setFrom(username);
         mailMessage.setTo(emailTo);
         mailMessage.setText(message);
 
         mailSender.send(mailMessage);
     }
-
 }
