@@ -22,8 +22,8 @@ public class PostController {
 
     @GetMapping("/post")
     public ResponseEntity<PostResponse> getPosts(@RequestParam(name = "text", defaultValue = "") String text,
-                                                 @RequestParam(name = "date_from") long dateFrom,
-                                                 @RequestParam(name = "date_to") long dateTo,
+                                                 @RequestParam(name = "date_from", defaultValue = "0") long dateFrom,
+                                                 @RequestParam(name = "date_to", defaultValue = "1701214256861") long dateTo,
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage) {
         return new ResponseEntity<>(postService.getPosts(text,dateFrom,dateTo,offset,itemPerPage),HttpStatus.OK);
