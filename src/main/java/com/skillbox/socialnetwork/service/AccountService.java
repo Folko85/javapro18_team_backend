@@ -54,7 +54,7 @@ public class AccountService {
         person.setMessagesPermission(MessagesPermission.ALL);
         person.setLastOnlineTime(ZonedDateTime.now(UTC).toLocalDateTime());
         String code = UUID.randomUUID().toString().replace("-", "");
-        mailSender.send(registerRequest.getEMail(), REGISTRATION_URL + "key=" + code + "&eMail=" + registerRequest.getEMail());
+        //mailSender.send(registerRequest.getEMail(), REGISTRATION_URL + "key=" + code + "&eMail=" + registerRequest.getEMail());
         person.setConfirmationCode(code);
         accountRepository.save(person);
         return getAccountResponse(UTC);

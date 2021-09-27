@@ -19,12 +19,12 @@ public class MailConfig {
     private String password;
     @Value("${spring.mail.port}")
     private int port;
-    @Value("${spring.mail.protocol}")
+    @Value("${mail.transport.protocol}")
     private String protocol;
     @Value("${mail.debug}")
     private boolean debug;
     @Value("${mail.smtp.auth}")
-    private String auth;
+    private boolean auth;
     @Value("${mail.smtp.starttls.enable}")
     private boolean enable;
 
