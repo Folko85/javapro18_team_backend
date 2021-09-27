@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.response.CommentData;
+import com.skillbox.socialnetwork.api.response.CommentWallData;
 import com.skillbox.socialnetwork.entity.PostComment;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,29 @@ public class CommentService {
         commentData.setTime(postComment.getTime().toInstant(UTC));
         if(postComment.getParent()!=null)
         commentData.setParentId(postComment.getParent().getId());
+        commentData.setPostId(postComment.getPost().getId());
+        return commentData;
+    }
+
+    public static List<CommentWallData> getCommentWallData4Response(Set<PostComment> comments)
+    {
+        List<CommentWallData> commentDataList = new ArrayList<>();
+        comments.forEach(postComment -> {
+            CommentWallData commentData = getCommentWallData(postComment);
+            commentDataList.add(commentData);
+        });
+        return commentDataList;
+    }
+
+    public static CommentWallData getCommentWallData(PostComment postComment) {
+        CommentWallData commentData = new CommentWallData();
+        commentData.setCommentText(postComment.getCommentText());
+        commentData.setBlocked(postComment.isBlocked());
+        commentData.setAuthorId(postComment.getPerson().getId());
+        commentData.setId(postComment.getId());
+        commentData.setTime(UserServiceImpl.convertLocalDateTime(postComment.getTime()));
+        if(postComment.getParent()!=null)
+            commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());
         return commentData;
     }

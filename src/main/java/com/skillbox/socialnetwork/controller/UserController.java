@@ -4,19 +4,20 @@ import com.skillbox.socialnetwork.api.response.AuthDTO.UserDeleteResponse;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
 import com.skillbox.socialnetwork.service.UserServiceImpl;
-import liquibase.pro.packaged.U;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -102,7 +103,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}/wall")
-    public  void getUserWall(@PathVariable String id){
+    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
+                             @RequestParam(name = "offset", defaultValue = "0") int offset,
+                             @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
+                             ){
         Integer userId;
         try{
             userId = Integer.valueOf(id);
@@ -110,18 +114,22 @@ public class UserController {
         } catch (NumberFormatException e){
             throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
         }
-        UserRestResponse userRestResponse = new UserRestResponse();
+        List<PostWallData> posts =new ArrayList<>();
         try {
-            userService.getUserWall(userId);
+           posts= userService.getUserWall(id, offset, itemPerPage);
         }
         catch (UsernameNotFoundException e){
             throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
+        PostWallResponse postWallResponse = new PostWallResponse();
+        postWallResponse.setError("string");
+        postWallResponse.setTimestamp(new Date().getTime() / 1000);
+        postWallResponse.setTotal(posts.size());
+        postWallResponse.setOffset(offset);
+        postWallResponse.setPerPage(itemPerPage);
+        postWallResponse.setData(posts);
+
+        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
 
     }
-
-
-
-
-
 }
