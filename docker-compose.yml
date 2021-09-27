@@ -32,3 +32,29 @@ services:
       - mysql_db_container
     links:
       - mysql_db_container
+  grafana:
+    build: './scripts/config/grafana'
+    ports:
+      - 3000:3000
+    volumes:
+      - ./scripts/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      monitoring:
+        aliases:
+          - grafana
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./scripts/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./scripts/prometheus:/prometheus
+    networks:
+      monitoring:
+        aliases:
+           - prometheus
+networks:
+  monitoring:
