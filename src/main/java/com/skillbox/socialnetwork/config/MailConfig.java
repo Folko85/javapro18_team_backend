@@ -28,19 +28,19 @@ public class MailConfig {
     @Value("${mail.smtp.starttls.enable}")
     private boolean enable;
 
-@Bean
-public JavaMailSender getJavaMailSender() {
-    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    mailSender.setHost(host);
-    mailSender.setPort(port);
-    mailSender.setUsername(username);
-    mailSender.setPassword(password);
-    Properties props = mailSender.getJavaMailProperties();
-    props.put("mail.transport.protocol", protocol);
-    props.put("mail.smtp.auth", auth);
-    props.put("mail.smtp.starttls.enable", enable);
-    props.put("mail.debug", debug);
+    @Bean
+    public JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", protocol);
+        props.put("mail.smtp.auth", auth);
+        props.put("mail.smtp.starttls.enable", enable);
+        props.put("mail.debug", debug);
 
-    return mailSender;
-}
+        return mailSender;
+    }
 }
