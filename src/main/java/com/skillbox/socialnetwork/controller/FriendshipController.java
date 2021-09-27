@@ -1,9 +1,6 @@
 package com.skillbox.socialnetwork.controller;
-
+import com.skillbox.socialnetwork.api.response.FriendsDTO.*;
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
-import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendResponse;
-import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendsPojo;
-import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendsList;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
