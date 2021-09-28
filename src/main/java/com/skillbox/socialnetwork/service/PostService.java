@@ -1,7 +1,9 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,8 @@ import java.util.List;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.CommentService.getCommentData4Response;
+import static com.skillbox.socialnetwork.service.CommentService.getCommentWallData4Response;
+import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDateTime;
 import static java.time.ZoneOffset.UTC;
 
 
@@ -76,5 +80,40 @@ public class PostService {
         postData.setBlocked(post.isBlocked());
         return postData;
     }
+
+    public List<PostWallData> getPastWallData(Integer offset, Integer itemPerPage, UserRest userRest){
+        Pageable pageable = PageRequest.of(offset/itemPerPage, itemPerPage);
+        Page<Post> page =postRepository.findUserPost(userRest.getId(), pageable);
+        List<Post> posts =page.getContent();
+        List<PostWallData> postWallDataList = new ArrayList<>();
+        posts.forEach(post -> {
+            PostWallData postWallData = getPostWallData(post, userRest);
+            postWallDataList.add(postWallData);
+        });
+        return postWallDataList;
+    }
+
+    public PostWallData getPostWallData(Post post, UserRest userRest) {
+        PostWallData postWallData = new PostWallData();
+        postWallData.setPostText(post.getPostText());
+        postWallData.setAuthor(userRest);
+        postWallData.setComments(getCommentWallData4Response(post.getComments()));
+        postWallData.setId(post.getId());
+        postWallData.setLikes(post.getPostLikes().size());
+        postWallData.setTime(convertLocalDateTime(post.getDatetime()));
+        postWallData.setTitle(post.getTitle());
+        postWallData.setBlocked(post.isBlocked());
+        if(LocalDateTime.now().isBefore(post.getDatetime())){
+            postWallData.setType("QUEUED");
+        }
+        else{
+            postWallData.setType("POSTED");
+        }
+        return postWallData;
+    }
+
+
+
+
 
 }

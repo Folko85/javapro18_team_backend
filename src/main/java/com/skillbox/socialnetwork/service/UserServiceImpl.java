@@ -4,23 +4,17 @@ import com.skillbox.socialnetwork.api.response.AuthDTO.Place;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.skillbox.socialnetwork.service.CommentService.getCommentWallData4Response;
 import static java.time.ZoneOffset.UTC;
 
 @Service
@@ -69,24 +63,22 @@ public class UserServiceImpl {
        person.setPhone(updates.getPhone());
        person.setAbout(updates.getAbout());
        person.setBirthday(covertToLocalDate(updates.getBirthday()));
-       person.setMessagesPermission(updates.getMessagesPermission());
+       person.setMessagesPermission(updates.getMessagesPermission()==null ? person.getMessagesPermission() : updates.getMessagesPermission());
        Person updatedPerson = accountRepository.save(person);
        UserRest updated= new UserRest();
        convertUserToUserRest(updatedPerson, updated);
        return updated;
     }
+
     public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage){
         Person person = accountRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException(""+id));
-        Pageable pageable = PageRequest.of(offset/itemPerPage, itemPerPage);
-        Page<Post> page =postRepository.findUserPost(id, pageable);
-        List<Post> posts =page.getContent();
-        List<PostWallData> postWallData = getPastWallData(posts);
-
+        UserRest userRest = new UserRest();
+        convertUserToUserRest(person, userRest);
+        List<PostWallData> postWallData = postService.getPastWallData(offset, itemPerPage, userRest);
         return postWallData;
 
     }
-
 
     public void deleteUser(String email){
         Person person = accountRepository.findByEMail(email)
@@ -125,31 +117,5 @@ public class UserServiceImpl {
        BeanUtils.copyProperties(person,userRest );
        conventionsFromPersonTimesToUserRest(person, userRest);
    }
-
-   private List<PostWallData> getPastWallData(List<Post> posts){
-       List<PostWallData> postWallDataList = new ArrayList<>();
-       posts.forEach(post -> {
-           PostWallData postWallData = getPostWallData(post);
-           postWallDataList.add(postWallData);
-       });
-       return postWallDataList;
-   }
-
-    private PostWallData getPostWallData(Post post) {
-        PostWallData postWallData = new PostWallData();
-        postWallData.setPostText(post.getPostText());
-        UserRest userRest = new UserRest();
-        convertUserToUserRest(post.getPerson(), userRest);
-        postWallData.setAuthor(userRest);
-        postWallData.setComments(getCommentWallData4Response(post.getComments()));
-        postWallData.setId(post.getId());
-        postWallData.setLikes(post.getPostLikes().size());
-        postWallData.setTime(convertLocalDateTime(post.getDatetime()));
-        postWallData.setTitle(post.getTitle());
-        postWallData.setBlocked(post.isBlocked());
-        postWallData.setType("POSTED");
-        return postWallData;
-    }
-
 
 }
