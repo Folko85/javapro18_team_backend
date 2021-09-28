@@ -1,10 +1,12 @@
 package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "post_comment")
@@ -24,11 +26,11 @@ public class PostComment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column(name = "parent_id")
-    private Integer parentId;
+    @ManyToOne()                   // вот так
+    private PostComment parent;
 
     @ManyToOne
-    @JoinColumn(name = "autor_id")
+    @JoinColumn(name = "author_id")
     private Person person;
 
     @Column(name = "comment_text", columnDefinition = "mediumtext")
@@ -37,16 +39,19 @@ public class PostComment {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "postComment")
+    private Set<BlockHistory> blocks;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         PostComment that = (PostComment) o;
-        return isBlocked == that.isBlocked && Objects.equals(id, that.id) && Objects.equals(time, that.time) && Objects.equals(post, that.post) && Objects.equals(parentId, that.parentId) && Objects.equals(person, that.person) && Objects.equals(commentText, that.commentText);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, time, post, parentId, person, commentText, isBlocked);
+        return 0;
     }
 }

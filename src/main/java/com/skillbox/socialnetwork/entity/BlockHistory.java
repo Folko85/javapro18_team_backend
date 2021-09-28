@@ -33,7 +33,7 @@ public class BlockHistory {
     private PostComment postComment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "action", length = 50, columnDefinition = "enum")
+    @Column(name = "action", columnDefinition = "enum('BLOCK','UNBLOCK')")
     private ActionType action;
 
     @Override

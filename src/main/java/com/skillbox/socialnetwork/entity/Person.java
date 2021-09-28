@@ -45,7 +45,7 @@ public class Person {
     @Column(name = "photo", length = 255)
     private String photo;
 
-    @Column (columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String about;
 
     @Column(name = "town", length = 50)
@@ -58,7 +58,7 @@ public class Person {
     private boolean isApproved;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "messages_permission", length = 50, columnDefinition = "enum")
+    @Column(name = "messages_permission", columnDefinition = "enum('ALL','FRIENDS')")
     private MessagesPermission messagesPermission;
 
     @Column(name = "last_online_time")
@@ -114,8 +114,7 @@ public class Person {
         return Objects.hash(id, firstName, lastName, dateAndTimeOfRegistration, birthday, eMail, phone, password, photo, about, town, confirmationCode, isApproved, messagesPermission, lastOnlineTime, isBlocked, post, comments, blockHistories, likes, notifications);
     }
 
-    public Role getRole()
-    {
+    public Role getRole() {
         return Role.USER;
     }
 }

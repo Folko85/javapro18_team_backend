@@ -21,7 +21,7 @@ public class NotificationType {
     private int id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "code", columnDefinition = "enum")
+    @Column(name = "code", columnDefinition = "enum('POST','POST_COMMENT','COMMENT_COMMENT','FRIEND_REQUEST','MESSAGE')")
     private com.skillbox.socialnetwork.entity.enums.NotificationType code;
 
     @Column

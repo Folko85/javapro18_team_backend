@@ -28,7 +28,7 @@ public class Message {
     private Person author;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "recepient_id", nullable = false)
+    @JoinColumn(name = "recipient_id", nullable = false)
     private Person recipient;
 
 
