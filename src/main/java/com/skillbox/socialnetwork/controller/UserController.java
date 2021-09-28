@@ -1,5 +1,9 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserDeleteResponse;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
@@ -9,15 +13,20 @@ import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
 import com.skillbox.socialnetwork.service.UserServiceImpl;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
+
+import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDate;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -29,16 +38,22 @@ public class UserController {
 
     }
 
+    /**
+     * Возвращает UserRest, что бы фронт смог обработать пользователя.
+     * Для соотвествия требованиям API необходимо доавить UserRest в UserRestResponse и поменять тип метода.
+     * @return UserRest userRest
+     * @throws Exception
+     */
     @GetMapping("/me")
-    public ResponseEntity<UserRestResponse> getMe() throws Exception {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            UserRestResponse userRestResponse = new UserRestResponse();
-            userRestResponse.setTimestamp(new Date().getTime() / 1000);
-            userRestResponse.setError("null");
-            userRestResponse.setData(userService.getUserByEmail(email));
-        System.out.println("####Principal##########:");
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+    public ResponseEntity<UserRest> getMe() throws Exception {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserRestResponse userRestResponse = new UserRestResponse();
+        userRestResponse.setTimestamp(new Date().getTime() / 1000);
+        userRestResponse.setError("null");
+        UserRest userRest = userService.getUserByEmail(email);
+        userRestResponse.setData(userRest);
+
+        return new ResponseEntity<>(userRest, HttpStatus.OK);
     }
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
@@ -60,12 +75,22 @@ public class UserController {
         userRestResponse.setError("null");
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
-
+    /**
+     * Возвращает UserRest, что бы фронт смог обработать пользователя.
+     * Для соотвествия требованиям API необходимо доавить UserRest в UserRestResponse и поменять тип метода.
+     * @return UserRest updatedUser
+     * @throws Exception
+     */
     @PutMapping("/me")
-    public  ResponseEntity<UserRestResponse> updateUser(@RequestBody UserRequestModel userRequestModel){
-
+    /**Замени аргумент updateUser() на (@RequestBody UserRequestModel userRequestModel),
+     * удали вызов и сам метод getUserRequestModelFromBody(), и не будет костыля.
+     * plusMonths(1) необходимо удалить, если не будет фронт убирать лишний месяц.
+     * Удали UserUpdateWithInstantRequestModel.
+     */
+    public  ResponseEntity<UserRest> updateUser(HttpEntity<String> httpEntity){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserRest updates= new UserRest();
+        UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
         BeanUtils.copyProperties(userRequestModel, updates);
         updates.setEMail(email);
         UserRest updatedUser;
@@ -79,7 +104,7 @@ public class UserController {
         userRestResponse.setData(updatedUser);
         userRestResponse.setTimestamp(new Date().getTime() / 1000);
         userRestResponse.setError("null");
-        return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+        return  new ResponseEntity<>(updatedUser, HttpStatus.OK);
 
     }
 
@@ -132,4 +157,31 @@ public class UserController {
         return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
 
     }
+    @PostMapping("/{id}/wall")
+    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id){
+
+        PostWallResponse postWallResponse = new PostWallResponse();
+
+        return  new ResponseEntity<>(postWallResponse, HttpStatus.OK);
+    }
+
+
+    private  UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity){
+        ObjectMapper objectMapper = new ObjectMapper(); objectMapper.registerModule(new JavaTimeModule());
+        UserRequestModel userRequestModel =new UserRequestModel();
+
+        try {
+            UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel= objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
+            userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC).plusMonths(1)));
+            BeanUtils.copyProperties(userUpdateWithInstantRequestModel, userRequestModel);
+        }
+        catch (JsonProcessingException e){
+            try{
+                userRequestModel= objectMapper.readValue(httpEntity.getBody(), UserRequestModel.class);
+            }
+            catch (JsonProcessingException g){throw  new IllegalArgumentException();}
+        }
+        return userRequestModel;
+    }
+
 }
