@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
-import static com.skillbox.socialnetwork.service.CommentService.getCommentData4Response;
 import static com.skillbox.socialnetwork.service.CommentService.getCommentWallData4Response;
 import static java.time.ZoneOffset.UTC;
 
@@ -64,17 +62,17 @@ public class UserServiceImpl {
     public  UserRest updateUser(UserRest updates){
        Person person = accountRepository.findByEMail(updates.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(""+updates.getEMail()));
-       person.setFirstName(updates.getFirstName());
-       person.setLastName(updates.getLastName());
+       String updatedName =updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
+       person.setFirstName(updatedName);
+       String updatedLastName=updates.getLastName().isEmpty() ? person.getLastName() : updates.getLastName();
+       person.setLastName(updatedLastName);
        person.setPhone(updates.getPhone());
        person.setAbout(updates.getAbout());
        person.setBirthday(covertToLocalDate(updates.getBirthday()));
        person.setMessagesPermission(updates.getMessagesPermission());
        Person updatedPerson = accountRepository.save(person);
        UserRest updated= new UserRest();
-       BeanUtils.copyProperties(updatedPerson, updated);
-       updated.setBirthday(convertLocalDate(updatedPerson.getBirthday()));
-       updated.setDateAndTimeOfRegistration(convertLocalDateTime(updatedPerson.getDateAndTimeOfRegistration()));
+       convertUserToUserRest(updatedPerson, updated);
        return updated;
     }
     public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage){
