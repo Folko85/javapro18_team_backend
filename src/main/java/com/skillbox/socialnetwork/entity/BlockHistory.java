@@ -15,7 +15,7 @@ import java.util.Objects;
 public class BlockHistory {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column
@@ -34,7 +34,7 @@ public class BlockHistory {
     private PostComment comment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "action", length = 50, columnDefinition = "enum")
+    @Column(name = "action", columnDefinition = "enum('BLOCK','UNBLOCK')")
     private ActionType action;
 
     @Override

@@ -122,7 +122,7 @@ public class AccountService {
 
     static AccountResponse getAccountResponse(ZoneId utc) {
         AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(ZonedDateTime.now(utc).toEpochSecond());
+        accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
         Map<String, String> dateMap = new HashMap<>();
         dateMap.put("message", "ok");
         accountResponse.setData(dateMap);

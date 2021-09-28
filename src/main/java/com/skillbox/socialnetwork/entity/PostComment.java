@@ -26,11 +26,11 @@ public class PostComment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column (name = "parent_id")                    // хз, как это обыгрывать
-    private Integer parentId;
+    @ManyToOne()                   // вот так
+    private PostComment parent;
 
     @ManyToOne
-    @JoinColumn(name = "autor_id")
+    @JoinColumn(name = "author_id")
     private Person person;
 
     @Column(name = "comment_text", columnDefinition = "mediumtext")
