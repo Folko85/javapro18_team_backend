@@ -71,6 +71,29 @@
         </dependency>
 
         <dependency>
+            <groupId>com.vk.api</groupId>
+            <artifactId>sdk</artifactId>
+            <version>1.0.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
             <version>2.5.0</version>
@@ -81,7 +104,12 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>1.7.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.1.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -89,6 +117,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.4</version>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -96,6 +125,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <outputDirectory>./jars</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -135,5 +165,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
