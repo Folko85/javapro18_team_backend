@@ -14,8 +14,6 @@ class JasyptConfig {
 
     private final String password = String.copyValueOf(new char[]{83, 107, 105, 108, 108, 98, 111, 120});
 
-
-
     @Bean(name = "encryptorBean")
     public StringEncryptor stringEncryptor() {
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
