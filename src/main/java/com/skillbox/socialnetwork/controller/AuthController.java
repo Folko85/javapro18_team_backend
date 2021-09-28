@@ -30,7 +30,6 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> logout() throws Exception {
         return new ResponseEntity<>(authService.logout(), HttpStatus.OK);
     }
