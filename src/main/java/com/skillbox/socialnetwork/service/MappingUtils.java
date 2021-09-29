@@ -1,14 +1,14 @@
-package com.skillbox.socialnetwork.utils;
+package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.response.FriendsDTO.*;
 import com.skillbox.socialnetwork.entity.Person;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class Converter {
+@Service
+public class MappingUtils {
 
-    public static FriendsPojo friendsToPojo(Person source) {
-        FriendsPojo result = new FriendsPojo();
+    public static FriendsDTO friendsToPojo(Person source) {
+        FriendsDTO result = new FriendsDTO();
 
         result.setId(source.getId());
         result.setFirstName(source.getFirstName());

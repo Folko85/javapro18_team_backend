@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-public class FriendsPojo {
+public class FriendsDTO {
     private int id;
 
     private String firstName;

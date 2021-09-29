@@ -1,4 +1,5 @@
 package com.skillbox.socialnetwork.controller;
+
 import com.skillbox.socialnetwork.api.response.FriendsDTO.*;
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
 import com.skillbox.socialnetwork.entity.Friendship;
@@ -7,7 +8,7 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.utils.Converter;
+import com.skillbox.socialnetwork.service.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,14 +38,14 @@ public class FriendshipController {
         Set<Friendship> myFriendship = friendshipRepository.findMyFriendByName(getFriendsListRequest.getName(), me);
         Set<Person> myFriends = myFriendship.stream().map(Friendship::getDstPerson).collect(Collectors.toSet());
 
-        FriendsList response = new FriendsList();
+        FriendshipDTO.Response.FriendsList response = new FriendshipDTO.Response.FriendsList();
         response.setTotal(myFriends.size());
         response.setTimestamp(LocalDateTime.now());
 
         if (myFriends.size() > 0) {
-            Set<FriendsPojo> friendsList = myFriends
+            Set<FriendsDTO> friendsList = myFriends
                     .stream()
-                    .map(Converter::friendsToPojo)
+                    .map(MappingUtils::friendsToPojo)
                     .collect(Collectors.toSet());
 
             return new ResponseEntity<>(friendsList, HttpStatus.OK);
@@ -59,7 +60,7 @@ public class FriendshipController {
         if (friendshipRepository.existsById(id)) {
             friendshipRepository.deleteById(id);
 
-            FriendResponse response = new FriendResponse();
+            FriendshipDTO.Response.FriendsResponse200 response = new FriendshipDTO.Response.FriendsResponse200();
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -88,13 +89,12 @@ public class FriendshipController {
 
             friendshipRepository.save(friendship);
 
-            //формируем ответ
-            FriendResponse addFriend = new FriendResponse();
-            addFriend.setError("not error");
-            addFriend.setTimestamp(LocalDateTime.now());
-            addFriend.setMessage("ok");
+            FriendshipDTO.Response.FriendsResponse200 addFriendResponse = new FriendshipDTO.Response.FriendsResponse200();
+            addFriendResponse.setError("not error");
+            addFriendResponse.setTimestamp(LocalDateTime.now());
+            addFriendResponse.setMessage("ok");
 
-            return new ResponseEntity<>(addFriend, HttpStatus.OK);
+            return new ResponseEntity<>(addFriendResponse, HttpStatus.OK);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
