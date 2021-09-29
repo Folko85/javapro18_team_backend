@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response;
+package com.skillbox.socialnetwork.api.response.CommentDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -20,6 +20,6 @@ public class CommentData {
     private int authorId;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
-//    @JsonProperty("sub_comments")
-//    private List<String> subComments;
+    @JsonProperty("sub_comments")
+    private List<CommentData> subComments;
 }

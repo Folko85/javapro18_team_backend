@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
+import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostLikeNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserExistException;
@@ -38,6 +39,13 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription("Like не существует");
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<BadRequestResponse> handleCommentNotFoundException(CommentNotFoundException exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("invalid_request");
+        badRequestResponse.setErrorDescription("Comment не существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 }
