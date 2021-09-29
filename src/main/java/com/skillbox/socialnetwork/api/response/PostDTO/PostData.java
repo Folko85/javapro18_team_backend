@@ -5,12 +5,13 @@ import com.skillbox.socialnetwork.api.response.AuthDTO.AuthData;
 import com.skillbox.socialnetwork.api.response.CommentData;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
 public class PostData {
     private int id;
-    private long time;
+    private Instant time;
     private AuthData author;
     private String title;
     @JsonProperty("post_text")

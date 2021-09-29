@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,25 +31,23 @@ public class PostService {
     public PostResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
-                LocalDateTime.ofEpochSecond(dateFrom, 0, UTC)
-                , LocalDateTime.ofEpochSecond(dateTo, 0, UTC),
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(dateFrom),UTC)
+                , LocalDateTime.ofInstant(Instant.ofEpochMilli(dateTo),UTC),
                 pageable);
-
-        PostResponse postResponse = new PostResponse();
-        postResponse.setPerPage(itemPerPage);
-        postResponse.setTimestamp(LocalDateTime.now().toEpochSecond(UTC));
-        postResponse.setOffset(offset);
-        postResponse.setTotal((int) pageablePostList.getTotalElements());
-        postResponse.setData(getPost4Response(pageablePostList.toList()));
-        return postResponse;
+        System.out.println(LocalDateTime.ofInstant(Instant.ofEpochMilli(dateFrom),UTC));
+        return getPostResponse(offset, itemPerPage, pageablePostList);
     }
 
-    public PostResponse getFeeds(String text,int offset, int itemPerPage) {
+    public PostResponse getFeeds(String text, int offset, int itemPerPage) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContaining(text, pageable);
+        return getPostResponse(offset, itemPerPage, pageablePostList);
+    }
+
+    private PostResponse getPostResponse(int offset, int itemPerPage, Page<Post> pageablePostList) {
         PostResponse postResponse = new PostResponse();
         postResponse.setPerPage(itemPerPage);
-        postResponse.setTimestamp(LocalDateTime.now().toEpochSecond(UTC));
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setOffset(offset);
         postResponse.setTotal((int) pageablePostList.getTotalElements());
         postResponse.setData(getPost4Response(pageablePostList.toList()));
@@ -72,7 +71,7 @@ public class PostService {
         postData.setComments(getCommentData4Response(post.getComments()));
         postData.setId(post.getId());
         postData.setLikes(post.getPostLikes().size());
-        postData.setTime(post.getDatetime().toEpochSecond(UTC));
+        postData.setTime(post.getDatetime().toInstant(UTC));
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
         return postData;

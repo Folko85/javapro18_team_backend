@@ -25,7 +25,6 @@ public class ApiAccountController {
 
     @PostMapping("/register")
     public ResponseEntity<AccountResponse> register(@RequestBody RegisterRequest registerRequest) throws UserExistException {
-        log.info("Сюда что-то дошло с фронта");
         return new ResponseEntity<>(accountService.register(registerRequest), HttpStatus.OK);
     }
 

@@ -15,13 +15,34 @@ spring:
       ddl-auto: validate
 
   mail:
-    host: smtp.yandex.ru
-    username: ivan.zukkel.mailsender@yandex.ru
-    password: vdgclvhfzrqcjqvc
-    port: 465
-    protocol: smtps
+    host: smtp.gmail.com
+    username: senderEmailDev1@gmail.com
+    password: nftzdhqxlainhtoa
+    port: 587
 mail:
+  transport:
+    protocol: smtp
+  smtp:
+    auth: true
+    starttls:
+      enable: true
   debug: true
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+
+
 
 
 vk:
