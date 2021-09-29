@@ -58,11 +58,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-maven-plugin</artifactId>
             <version>4.4.3</version>
@@ -72,18 +67,6 @@
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>2.5.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
-            <version>1.7.3</version>
-        </dependency>
-
         <dependency>
             <groupId>com.vk.api</groupId>
             <artifactId>sdk</artifactId>
@@ -115,7 +98,7 @@
             <version>5.1.0</version>
             <scope>test</scope>
         </dependency>
-=========
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
             <version>2.5.0</version>
@@ -126,8 +109,6 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>1.7.3</version>
         </dependency>
-
->>>>>>>>> Temporary merge branch 2
     </dependencies>
 
     <build>
@@ -179,24 +160,6 @@
                 <configuration>
                     <source>15</source>
                     <target>15</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-maven-plugin</artifactId>
-                <version>0.3</version>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <apiDocsUrl>http://localhost:8086/v3/api-docs</apiDocsUrl>
-                    <outputFileName>openapi.yaml</outputFileName>
-                    <outputDir>${project.basedir}</outputDir>
                 </configuration>
             </plugin>
         </plugins>
