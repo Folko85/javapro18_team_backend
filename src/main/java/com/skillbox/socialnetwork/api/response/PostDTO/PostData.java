@@ -20,4 +20,6 @@ public class PostData {
     private boolean isBlocked;
     private int likes;
     private List<CommentData> comments;
+    @JsonProperty("my_like")
+    private boolean myLike;
 }

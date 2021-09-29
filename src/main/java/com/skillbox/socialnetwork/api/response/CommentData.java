@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 public class CommentData {
@@ -19,4 +20,6 @@ public class CommentData {
     private int authorId;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
+//    @JsonProperty("sub_comments")
+//    private List<String> subComments;
 }
