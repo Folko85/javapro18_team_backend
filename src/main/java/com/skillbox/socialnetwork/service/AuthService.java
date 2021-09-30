@@ -55,7 +55,7 @@ public class AuthService {
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
 
         AuthResponse authResponse = new AuthResponse();
-        authResponse.setTimestamp(ZonedDateTime.now().toInstant());
+        authResponse.setTimestamp(new Date().getTime() / 1000);
         AuthData authData;
         authData = setAuthData(person);
         authData.setToken(token);
@@ -78,7 +78,7 @@ public class AuthService {
         authData.setFirstName(person.getFirstName());
         authData.setLastName(person.getLastName());
         authData.setId(person.getId());
-        authData.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
+        authData.setRegDate(person.getDateAndTimeOfRegistration().toEpochSecond(UTC));
         authData.setPhone(person.getPhone());
         authData.setMessagesPermission(person.getMessagesPermission().toString());
         authData.setBlocked(person.isBlocked());

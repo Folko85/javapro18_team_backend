@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -25,14 +24,11 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String eMail) throws UsernameNotFoundException {
         Optional<User> optionalUser = userRepository.findByEMail(eMail);
-        if (optionalUser.isEmpty()) {
-            Optional<Person> optionalPerson = accountRepository.findByEMail(eMail);
-            if (optionalPerson.isPresent()) {
-                Person person = optionalPerson.get();
-                person.setLastOnlineTime(LocalDateTime.now());
-                accountRepository.save(person);
-                return SecurityUser.fromUser(person);
-            } else return null;
-        } else return SecurityUser.fromUser(optionalUser.get());
+        if(optionalUser.isEmpty()) {
+            Person person = accountRepository.findByEMail(eMail)
+                    .orElseThrow(() -> new UsernameNotFoundException(eMail));
+            return  SecurityUser.fromUser(person);
+        }
+        else return SecurityUser.fromUser(optionalUser.get());
     }
 }

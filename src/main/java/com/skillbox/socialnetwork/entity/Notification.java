@@ -23,6 +23,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Enumerated(EnumType.STRING)
     @JoinColumn(name = "type_id")
     @ManyToOne
     private NotificationType type;
@@ -35,11 +36,11 @@ public class Notification {
     private Person person;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "entity_id", columnDefinition = "enum('COMMENT','FRIEND','POST','MESSAGE')")
+    @Column(name = "entity_id", columnDefinition = "enum")
     private EntityId entityId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "contact", columnDefinition = "enum('EMAIL','PHONE')")
+    @Column(name = "contact", columnDefinition = "enum")
     private Contact contact;
 
     @Override
