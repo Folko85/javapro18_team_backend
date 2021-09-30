@@ -1,15 +1,13 @@
 package com.skillbox.socialnetwork.entity;
 
+import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -26,11 +24,9 @@ public class FriendshipStatus {
     @Column (name = "time")
     private LocalDateTime time;
 
-    @Column
-    private String name;
-
-    @Column
-    private String code;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "code", columnDefinition = "enum")
+    private FriendshipStatusCode code;
 
     @Override
     public boolean equals(Object o) {

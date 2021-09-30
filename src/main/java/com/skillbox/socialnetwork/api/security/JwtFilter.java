@@ -18,7 +18,7 @@ import static org.springframework.util.StringUtils.hasText;
 @Component
 public class JwtFilter extends GenericFilterBean {
 
-    public static final String AUTHORIZATION_KEY = "Authorization"; //узнаю ответ на вопрос, поменяю
+    public static final String AUTHORIZATION_KEY = "Authorization";
 
     private final JwtProvider jwtProvider;
 
@@ -35,8 +35,9 @@ public class JwtFilter extends GenericFilterBean {
         if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
             UserDetails userDetails = userDetailService.loadUserByUsername(userLogin);
-            SecurityContextHolder.getContext()
-                    .setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+            if (userDetails != null)
+                SecurityContextHolder.getContext()
+                        .setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
