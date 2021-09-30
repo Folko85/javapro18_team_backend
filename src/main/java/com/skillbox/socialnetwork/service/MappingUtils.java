@@ -28,5 +28,4 @@ public class MappingUtils {
         return result;
     }
 
-
 }

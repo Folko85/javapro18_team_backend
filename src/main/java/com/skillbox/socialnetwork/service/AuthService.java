@@ -15,11 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Period;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.skillbox.socialnetwork.service.AccountService.getAccountResponse;
 import static java.time.ZoneOffset.UTC;

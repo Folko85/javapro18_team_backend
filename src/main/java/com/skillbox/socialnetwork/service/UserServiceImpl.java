@@ -4,15 +4,9 @@ import com.skillbox.socialnetwork.api.response.AuthDTO.Place;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
-import liquibase.pro.packaged.U;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-
-import static java.time.ZoneOffset.UTC;
 
 @Service
 public class UserServiceImpl {

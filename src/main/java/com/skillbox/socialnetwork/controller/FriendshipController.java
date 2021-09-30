@@ -1,19 +1,28 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.request.EMailChangeRequest;
 import com.skillbox.socialnetwork.api.response.FriendsDTO.*;
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
+import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.service.AccountService;
 import com.skillbox.socialnetwork.service.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Email;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -32,10 +41,9 @@ public class FriendshipController {
     }
 
     @GetMapping("/api/v1/friends")
-    public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest, Principal principal) {
+    public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {
 
-        Person me = (Person) principal;
-        Set<Friendship> myFriendship = friendshipRepository.findMyFriendByName(getFriendsListRequest.getName(), me);
+        Set<Friendship> myFriendship = friendshipRepository.findMyFriendByName(getFriendsListRequest.getName());
         Set<Person> myFriends = myFriendship.stream().map(Friendship::getDstPerson).collect(Collectors.toSet());
 
         FriendshipDTO.Response.FriendsList response = new FriendshipDTO.Response.FriendsList();
@@ -69,14 +77,14 @@ public class FriendshipController {
     }
 
     @PostMapping("/api/v1/friends/{id}")
-    public ResponseEntity<?> add(@PathVariable int id, Principal principal) {
+    public ResponseEntity<?> add(@PathVariable int id) {
 
-        Person src = (Person) principal;
+        String eMail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Person srcPerson = personRepository.findPersonById(src.getId());
+        Person srcPerson = personRepository.findPersonByEmail(eMail);
         Person dstPerson = personRepository.findPersonById(id);
 
-        if (dstPerson != null && friendshipRepository.findMyFriendById(id, srcPerson).getDstPerson() == null) {
+        if (dstPerson != null && friendshipRepository.findMyFriendById(id) != null) {
 
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
