@@ -34,24 +34,17 @@ public class PlatformService {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
-        GetCountriesResponse response = vk.database().getCountries(actor).needAll(true).lang(Lang.RU).execute();
+        GetCountriesResponse response = vk.database().getCountries(actor).needAll(true).count(250).lang(Lang.RU).execute();
         return response.getItems();
 
     }
 
-    public List<CityDTO> getCities(int countryId, String city, int count) throws ClientException, ApiException {
+    public List<CityDTO> getCities(int countryId) throws ClientException, ApiException {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
-        if (count == 0) {
-            count = 10;
-        }
 
-        if (city == null || city.isEmpty()) {
-            throw new ApiException("Need more 0 letters");
-        }
-
-        GetCitiesResponse response = vk.database().getCities(actor, countryId).count(count).q(city).lang(Lang.RU).execute();
+        GetCitiesResponse response = vk.database().getCities(actor, countryId).needAll(true).count(250).lang(Lang.RU).execute();
         return response.getItems().stream().map(x -> {
             CityDTO result = new CityDTO();
             BeanUtils.copyProperties(x, result);
