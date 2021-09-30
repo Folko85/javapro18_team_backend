@@ -11,13 +11,16 @@ import java.util.Set;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
 
-    @Query("SELECT f " +
-            "FROM Friendship f " +
-            "WHERE f.dstPerson.id = ?1")
     Friendship findMyFriendById(Integer id);
-
-    @Query("SELECT f " +
-            "FROM Friendship f " +
-            "WHERE f.dstPerson.firstName = ?1")
     Set<Friendship> findMyFriendByName(String name);
+
+//    @Query("SELECT f " +
+//            "FROM Friendship f " +
+//            "WHERE f.dstPerson.id = ?1 OR f.srcPerson.id = ?1")
+//    Friendship findMyFriendById(Integer id);
+//
+//    @Query("SELECT f " +
+//            "FROM Friendship f " +
+//            "WHERE f.dstPerson.firstName = ?1 OR f.srcPerson.firstName = ?1")
+//    Set<Friendship> findMyFriendByName(String name);
 }

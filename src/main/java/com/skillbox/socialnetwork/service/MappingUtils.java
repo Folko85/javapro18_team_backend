@@ -1,6 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.FriendsDTO.*;
+import com.skillbox.socialnetwork.api.response.friendsDTO.*;
 import com.skillbox.socialnetwork.entity.Person;
 import org.springframework.stereotype.Service;
 
