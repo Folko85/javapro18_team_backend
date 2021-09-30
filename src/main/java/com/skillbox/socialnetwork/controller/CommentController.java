@@ -31,4 +31,13 @@ public class CommentController {
                                                        Principal principal) throws PostNotFoundException, CommentNotFoundException {
         return new ResponseEntity<>(commentService.postComment(id, commentRequest, principal), HttpStatus.OK);
     }
+
+    @PutMapping("/post/{id}/comments/{comment_id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<CommentResponse> putComment(@PathVariable int id,
+                                                      @PathVariable int comment_id,
+                                                      @RequestBody CommentRequest commentRequest,
+                                                      Principal principal) throws PostNotFoundException, CommentNotFoundException {
+        return new ResponseEntity<>(commentService.putComment(id,comment_id, commentRequest, principal), HttpStatus.OK);
+    }
 }

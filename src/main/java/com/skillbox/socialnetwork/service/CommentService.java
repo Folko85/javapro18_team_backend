@@ -37,9 +37,9 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    public CommentResponse postComment(int id, CommentRequest commentRequest, Principal principal) throws PostNotFoundException, CommentNotFoundException {
+    public CommentResponse postComment(int itemId, CommentRequest commentRequest, Principal principal) throws PostNotFoundException, CommentNotFoundException {
         Person person = findPerson(principal.getName());
-        Post post = findPost(id);
+        Post post = findPost(itemId);
         PostComment postComment = new PostComment();
         if (commentRequest.getParentId() != null) {
             PostComment parentPostComment = commentRepository
@@ -51,10 +51,18 @@ public class CommentService {
         postComment.setTime(LocalDateTime.now());
         postComment.setPerson(person);
         postComment = commentRepository.save(postComment);
-        CommentResponse commentResponse = new CommentResponse();
-        commentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
-        commentResponse.setCommentData(getCommentData(postComment));
-        return commentResponse;
+        return getCommentResponse(postComment);
+    }
+
+    public CommentResponse putComment(int itemId, int commentId, CommentRequest commentRequest, Principal principal) throws CommentNotFoundException, PostNotFoundException {
+        findPerson(principal.getName());
+        findPost(itemId);
+        if (commentRequest.getParentId() != null)
+            findPostComment(commentRequest.getParentId());
+        PostComment postComment = findPostComment(commentId);
+        postComment.setCommentText(commentRequest.getCommentText());
+        commentRepository.save(postComment);
+        return getCommentResponse(postComment);
     }
 
     public static List<CommentData> getCommentData4Response(Set<PostComment> comments) {
@@ -92,5 +100,17 @@ public class CommentService {
     private Post findPost(int itemId) throws PostNotFoundException {
         return postRepository.findById(itemId)
                 .orElseThrow(PostNotFoundException::new);
+    }
+
+    private PostComment findPostComment(int itemId) throws CommentNotFoundException {
+        return commentRepository.findById(itemId)
+                .orElseThrow(CommentNotFoundException::new);
+    }
+
+    public CommentResponse getCommentResponse(PostComment postComment) {
+        CommentResponse commentResponse = new CommentResponse();
+        commentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        commentResponse.setCommentData(getCommentData(postComment));
+        return commentResponse;
     }
 }
