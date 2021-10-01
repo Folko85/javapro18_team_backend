@@ -35,10 +35,6 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         UserRest userRest = new UserRest();
         convertUserToUserRest(person, userRest);
-        Place city= new Place();
-        city.setId(1);
-        city.setTitle(person.getTown());
-        userRest.setCity(city);
         return userRest;
     }
     public  UserRest getUserById(Integer id){
@@ -46,10 +42,6 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(""+id));
         UserRest userRest = new UserRest();
         convertUserToUserRest(person, userRest);
-        Place city= new Place();
-        city.setId(1);
-        city.setTitle(person.getTown());
-        userRest.setCity(city);
         return userRest;
 
     }
@@ -115,6 +107,8 @@ public class UserServiceImpl {
    }
    public static void convertUserToUserRest(Person person, UserRest userRest ){
        BeanUtils.copyProperties(person,userRest );
+       userRest.setCity(null);
+       userRest.setCountry(null);
        conventionsFromPersonTimesToUserRest(person, userRest);
    }
 
