@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
 import com.skillbox.socialnetwork.service.PostService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,8 @@ import java.security.Principal;
 @Slf4j
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
-@RequestMapping("/api/v1/")
+@Api("")
+@RequestMapping("/api/v1/post")
 public class PostController {
     private final PostService postService;
 
@@ -22,7 +24,7 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping("/post")
+    @GetMapping("")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<PostResponse> getPosts(@RequestParam(name = "text", defaultValue = "") String text,
                                                  @RequestParam(name = "date_from", defaultValue = "0") long dateFrom,
@@ -32,6 +34,14 @@ public class PostController {
                                                  Principal principal) {
         return new ResponseEntity<>(postService.getPosts(text,dateFrom,dateTo,offset,itemPerPage,principal),HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<PostResponse> getPostById(@PathVariable int id,
+                                                    Principal principal) {
+        return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
+    }
+
     @GetMapping("/feeds")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<PostResponse> getFeeds(@RequestParam(name = "text", defaultValue = "") String text,

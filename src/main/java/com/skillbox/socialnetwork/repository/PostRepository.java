@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface PostRepository extends PagingAndSortingRepository<Post, Integer> {
     @Query("SELECT p " +
@@ -27,4 +28,6 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContaining(String query, Pageable pageable);
+
+    Page<Post> findPostById(int id, Pageable pageable);
 }

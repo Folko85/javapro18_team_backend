@@ -41,8 +41,15 @@ public class PostService {
                 LocalDateTime.ofInstant(Instant.ofEpochMilli(dateFrom), UTC)
                 , LocalDateTime.ofInstant(Instant.ofEpochMilli(dateTo), UTC),
                 pageable);
-        System.out.println(LocalDateTime.ofInstant(Instant.ofEpochMilli(dateFrom), UTC));
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
+    }
+
+    public PostResponse getPostById(int id, Principal principal) {
+        Person person = findPerson(principal.getName());
+        Pageable pageable = PageRequest.of(0 ,1);
+        Page<Post> post = postRepository.findPostById(id,pageable);
+
+        return getPostResponse(post, person);
     }
 
     public PostResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
@@ -57,6 +64,15 @@ public class PostService {
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setOffset(offset);
+        postResponse.setTotal((int) pageablePostList.getTotalElements());
+        postResponse.setData(getPost4Response(pageablePostList.toList(), person));
+
+        return postResponse;
+    }
+
+    private PostResponse getPostResponse(Page<Post> pageablePostList, Person person) {
+        PostResponse postResponse = new PostResponse();
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setTotal((int) pageablePostList.getTotalElements());
         postResponse.setData(getPost4Response(pageablePostList.toList(), person));
 
