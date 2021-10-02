@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.api.response.PostDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.AuthDTO.AuthData;
-import com.skillbox.socialnetwork.api.response.CommentData;
+import com.skillbox.socialnetwork.api.response.CommentDTO.CommentData;
 import lombok.Data;
 
 import java.time.Instant;
@@ -20,4 +20,6 @@ public class PostData {
     private boolean isBlocked;
     private int likes;
     private List<CommentData> comments;
+    @JsonProperty("my_like")
+    private boolean myLike;
 }
