@@ -57,7 +57,7 @@ public class CommentService {
         return commentResponse;
     }
 
-    public static List<CommentData> getCommentData4Response(Set<PostComment> comments) {
+    public static List<CommentData> getCommentData4Response(List<PostComment> comments) {
         List<CommentData> commentDataList = new ArrayList<>();
         comments.forEach(postComment -> {
             CommentData commentData = getCommentData(postComment);

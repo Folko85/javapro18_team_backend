@@ -15,11 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Period;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.skillbox.socialnetwork.service.AccountService.getAccountResponse;
 import static java.time.ZoneOffset.UTC;
@@ -78,7 +74,7 @@ public class AuthService {
         authData.setFirstName(person.getFirstName());
         authData.setLastName(person.getLastName());
         authData.setId(person.getId());
-        authData.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
+        authData.setRegDate(person.getDateAndTimeOfRegistration());
         authData.setPhone(person.getPhone());
         authData.setMessagesPermission(person.getMessagesPermission().toString());
         authData.setBlocked(person.isBlocked());

@@ -3,13 +3,15 @@ package com.skillbox.socialnetwork.repository;
 import com.skillbox.socialnetwork.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface PostRepository extends PagingAndSortingRepository<Post, Integer> {
+@Repository
+public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p " +
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
@@ -29,5 +31,5 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContaining(String query, Pageable pageable);
 
-    Page<Post> findPostById(int id, Pageable pageable);
+    Optional<Post> findById(int id);
 }

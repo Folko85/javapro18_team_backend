@@ -1,22 +1,28 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.PostDTO.PostData;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
+import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
+import com.skillbox.socialnetwork.api.response.PostDTO.*;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
+import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -28,10 +34,14 @@ import static java.time.ZoneOffset.UTC;
 public class PostService {
     private final PostRepository postRepository;
     private final AccountRepository accountRepository;
+    private final CommentRepository commentRepository;
 
-    public PostService(PostRepository postRepository, AccountRepository accountRepository) {
+    public PostService(PostRepository postRepository,
+                       AccountRepository accountRepository,
+                       CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.accountRepository = accountRepository;
+        this.commentRepository = commentRepository;
     }
 
     public PostResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
@@ -44,12 +54,49 @@ public class PostService {
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    public PostResponse getPostById(int id, Principal principal) {
-        Person person = findPerson(principal.getName());
-        Pageable pageable = PageRequest.of(0 ,1);
-        Page<Post> post = postRepository.findPostById(id,pageable);
+    public ResponseEntity<?> getPostById(int id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
 
-        return getPostResponse(post, person);
+        if (optionalPost.isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new PostDataResponse(getPostEntityResponseByPost(optionalPost.get())));
+    }
+
+    public ResponseEntity<?> putPostById(int id, long publishDate, TitlePostTextRequest requestBody) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if (optionalPost.isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
+        }
+        Post post = optionalPost.get();
+        post.setTitle(requestBody.getTitle());
+        post.setPostText(requestBody.getPostText());
+        post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new PostDataResponse(getPostEntityResponseByPost(postRepository.saveAndFlush(post))));
+    }
+
+    public ResponseEntity<?> deletePostById(int id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if (optionalPost.isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
+        }
+        postRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new PostDataResponse(new IdResponse(id)));
+    }
+
+
+
+    private PostEntityResponse getPostEntityResponseByPost(Post post) {
+        return new PostEntityResponse(post, commentRepository);
     }
 
     public PostResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
@@ -64,15 +111,6 @@ public class PostService {
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setOffset(offset);
-        postResponse.setTotal((int) pageablePostList.getTotalElements());
-        postResponse.setData(getPost4Response(pageablePostList.toList(), person));
-
-        return postResponse;
-    }
-
-    private PostResponse getPostResponse(Page<Post> pageablePostList, Person person) {
-        PostResponse postResponse = new PostResponse();
-        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setTotal((int) pageablePostList.getTotalElements());
         postResponse.setData(getPost4Response(pageablePostList.toList(), person));
 

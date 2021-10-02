@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
 import com.skillbox.socialnetwork.service.PostService;
 import io.swagger.annotations.Api;
@@ -15,7 +16,6 @@ import java.security.Principal;
 @Slf4j
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
-@Api("")
 @RequestMapping("/api/v1/post")
 public class PostController {
     private final PostService postService;
@@ -37,9 +37,22 @@ public class PostController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<PostResponse> getPostById(@PathVariable int id,
-                                                    Principal principal) {
-        return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
+    public ResponseEntity<?> getPostById(@PathVariable int id) {
+        return postService.getPostById(id);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> putPostById(@PathVariable int id,
+                                         @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
+                                         @RequestBody TitlePostTextRequest requestBody) {
+        return postService.putPostById(id, publishDate, requestBody);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> deletePostById(@PathVariable int id) {
+        return postService.deletePostById(id);
     }
 
     @GetMapping("/feeds")

@@ -10,8 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "post_comment")
-@Getter
-@Setter
+@Data
 public class PostComment {
 
     @Id
@@ -50,8 +49,5 @@ public class PostComment {
         return Objects.equals(id, that.id);
     }
 
-    @Override
-    public int hashCode() {
-        return 0;
-    }
+
 }
