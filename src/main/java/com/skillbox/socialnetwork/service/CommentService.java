@@ -1,6 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.CommentData;
+
 import com.skillbox.socialnetwork.api.response.CommentWallData;
 import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.CommentDTO.CommentData;

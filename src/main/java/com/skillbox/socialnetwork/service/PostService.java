@@ -126,8 +126,4 @@ public class PostService {
         return postWallData;
     }
 
-
-
-
-
 }

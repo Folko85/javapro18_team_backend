@@ -9,16 +9,35 @@ spring:
   liquibase:
     change-log: /db/changelog/changelog.yml
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: validate
 
   mail:
-    host: smtp.yandex.ru
-    username: ivan.zukkel.mailsender@yandex.ru
-    password: vdgclvhfzrqcjqvc
-    port: 465
-    protocol: smtps
+    host: smtp.gmail.com
+    username: senderEmailDev1@gmail.com
+    password: nftzdhqxlainhtoa
+    port: 587
 mail:
+  transport:
+    protocol: smtp
+  smtp:
+    auth: true
+    starttls:
+      enable: true
   debug: true
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
 
@@ -169,7 +168,7 @@ public class UserController {
     private  UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity){
         ObjectMapper objectMapper = new ObjectMapper(); objectMapper.registerModule(new JavaTimeModule());
         UserRequestModel userRequestModel =new UserRequestModel();
-
+        System.out.println(httpEntity.getBody());
         try {
             UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel= objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
             userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC).plusMonths(1)));
