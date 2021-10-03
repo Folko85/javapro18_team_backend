@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.AuthDTO;
+package com.skillbox.socialnetwork.api.response.authDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

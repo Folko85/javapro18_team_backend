@@ -1,15 +1,18 @@
-package com.skillbox.socialnetwork.api.response.AuthDTO;
+package com.skillbox.socialnetwork.api.response.postDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.Map;
+import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AuthResponse {
+public class PostResponse {
     private String error;
     private Instant timestamp;
-    private AuthData data;
+    private int total;
+    private int offset;
+    private int perPage;
+    private List<Dto> data;
 }

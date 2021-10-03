@@ -1,11 +1,10 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserDeleteResponse;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
+import com.skillbox.socialnetwork.api.response.authDTO.UserDeleteResponse;
+import com.skillbox.socialnetwork.api.response.authDTO.UserRest;
+import com.skillbox.socialnetwork.api.response.authDTO.UserRestResponse;
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.service.UserServiceImpl;
-import liquibase.pro.packaged.U;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -27,7 +27,7 @@
         </createTable>
 
         <createTable tableName="friendship_status">
-            <column name="id" type="INT">
+            <column autoIncrement="true" name="id" type="INT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_friendship_status"/>
             </column>
             <column name="time" type="DATETIME"/>

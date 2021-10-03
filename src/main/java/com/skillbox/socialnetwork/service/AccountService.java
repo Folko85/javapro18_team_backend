@@ -6,7 +6,7 @@ import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.exception.UserExistException;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,21 +27,21 @@ public class AccountService {
     private final String RECOVERY_URL = "http://localhost:8080/api/v1/account/recovery_complete?";
     private final String REGISTRATION_URL = "http://localhost:8080/api/v1/account/registration_complete?";
 
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
     private final MailSender mailSender;
     private final JwtProvider jwtProvider;
 
 
-    public AccountService(AccountRepository accountRepository,
+    public AccountService(PersonRepository personRepository,
                           MailSender mailSender,
                           JwtProvider jwtProvider) {
-        this.accountRepository = accountRepository;
+        this.personRepository = personRepository;
         this.mailSender = mailSender;
         this.jwtProvider = jwtProvider;
     }
 
     public AccountResponse register(RegisterRequest registerRequest) throws UserExistException {
-        if (accountRepository.findByEMail(registerRequest.getEMail()).isPresent())
+        if (personRepository.findByEMail(registerRequest.getEMail()).isPresent())
             throw new UserExistException();
         Person person = new Person();
         person.setEMail(registerRequest.getEMail());
@@ -56,7 +56,7 @@ public class AccountService {
         String code = UUID.randomUUID().toString().replace("-", "");
         //mailSender.send(registerRequest.getEMail(), REGISTRATION_URL + "key=" + code + "&eMail=" + registerRequest.getEMail());
         person.setConfirmationCode(code);
-        accountRepository.save(person);
+        personRepository.save(person);
         return getAccountResponse(UTC);
     }
 
@@ -64,7 +64,7 @@ public class AccountService {
         Person person = findPerson(recoveryRequest.getEMail());
         String code = UUID.randomUUID().toString().replace("-", "");
         person.setConfirmationCode(code);
-        accountRepository.save(person);
+        personRepository.save(person);
         mailSender.send(recoveryRequest.getEMail(), RECOVERY_URL + "key=" + code + "&eMail=" + recoveryRequest.getEMail());
         return "Сообщение отправлено на почту";
     }
@@ -77,7 +77,7 @@ public class AccountService {
             person.setPassword(passwordEncoder.encode(passwd));
             person.setConfirmationCode("");
             mailSender.send(eMail, passwd);
-            accountRepository.save(person);
+            personRepository.save(person);
         } else return "Неверный код";
         return "Новый пароль выслан";
     }
@@ -87,18 +87,18 @@ public class AccountService {
         if (person.getConfirmationCode().equals(key)) {
             person.setApproved(true);
             person.setConfirmationCode("");
-            accountRepository.save(person);
+            personRepository.save(person);
         } else return "Неверный код";
         return "Аккаунт подтверждён";
     }
 
     public AccountResponse changeEMail(EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
-        if (accountRepository.findByEMail(eMailChangeRequest.getEMail()).isPresent())
+        if (personRepository.findByEMail(eMailChangeRequest.getEMail()).isPresent())
             throw new UserExistException();
         Person person = findPerson(principal.getName());
         person.setEMail(eMailChangeRequest.getEMail());
         SecurityContextHolder.clearContext();
-        accountRepository.save(person);
+        personRepository.save(person);
         return getAccountResponse(UTC);
 
     }
@@ -111,12 +111,12 @@ public class AccountService {
         Person person = findPerson(jwtProvider.getLoginFromToken(passwdChangeRequest.getToken()));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
         person.setPassword(passwordEncoder.encode(passwdChangeRequest.getPassword()));
-        accountRepository.save(person);
+        personRepository.save(person);
         return getAccountResponse(UTC);
     }
 
     private Person findPerson(String eMail) {
-        return accountRepository.findByEMail(eMail)
+        return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 

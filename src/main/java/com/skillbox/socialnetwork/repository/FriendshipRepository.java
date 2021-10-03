@@ -1,26 +1,22 @@
 package com.skillbox.socialnetwork.repository;
 
 import com.skillbox.socialnetwork.entity.Friendship;
-import com.skillbox.socialnetwork.entity.Person;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
 
-    Friendship findMyFriendById(Integer id);
-    Set<Friendship> findMyFriendByName(String name);
+    @Query("select f from Friendship f where f.srcPerson.firstName = ?1 or f.dstPerson.firstName = ?1")
+    List<Friendship> findBySrcPersonFirstNameOrDstPersonFirstName(String firstName, Pageable pageable);
 
-//    @Query("SELECT f " +
-//            "FROM Friendship f " +
-//            "WHERE f.dstPerson.id = ?1 OR f.srcPerson.id = ?1")
-//    Friendship findMyFriendById(Integer id);
-//
-//    @Query("SELECT f " +
-//            "FROM Friendship f " +
-//            "WHERE f.dstPerson.firstName = ?1 OR f.srcPerson.firstName = ?1")
-//    Set<Friendship> findMyFriendByName(String name);
+    @Override
+    @Query("select f from Friendship f where f.srcPerson.id = ?1 or f.dstPerson.id = ?1")
+    Optional<Friendship> findById(Integer id);
+
 }

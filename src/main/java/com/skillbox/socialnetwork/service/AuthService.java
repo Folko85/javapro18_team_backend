@@ -2,12 +2,12 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
-import com.skillbox.socialnetwork.api.response.AuthDTO.AuthData;
-import com.skillbox.socialnetwork.api.response.AuthDTO.AuthResponse;
+import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
+import com.skillbox.socialnetwork.api.response.authDTO.AuthResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,18 +22,18 @@ import static java.time.ZoneOffset.UTC;
 
 @Service
 public class AuthService {
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final UserDetailServiceImpl userDetailService;
 
-    public AuthService(AccountRepository accountRepository,
+    public AuthService(PersonRepository personRepository,
                        UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtProvider jwtProvider,
                        UserDetailServiceImpl userDetailService) {
-        this.accountRepository = accountRepository;
+        this.personRepository = personRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
@@ -44,7 +44,7 @@ public class AuthService {
     public AuthResponse auth(LoginRequest loginRequest) {
         UserDetails userDetails = userDetailService.loadUserByUsername(loginRequest.getEMail());
         String token;
-        Person person = accountRepository.findByEMail(loginRequest.getEMail())
+        Person person = personRepository.findByEMail(loginRequest.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
         if (passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());

@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: '2021091603'
+      author: m.gutorov
+      changes:
+        - createTable:
+            tableName: notification_type
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(20)
+              - column:
+                  name: name
+                  type: varchar(50)
+
+        - createSequence:
+            sequenceName: notification_type_seq
+            minValue: 1
+
+        - createTable:
+            tableName: notification
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type_id
+                  type: int
+                  constraints:
+                    foreignKeyName: type_notyfy_id
+                    referencedTableName: notification_type
+                    referencedColumnNames: id
+              - column:
+                  name: send_time
+                  type: datetime
+              - column:
+                  name: person_id
+                  type: int
+                  constraints:
+                    foreignKeyName: person_notify_id
+                    referencedTableName: person
+                    referencedColumnNames: id
+              - column:
+                  name: entity_id
+                  type: varchar(50)
+              - column:
+                  name: contact
+                  type: varchar(50)
+        - createSequence:
+            sequenceName: notification_seq
+            minValue: 1
+

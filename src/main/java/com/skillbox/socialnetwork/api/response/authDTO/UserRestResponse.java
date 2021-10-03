@@ -1,13 +1,12 @@
-package com.skillbox.socialnetwork.api.response.AuthDTO;
+package com.skillbox.socialnetwork.api.response.authDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import java.util.Map;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDeleteResponse {
+public class UserRestResponse {
     private String error;
     private long timestamp;
-    private Map<String,String> data;
+    private UserRest data;
 }

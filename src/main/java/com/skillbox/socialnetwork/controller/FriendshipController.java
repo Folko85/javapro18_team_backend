@@ -1,57 +1,56 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
-import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDTO;
-import com.skillbox.socialnetwork.api.response.friendsDTO.FriendshipDTO;
+import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
+import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsResponse200;
+import com.skillbox.socialnetwork.api.response.postDTO.PostResponse;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
-import com.skillbox.socialnetwork.repository.FriendshipRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.service.MappingUtils;
+import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 public class FriendshipController {
 
-    private final FriendshipRepository friendshipRepository;
-    private final PersonRepository personRepository;
     private final PersonService personService;
+    private final FriendshipService friendshipService;
 
-    public FriendshipController(FriendshipRepository friendshipRepository, PersonRepository personRepository,
-                                PersonService personService) {
-        this.friendshipRepository = friendshipRepository;
-        this.personRepository = personRepository;
+    public FriendshipController(PersonService personService, FriendshipService friendshipService) {
         this.personService = personService;
+        this.friendshipService = friendshipService;
     }
 
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {
+    public ResponseEntity<?> findMyFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {
 
-        Set<Friendship> myFriendship = friendshipRepository.findMyFriendByName(getFriendsListRequest.getName());
-        Set<Person> myFriends = myFriendship.stream().map(Friendship::getDstPerson).collect(Collectors.toSet());
+        String friendsName = getFriendsListRequest.getName();
+        int itemPerPage = getFriendsListRequest.getItemPerPage();
 
-        FriendshipDTO.Response.FriendsList response = new FriendshipDTO.Response.FriendsList();
+        List<Person> myFriends = friendshipService.findMyFriendByName(friendsName, itemPerPage);
+
+        PostResponse response = new PostResponse();
         response.setTotal(myFriends.size());
-        response.setTimestamp(LocalDateTime.now());
+        response.setTimestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC));
 
         if (myFriends.size() > 0) {
-            Set<FriendsDTO> friendsList = myFriends
+            List<FriendsDto> friendsList = myFriends
                     .stream()
-                    .map(MappingUtils::friendsToPojo)
-                    .collect(Collectors.toSet());
+                    .map(personService::friendsToPojo)
+                    .collect(Collectors.toList());
 
             return new ResponseEntity<>(friendsList, HttpStatus.OK);
         } else {
@@ -61,12 +60,17 @@ public class FriendshipController {
 
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> stopBeingFriends(@PathVariable int id) {
 
-        if (friendshipRepository.existsById(id)) {
-            friendshipRepository.deleteById(id);
+        Optional<Friendship> friendship = friendshipService.findMyFriendshipByIdMyFriend(id);
 
-            FriendshipDTO.Response.FriendsResponse200 response = new FriendshipDTO.Response.FriendsResponse200();
+        if (friendship.isPresent()) {
+            friendshipService.stopBeingFriendsById(id);
+
+            FriendsResponse200 response = new FriendsResponse200();
+            response.setError("Successfully");
+            response.setTimestamp(LocalDateTime.now());
+            response.setMessage("Stop being friends");
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -74,32 +78,34 @@ public class FriendshipController {
         }
     }
 
-    @PostMapping("/api/v1/friends/{id}")
+    @PostMapping("/api/v1/friends{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> add(@PathVariable int id, Principal principal) {
+    public ResponseEntity<?> addingToFriends(@PathVariable int id, Principal principal) {
 
-        String eMail = SecurityContextHolder.getContext().getAuthentication().getName();
+        String eMailSrcPerson = principal.getName();
 
-        Person srcPerson = personService.findPersonByEmail(eMail);
-        Person dstPerson = personService.findPersonById(id);
+        Person srcPerson = personService.findPersonByEmail(eMailSrcPerson);
+        Optional<Person> optionalPerson = personService.findPersonById(id);
 
-        if (dstPerson != null && friendshipRepository.findMyFriendById(id) != null) {
+        if (optionalPerson.isPresent() && friendshipService.findMyFriendshipByIdMyFriend(id).isEmpty()) {
+
+            Person dstPerson = optionalPerson.get();
 
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
             friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
 
-            Friendship friendship = new Friendship();
-            friendship.setStatus(friendshipStatus);
-            friendship.setSrcPerson(srcPerson);
-            friendship.setDstPerson(dstPerson);
+            Friendship newFriendship = new Friendship();
+            newFriendship.setStatus(friendshipStatus);
+            newFriendship.setSrcPerson(srcPerson);
+            newFriendship.setDstPerson(dstPerson);
 
-            friendshipRepository.save(friendship);
+            friendshipService.save(newFriendship);
 
-            FriendshipDTO.Response.FriendsResponse200 addFriendResponse = new FriendshipDTO.Response.FriendsResponse200();
-            addFriendResponse.setError("not error");
+            FriendsResponse200 addFriendResponse = new FriendsResponse200();
+            addFriendResponse.setError("Successfully");
             addFriendResponse.setTimestamp(LocalDateTime.now());
-            addFriendResponse.setMessage("ok");
+            addFriendResponse.setMessage("Adding to friends");
 
             return new ResponseEntity<>(addFriendResponse, HttpStatus.OK);
         } else {

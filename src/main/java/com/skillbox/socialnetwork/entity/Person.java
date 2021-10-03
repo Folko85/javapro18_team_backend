@@ -85,6 +85,9 @@ public class Person {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "dstPerson")
     private Set<Friendship> friends;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "recipient")
+    private Set<Message> messages;
+
     public Set<Friendship> getFriends() {
         return friends;
     }

@@ -1,0 +1,97 @@
+databaseChangeLog:
+  - changeSet:
+      id: '2021091301'
+      author: m.gutorov
+      changes:
+        - createTable:
+            tableName: person
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: first_name
+                  type: varchar(50)
+              - column:
+                  name: last_name
+                  type: varchar(50)
+              - column:
+                  name: reg_date
+                  type: datetime
+              - column:
+                  name: birth_date
+                  type: date
+              - column:
+                  name: e_mail
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+              - column:
+                  name: phone
+                  type: varchar(12)
+                  constraints:
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(50)
+              - column:
+                  name: photo
+                  type: varchar(50)
+              - column:
+                  name: about
+                  type: text
+              - column:
+                  name: town
+                  type: varchar(50)
+              - column:
+                  name: confirmation_code
+                  type: varchar(50)
+              - column:
+                  name: is_approved
+                  type: boolean
+              - column:
+                  name: messages_permission
+                  type: varchar(50)
+              - column:
+                  name: last_online_time
+                  type: datetime
+              - column:
+                  name: is_blocked
+                  type: boolean
+
+        - createSequence:
+            sequenceName: person_seq
+            minValue: 1
+
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+              - column:
+                  name: e_mail
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(50)
+              - column:
+                  name: type
+                  type: varchar(50)
+
+        - createSequence:
+            sequenceName: user_seq
+            minValue: 1
