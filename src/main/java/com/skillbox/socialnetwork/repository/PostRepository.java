@@ -31,5 +31,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContaining(String query, Pageable pageable);
 
-    Optional<Post> findById(int id);
+    @Query("SELECT p FROM Post p WHERE p.id = ?1 and p.isBlocked = false")
+    Optional<Post> findPostById(int id);
 }

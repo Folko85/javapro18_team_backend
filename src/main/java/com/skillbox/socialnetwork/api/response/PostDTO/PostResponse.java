@@ -2,17 +2,29 @@ package com.skillbox.socialnetwork.api.response.PostDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class PostResponse {
     private String error;
-    private Instant timestamp;
+    private long timestamp;
     private int total;
     private int offset;
     private int perPage;
-    private List<PostData> data;
+    private List<?> data;
+
+    public PostResponse(int total, int offset, int perPage, List<?> data) {
+        this.error = "";
+        timestamp = System.currentTimeMillis();
+        this.total = total;
+        this.offset = offset;
+        this.perPage = perPage;
+        this.data = data;
+    }
 }

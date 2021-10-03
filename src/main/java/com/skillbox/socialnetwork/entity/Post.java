@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.entity;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -13,8 +14,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "post")
-@Getter
-@Setter
+@Data
 public class Post {
 
     @Id

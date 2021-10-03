@@ -48,6 +48,4 @@ public class PostComment {
         PostComment that = (PostComment) o;
         return Objects.equals(id, that.id);
     }
-
-
 }

@@ -55,7 +55,7 @@ public class PostService {
     }
 
     public ResponseEntity<?> getPostById(int id) {
-        Optional<Post> optionalPost = postRepository.findById(id);
+        Optional<Post> optionalPost = postRepository.findPostById(id);
 
         if (optionalPost.isEmpty()) {
             return ResponseEntity.status(400)
@@ -88,9 +88,25 @@ public class PostService {
             return ResponseEntity.status(400)
                     .body(new PostNotFoundException("Post with id = " + id + " not found."));
         }
-        postRepository.deleteById(id);
+        Post post = optionalPost.get();
+        post.setBlocked(true);
+        postRepository.saveAndFlush(post);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new PostDataResponse(new IdResponse(id)));
+    }
+
+    public ResponseEntity<?> putPostIdRecover(int id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if (optionalPost.isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
+        }
+        Post post = optionalPost.get();
+        post.setBlocked(false);
+        postRepository.saveAndFlush(post);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new PostDataResponse(getPostEntityResponseByPost(optionalPost.get())));
     }
 
 
@@ -109,7 +125,7 @@ public class PostService {
     private PostResponse getPostResponse(int offset, int itemPerPage, Page<Post> pageablePostList, Person person) {
         PostResponse postResponse = new PostResponse();
         postResponse.setPerPage(itemPerPage);
-        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC).toEpochMilli());
         postResponse.setOffset(offset);
         postResponse.setTotal((int) pageablePostList.getTotalElements());
         postResponse.setData(getPost4Response(pageablePostList.toList(), person));

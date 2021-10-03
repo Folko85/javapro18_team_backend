@@ -3,7 +3,6 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
 import com.skillbox.socialnetwork.service.PostService;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +53,20 @@ public class PostController {
     public ResponseEntity<?> deletePostById(@PathVariable int id) {
         return postService.deletePostById(id);
     }
+
+
+
+
+
+    @PutMapping("/{id}/recover")
+    public ResponseEntity<?> putPostRecover(@PathVariable int id){
+        return postService.putPostIdRecover(id);
+    }
+
+
+
+
+
 
     @GetMapping("/feeds")
     @PreAuthorize("hasAuthority('user:write')")
