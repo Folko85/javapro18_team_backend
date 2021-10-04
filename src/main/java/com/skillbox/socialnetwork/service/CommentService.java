@@ -65,6 +65,22 @@ public class CommentService {
         return getCommentResponse(postComment);
     }
 
+    public DataResponse deleteComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+        Person person = findPerson(principal.getName());
+        PostComment postComment = findPostComment(commentId);
+        postComment.setDeleted(postComment.getPerson().getId() == person.getId() || postComment.isDeleted());
+        commentRepository.save(postComment);
+        return getCommentResponse(postComment);
+    }
+
+    public DataResponse recoveryComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+        Person person = findPerson(principal.getName());
+        PostComment postComment = findPostComment(commentId);
+        postComment.setDeleted(postComment.getPerson().getId() != person.getId() && postComment.isDeleted());
+        commentRepository.save(postComment);
+        return getCommentResponse(postComment);
+    }
+
     public static List<CommentData> getCommentData4Response(Set<PostComment> comments) {
         List<CommentData> commentDataList = new ArrayList<>();
         comments.forEach(postComment -> {
@@ -85,6 +101,7 @@ public class CommentService {
         commentData.setAuthorId(postComment.getPerson().getId());
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
+        commentData.setDeleted(postComment.isDeleted());
         if (postComment.getParent() != null)
             commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());

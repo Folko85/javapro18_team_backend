@@ -35,9 +35,25 @@ public class CommentController {
     @PutMapping("/post/{id}/comments/{comment_id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> putComment(@PathVariable int id,
-                                                      @PathVariable int comment_id,
-                                                      @RequestBody CommentRequest commentRequest,
-                                                      Principal principal) throws PostNotFoundException, CommentNotFoundException {
-        return new ResponseEntity<>(commentService.putComment(id,comment_id, commentRequest, principal), HttpStatus.OK);
+                                                   @PathVariable(name = "comment_id") int commentId,
+                                                   @RequestBody CommentRequest commentRequest,
+                                                   Principal principal) throws PostNotFoundException, CommentNotFoundException {
+        return new ResponseEntity<>(commentService.putComment(id, commentId, commentRequest, principal), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/post/{id}/comments/{comment_id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> deleteComment(@PathVariable int id,
+                                                      @PathVariable(name = "comment_id") int commentId,
+                                                      Principal principal) throws CommentNotFoundException {
+        return new ResponseEntity<>(commentService.deleteComment(id, commentId, principal), HttpStatus.OK);
+    }
+
+    @PutMapping("/post/{id}/comments/{comment_id}/recover")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> recoveryComment(@PathVariable int id,
+                                                        @PathVariable(name = "comment_id") int commentId,
+                                                        Principal principal) throws CommentNotFoundException {
+        return new ResponseEntity<>(commentService.recoveryComment(id, commentId, principal), HttpStatus.OK);
     }
 }

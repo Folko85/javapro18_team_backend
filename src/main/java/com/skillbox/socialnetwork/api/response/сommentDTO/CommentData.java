@@ -21,6 +21,8 @@ public class CommentData implements Dto {
     private int authorId;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
+    @JsonProperty("is_deleted")
+    private boolean isDeleted;
     @JsonProperty("sub_comments")
     private List<CommentData> subComments;
 }
