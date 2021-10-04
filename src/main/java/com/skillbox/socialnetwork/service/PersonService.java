@@ -1,14 +1,18 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.request.SearchUser;
 import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
 import com.skillbox.socialnetwork.api.response.postDTO.Dto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,19 +51,22 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public List<Dto> searchPerson(String firstName, String lastName, int itemPerPage) {
+    public List<Dto> searchPerson(SearchUser searchUser) {
 
-        Pageable pageable = Pageable.ofSize(itemPerPage);
+        String firstName = searchUser.getFirstName();
+        String lastName = searchUser.getLastName();
+        int itemPerPage = searchUser.getItemPerPage();
+
+        Pageable pageable = PageRequest.ofSize(itemPerPage);
 
         List<Person> personsList = personRepository
                 .findAllByFirstNameAndLastName(firstName, lastName, pageable);
 
         if (!personsList.isEmpty()) {
-            List<Dto> setPersons = personsList
+            return personsList
                     .stream()
                     .map(this::friendsToPojo)
                     .collect(Collectors.toList());
-            return setPersons;
         } else {
             return new ArrayList<>();
         }

@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class FriendshipService {
     }
 
     public List<Person> findMyFriendByName(String firstName, int itemPerPage) {
-        Pageable pageable = Pageable.ofSize(itemPerPage);
+        Pageable pageable = PageRequest.ofSize(itemPerPage);
 
         List<Friendship> friendshipList = friendshipRepository
                 .findBySrcPersonFirstNameOrDstPersonFirstName(firstName, pageable);

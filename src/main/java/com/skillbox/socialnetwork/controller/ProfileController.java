@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.SearchUser;
-import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
 import com.skillbox.socialnetwork.api.response.postDTO.Dto;
 import com.skillbox.socialnetwork.api.response.postDTO.PostResponse;
 import com.skillbox.socialnetwork.service.PersonService;
@@ -28,15 +27,13 @@ public class ProfileController {
     @GetMapping("/api/v1/users/search")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> search(@RequestBody SearchUser searchUser) {
-
-        List<Dto> searchPerson = personService
-                .searchPerson(searchUser.getFirstName(), searchUser.getLastName(), searchUser.getItemPerPage());
+        List<Dto> searchPerson = personService.searchPerson(searchUser);
 
         PostResponse list = new PostResponse();
         list.setTimestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC));
-        list.setTotal(20);
-        list.setError("Error");
-        list.setPerPage(20);
+        list.setTotal(searchPerson.size());
+        list.setError("Successfully");
+        list.setPerPage(searchUser.getItemPerPage());
         list.setData(searchPerson);
 
         return new ResponseEntity<>(list, HttpStatus.OK);
