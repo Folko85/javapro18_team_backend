@@ -1,4 +1,4 @@
-image: maven:4.0.0-openjdk-15
+image: maven:3.8.2-openjdk-16
 stages:
   - build
 build:
