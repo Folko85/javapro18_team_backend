@@ -35,7 +35,7 @@ public class PostEntityResponse {
 
     public PostEntityResponse(Post post, CommentRepository commentRepository) {
         id = post.getId();
-        time = post.getDatetime().toInstant(ZoneOffset.UTC);
+        time = post.getDatetime();
         author = new AuthData(post.getPerson());
         title = post.getTitle();
         postText = post.getPostText();

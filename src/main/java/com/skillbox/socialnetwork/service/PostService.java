@@ -65,18 +65,11 @@ public class PostService {
                 .body(new PostDataResponse(getPostEntityResponseByPost(optionalPost.get())));
     }
 
-    public ResponseEntity<?> putPostById(int id, long publishDate, TitlePostTextRequest requestBody) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isEmpty()) {
-            return ResponseEntity.status(400)
-                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
-        }
-        Post post = optionalPost.get();
+    public ResponseEntity<?> putPostById(int id, long publishDate, TitlePostTextRequest requestBody) throws PostNotFoundException {
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         post.setTitle(requestBody.getTitle());
         post.setPostText(requestBody.getPostText());
-        post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime());
+        post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate));
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new PostDataResponse(getPostEntityResponseByPost(postRepository.saveAndFlush(post))));
@@ -89,6 +82,7 @@ public class PostService {
                     .body(new PostNotFoundException("Post with id = " + id + " not found."));
         }
         Post post = optionalPost.get();
+        //todo: заменить как сделаем удаление в модель
         post.setBlocked(true);
         postRepository.saveAndFlush(post);
         return ResponseEntity.status(HttpStatus.OK)
@@ -102,14 +96,13 @@ public class PostService {
                     .body(new PostNotFoundException("Post with id = " + id + " not found."));
         }
         Post post = optionalPost.get();
+        //todo: заменить как сделаем удаление в модель
         post.setBlocked(false);
         postRepository.saveAndFlush(post);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new PostDataResponse(getPostEntityResponseByPost(optionalPost.get())));
     }
-
-
 
     private PostEntityResponse getPostEntityResponseByPost(Post post) {
         return new PostEntityResponse(post, commentRepository);
@@ -149,7 +142,7 @@ public class PostService {
         postData.setComments(getCommentData4Response(post.getComments()));
         postData.setId(post.getId());
         postData.setLikes(post.getPostLikes().size());
-        postData.setTime(post.getDatetime().toInstant(UTC));
+        postData.setTime(post.getDatetime());
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
         postData.setMyLike(post.getPostLikes().stream()

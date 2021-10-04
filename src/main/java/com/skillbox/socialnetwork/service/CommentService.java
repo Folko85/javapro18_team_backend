@@ -3,7 +3,6 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.CommentDTO.CommentData;
 import com.skillbox.socialnetwork.api.response.CommentDTO.CommentResponse;
-import com.skillbox.socialnetwork.api.response.CommentDTO.ParentIdCommentTextRequest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -57,7 +55,7 @@ public class CommentService {
         postComment.setPost(post);
         postComment.setTime(LocalDateTime.now());
         postComment.setPerson(person);
-        postComment = commentRepository.save(postComment);
+        postComment = commentRepository.saveAndFlush(postComment);
         CommentResponse commentResponse = new CommentResponse();
         commentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         commentResponse.setCommentData(getCommentData(postComment));
@@ -135,7 +133,7 @@ public class CommentService {
                         commentRepository);
     }
 
-    public ResponseEntity<?> putPostIdCommentsCommentId(int id, int commentId, ParentIdCommentTextRequest request) {
+    public ResponseEntity<?> putPostIdCommentsCommentId(int id, int commentId, CommentRequest request) {
         if (postRepository.findPostById(id).isEmpty()) {
             return ResponseEntity.status(400).body(new PostNotFoundException("Post with id = " + id + " not found."));
         }
@@ -154,7 +152,6 @@ public class CommentService {
         if (!errors.toString().equals("")) {
             return ResponseEntity.status(400).body(new PostNotFoundException(errors.toString().trim()));
         }
-
         //todo: parent_id - где и как добавлять?
         PostComment comment = optionalPostComment.get();
 

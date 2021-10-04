@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
+import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class PostController {
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
-        return new ResponseEntity<>(postService.getPosts(text,dateFrom,dateTo,offset,itemPerPage,principal),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -44,7 +45,7 @@ public class PostController {
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> putPostById(@PathVariable int id,
                                          @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
-                                         @RequestBody TitlePostTextRequest requestBody) {
+                                         @RequestBody TitlePostTextRequest requestBody) throws PostNotFoundException {
         return postService.putPostById(id, publishDate, requestBody);
     }
 
@@ -55,17 +56,10 @@ public class PostController {
     }
 
 
-
-
-
     @PutMapping("/{id}/recover")
-    public ResponseEntity<?> putPostRecover(@PathVariable int id){
+    public ResponseEntity<?> putPostRecover(@PathVariable int id) {
         return postService.putPostIdRecover(id);
     }
-
-
-
-
 
 
     @GetMapping("/feeds")
@@ -74,6 +68,6 @@ public class PostController {
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
-        return new ResponseEntity<>(postService.getFeeds(text,offset,itemPerPage,principal),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getFeeds(text, offset, itemPerPage, principal), HttpStatus.OK);
     }
 }
