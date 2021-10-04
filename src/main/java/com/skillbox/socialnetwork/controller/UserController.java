@@ -3,13 +3,16 @@ package com.skillbox.socialnetwork.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserDeleteResponse;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostCreationResponse;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
+import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserServiceImpl;
 
 import org.springframework.beans.BeanUtils;
@@ -21,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -32,8 +36,10 @@ import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDat
 @RequestMapping("/api/v1/users")
 public class UserController {
     private  UserServiceImpl userService;
-    public UserController(UserServiceImpl userService){
+    private PostService postService;
+    public UserController(UserServiceImpl userService, PostService postService){
         this.userService= userService;
+        this.postService=postService;
 
     }
 
@@ -147,7 +153,7 @@ public class UserController {
         }
         PostWallResponse postWallResponse = new PostWallResponse();
         postWallResponse.setError("string");
-        postWallResponse.setTimestamp(new Date().getTime() / 1000);
+        postWallResponse.setTimestamp(new Date().getTime());
         postWallResponse.setTotal(posts.size());
         postWallResponse.setOffset(offset);
         postWallResponse.setPerPage(itemPerPage);
@@ -157,11 +163,16 @@ public class UserController {
 
     }
     @PostMapping("/{id}/wall")
-    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id){
+    public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,
+                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+                            @RequestBody PostRequest postRequest, Principal principal
+                            ){
 
-        PostWallResponse postWallResponse = new PostWallResponse();
-
-        return  new ResponseEntity<>(postWallResponse, HttpStatus.OK);
+        PostCreationResponse postCreationResponse = new PostCreationResponse();
+        postCreationResponse.setTimestamp(new Date().getTime());
+        PostWallData postWallData = userService.createPost(id, publishDate, postRequest, principal);
+        postCreationResponse.setData(postWallData);
+        return  new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
     }
 
 

@@ -1,6 +1,5 @@
 package com.skillbox.socialnetwork.service;
 
-
 import com.skillbox.socialnetwork.api.response.CommentWallData;
 import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.CommentDTO.CommentData;
@@ -15,7 +14,6 @@ import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -119,14 +117,16 @@ public class CommentService {
     public static List<CommentWallData> getCommentWallData4Response(Set<PostComment> comments)
     {
         List<CommentWallData> commentDataList = new ArrayList<>();
-        comments.forEach(postComment -> {
-            CommentWallData commentData = getCommentWallData(postComment);
-            if (commentData.getParentId() != null)
-                commentDataList.stream()
-                        .filter(comment -> comment.getId() == commentData.getParentId())
-                        .forEach(comment -> comment.getSubComments().add(commentData));
-            else commentDataList.add(commentData);
-        });
+        if(comments!=null) {
+            comments.forEach(postComment -> {
+                CommentWallData commentData = getCommentWallData(postComment);
+                if (commentData.getParentId() != null)
+                    commentDataList.stream()
+                            .filter(comment -> comment.getId() == commentData.getParentId())
+                            .forEach(comment -> comment.getSubComments().add(commentData));
+                else commentDataList.add(commentData);
+            });
+        }
         return commentDataList;
     }
 
@@ -143,4 +143,5 @@ public class CommentService {
         commentData.setSubComments(new ArrayList<>());
         return commentData;
     }
+
 }

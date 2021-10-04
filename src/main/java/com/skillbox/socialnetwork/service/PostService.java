@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
@@ -11,12 +12,14 @@ import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,7 @@ import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.CommentService.getCommentData4Response;
 import static com.skillbox.socialnetwork.service.CommentService.getCommentWallData4Response;
 import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDateTime;
+import static com.skillbox.socialnetwork.service.UserServiceImpl.convertToLocalDateTime;
 import static java.time.ZoneOffset.UTC;
 
 
@@ -36,6 +40,7 @@ public class PostService {
     public PostService(PostRepository postRepository, AccountRepository accountRepository) {
         this.postRepository = postRepository;
         this.accountRepository = accountRepository;
+
     }
 
     public PostResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
@@ -95,6 +100,28 @@ public class PostService {
         return accountRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
+
+    public PostWallData createPost(long publishDate, PostRequest postRequest, UserRest userRest){
+
+        Post post = new Post();
+        post.setPostText(postRequest.getPostText());
+        post.setTitle(postRequest.getTitle());
+        LocalDateTime publisDateTime = convertToLocalDateTime(publishDate);
+        if(publisDateTime ==null){
+            post.setDatetime(LocalDateTime.now(ZoneOffset.UTC));
+        }
+        else{
+            post.setDatetime(publisDateTime);
+        }
+        Person person = new Person();
+        person.setId(userRest.getId());
+        post.setBlocked(false);
+        post.setPerson(person);
+        Post saved =postRepository.save(post);
+        PostWallData postWallData = getPostWallData(saved, userRest);
+        return  postWallData;
+    }
+
     public List<PostWallData> getPastWallData(Integer offset, Integer itemPerPage, UserRest userRest){
         Pageable pageable = PageRequest.of(offset/itemPerPage, itemPerPage);
         Page<Post> page =postRepository.findUserPost(userRest.getId(), pageable);
