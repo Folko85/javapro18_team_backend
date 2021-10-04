@@ -117,11 +117,16 @@ public class PostService {
         postWallData.setTime(convertLocalDateTime(post.getDatetime()));
         postWallData.setTitle(post.getTitle());
         postWallData.setBlocked(post.isBlocked());
+        postWallData.setMyLike(post.getPostLikes().stream()
+                .anyMatch(postLike -> postLike.getPerson().getId()==userRest.getId()));
         if(LocalDateTime.now().isBefore(post.getDatetime())){
             postWallData.setType("QUEUED");
         }
         else{
             postWallData.setType("POSTED");
+        }
+        if (post.isBlocked()){
+            postWallData.setType("BLOCKED");
         }
         return postWallData;
     }

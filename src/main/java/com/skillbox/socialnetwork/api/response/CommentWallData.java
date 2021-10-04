@@ -3,6 +3,8 @@ package com.skillbox.socialnetwork.api.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class CommentWallData {
@@ -18,4 +20,6 @@ public class CommentWallData {
     private int authorId;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
+    @JsonProperty("sub_comments")
+    private List<CommentWallData> subComments;
 }

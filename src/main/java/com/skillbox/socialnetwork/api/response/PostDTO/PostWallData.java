@@ -20,4 +20,6 @@ public class PostWallData {
     private int likes;
     private List<CommentWallData> comments;
     private String type;
+    @JsonProperty("my_like")
+    private boolean myLike;
 }

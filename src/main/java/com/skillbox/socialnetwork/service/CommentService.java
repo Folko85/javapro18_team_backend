@@ -121,7 +121,11 @@ public class CommentService {
         List<CommentWallData> commentDataList = new ArrayList<>();
         comments.forEach(postComment -> {
             CommentWallData commentData = getCommentWallData(postComment);
-            commentDataList.add(commentData);
+            if (commentData.getParentId() != null)
+                commentDataList.stream()
+                        .filter(comment -> comment.getId() == commentData.getParentId())
+                        .forEach(comment -> comment.getSubComments().add(commentData));
+            else commentDataList.add(commentData);
         });
         return commentDataList;
     }
@@ -136,6 +140,7 @@ public class CommentService {
         if(postComment.getParent()!=null)
             commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());
+        commentData.setSubComments(new ArrayList<>());
         return commentData;
     }
 }
