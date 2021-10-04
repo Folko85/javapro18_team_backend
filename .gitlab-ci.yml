@@ -1,7 +1,11 @@
+image: docker
+
+services:
+  - docker:dind
 build-job:
   stage: build
   script:
-    - echo "Hello, $GITLAB_USER_LOGIN!"
+    - docker build -t 18team
 
 test-job1:
   stage: test
