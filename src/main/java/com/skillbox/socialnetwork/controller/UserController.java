@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
@@ -43,14 +44,8 @@ public class UserController {
 
     }
 
-    /**
-     * Возвращает UserRest, что бы фронт смог обработать пользователя.
-     * Для соотвествия требованиям API необходимо доавить UserRest в UserRestResponse и поменять тип метода.
-     * @return UserRest userRest
-     * @throws Exception
-     */
     @GetMapping("/me")
-    public ResponseEntity<UserRest> getMe() throws Exception {
+    public ResponseEntity<UserRestResponse> getMe() throws Exception {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserRestResponse userRestResponse = new UserRestResponse();
         userRestResponse.setTimestamp(new Date().getTime() / 1000);
@@ -58,7 +53,7 @@ public class UserController {
         UserRest userRest = userService.getUserByEmail(email);
         userRestResponse.setData(userRest);
 
-        return new ResponseEntity<>(userRest, HttpStatus.OK);
+        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
@@ -80,19 +75,9 @@ public class UserController {
         userRestResponse.setError("null");
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
-    /**
-     * Возвращает UserRest, что бы фронт смог обработать пользователя.
-     * Для соотвествия требованиям API необходимо доавить UserRest в UserRestResponse и поменять тип метода.
-     * @return UserRest updatedUser
-     * @throws Exception
-     */
+
     @PutMapping("/me")
-    /**Замени аргумент updateUser() на (@RequestBody UserRequestModel userRequestModel),
-     * удали вызов и сам метод getUserRequestModelFromBody(), и не будет костыля.
-     * plusMonths(1) необходимо удалить, если не будет фронт убирать лишний месяц.
-     * Удали UserUpdateWithInstantRequestModel.
-     */
-    public  ResponseEntity<UserRest> updateUser(HttpEntity<String> httpEntity){
+    public  ResponseEntity<UserRestResponse> updateUser(HttpEntity<String> httpEntity){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserRest updates= new UserRest();
         UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
@@ -109,8 +94,13 @@ public class UserController {
         userRestResponse.setData(updatedUser);
         userRestResponse.setTimestamp(new Date().getTime() / 1000);
         userRestResponse.setError("null");
-        return  new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/me")
+    public  void test(){
+        System.out.println("Teeest");
     }
 
     @DeleteMapping("/me")
@@ -175,14 +165,16 @@ public class UserController {
         return  new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
     }
 
-
-    private  UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity){
+    private  UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity) {
         ObjectMapper objectMapper = new ObjectMapper(); objectMapper.registerModule(new JavaTimeModule());
         UserRequestModel userRequestModel =new UserRequestModel();
         System.out.println(httpEntity.getBody());
         try {
+            ObjectNode node = new ObjectMapper().readValue(httpEntity.getBody(), ObjectNode.class);
             UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel= objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
-            userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC).plusMonths(1)));
+            if(userUpdateWithInstantRequestModel.getBirthday()!=null)
+                userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC)));
+            else userRequestModel.setBirthday(0);
             BeanUtils.copyProperties(userUpdateWithInstantRequestModel, userRequestModel);
         }
         catch (JsonProcessingException e){

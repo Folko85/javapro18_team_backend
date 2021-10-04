@@ -18,9 +18,9 @@ public class UserRequestModel {
     private String phone;
     private String photo_id;
     private String about;
-    private int town_id;
+    private Place city;
+    private Place country;
     private int country_id;
     @JsonProperty("messages_permission")
     private MessagesPermission messagesPermission;
-
 }
