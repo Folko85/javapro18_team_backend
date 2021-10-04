@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.CommentRequest;
-import com.skillbox.socialnetwork.api.response.CommentDTO.CommentResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.CommentService;
@@ -26,15 +26,15 @@ public class CommentController {
 
     @PostMapping("/post/{id}/comments")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<CommentResponse> postComment(@PathVariable int id,
-                                                       @RequestBody CommentRequest commentRequest,
-                                                       Principal principal) throws PostNotFoundException, CommentNotFoundException {
+    public ResponseEntity<DataResponse> postComment(@PathVariable int id,
+                                                    @RequestBody CommentRequest commentRequest,
+                                                    Principal principal) throws PostNotFoundException, CommentNotFoundException {
         return new ResponseEntity<>(commentService.postComment(id, commentRequest, principal), HttpStatus.OK);
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<CommentResponse> putComment(@PathVariable int id,
+    public ResponseEntity<DataResponse> putComment(@PathVariable int id,
                                                       @PathVariable int comment_id,
                                                       @RequestBody CommentRequest commentRequest,
                                                       Principal principal) throws PostNotFoundException, CommentNotFoundException {

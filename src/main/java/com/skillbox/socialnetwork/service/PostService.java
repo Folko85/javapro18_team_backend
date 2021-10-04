@@ -1,7 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.PostDTO.PostData;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.postDTO.PostData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.repository.AccountRepository;
@@ -34,7 +35,7 @@ public class PostService {
         this.accountRepository = accountRepository;
     }
 
-    public PostResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
+    public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
@@ -45,15 +46,15 @@ public class PostService {
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    public PostResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
+    public ListResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContaining(text, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    private PostResponse getPostResponse(int offset, int itemPerPage, Page<Post> pageablePostList, Person person) {
-        PostResponse postResponse = new PostResponse();
+    private ListResponse getPostResponse(int offset, int itemPerPage, Page<Post> pageablePostList, Person person) {
+        ListResponse postResponse = new ListResponse();
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setOffset(offset);
@@ -63,8 +64,8 @@ public class PostService {
         return postResponse;
     }
 
-    private List<PostData> getPost4Response(List<Post> posts, Person person) {
-        List<PostData> postDataList = new ArrayList<>();
+    private List<Dto> getPost4Response(List<Post> posts, Person person) {
+        List<Dto> postDataList = new ArrayList<>();
         posts.forEach(post -> {
             PostData postData = getPostData(post, person);
             postDataList.add(postData);

@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LikeRequest;
-import com.skillbox.socialnetwork.api.response.LikeDTO.LikeData;
-import com.skillbox.socialnetwork.api.response.LikeDTO.LikeResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.likeDTO.LikeData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostLike;
@@ -34,12 +34,12 @@ public class LikeService {
         this.postRepository = postRepository;
     }
 
-    public LikeResponse getLikes(int itemId) throws PostNotFoundException {
+    public DataResponse getLikes(int itemId) throws PostNotFoundException {
         Post post = postRepository.findById(itemId).orElseThrow(PostNotFoundException::new);
         return getPostLikes(post);
     }
 
-    public LikeResponse putLikes(LikeRequest likeRequest, Principal principal) throws PostNotFoundException, PostLikeNotFoundException {
+    public DataResponse putLikes(LikeRequest likeRequest, Principal principal) throws PostNotFoundException, PostLikeNotFoundException {
         Person person = findPerson(principal.getName());
         Post post = findPost(likeRequest.getItemId());
         if (postLikeRepository.findPostLikeByItemAndPerson(post.getId(), person.getId()).isPresent())
@@ -52,7 +52,7 @@ public class LikeService {
         return getLikes(likeRequest.getItemId());
     }
 
-    public LikeResponse deleteLike(int itemId, Principal principal) throws PostNotFoundException, PostLikeNotFoundException {
+    public DataResponse deleteLike(int itemId, Principal principal) throws PostNotFoundException, PostLikeNotFoundException {
         Person person = findPerson(principal.getName());
         Post post = findPost(itemId);
         PostLike postLike = postLikeRepository.findPostLikeByItemAndPerson(post.getId(), person.getId())
@@ -61,10 +61,10 @@ public class LikeService {
         return getPostLikes(post);
     }
 
-    public LikeResponse getLiked(int itemId, int userId) throws PostNotFoundException {
+    public DataResponse getLiked(int itemId, int userId) throws PostNotFoundException {
         accountRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException(""));
         postRepository.findById(itemId).orElseThrow(PostNotFoundException::new);
-        LikeResponse likeResponse = new LikeResponse();
+        DataResponse likeResponse = new DataResponse();
         LikeData likeData = new LikeData();
         likeData.setLikes(postLikeRepository.findPostLikeByItemAndPerson(itemId, userId)
                 .isPresent() ? "true" : "false");
@@ -82,8 +82,8 @@ public class LikeService {
                 .orElseThrow(PostNotFoundException::new);
     }
 
-    private LikeResponse getPostLikes(Post post) {
-        LikeResponse likeResponse = new LikeResponse();
+    private DataResponse getPostLikes(Post post) {
+        DataResponse likeResponse = new DataResponse();
         LikeData likeData = new LikeData();
         List<Integer> users = new ArrayList<>();
         postLikeRepository.findPostLikeByItem(post.getId()).forEach(postLike1 -> {

@@ -2,14 +2,13 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
-import com.skillbox.socialnetwork.api.response.AuthDTO.AuthResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 
 
 import com.skillbox.socialnetwork.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -25,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
+    public ResponseEntity<DataResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
         return new ResponseEntity<>(authService.auth(loginRequest), HttpStatus.OK);
     }
 

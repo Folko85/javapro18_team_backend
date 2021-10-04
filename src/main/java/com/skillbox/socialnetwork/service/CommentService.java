@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.CommentRequest;
-import com.skillbox.socialnetwork.api.response.CommentDTO.CommentData;
-import com.skillbox.socialnetwork.api.response.CommentDTO.CommentResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.сommentDTO.CommentData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostComment;
@@ -37,7 +37,7 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    public CommentResponse postComment(int itemId, CommentRequest commentRequest, Principal principal) throws PostNotFoundException, CommentNotFoundException {
+    public DataResponse postComment(int itemId, CommentRequest commentRequest, Principal principal) throws PostNotFoundException, CommentNotFoundException {
         Person person = findPerson(principal.getName());
         Post post = findPost(itemId);
         PostComment postComment = new PostComment();
@@ -54,7 +54,7 @@ public class CommentService {
         return getCommentResponse(postComment);
     }
 
-    public CommentResponse putComment(int itemId, int commentId, CommentRequest commentRequest, Principal principal) throws CommentNotFoundException, PostNotFoundException {
+    public DataResponse putComment(int itemId, int commentId, CommentRequest commentRequest, Principal principal) throws CommentNotFoundException, PostNotFoundException {
         findPerson(principal.getName());
         findPost(itemId);
         if (commentRequest.getParentId() != null)
@@ -107,10 +107,10 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
     }
 
-    public CommentResponse getCommentResponse(PostComment postComment) {
-        CommentResponse commentResponse = new CommentResponse();
+    public DataResponse getCommentResponse(PostComment postComment) {
+        DataResponse commentResponse = new DataResponse();
         commentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
-        commentResponse.setCommentData(getCommentData(postComment));
+        commentResponse.setData(getCommentData(postComment));
         return commentResponse;
     }
 }
