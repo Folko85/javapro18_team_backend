@@ -44,7 +44,7 @@ public class PlatformService {
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
 
-        GetCitiesResponse response = vk.database().getCities(actor, countryId).needAll(true).count(250).lang(Lang.RU).execute();
+        GetCitiesResponse response = vk.database().getCities(actor, countryId).lang(Lang.RU).execute();
         return response.getItems().stream().map(x -> {
             CityDTO result = new CityDTO();
             BeanUtils.copyProperties(x, result);
