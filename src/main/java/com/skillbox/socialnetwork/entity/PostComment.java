@@ -39,6 +39,8 @@ public class PostComment {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    private boolean isDeleted;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "comment")
     private Set<BlockHistory> blocks;
 
