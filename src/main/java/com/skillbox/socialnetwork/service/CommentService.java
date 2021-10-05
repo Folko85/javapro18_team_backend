@@ -120,9 +120,9 @@ public class CommentService {
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
         commentData.setDeleted(postComment.isDeleted());
-        commentData.setLikes(postComment.getCommentLikes().size());
-        commentData.setMyLike(postComment.getCommentLikes().stream()
-                .anyMatch(commentLike -> commentLike.getPerson().equals(person)));
+//        commentData.setLikes(postComment.getCommentLikes().size());
+//        commentData.setMyLike(postComment.getCommentLikes().stream()
+//                .anyMatch(commentLike -> commentLike.getPerson().equals(person)));
         if (postComment.getParent() != null)
             commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());

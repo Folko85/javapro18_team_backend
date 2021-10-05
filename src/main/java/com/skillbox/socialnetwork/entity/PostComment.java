@@ -46,10 +46,6 @@ public class PostComment {
     private Set<BlockHistory> blocks;
 
     @OneToMany
-    @JoinColumn(name = "comment_id")
-    private Set<CommentLike> commentLikes = new HashSet<>();
-
-    @OneToMany
     @JoinColumn(name = "parent_id")
     private Set<PostComment> postComments = new HashSet<>();
 
