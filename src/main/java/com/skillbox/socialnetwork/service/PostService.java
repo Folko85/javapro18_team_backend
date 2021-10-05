@@ -12,8 +12,6 @@ import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +20,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
-import static com.skillbox.socialnetwork.service.CommentService.getCommentData4Response;
 import static java.time.ZoneOffset.UTC;
 
 
@@ -34,10 +30,12 @@ import static java.time.ZoneOffset.UTC;
 public class PostService {
     private final PostRepository postRepository;
     private final AccountRepository accountRepository;
+    private final CommentService commentService;
 
-    public PostService(PostRepository postRepository, AccountRepository accountRepository) {
+    public PostService(PostRepository postRepository, AccountRepository accountRepository, CommentService commentService) {
         this.postRepository = postRepository;
         this.accountRepository = accountRepository;
+        this.commentService = commentService;
     }
 
     public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
@@ -73,7 +71,6 @@ public class PostService {
         postResponse.setOffset(offset);
         postResponse.setTotal((int) pageablePostList.getTotalElements());
         postResponse.setData(getPost4Response(pageablePostList.toList(), person));
-
         return postResponse;
     }
 
@@ -90,7 +87,7 @@ public class PostService {
         PostData postData = new PostData();
         postData.setPostText(post.getPostText());
         postData.setAuthor(setAuthData(post.getPerson()));
-        postData.setComments(getCommentData4Response(post.getComments(), person));
+        postData.setComments(commentService.getPage4PostComments(0, 5, post, person));
         postData.setId(post.getId());
         postData.setLikes(post.getPostLikes().size());
         postData.setTime(post.getDatetime().toInstant(UTC));

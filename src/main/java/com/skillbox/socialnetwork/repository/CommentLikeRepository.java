@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Integer> {
-//    @Query("SELECT pl " +
-//            "FROM PostLike pl " +
-//            "WHERE pl.post.id = ?1"
-//    )
-    List<CommentLike> findPostLikeByItem(int item);
+    @Query("SELECT cl " +
+            "FROM CommentLike cl " +
+            "WHERE cl.postComment.id = ?1"
+    )
+    List<CommentLike> findCommentLikeByItem(int item);
 
-//    @Query("SELECT pl " +
-//            "FROM PostLike pl " +
-//            "WHERE pl.post.id = ?1 AND pl.person.id = ?2"
-//    )
-    Optional<CommentLike> findPostLikeByItemAndPerson(int item, int person);
+    @Query("SELECT cl " +
+            "FROM CommentLike cl " +
+            "WHERE cl.postComment.id = ?1 AND cl.person.id = ?2"
+    )
+    Optional<CommentLike> findCommentLikeByItemAndPerson(int item, int person);
 }

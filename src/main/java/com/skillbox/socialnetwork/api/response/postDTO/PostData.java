@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.api.response.postDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
 import com.skillbox.socialnetwork.api.response.сommentDTO.CommentData;
 import lombok.Data;
@@ -20,7 +21,8 @@ public class PostData implements Dto {
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private int likes;
-    private List<CommentData> comments;
+    private ListResponse comments;
     @JsonProperty("my_like")
     private boolean myLike;
+
 }

@@ -3,14 +3,13 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.request.LikeRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.likeDTO.LikeData;
-import com.skillbox.socialnetwork.entity.CommentLike;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostLike;
 import com.skillbox.socialnetwork.exception.PostLikeNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
-import com.skillbox.socialnetwork.repository.CommentLikeRepository;
+import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.PostLikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,16 +26,16 @@ public class LikeService {
     private final PostLikeRepository postLikeRepository;
     private final AccountRepository accountRepository;
     private final PostRepository postRepository;
-    private final CommentLikeRepository commentLikeRepository;
+    private final CommentRepository commentRepository;
 
     public LikeService(PostLikeRepository postLikeRepository,
                        AccountRepository accountRepository,
                        PostRepository postRepository,
-                       CommentLikeRepository commentLikeRepository) {
+                       CommentRepository commentRepository) {
         this.postLikeRepository = postLikeRepository;
         this.accountRepository = accountRepository;
         this.postRepository = postRepository;
-        this.commentLikeRepository = commentLikeRepository;
+        this.commentRepository = commentRepository;
     }
 
     public DataResponse getLikes(int itemId) throws PostNotFoundException {

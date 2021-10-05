@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.CommentService;
@@ -55,5 +56,14 @@ public class CommentController {
                                                         @PathVariable(name = "comment_id") int commentId,
                                                         Principal principal) throws CommentNotFoundException {
         return new ResponseEntity<>(commentService.recoveryComment(id, commentId, principal), HttpStatus.OK);
+    }
+
+    @GetMapping("/post/{id}/comments")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<ListResponse> getFeeds(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                 @RequestParam(name = "itemPerPage", defaultValue = "5") int itemPerPage,
+                                                 @PathVariable int id,
+                                                 Principal principal) throws PostNotFoundException {
+        return new ResponseEntity<>(commentService.getPostComments(offset, itemPerPage, id, principal), HttpStatus.OK);
     }
 }
