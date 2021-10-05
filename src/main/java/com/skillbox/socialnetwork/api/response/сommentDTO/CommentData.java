@@ -25,4 +25,7 @@ public class CommentData implements Dto {
     private boolean isDeleted;
     @JsonProperty("sub_comments")
     private List<CommentData> subComments;
+    private int likes;
+    @JsonProperty("my_like")
+    private boolean myLike;
 }

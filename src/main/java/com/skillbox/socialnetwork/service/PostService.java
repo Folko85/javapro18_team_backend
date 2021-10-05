@@ -90,7 +90,7 @@ public class PostService {
         PostData postData = new PostData();
         postData.setPostText(post.getPostText());
         postData.setAuthor(setAuthData(post.getPerson()));
-        postData.setComments(getCommentData4Response(post.getComments()));
+        postData.setComments(getCommentData4Response(post.getComments(), person));
         postData.setId(post.getId());
         postData.setLikes(post.getPostLikes().size());
         postData.setTime(post.getDatetime().toInstant(UTC));

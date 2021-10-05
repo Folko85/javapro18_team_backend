@@ -51,18 +51,18 @@ public class CommentService {
         postComment.setTime(LocalDateTime.now());
         postComment.setPerson(person);
         postComment = commentRepository.save(postComment);
-        return getCommentResponse(postComment);
+        return getCommentResponse(postComment, person);
     }
 
     public DataResponse putComment(int itemId, int commentId, CommentRequest commentRequest, Principal principal) throws CommentNotFoundException, PostNotFoundException {
-        findPerson(principal.getName());
+        Person person = findPerson(principal.getName());
         findPost(itemId);
         if (commentRequest.getParentId() != null)
             findPostComment(commentRequest.getParentId());
         PostComment postComment = findPostComment(commentId);
         postComment.setCommentText(commentRequest.getCommentText());
         commentRepository.save(postComment);
-        return getCommentResponse(postComment);
+        return getCommentResponse(postComment, person);
     }
 
     public DataResponse deleteComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
@@ -70,7 +70,7 @@ public class CommentService {
         PostComment postComment = findPostComment(commentId);
         postComment.setDeleted(postComment.getPerson().getId() == person.getId() || postComment.isDeleted());
         commentRepository.save(postComment);
-        return getCommentResponse(postComment);
+        return getCommentResponse(postComment, person);
     }
 
     public DataResponse recoveryComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
@@ -78,13 +78,13 @@ public class CommentService {
         PostComment postComment = findPostComment(commentId);
         postComment.setDeleted(postComment.getPerson().getId() != person.getId() && postComment.isDeleted());
         commentRepository.save(postComment);
-        return getCommentResponse(postComment);
+        return getCommentResponse(postComment, person);
     }
 
-    public static List<CommentData> getCommentData4Response(Set<PostComment> comments) {
+    public static List<CommentData> getCommentData4Response(Set<PostComment> comments, Person person) {
         List<CommentData> commentDataList = new ArrayList<>();
         comments.forEach(postComment -> {
-            CommentData commentData = getCommentData(postComment);
+            CommentData commentData = getCommentData(postComment, person);
             if (commentData.getParentId() != null)
                 commentDataList.stream()
                         .filter(comment -> comment.getId() == commentData.getParentId())
@@ -94,7 +94,7 @@ public class CommentService {
         return commentDataList;
     }
 
-    public static CommentData getCommentData(PostComment postComment) {
+    public static CommentData getCommentData(PostComment postComment, Person person) {
         CommentData commentData = new CommentData();
         commentData.setCommentText(postComment.getCommentText());
         commentData.setBlocked(postComment.isBlocked());
@@ -102,6 +102,9 @@ public class CommentService {
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
         commentData.setDeleted(postComment.isDeleted());
+        commentData.setLikes(postComment.getCommentLikes().size());
+        commentData.setMyLike(postComment.getCommentLikes().stream()
+                .anyMatch(commentLike -> commentLike.getPerson().equals(person)));
         if (postComment.getParent() != null)
             commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());
@@ -124,10 +127,10 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
     }
 
-    public DataResponse getCommentResponse(PostComment postComment) {
+    public DataResponse getCommentResponse(PostComment postComment, Person person) {
         DataResponse commentResponse = new DataResponse();
         commentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
-        commentResponse.setData(getCommentData(postComment));
+        commentResponse.setData(getCommentData(postComment, person));
         return commentResponse;
     }
 }

@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -43,6 +44,10 @@ public class PostComment {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "comment")
     private Set<BlockHistory> blocks;
+
+    @OneToMany
+    @JoinColumn(name = "comment_id")
+    private Set<CommentLike> commentLikes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

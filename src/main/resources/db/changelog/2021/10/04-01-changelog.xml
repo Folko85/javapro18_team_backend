@@ -7,15 +7,15 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <changeSet id="1633352228222-13" author="Nikita">
         <addColumn tableName="person">
-            <column name="is_deleted" type="BOOLEAN"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false"/>
         </addColumn>
 
         <addColumn tableName="post">
-            <column name="is_deleted" type="BOOLEAN"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false"/>
         </addColumn>
 
         <addColumn tableName="post_comment">
-            <column name="is_deleted" type="BOOLEAN"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false"/>
         </addColumn>
 
         <dropUniqueConstraint constraintName="uc_user_e_mail" tableName="user"/>
