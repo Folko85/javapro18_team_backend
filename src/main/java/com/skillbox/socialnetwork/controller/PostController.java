@@ -1,6 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,11 @@ public class PostController {
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
         return new ResponseEntity<>(postService.getPosts(text,dateFrom,dateTo,offset,itemPerPage,principal),HttpStatus.OK);
+    }
+    @GetMapping("/post/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
+        return new ResponseEntity<>(postService.getPostById(id,principal),HttpStatus.OK);
     }
     @GetMapping("/feeds")
     @PreAuthorize("hasAuthority('user:write')")

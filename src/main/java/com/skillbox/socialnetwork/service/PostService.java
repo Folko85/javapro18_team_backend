@@ -1,15 +1,19 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.postDTO.PostData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
+import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -42,7 +47,6 @@ public class PostService {
                 LocalDateTime.ofInstant(Instant.ofEpochMilli(dateFrom), UTC)
                 , LocalDateTime.ofInstant(Instant.ofEpochMilli(dateTo), UTC),
                 pageable);
-        System.out.println(LocalDateTime.ofInstant(Instant.ofEpochMilli(dateFrom), UTC));
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
@@ -51,6 +55,15 @@ public class PostService {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContaining(text, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
+    }
+
+    public DataResponse getPostById(int id, Principal principal) throws PostNotFoundException {
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        Person person = accountRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(""));
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        dataResponse.setData(getPostData(post, person));
+        return dataResponse;
     }
 
     private ListResponse getPostResponse(int offset, int itemPerPage, Page<Post> pageablePostList, Person person) {
