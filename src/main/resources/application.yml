@@ -49,6 +49,11 @@ vk:
   id: ENC(m7rHhgvZf1a3XykimmtX9A==)
   token: ENC(0FWZ/Ebbh5M0GV/ZD8TcXU1ISRbcusF9MrjiZsUnR4Vf4Hv8l7sp32S4w/KWqNsnLI7ppZCPy3ZztKJxXLGkhpBEkJXeEZpE6NFIDCts6BY=)
 
+cloudinary:
+  cloud: ENC(Vfhff27NWtbJpMagmXDrAPdoUn5Wl0BP)
+  key: ENC(Dw9PMgrkxd0Q7YTIBowaLFI/ixt2nvHf)
+  secret: ENC(hQVnqsRAm3jW1tjWc3zDAOu19ppToSJ7czBD5CHa0E6coGq36y7wVA==)
+
 jasypt:
   encryptor:
     bean: encryptorBean

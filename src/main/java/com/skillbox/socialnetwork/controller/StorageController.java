@@ -3,7 +3,9 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.response.ImageDTO;
 import com.skillbox.socialnetwork.service.StorageService;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class StorageController {
@@ -15,8 +17,8 @@ public class StorageController {
     }
 
     @PostMapping
-    public ImageDTO uploadImage(){
-        return storageService.uploadImage();
+    public ImageDTO uploadImage(@RequestParam("image") MultipartFile image){
+        return storageService.uploadImage(image);
     }
 
 }
