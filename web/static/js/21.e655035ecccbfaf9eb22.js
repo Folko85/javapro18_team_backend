@@ -1,0 +1,2 @@
+webpackJsonp([21],{jFu4:function(e,t,s){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var i={render:function(){var e=this.$createElement,t=this._self._c||e;return t("div",{staticClass:"success-register"},[t("simple-svg",{attrs:{filepath:"/static/img/delete.svg"}})],1)},staticRenderFns:[]};var n=s("VU/8")({name:"RegisterConfirmationFailed"},i,!1,function(e){s("wDrm")},null,null);t.default=n.exports},wDrm:function(e,t){}});
+//# sourceMappingURL=21.e655035ecccbfaf9eb22.js.map

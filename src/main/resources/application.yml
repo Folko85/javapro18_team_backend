@@ -42,9 +42,6 @@ management:
       percentiles-histogram:
         "[http.server.requests]": true
 
-
-
-
 vk:
   id: ENC(m7rHhgvZf1a3XykimmtX9A==)
   token: ENC(0FWZ/Ebbh5M0GV/ZD8TcXU1ISRbcusF9MrjiZsUnR4Vf4Hv8l7sp32S4w/KWqNsnLI7ppZCPy3ZztKJxXLGkhpBEkJXeEZpE6NFIDCts6BY=)
@@ -57,3 +54,16 @@ cloudinary:
 jasypt:
   encryptor:
     bean: encryptorBean
+
+cors:
+  - http://localhost:8086/
+  - http://127.0.0.1:8086/
+  - http://localhost/
+  - http://127.0.0.1/
+  - http://195.234.208.58/
+  - http://localhost:80/
+  - http://127.0.0.1:80/
+  - http://195.234.208.58:80/
+  - http://www.zeronenetwork.design/
+  - http://10.186.0.2:8086/
+  - http://10.186.0.2/%22
