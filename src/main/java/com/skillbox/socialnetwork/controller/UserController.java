@@ -33,7 +33,6 @@ import java.util.*;
 import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDate;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RequestMapping("/api/v1/users")
 public class UserController {
     private  UserServiceImpl userService;
@@ -45,7 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserRestResponse> getMe() throws Exception {
+    public ResponseEntity<UserRestResponse> getMe() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserRestResponse userRestResponse = new UserRestResponse();
         userRestResponse.setTimestamp(new Date().getTime() / 1000);
@@ -56,10 +55,10 @@ public class UserController {
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
     @GetMapping(path = "/{id}")
-    public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
-        Integer userId;
+    public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) {
+        int userId;
         try{
-            userId = Integer.valueOf(id);
+            userId = Integer.parseInt(id);
 
         } catch (NumberFormatException e){
             throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
@@ -127,14 +126,8 @@ public class UserController {
                              @RequestParam(name = "offset", defaultValue = "0") int offset,
                              @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
                              ){
-        Integer userId;
-        try{
-            userId = Integer.valueOf(id);
 
-        } catch (NumberFormatException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
-        }
-        List<PostWallData> posts =new ArrayList<>();
+        List<PostWallData> posts;
         try {
            posts= userService.getUserWall(id, offset, itemPerPage);
         }
