@@ -8,15 +8,3 @@ databaseChangeLog:
   - include:
       file: 2021/09/24-02-changelog.yml
       relativeToChangelogFile: true
-  - include:
-      file: 2021/09/18-01-changelog-insert-50-constant-persons.yml
-      relativeToChangelogFile: true
-  - include:
-      file: 2021/09/18-02-changelog-insert-deletable-50-persons.yml
-      relativeToChangelogFile: true
-  - include:
-      file: 2021/09/18-03-changelog-insert-1000-posts.yml
-      relativeToChangelogFile: true
-  - include:
-      file: 2021/09/18-04-changelog-insert-10-emptyPersons.yml
-      relativeToChangelogFile: true

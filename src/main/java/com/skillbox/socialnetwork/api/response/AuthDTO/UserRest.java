@@ -7,7 +7,6 @@ import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserRest {
     private int id;
     @JsonProperty("first_name")

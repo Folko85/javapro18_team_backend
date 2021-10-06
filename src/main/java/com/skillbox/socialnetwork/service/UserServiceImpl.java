@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.AuthDTO.Place;
 import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
@@ -10,10 +11,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
+import java.util.TimeZone;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -35,10 +37,6 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         UserRest userRest = new UserRest();
         convertUserToUserRest(person, userRest);
-        Place city= new Place();
-        city.setId(1);
-        city.setTitle(person.getTown());
-        userRest.setCity(city);
         return userRest;
     }
     public  UserRest getUserById(Integer id){
@@ -46,10 +44,6 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(""+id));
         UserRest userRest = new UserRest();
         convertUserToUserRest(person, userRest);
-        Place city= new Place();
-        city.setId(1);
-        city.setTitle(person.getTown());
-        userRest.setCity(city);
         return userRest;
 
     }
@@ -106,8 +100,12 @@ public class UserServiceImpl {
        return localDateTime.toEpochSecond(UTC);
 
    }
+   public  static LocalDateTime convertToLocalDateTime(long date){
+       if(date==0) return null;
+       return  LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneOffset.UTC);
+   }
 
-   public static  void conventionsFromPersonTimesToUserRest(Person person, UserRest userRest){
+    public static  void conventionsFromPersonTimesToUserRest(Person person, UserRest userRest){
       userRest.setLastOnlineTime(convertLocalDateTime(person.getLastOnlineTime()));
       userRest.setDateAndTimeOfRegistration(convertLocalDateTime(person.getDateAndTimeOfRegistration()));
       userRest.setBirthday(convertLocalDate(person.getBirthday()));
@@ -115,7 +113,17 @@ public class UserServiceImpl {
    }
    public static void convertUserToUserRest(Person person, UserRest userRest ){
        BeanUtils.copyProperties(person,userRest );
+       userRest.setCountry(null);
+       userRest.setCity(null);
        conventionsFromPersonTimesToUserRest(person, userRest);
    }
 
+    public PostWallData createPost(int id, long publishDate, PostRequest postRequest, Principal principal) {
+        UserRest userRest = getUserById(id);
+        Person person = accountRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
+        if (userRest.getId()!=person.getId())
+            throw new IllegalArgumentException();
+        return postService.createPost(publishDate, postRequest, userRest);
+    }
 }

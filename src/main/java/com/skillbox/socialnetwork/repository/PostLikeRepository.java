@@ -18,5 +18,5 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Integer> {
             "FROM PostLike pl " +
             "WHERE pl.post.id = ?1 AND pl.person.id = ?2"
     )
-   Optional<PostLike> findPostLikeByItemAndPerson(int item, int person);
+    Optional<PostLike> findPostLikeByItemAndPerson(int item, int person);
 }
