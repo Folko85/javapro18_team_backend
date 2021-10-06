@@ -1,12 +1,32 @@
 image: maven:3.8.2-openjdk-16
 stages:
   - build
+  - deploy
 build:
   only:
     - merge_request
     - dev
+  except:
+    - tags
   stage: build
   when: always
   script:
     - mvn clean compile
-
+deploy:
+  stage: deploy
+  only:
+    - dev
+  except:
+    - tags
+  before_script:
+    - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/app_name.jar ] || mv $DEV_APP_PATH/app_name.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
+      - scp target/app_name.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/
+      - ssh $DEV_USER@$DEV_HOST "sudo systemctl stop app_name_service && sudo systemctl start app_name_service"
