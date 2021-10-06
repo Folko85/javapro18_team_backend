@@ -15,7 +15,6 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RequestMapping("/api/v1/account")
 public class ApiAccountController {
     private final AccountService accountService;
@@ -26,7 +25,6 @@ public class ApiAccountController {
 
     @PostMapping("/register")
     public ResponseEntity<AccountResponse> register(@RequestBody RegisterRequest registerRequest) throws UserExistException {
-        log.info("Сюда что-то дошло с фронта");
         return new ResponseEntity<>(accountService.register(registerRequest), HttpStatus.OK);
     }
 

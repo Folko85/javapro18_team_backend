@@ -1,9 +1,13 @@
 package com.skillbox.socialnetwork.api.response.AuthDTO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.time.Instant;
+
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthData {
     private int id;
     @JsonProperty("first_name")
@@ -11,9 +15,9 @@ public class AuthData {
     @JsonProperty("last_name")
     private String lastName;
     @JsonProperty("reg_date")
-    private long regDate;
+    private Instant regDate;
     @JsonProperty("birth_date")
-    private long birthDate;
+    private Long birthDate;
     @JsonProperty("email")
     private String eMail;
     private String phone;
@@ -24,7 +28,7 @@ public class AuthData {
     @JsonProperty("messages_permission")
     private String messagesPermission;
     @JsonProperty("last_online_time")
-    private long lastOnlineTime;
+    private Instant lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private String token;
