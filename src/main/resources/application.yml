@@ -42,3 +42,13 @@ management:
       percentiles-histogram:
         "[http.server.requests]": true
 
+
+
+
+vk:
+  id: ENC(m7rHhgvZf1a3XykimmtX9A==)
+  token: ENC(0FWZ/Ebbh5M0GV/ZD8TcXU1ISRbcusF9MrjiZsUnR4Vf4Hv8l7sp32S4w/KWqNsnLI7ppZCPy3ZztKJxXLGkhpBEkJXeEZpE6NFIDCts6BY=)
+
+jasypt:
+  encryptor:
+    bean: encryptorBean
