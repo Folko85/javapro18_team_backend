@@ -8,5 +8,4 @@ public class LikeRequest {
     @JsonProperty("item_id")
     private int itemId;
     private String post;
-
 }

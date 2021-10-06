@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.response.CommentWallData;
 import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.CommentDTO.CommentData;
 import com.skillbox.socialnetwork.api.response.CommentDTO.CommentResponse;
@@ -13,7 +14,6 @@ import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -113,4 +113,35 @@ public class CommentService {
         commentResponse.setCommentData(getCommentData(postComment));
         return commentResponse;
     }
+
+    public static List<CommentWallData> getCommentWallData4Response(Set<PostComment> comments)
+    {
+        List<CommentWallData> commentDataList = new ArrayList<>();
+        if(comments!=null) {
+            comments.forEach(postComment -> {
+                CommentWallData commentData = getCommentWallData(postComment);
+                if (commentData.getParentId() != null)
+                    commentDataList.stream()
+                            .filter(comment -> comment.getId() == commentData.getParentId())
+                            .forEach(comment -> comment.getSubComments().add(commentData));
+                else commentDataList.add(commentData);
+            });
+        }
+        return commentDataList;
+    }
+
+    public static CommentWallData getCommentWallData(PostComment postComment) {
+        CommentWallData commentData = new CommentWallData();
+        commentData.setCommentText(postComment.getCommentText());
+        commentData.setBlocked(postComment.isBlocked());
+        commentData.setAuthorId(postComment.getPerson().getId());
+        commentData.setId(postComment.getId());
+        commentData.setTime(UserServiceImpl.convertLocalDateTime(postComment.getTime()));
+        if(postComment.getParent()!=null)
+            commentData.setParentId(postComment.getParent().getId());
+        commentData.setPostId(postComment.getPost().getId());
+        commentData.setSubComments(new ArrayList<>());
+        return commentData;
+    }
+
 }

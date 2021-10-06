@@ -1,13 +1,11 @@
 package com.skillbox.socialnetwork.api.response.AuthDTO;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.Instant;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthData {
     private int id;
     @JsonProperty("first_name")

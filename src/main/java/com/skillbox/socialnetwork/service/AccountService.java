@@ -54,7 +54,7 @@ public class AccountService {
         person.setMessagesPermission(MessagesPermission.ALL);
         person.setLastOnlineTime(ZonedDateTime.now(UTC).toLocalDateTime());
         String code = UUID.randomUUID().toString().replace("-", "");
-        //mailSender.send(registerRequest.getEMail(), REGISTRATION_URL + "key=" + code + "&eMail=" + registerRequest.getEMail());
+       // mailSender.send(registerRequest.getEMail(), REGISTRATION_URL + "key=" + code + "&eMail=" + registerRequest.getEMail());
         person.setConfirmationCode(code);
         accountRepository.save(person);
         return getAccountResponse(UTC);
@@ -109,8 +109,7 @@ public class AccountService {
     }
     public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {
         Person person = findPerson(jwtProvider.getLoginFromToken(passwdChangeRequest.getToken()));
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
-        person.setPassword(passwordEncoder.encode(passwdChangeRequest.getPassword()));
+        person.setPassword(passwdChangeRequest.getPassword());
         accountRepository.save(person);
         return getAccountResponse(UTC);
     }
@@ -122,7 +121,7 @@ public class AccountService {
 
     static AccountResponse getAccountResponse(ZoneId utc) {
         AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
+        accountResponse.setTimestamp(ZonedDateTime.now(utc).toEpochSecond());
         Map<String, String> dateMap = new HashMap<>();
         dateMap.put("message", "ok");
         accountResponse.setData(dateMap);
