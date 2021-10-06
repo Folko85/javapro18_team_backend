@@ -18,7 +18,7 @@ public class PostResponse {
     private List<?> data;
 
     public PostResponse(int total, int offset, int perPage, List<?> data) {
-        this.error = "";
+        this.error = "string";
         timestamp = System.currentTimeMillis();
         this.total = total;
         this.offset = offset;

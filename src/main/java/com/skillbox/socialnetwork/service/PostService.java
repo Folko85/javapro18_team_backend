@@ -19,11 +19,9 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.CommentService.getCommentData4Response;
@@ -54,18 +52,16 @@ public class PostService {
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    public ResponseEntity<?> getPostById(int id) {
-        Optional<Post> optionalPost = postRepository.findPostById(id);
+    public ResponseEntity<?> getPostById(int id, Principal principal) throws PostNotFoundException {
+        Person person = findPerson(principal.getName());
+        Post post = postRepository.findPostById(id).orElseThrow(PostNotFoundException::new);
 
-        if (optionalPost.isEmpty()) {
-            return ResponseEntity.status(400)
-                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
-        }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new PostDataResponse(getPostEntityResponseByPost(optionalPost.get())));
+                .body(new PostDataResponse(getPostEntityResponseByPost(post)));
     }
 
-    public ResponseEntity<?> putPostById(int id, long publishDate, TitlePostTextRequest requestBody) throws PostNotFoundException {
+    public ResponseEntity<?> putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal principal) throws PostNotFoundException {
+        Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         post.setTitle(requestBody.getTitle());
         post.setPostText(requestBody.getPostText());
@@ -75,33 +71,23 @@ public class PostService {
                 .body(new PostDataResponse(getPostEntityResponseByPost(postRepository.saveAndFlush(post))));
     }
 
-    public ResponseEntity<?> deletePostById(int id) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isEmpty()) {
-            return ResponseEntity.status(400)
-                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
-        }
-        Post post = optionalPost.get();
-        //todo: заменить как сделаем удаление в модель
-        post.setBlocked(true);
+    public ResponseEntity<?> deletePostById(int id, Principal principal) throws PostNotFoundException {
+        Person person = findPerson(principal.getName());
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        post.setDeleted(true);
         postRepository.saveAndFlush(post);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new PostDataResponse(new IdResponse(id)));
     }
 
-    public ResponseEntity<?> putPostIdRecover(int id) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isEmpty()) {
-            return ResponseEntity.status(400)
-                    .body(new PostNotFoundException("Post with id = " + id + " not found."));
-        }
-        Post post = optionalPost.get();
-        //todo: заменить как сделаем удаление в модель
-        post.setBlocked(false);
+    public ResponseEntity<?> putPostIdRecover(int id,  Principal principal) throws PostNotFoundException {
+        Person person = findPerson(principal.getName());
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        post.setDeleted(false);
         postRepository.saveAndFlush(post);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new PostDataResponse(getPostEntityResponseByPost(optionalPost.get())));
+                .body(new PostDataResponse(getPostEntityResponseByPost(post)));
     }
 
     private PostEntityResponse getPostEntityResponseByPost(Post post) {

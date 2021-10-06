@@ -37,28 +37,31 @@ public class PostController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> getPostById(@PathVariable int id) {
-        return postService.getPostById(id);
+    public ResponseEntity<?> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
+        return postService.getPostById(id, principal);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> putPostById(@PathVariable int id,
                                          @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
-                                         @RequestBody TitlePostTextRequest requestBody) throws PostNotFoundException {
-        return postService.putPostById(id, publishDate, requestBody);
+                                         @RequestBody TitlePostTextRequest requestBody,
+                                         Principal principal) throws PostNotFoundException {
+        return postService.putPostById(id, publishDate, requestBody, principal);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> deletePostById(@PathVariable int id) {
-        return postService.deletePostById(id);
+    public ResponseEntity<?> deletePostById(@PathVariable int id,
+                                            Principal principal) throws PostNotFoundException {
+        return postService.deletePostById(id, principal);
     }
 
 
     @PutMapping("/{id}/recover")
-    public ResponseEntity<?> putPostRecover(@PathVariable int id) {
-        return postService.putPostIdRecover(id);
+    public ResponseEntity<?> putPostRecover(@PathVariable int id,
+                                            Principal principal) throws PostNotFoundException {
+        return postService.putPostIdRecover(id, principal);
     }
 
 
