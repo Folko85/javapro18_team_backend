@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.tagdto.ManyTagsResponse;
 import com.skillbox.socialnetwork.api.response.tagdto.OneTagResponse;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.TagRepository;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class TagService {
 
     private final TagRepository tagRepository;
@@ -21,13 +23,13 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-    public ManyTagsResponse getTags(String tag, int offset, int itemPerPage) {
+    public ManyTagsResponse getTags(String tag, Integer offset, Integer itemPerPage) {
         List<Tag> tags = tagRepository.findAll();
         int total = tags.size();
         if (tag != null && !tag.isEmpty()) {
             tags = tags.stream().filter(x -> x.getTag().startsWith(tag)).collect(Collectors.toList());
         }
-        if (tags.size() > itemPerPage) {
+        if (itemPerPage!= null && tags.size() > itemPerPage) {
             tags = tags.subList(0, itemPerPage);
         }
         return new ManyTagsResponse().setTimestamp(Instant.now()).setError("all right").setOffset(offset).setPerPage(itemPerPage).setTotal(total).setData(tags);
