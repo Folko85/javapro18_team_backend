@@ -1,20 +1,38 @@
 package com.skillbox.socialnetwork.config;
 
 import org.springframework.context.annotation.Configuration;
+
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class CORSConfig implements WebMvcConfigurer {
 
+    private final Environment environment;
+
+    public CORSConfig(Environment environment) {
+        this.environment = environment;
+    }
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+
+        List<String> allowedOrigins = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            if (environment.getProperty("cors["+ i +"]") == null){
+                break;
+            }
+            allowedOrigins.add(environment.getProperty("cors["+ i +"]"));
+        }
+
         registry.addMapping("/**")
-//        ;
-                .allowedOrigins("http://localhost:8086/", "http://127.0.0.1:8086/", "http://34.118.44.199:8086/", "http://localhost/", "http://127.0.0.1/", "http://195.234.208.58/", "http://localhost:80/", "http://127.0.0.1:80/", "http://195.234.208.58:80/", "http://10.186.0.2:80/", "http://10.186.0.2:8086/", "http://10.186.0.2/%22", "http://www.zeronenetwork.design:80/", "http://www.zeronenetwork.design:8086/")
-//                .allowedOriginPatterns("/**")
-                        .allowedMethods("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("Authorization", "Cache-Control", "Content-Type", "Access-Control-Allow-Origin")
-                        .allowCredentials(true);
+                .allowedOrigins(allowedOrigins.toArray(String[]::new))
+                .allowedMethods("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("Authorization", "Cache-Control", "Content-Type", "Access-Control-Allow-Origin")
+                .allowCredentials(true);
     }
 }
