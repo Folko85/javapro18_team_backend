@@ -16,7 +16,6 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RequestMapping("/api/v1")
 public class CommentController {
     private final CommentService commentService;

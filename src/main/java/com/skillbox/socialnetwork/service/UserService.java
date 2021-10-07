@@ -69,9 +69,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("" + id));
         AuthData userRest = new AuthData();
         convertUserToUserRest(person, userRest);
-        List<PostWallData> postWallData = postService.getPastWallData(offset, itemPerPage, userRest);
-        return postWallData;
-
+        return postService.getPastWallData(offset, itemPerPage, userRest);
     }
 
     public void deleteUser(String email) {
@@ -104,8 +102,6 @@ public class UserService {
     public static void conventionsFromPersonTimesToUserRest(Person person, AuthData userRest) {
         userRest.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         userRest.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
-        userRest.setBirthDate(person.getBirthday().atStartOfDay().toInstant(UTC));
-
     }
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
