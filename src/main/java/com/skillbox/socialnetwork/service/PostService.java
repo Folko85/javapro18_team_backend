@@ -4,10 +4,12 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.postDTO.PostData;
+import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -31,11 +34,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final AccountRepository accountRepository;
     private final CommentService commentService;
+    private final LikeRepository likeRepository;
 
-    public PostService(PostRepository postRepository, AccountRepository accountRepository, CommentService commentService) {
+    public PostService(PostRepository postRepository, AccountRepository accountRepository, CommentService commentService, LikeRepository likeRepository) {
         this.postRepository = postRepository;
         this.accountRepository = accountRepository;
         this.commentService = commentService;
+        this.likeRepository = likeRepository;
     }
 
     public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
@@ -89,11 +94,12 @@ public class PostService {
         postData.setAuthor(setAuthData(post.getPerson()));
         postData.setComments(commentService.getPage4PostComments(0, 5, post, person));
         postData.setId(post.getId());
-        postData.setLikes(post.getPostLikes().size());
+        Set<Like> likes = likeRepository.findLikesByItemAndType(post.getId(),"Post");
+        postData.setLikes(likes.size());
         postData.setTime(post.getDatetime().toInstant(UTC));
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
-        postData.setMyLike(post.getPostLikes().stream()
+        postData.setMyLike(likes.stream()
                 .anyMatch(postLike -> postLike.getPerson().equals(person)));
         return postData;
     }

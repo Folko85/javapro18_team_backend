@@ -49,6 +49,10 @@ public class PostComment {
     @JoinColumn(name = "parent_id")
     private Set<PostComment> postComments = new HashSet<>();
 
+//    @OneToMany
+//    @JoinColumn(name = "item_id")
+//    private Set<Like> likes = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

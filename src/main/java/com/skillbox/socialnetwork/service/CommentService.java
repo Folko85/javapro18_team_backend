@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.сommentDTO.CommentData;
+import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostComment;
@@ -12,6 +13,7 @@ import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.CommentRepository;
+import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,10 +23,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.security.Principal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,13 +35,15 @@ public class CommentService {
     private final AccountRepository accountRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
     public CommentService(AccountRepository accountRepository,
                           PostRepository postRepository,
-                          CommentRepository commentRepository) {
+                          CommentRepository commentRepository, LikeRepository likeRepository) {
         this.accountRepository = accountRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.likeRepository = likeRepository;
     }
 
     public ListResponse getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
@@ -120,9 +122,10 @@ public class CommentService {
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
         commentData.setDeleted(postComment.isDeleted());
-//        commentData.setLikes(postComment.getCommentLikes().size());
-//        commentData.setMyLike(postComment.getCommentLikes().stream()
-//                .anyMatch(commentLike -> commentLike.getPerson().equals(person)));
+        Set<Like> likes = likeRepository.findLikesByItemAndType(postComment.getId(),"Comment");
+        commentData.setLikes(likes.size());
+        commentData.setMyLike(likes.stream()
+                .anyMatch(commentLike -> commentLike.getPerson().equals(person)));
         if (postComment.getParent() != null)
             commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());

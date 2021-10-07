@@ -50,9 +50,9 @@ public class Post {
             inverseJoinColumns = {@JoinColumn(name = "post_id")})
     private Set<Tag> tags;
 
-    @OneToMany
-    @JoinColumn(name = "post_id")
-    private Set<PostLike> postLikes = new HashSet<>();
+//    @OneToMany
+//    @JoinColumn(name = "item_id")
+//    private Set<Like> likes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
