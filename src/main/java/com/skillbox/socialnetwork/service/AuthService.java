@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.request.LoginRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
-import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.entity.Person;
@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import static com.skillbox.socialnetwork.service.AccountService.getAccountResponse;

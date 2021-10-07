@@ -1,8 +1,8 @@
-package com.skillbox.socialnetwork.api.response.PostDTO;
+package com.skillbox.socialnetwork.api.response.postdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.CommentWallData;
-import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 
 import java.util.List;

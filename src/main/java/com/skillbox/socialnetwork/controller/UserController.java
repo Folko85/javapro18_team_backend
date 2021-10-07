@@ -10,10 +10,10 @@ import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostCreationResponse;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
-import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
+import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
+import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
+import com.skillbox.socialnetwork.api.response.postdto.PostWallResponse;
 import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserService;
 
@@ -39,9 +39,10 @@ import static com.skillbox.socialnetwork.service.UserService.convertLocalDate;
 public class UserController {
     private UserService userService;
     private PostService postService;
-    public UserController(UserService userService, PostService postService){
-        this.userService= userService;
-        this.postService=postService;
+
+    public UserController(UserService userService, PostService postService) {
+        this.userService = userService;
+        this.postService = postService;
 
     }
 
@@ -55,21 +56,21 @@ public class UserController {
 
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
+
     @GetMapping(path = "/{id}")
     public ResponseEntity<DataResponse> getUserById(@PathVariable String id) {
         Integer userId;
-        try{
+        try {
             userId = Integer.parseInt(id);
 
-        } catch (NumberFormatException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
         }
         DataResponse userRestResponse = new DataResponse();
         try {
             userRestResponse.setData(userService.getUserById(userId));
-        }
-        catch (UsernameNotFoundException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
         userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
@@ -77,40 +78,38 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public  ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity){
+    public ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AuthData updates= new AuthData();
+        AuthData updates = new AuthData();
         UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
         BeanUtils.copyProperties(userRequestModel, updates);
         updates.setEMail(email);
         AuthData updatedUser;
         try {
             updatedUser = userService.updateUser(updates);
-        }
-        catch (UsernameNotFoundException e){
-            throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setData(updatedUser);
         userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
-        return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
 
     }
 
     @PostMapping("/me")
-    public  void test(){
+    public void test() {
         System.out.println("Teeest");
     }
 
     @DeleteMapping("/me")
-    public  ResponseEntity<DataResponse> deleteUser(){
+    public ResponseEntity<DataResponse> deleteUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        try{
+        try {
             userService.deleteUser(email);
-        }
-        catch (UsernameNotFoundException e){
-            throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
         AccountResponse userDeleteResponse = new AccountResponse();
         userDeleteResponse.setTimestamp(Instant.now());
@@ -124,16 +123,15 @@ public class UserController {
 
     @GetMapping("/{id}/wall")
     public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
-                             @RequestParam(name = "offset", defaultValue = "0") int offset,
-                             @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
-                             ){
+                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
+    ) {
 
         List<PostWallData> posts;
         try {
-           posts= userService.getUserWall(id, offset, itemPerPage);
-        }
-        catch (UsernameNotFoundException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+            posts = userService.getUserWall(id, offset, itemPerPage);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
         PostWallResponse postWallResponse = new PostWallResponse();
         postWallResponse.setError("string");
@@ -146,36 +144,38 @@ public class UserController {
         return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
 
     }
+
     @PostMapping("/{id}/wall")
     public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,
-                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
-                            @RequestBody PostRequest postRequest, Principal principal
-                            ){
+                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+                                                            @RequestBody PostRequest postRequest, Principal principal
+    ) {
 
         PostCreationResponse postCreationResponse = new PostCreationResponse();
         postCreationResponse.setTimestamp(new Date().getTime());
         PostWallData postWallData = userService.createPost(id, publishDate, postRequest, principal);
         postCreationResponse.setData(postWallData);
-        return  new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
+        return new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
     }
 
-    private  UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity) {
-        ObjectMapper objectMapper = new ObjectMapper(); objectMapper.registerModule(new JavaTimeModule());
-        UserRequestModel userRequestModel =new UserRequestModel();
+    private UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        UserRequestModel userRequestModel = new UserRequestModel();
         System.out.println(httpEntity.getBody());
         try {
             ObjectNode node = new ObjectMapper().readValue(httpEntity.getBody(), ObjectNode.class);
-            UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel= objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
-            if(userUpdateWithInstantRequestModel.getBirthday()!=null)
+            UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel = objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
+            if (userUpdateWithInstantRequestModel.getBirthday() != null)
                 userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC)));
             else userRequestModel.setBirthday(0);
             BeanUtils.copyProperties(userUpdateWithInstantRequestModel, userRequestModel);
-        }
-        catch (JsonProcessingException e){
-            try{
-                userRequestModel= objectMapper.readValue(httpEntity.getBody(), UserRequestModel.class);
+        } catch (JsonProcessingException e) {
+            try {
+                userRequestModel = objectMapper.readValue(httpEntity.getBody(), UserRequestModel.class);
+            } catch (JsonProcessingException g) {
+                throw new IllegalArgumentException();
             }
-            catch (JsonProcessingException g){throw  new IllegalArgumentException();}
         }
         return userRequestModel;
     }

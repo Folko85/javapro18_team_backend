@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.likeDTO;
+package com.skillbox.socialnetwork.api.response.likedto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.skillbox.socialnetwork.api.response.Dto;

@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LikeRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
-import com.skillbox.socialnetwork.api.response.likeDTO.LikeData;
+import com.skillbox.socialnetwork.api.response.likedto.LikeData;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.LikeNotFoundException;
