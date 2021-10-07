@@ -7,5 +7,6 @@ import lombok.Data;
 public class LikeRequest {
     @JsonProperty("item_id")
     private int itemId;
-    private String post;
+    private String type;
+
 }

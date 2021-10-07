@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
-import com.skillbox.socialnetwork.exception.PostLikeNotFoundException;
+import com.skillbox.socialnetwork.exception.LikeNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import org.springframework.http.HttpStatus;
@@ -36,8 +36,8 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription("Пользователь не существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(PostLikeNotFoundException.class)
-    public ResponseEntity<BadRequestResponse> handleUsernameNotFoundException(PostLikeNotFoundException exc) {
+    @ExceptionHandler(LikeNotFoundException.class)
+    public ResponseEntity<BadRequestResponse> handleLikeNotFoundException(LikeNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription("Like не существует");
