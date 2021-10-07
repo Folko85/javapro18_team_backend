@@ -42,16 +42,9 @@ public class PostComment {
 
     private boolean isDeleted;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "comment")
-    private Set<BlockHistory> blocks;
-
     @OneToMany
     @JoinColumn(name = "parent_id")
     private Set<PostComment> postComments = new HashSet<>();
-
-//    @OneToMany
-//    @JoinColumn(name = "item_id")
-//    private Set<Like> likes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

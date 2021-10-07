@@ -6,7 +6,6 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -49,10 +48,6 @@ public class Post {
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "post_id")})
     private Set<Tag> tags;
-
-//    @OneToMany
-//    @JoinColumn(name = "item_id")
-//    private Set<Like> likes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
