@@ -74,6 +74,7 @@ public class AuthService {
         authData.setPhone(person.getPhone());
         authData.setMessagesPermission(person.getMessagesPermission().toString());
         authData.setBlocked(person.isBlocked());
+        authData.setPhoto(person.getPhoto());
         return authData;
     }
 
