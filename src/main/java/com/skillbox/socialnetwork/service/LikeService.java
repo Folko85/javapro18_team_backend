@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LikeRequest;
-import com.skillbox.socialnetwork.api.response.LikeDTO.LikeData;
-import com.skillbox.socialnetwork.api.response.LikeDTO.LikeResponse;
+import com.skillbox.socialnetwork.api.response.likedto.LikeData;
+import com.skillbox.socialnetwork.api.response.likedto.LikeResponse;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostLike;

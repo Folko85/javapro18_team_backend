@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.LikeRequest;
-import com.skillbox.socialnetwork.api.response.LikeDTO.LikeResponse;
+import com.skillbox.socialnetwork.api.response.likedto.LikeResponse;
 import com.skillbox.socialnetwork.exception.PostLikeNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.LikeService;

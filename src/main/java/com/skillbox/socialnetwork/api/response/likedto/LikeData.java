@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.LikeDTO;
+package com.skillbox.socialnetwork.api.response.likedto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

@@ -1,9 +1,9 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.CommentRequest;
-import com.skillbox.socialnetwork.api.response.CommentDTO.CommentData;
-import com.skillbox.socialnetwork.api.response.CommentDTO.CommentResponse;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
+import com.skillbox.socialnetwork.api.response.commentdto.CommentResponse;
+import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostComment;

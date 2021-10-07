@@ -1,15 +1,15 @@
-package com.skillbox.socialnetwork.api.response.AuthDTO;
+package com.skillbox.socialnetwork.api.response.commentdto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AuthResponse {
+public class CommentResponse {
     private String error;
     private Instant timestamp;
-    private AuthData data;
+    private CommentData commentData;
+
 }
