@@ -49,7 +49,7 @@ public class LikeService {
         checkItemId(likeRequest.getItemId(), likeRequest.getType());
         Like like = new Like();
         like.setItem(likeRequest.getItemId());
-        like.setType(like.getType());
+        like.setType(likeRequest.getType());
         like.setPerson(person);
         like.setTime(LocalDateTime.now());
         likeRepository.save(like);

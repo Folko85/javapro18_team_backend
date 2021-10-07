@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.api.response.сommentDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
 import lombok.Data;
 
 import java.time.Instant;
@@ -17,8 +18,7 @@ public class CommentData implements Dto {
     @JsonProperty("post_id")
     private int postId;
     private Instant time;
-    @JsonProperty("author_id")
-    private int authorId;
+    private AuthData author;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     @JsonProperty("is_deleted")
