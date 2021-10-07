@@ -106,6 +106,7 @@ public class PostService {
         postData.setTime(post.getDatetime().toInstant(UTC));
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
+        postData.setTags(List.of("tag","tagtagtagtagtagtag","tag","tag","tag","tag","tag","tag"));
         postData.setMyLike(likes.stream()
                 .anyMatch(postLike -> postLike.getPerson().equals(person)));
         return postData;

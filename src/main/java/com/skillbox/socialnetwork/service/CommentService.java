@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
 @Service
@@ -118,7 +119,7 @@ public class CommentService {
         CommentData commentData = new CommentData();
         commentData.setCommentText(postComment.getCommentText());
         commentData.setBlocked(postComment.isBlocked());
-        commentData.setAuthorId(postComment.getPerson().getId());
+        commentData.setAuthor(setAuthData(postComment.getPerson()));
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
         commentData.setDeleted(postComment.isDeleted());

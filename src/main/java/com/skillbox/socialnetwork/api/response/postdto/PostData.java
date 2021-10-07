@@ -9,6 +9,7 @@ import lombok.Data;
 import java.time.Instant;
 
 
+
 @Data
 public class PostData implements Dto {
     private int id;
@@ -23,5 +24,6 @@ public class PostData implements Dto {
     private ListResponse comments;
     @JsonProperty("my_like")
     private boolean myLike;
+    private List<String> tags;
 
 }
