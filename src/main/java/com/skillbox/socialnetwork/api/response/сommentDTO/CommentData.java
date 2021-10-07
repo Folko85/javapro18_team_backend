@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.api.response.сommentdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
-import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 
 import java.time.Instant;
