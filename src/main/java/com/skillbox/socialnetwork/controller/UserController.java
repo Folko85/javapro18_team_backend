@@ -26,9 +26,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDate;
 
@@ -38,9 +40,11 @@ import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDat
 public class UserController {
     private  UserServiceImpl userService;
     private PostService postService;
+    private Pattern pattern = Pattern.compile("^(d{4})");
     public UserController(UserServiceImpl userService, PostService postService){
         this.userService= userService;
         this.postService=postService;
+
 
     }
 
@@ -80,7 +84,7 @@ public class UserController {
     public  ResponseEntity<UserRestResponse> updateUser(HttpEntity<String> httpEntity){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserRest updates= new UserRest();
-        UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
+        UserRequestModel userRequestModel = userService.updateUser(httpEntity);
         BeanUtils.copyProperties(userRequestModel, updates);
         updates.setEMail(email);
         UserRest updatedUser;
@@ -96,11 +100,6 @@ public class UserController {
         userRestResponse.setError("null");
         return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
 
-    }
-
-    @PostMapping("/me")
-    public  void test(){
-        System.out.println("Teeest");
     }
 
     @DeleteMapping("/me")
@@ -164,26 +163,4 @@ public class UserController {
         postCreationResponse.setData(postWallData);
         return  new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
     }
-
-    private  UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity) {
-        ObjectMapper objectMapper = new ObjectMapper(); objectMapper.registerModule(new JavaTimeModule());
-        UserRequestModel userRequestModel =new UserRequestModel();
-        System.out.println(httpEntity.getBody());
-        try {
-            ObjectNode node = new ObjectMapper().readValue(httpEntity.getBody(), ObjectNode.class);
-            UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel= objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
-            if(userUpdateWithInstantRequestModel.getBirthday()!=null)
-                userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC)));
-            else userRequestModel.setBirthday(0);
-            BeanUtils.copyProperties(userUpdateWithInstantRequestModel, userRequestModel);
-        }
-        catch (JsonProcessingException e){
-            try{
-                userRequestModel= objectMapper.readValue(httpEntity.getBody(), UserRequestModel.class);
-            }
-            catch (JsonProcessingException g){throw  new IllegalArgumentException();}
-        }
-        return userRequestModel;
-    }
-
 }
