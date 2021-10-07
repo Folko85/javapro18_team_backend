@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.PostDTO.*;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
+import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
@@ -21,7 +22,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.CommentService.getCommentData4Response;
@@ -52,42 +52,41 @@ public class PostService {
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    public ResponseEntity<?> getPostById(int id, Principal principal) throws PostNotFoundException {
+    public PostDataResponse getPostById(int id, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findPostById(id).orElseThrow(PostNotFoundException::new);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new PostDataResponse(getPostEntityResponseByPost(post)));
+        if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
+        return new PostDataResponse(getPostEntityResponseByPost(post));
     }
 
-    public ResponseEntity<?> putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal principal) throws PostNotFoundException {
+    public PostDataResponse putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setTitle(requestBody.getTitle());
         post.setPostText(requestBody.getPostText());
         post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate));
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new PostDataResponse(getPostEntityResponseByPost(postRepository.saveAndFlush(post))));
+        return new PostDataResponse(getPostEntityResponseByPost(postRepository.saveAndFlush(post)));
     }
 
-    public ResponseEntity<?> deletePostById(int id, Principal principal) throws PostNotFoundException {
+    public PostDataResponse deletePostById(int id, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setDeleted(true);
         postRepository.saveAndFlush(post);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new PostDataResponse(new IdResponse(id)));
+        return new PostDataResponse(new IdResponse(id));
     }
 
-    public ResponseEntity<?> putPostIdRecover(int id,  Principal principal) throws PostNotFoundException {
+    public PostDataResponse putPostIdRecover(int id,  Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setDeleted(false);
         postRepository.saveAndFlush(post);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new PostDataResponse(getPostEntityResponseByPost(post)));
+        return new PostDataResponse(getPostEntityResponseByPost(post));
     }
 
     private PostEntityResponse getPostEntityResponseByPost(Post post) {

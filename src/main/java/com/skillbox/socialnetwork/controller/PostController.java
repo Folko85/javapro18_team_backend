@@ -3,6 +3,7 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
+import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,8 +38,8 @@ public class PostController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
-        return postService.getPostById(id, principal);
+    public ResponseEntity<?> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+        return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -46,22 +47,23 @@ public class PostController {
     public ResponseEntity<?> putPostById(@PathVariable int id,
                                          @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
                                          @RequestBody TitlePostTextRequest requestBody,
-                                         Principal principal) throws PostNotFoundException {
-        return postService.putPostById(id, publishDate, requestBody, principal);
+                                         Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+        return new ResponseEntity<>(postService.putPostById(id, publishDate, requestBody, principal), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> deletePostById(@PathVariable int id,
-                                            Principal principal) throws PostNotFoundException {
-        return postService.deletePostById(id, principal);
+                                            Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+        return new ResponseEntity<>(postService.deletePostById(id, principal), HttpStatus.OK);
     }
 
 
     @PutMapping("/{id}/recover")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> putPostRecover(@PathVariable int id,
-                                            Principal principal) throws PostNotFoundException {
-        return postService.putPostIdRecover(id, principal);
+                                            Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+        return new ResponseEntity<>(postService.putPostIdRecover(id, principal), HttpStatus.OK);
     }
 
 
