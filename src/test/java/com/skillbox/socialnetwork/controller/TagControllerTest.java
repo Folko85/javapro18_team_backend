@@ -46,5 +46,4 @@ public class TagControllerTest extends AbstractTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-
 }
