@@ -1,14 +1,15 @@
-package com.skillbox.socialnetwork.api.response.AuthDTO;
+package com.skillbox.socialnetwork.api.response.authDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skillbox.socialnetwork.api.response.Dto;
 import lombok.Data;
 
 import java.time.Instant;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AuthData {
+public class AuthData implements Dto {
     private int id;
     @JsonProperty("first_name")
     private String firstName;

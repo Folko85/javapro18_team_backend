@@ -13,7 +13,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
             "LEFT JOIN PostComment pc ON pc.post.id = p.id " +
-            "LEFT JOIN PostLike pl on pl.post.id = p.id " +
+//            "LEFT JOIN PostLike pl on pl.post.id = p.id " +
             "WHERE p.isBlocked = false AND p.datetime >= ?2 AND p.datetime <= ?3 AND p.postText LIKE  %?1% " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
@@ -22,7 +22,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
             "LEFT JOIN PostComment pc ON pc.post.id = p.id " +
-            "LEFT JOIN PostLike pl on pl.post.id = p.id " +
+//            "LEFT JOIN PostLike pl on pl.post.id = p.id " +
             "WHERE p.isBlocked = false AND p.postText LIKE  %?1% " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")

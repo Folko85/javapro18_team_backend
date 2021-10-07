@@ -67,6 +67,8 @@ public class Person {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    private boolean isDeleted;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<Post> post;
 
