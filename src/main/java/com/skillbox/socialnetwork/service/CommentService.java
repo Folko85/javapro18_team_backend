@@ -187,7 +187,7 @@ public class CommentService {
         commentData.setBlocked(postComment.isBlocked());
         commentData.setAuthorId(postComment.getPerson().getId());
         commentData.setId(postComment.getId());
-        commentData.setTime(UserServiceImpl.convertLocalDateTime(postComment.getTime()));
+        commentData.setTime(UserService.convertLocalDateTime(postComment.getTime()));
         if(postComment.getParent()!=null)
             commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());

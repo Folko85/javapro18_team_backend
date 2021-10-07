@@ -6,15 +6,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserDeleteResponse;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
+
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostCreationResponse;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
+import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
 import com.skillbox.socialnetwork.service.PostService;
-import com.skillbox.socialnetwork.service.UserServiceImpl;
+import com.skillbox.socialnetwork.service.UserService;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
@@ -26,37 +27,37 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.*;
 
-import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDate;
+import static com.skillbox.socialnetwork.service.UserService.convertLocalDate;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private  UserServiceImpl userService;
+    private UserService userService;
     private PostService postService;
-    public UserController(UserServiceImpl userService, PostService postService){
+    public UserController(UserService userService, PostService postService){
         this.userService= userService;
         this.postService=postService;
 
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserRestResponse> getMe() throws Exception {
+    public ResponseEntity<DataResponse> getMe() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserRestResponse userRestResponse = new UserRestResponse();
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
-        userRestResponse.setError("null");
-        UserRest userRest = userService.getUserByEmail(email);
+        DataResponse userRestResponse = new DataResponse();
+        userRestResponse.setTimestamp(Instant.now());
+        AuthData userRest = userService.getUserByEmail(email);
         userRestResponse.setData(userRest);
 
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
     @GetMapping(path = "/{id}")
-    public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
+    public ResponseEntity<DataResponse> getUserById(@PathVariable String id) {
         Integer userId;
         try{
             userId = Integer.valueOf(id);
@@ -64,35 +65,35 @@ public class UserController {
         } catch (NumberFormatException e){
             throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
         }
-        UserRestResponse userRestResponse = new UserRestResponse();
+        DataResponse userRestResponse = new DataResponse();
         try {
             userRestResponse.setData(userService.getUserById(userId));
         }
         catch (UsernameNotFoundException e){
             throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
+        userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
 
     @PutMapping("/me")
-    public  ResponseEntity<UserRestResponse> updateUser(HttpEntity<String> httpEntity){
+    public  ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserRest updates= new UserRest();
+        AuthData updates= new AuthData();
         UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
         BeanUtils.copyProperties(userRequestModel, updates);
         updates.setEMail(email);
-        UserRest updatedUser;
+        AuthData updatedUser;
         try {
             updatedUser = userService.updateUser(updates);
         }
         catch (UsernameNotFoundException e){
             throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        UserRestResponse userRestResponse = new UserRestResponse();
+        DataResponse userRestResponse = new DataResponse();
         userRestResponse.setData(updatedUser);
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
+        userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
         return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
 
@@ -104,7 +105,7 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    public  ResponseEntity<UserDeleteResponse> deleteUser(){
+    public  ResponseEntity<DataResponse> deleteUser(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         try{
             userService.deleteUser(email);
@@ -112,14 +113,14 @@ public class UserController {
         catch (UsernameNotFoundException e){
             throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        UserDeleteResponse userDeleteResponse = new UserDeleteResponse();
-        userDeleteResponse.setTimestamp(new Date().getTime() / 1000);
+        AccountResponse userDeleteResponse = new AccountResponse();
+        userDeleteResponse.setTimestamp(Instant.now());
         userDeleteResponse.setError("string");
         Map<String, String> dateMap = new HashMap<>();
         dateMap.put("message", "ok");
         userDeleteResponse.setData(dateMap);
         SecurityContextHolder.clearContext();
-        return new ResponseEntity<>(userDeleteResponse, HttpStatus.OK);
+        return new ResponseEntity(userDeleteResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/wall")
