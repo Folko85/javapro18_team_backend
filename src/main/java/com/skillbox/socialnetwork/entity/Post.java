@@ -38,6 +38,7 @@ public class Post {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    @Column(name = "is_deleted")
     private boolean isDeleted;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")

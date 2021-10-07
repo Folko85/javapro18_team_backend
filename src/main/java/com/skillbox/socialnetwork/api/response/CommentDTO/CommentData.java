@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.api.response.CommentDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnetwork.api.response.AuthDTO.AuthData;
 import com.skillbox.socialnetwork.entity.PostComment;
 import com.skillbox.socialnetwork.repository.CommentRepository;
 import lombok.Data;
@@ -12,7 +11,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -38,7 +36,7 @@ public class CommentData {
         this.id = comment.getId();
         this.postId = comment.getPost().getId();
         this.time = comment.getTime().toInstant(ZoneOffset.UTC);
-        this.authorId = new AuthData(comment.getPerson()).getId();
+//        this.authorId = new AuthData(comment.getPerson()).getId();
         this.isBlocked = comment.getPost().isBlocked();
         subComments = new ArrayList<>();
         List<PostComment> subComments = repository.findByParentId(comment.getId());

@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.api.response.PostDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.skillbox.socialnetwork.api.response.Dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,15 +13,5 @@ import lombok.NoArgsConstructor;
 public class PostDataResponse {
     private String error;
     private long timestamp;
-    private Object data;
-
-    public PostDataResponse(String error, Object data) {
-        this.error = error;
-        timestamp = System.currentTimeMillis();
-        this.data = data;
-    }
-
-    public PostDataResponse(Object data) {
-        this("String", data);
-    }
+    private Dto data;
 }

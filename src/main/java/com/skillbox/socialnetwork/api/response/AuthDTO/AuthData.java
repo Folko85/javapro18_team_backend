@@ -38,21 +38,4 @@ public class AuthData {
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private String token;
-
-    public AuthData(Person person) {
-        this.id = person.getId();
-        this.firstName = person.getFirstName();
-        this.lastName = person.getLastName();
-        this.regDate = person.getDateAndTimeOfRegistration();
-        this.birthDate = person.getBirthday().toEpochDay();
-        this.eMail = person.getEMail();
-        this.phone = person.getPhone();
-        this.photo = person.getPhoto();
-        this.about = person.getAbout();
-//        this.city = person.getCity();
-//        this.country = person.getCountry();
-        this.messagesPermission = person.getMessagesPermission().toString();
-        this.lastOnlineTime = person.getLastOnlineTime();
-        this.isBlocked = person.isBlocked();
-    }
 }
