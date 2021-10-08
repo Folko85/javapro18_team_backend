@@ -1,4 +1,4 @@
-image: rvancea/maven-chrome-jdk8:latest
+image: maven:3.8.2-openjdk-16
 stages:
   - build
   - deploy
