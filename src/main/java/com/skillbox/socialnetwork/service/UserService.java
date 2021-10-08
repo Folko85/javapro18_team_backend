@@ -106,8 +106,11 @@ public class UserService {
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
         BeanUtils.copyProperties(person, userRest);
+
+        userRest.setBirthDate(person.getBirthday() == null ? Instant.now() : person.getBirthday().atStartOfDay().toInstant(UTC));
         userRest.setCountry(null);
         userRest.setCity(null);
+        userRest.setPhone(person.getPhone() == null ? "" : person.getPhone());
         conventionsFromPersonTimesToUserRest(person, userRest);
     }
 

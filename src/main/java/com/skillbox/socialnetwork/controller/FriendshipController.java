@@ -12,8 +12,10 @@ import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +88,8 @@ public class FriendshipController {
     }
 
     @PostMapping("/api/v1/friends/{id}")
-    public ResponseEntity<?> add(@PathVariable int id) {
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> add(@PathVariable int id, Principal principal) {
         Person newFriend = personRepository.findByPersonId(id);
 
         FriendshipStatus friendshipStatus = new FriendshipStatus();

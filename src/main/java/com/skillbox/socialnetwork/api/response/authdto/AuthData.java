@@ -9,7 +9,6 @@ import lombok.Data;
 import java.time.Instant;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthData implements Dto {
     private int id;
     @JsonProperty("first_name")
