@@ -5,15 +5,16 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
-
 
 import static java.time.ZoneOffset.UTC;
 
@@ -22,12 +23,10 @@ public class UserService {
 
     private AccountRepository accountRepository;
     private PostService postService;
-    private PostRepository postRepository;
 
-    public UserService(AccountRepository accountRepository, PostService postService, PostRepository postRepository) {
+    public UserService(AccountRepository accountRepository, PostService postService) {
         this.accountRepository = accountRepository;
         this.postService = postService;
-        this.postRepository = postRepository;
     }
 
     public AuthData getUserByEmail(String email) {
@@ -56,7 +55,6 @@ public class UserService {
         person.setLastName(updatedLastName);
         person.setPhone(updates.getPhone());
         person.setAbout(updates.getAbout());
-        person.setBirthday(LocalDate.ofInstant(updates.getBirthDate(), ZoneId.systemDefault()));
         person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
         Person updatedPerson = accountRepository.save(person);
         AuthData updated = new AuthData();
