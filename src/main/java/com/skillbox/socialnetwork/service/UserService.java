@@ -1,18 +1,26 @@
 package com.skillbox.socialnetwork.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillbox.socialnetwork.api.request.PostRequest;
+import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import static java.time.ZoneOffset.UTC;
@@ -23,7 +31,7 @@ public class UserService {
     private AccountRepository accountRepository;
     private PostService postService;
     private PostRepository postRepository;
-
+    private Pattern pattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})");
     public UserService(AccountRepository accountRepository, PostService postService, PostRepository postRepository) {
         this.accountRepository = accountRepository;
         this.postService = postService;
@@ -77,6 +85,31 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         accountRepository.delete(person);
     }
+
+    public UserRequestModel updateUser(HttpEntity<String> httpEntity){
+        ObjectMapper objectMapper = new ObjectMapper(); objectMapper.registerModule(new JavaTimeModule());
+        UserRequestModel userRequestModel =new UserRequestModel();
+        System.out.println(httpEntity.getBody());
+        try {
+            ObjectNode node = new ObjectMapper().readValue(httpEntity.getBody(), ObjectNode.class);
+            if(node.get("birth_date")==null){
+                node =node.put("birth_date", "null");
+                System.out.println("#################"+node.get("birth_day"));
+                userRequestModel = objectMapper.readValue(node.toString(), UserRequestModel.class);
+            }else{
+                Matcher matcher = pattern.matcher(node.get("birth_date").asText());
+                if(matcher.find()){
+                    node = node.put("birth_date", convertLocalDate(LocalDate.parse(matcher.group())));
+                    userRequestModel = objectMapper.readValue(node.toString(), UserRequestModel.class);
+                }
+            }
+        }
+        catch (JsonProcessingException e){
+            System.out.println("EXCEEEPTION");
+        }
+        return userRequestModel;
+    }
+
 
 
     public static long convertLocalDate(LocalDate localDate) {

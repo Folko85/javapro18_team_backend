@@ -1,8 +1,7 @@
-package com.skillbox.socialnetwork.api.response.postdto;
+package com.skillbox.socialnetwork.api.response.PostDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-
 import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

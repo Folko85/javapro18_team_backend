@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.postdto;
+package com.skillbox.socialnetwork.api.response.PostDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.CommentWallData;

@@ -1,37 +1,11 @@
 package com.skillbox.socialnetwork.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.api.request.UserRequestModel;
-import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
-import com.skillbox.socialnetwork.api.response.AuthDTO.Place;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
-import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.repository.AccountRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
 import com.sun.xml.bind.v2.TODO;
-import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.security.Principal;
-import java.sql.Date;
-import java.time.*;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static java.time.ZoneOffset.UTC;
 
 @Service
 public class UserServiceImpl {
-
+    /**
    private AccountRepository accountRepository;
    private PostService postService;
    private PostRepository postRepository;
@@ -90,36 +64,13 @@ public class UserServiceImpl {
         accountRepository.delete(person);
     }
 
-    /**
+
      * {@link TODO}
      *
      *
      *
      *
-     */
-    public UserRequestModel updateUser(HttpEntity<String> httpEntity){
-        ObjectMapper objectMapper = new ObjectMapper(); objectMapper.registerModule(new JavaTimeModule());
-        UserRequestModel userRequestModel =new UserRequestModel();
-        System.out.println(httpEntity.getBody());
-        try {
-            ObjectNode node = new ObjectMapper().readValue(httpEntity.getBody(), ObjectNode.class);
-            if(node.get("birth_date")==null){
-                node =node.put("birth_date", "null");
-                System.out.println("#################"+node.get("birth_day"));
-                userRequestModel = objectMapper.readValue(node.toString(), UserRequestModel.class);
-            }else{
-                Matcher matcher = pattern.matcher(node.get("birth_date").asText());
-                if(matcher.find()){
-                    node = node.put("birth_date", convertLocalDate(LocalDate.parse(matcher.group())));
-                    userRequestModel = objectMapper.readValue(node.toString(), UserRequestModel.class);
-                }
-            }
-        }
-        catch (JsonProcessingException e){
-            System.out.println("EXCEEEPTION");
-        }
-        return userRequestModel;
-    }
+
 
 
     public static long convertLocalDate(LocalDate localDate){
@@ -164,4 +115,5 @@ public class UserServiceImpl {
             throw new IllegalArgumentException();
         return postService.createPost(publishDate, postRequest, userRest);
     }
+    **/
 }

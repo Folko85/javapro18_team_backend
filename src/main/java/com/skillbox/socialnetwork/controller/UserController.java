@@ -1,19 +1,14 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
 
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallResponse;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostCreationResponse;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
 import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserService;
 
@@ -21,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.*;
-
-import static com.skillbox.socialnetwork.service.UserService.convertLocalDate;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -47,8 +39,10 @@ public class UserController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getMe() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(email);
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setTimestamp(Instant.now());
         AuthData userRest = userService.getUserByEmail(email);
@@ -58,17 +52,11 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DataResponse> getUserById(@PathVariable String id) {
-        Integer userId;
-        try {
-            userId = Integer.parseInt(id);
-
-        } catch (NumberFormatException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
-        }
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
         DataResponse userRestResponse = new DataResponse();
         try {
-            userRestResponse.setData(userService.getUserById(userId));
+            userRestResponse.setData(userService.getUserById(id));
         } catch (UsernameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
@@ -78,10 +66,11 @@ public class UserController {
     }
 
     @PutMapping("/me")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         AuthData updates = new AuthData();
-        UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
+        UserRequestModel userRequestModel = userService.updateUser(httpEntity);
         BeanUtils.copyProperties(userRequestModel, updates);
         updates.setEMail(email);
         AuthData updatedUser;
@@ -98,12 +87,8 @@ public class UserController {
 
     }
 
-    @PostMapping("/me")
-    public void test() {
-        System.out.println("Teeest");
-    }
-
     @DeleteMapping("/me")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> deleteUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
@@ -122,6 +107,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
                                                         @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                         @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
@@ -146,6 +132,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,
                                                             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
                                                             @RequestBody PostRequest postRequest, Principal principal
