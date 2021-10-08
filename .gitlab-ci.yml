@@ -11,7 +11,8 @@ build:
   stage: build
   when: always
   script:
-    - mvn clean compile package
+    - mvn clean compile
+    - mvn package
 deploy:
   stage: deploy
   only:
