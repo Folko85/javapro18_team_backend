@@ -6,7 +6,6 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -36,6 +35,8 @@ public class Post {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    private boolean isDeleted;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<PostComment> comments;
 
@@ -47,10 +48,6 @@ public class Post {
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "post_id")})
     private Set<Tag> tags;
-
-    @OneToMany
-    @JoinColumn(name = "post_id")
-    private Set<PostLike> postLikes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

@@ -1,0 +1,18 @@
+package com.skillbox.socialnetwork.api.response.tagdto;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.skillbox.socialnetwork.entity.Tag;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.time.Instant;
+
+@Data
+@Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class OneTagResponse {
+
+    private String error;
+    private Instant timestamp;
+    private Tag data;
+}

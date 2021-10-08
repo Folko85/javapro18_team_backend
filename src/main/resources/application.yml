@@ -13,12 +13,12 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: validate
-
   mail:
     host: smtp.gmail.com
     username: senderEmailDev1@gmail.com
     password: nftzdhqxlainhtoa
     port: 587
+
 mail:
   transport:
     protocol: smtp

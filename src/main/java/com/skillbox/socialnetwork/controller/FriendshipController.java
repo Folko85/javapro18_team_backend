@@ -1,16 +1,15 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
-import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendResponse;
-import com.skillbox.socialnetwork.api.response.FriendsDTO.Friends;
-import com.skillbox.socialnetwork.api.response.FriendsDTO.FriendsList;
+import com.skillbox.socialnetwork.api.response.friendsdto.FriendResponse;
+import com.skillbox.socialnetwork.api.response.friendsdto.Friends;
+import com.skillbox.socialnetwork.api.response.friendsdto.FriendsList;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +21,14 @@ import java.util.List;
 @RestController
 public class FriendshipController {
 
-    @Autowired
-    private FriendshipRepository friendshipRepository;
-    @Autowired
-    private PersonRepository personRepository;
+
+    private final FriendshipRepository friendshipRepository;
+    private final PersonRepository personRepository;
+
+    public FriendshipController(FriendshipRepository friendshipRepository, PersonRepository personRepository) {
+        this.friendshipRepository = friendshipRepository;
+        this.personRepository = personRepository;
+    }
 
     @GetMapping("/api/v1/friends")
     public ResponseEntity<?> findFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {

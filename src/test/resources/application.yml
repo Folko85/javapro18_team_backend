@@ -1,0 +1,49 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    banner-mode: 'off'
+  jmx.default-domain: test
+  datasource: # настройки источника данных (базы)
+    username: user # логин для подключения к базе
+    password: password # пароль для подключения к базе
+    driverClassName: org.h2.Driver #драйвер для подключения к базе
+    jdbc-url: jdbc:h2:mem:mydb1 #url для подключения к базе
+  liquibase:
+    change-log: /db/changelog/changelog.yml
+    enabled: false
+  jpa:
+    show-sql: false
+    hibernate:
+      dialect: org.h2.Driver
+      ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    username: senderEmailDev1@gmail.com
+    password: nftzdhqxlainhtoa
+    port: 587
+
+mail:
+  transport:
+    protocol: smtp
+  smtp:
+    auth: true
+    starttls:
+      enable: true
+  debug: true
+
+vk:
+  id: ENC(m7rHhgvZf1a3XykimmtX9A==)
+  token: ENC(0FWZ/Ebbh5M0GV/ZD8TcXU1ISRbcusF9MrjiZsUnR4Vf4Hv8l7sp32S4w/KWqNsnLI7ppZCPy3ZztKJxXLGkhpBEkJXeEZpE6NFIDCts6BY=)
+
+cloudinary:
+  cloud: ENC(Vfhff27NWtbJpMagmXDrAPdoUn5Wl0BP)
+  key: ENC(Dw9PMgrkxd0Q7YTIBowaLFI/ixt2nvHf)
+  secret: ENC(hQVnqsRAm3jW1tjWc3zDAOu19ppToSJ7czBD5CHa0E6coGq36y7wVA==)
+
+jasypt:
+  encryptor:
+    bean: encryptorBean
+
+cors:
+  - http://localhost:8086/
+  - http://localhost/

@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.api.security;
 
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.User;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -55,14 +54,6 @@ public class SecurityUser implements UserDetails {
         return true;
     }
 
-    public static UserDetails fromUser(User user) {
-        return new org.springframework.security.core.userdetails.User(
-                user.getEMail(),
-                user.getPassword(),
-                true, true, true, true,
-                user.getRole().getAuthorities()
-        );
-    }
     public static UserDetails fromUser(Person user) {
         return new org.springframework.security.core.userdetails.User(
                 user.getEMail(),

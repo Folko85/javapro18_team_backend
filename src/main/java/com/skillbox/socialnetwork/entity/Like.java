@@ -8,14 +8,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "post_like")
+@Table(name = "lois")
 @Getter
 @Setter
 @AllArgsConstructor
 @ToString
 @NoArgsConstructor
-public class PostLike {
-
+public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -28,16 +27,17 @@ public class PostLike {
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column(name = "item_id")
+    private Integer item;
+
+    private String type;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        PostLike postLike = (PostLike) o;
-        return Objects.equals(id, postLike.id);
+        Like like = (Like) o;
+        return Objects.equals(id, like.id);
     }
 
     @Override

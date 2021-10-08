@@ -1,8 +1,8 @@
-package com.skillbox.socialnetwork.api.response.PostDTO;
+package com.skillbox.socialnetwork.api.response.postdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
 import com.skillbox.socialnetwork.api.response.CommentWallData;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public class PostWallData {
     private int id;
     private long time;
-    private UserRest author;
+    private AuthData author;
     private String title;
     @JsonProperty("post_text")
     private String postText;

@@ -6,15 +6,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserDeleteResponse;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRest;
-import com.skillbox.socialnetwork.api.response.AuthDTO.UserRestResponse;
+
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostCreationResponse;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
+import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
+import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
+import com.skillbox.socialnetwork.api.response.postdto.PostWallResponse;
 import com.skillbox.socialnetwork.service.PostService;
-import com.skillbox.socialnetwork.service.UserServiceImpl;
+import com.skillbox.socialnetwork.service.UserService;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
@@ -30,115 +31,107 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.regex.Pattern;
 
-import static com.skillbox.socialnetwork.service.UserServiceImpl.convertLocalDate;
+import static com.skillbox.socialnetwork.service.UserService.convertLocalDate;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private  UserServiceImpl userService;
+    private UserService userService;
     private PostService postService;
-    private Pattern pattern = Pattern.compile("^(d{4})");
-    public UserController(UserServiceImpl userService, PostService postService){
-        this.userService= userService;
-        this.postService=postService;
 
+    public UserController(UserService userService, PostService postService) {
+        this.userService = userService;
+        this.postService = postService;
 
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserRestResponse> getMe() throws Exception {
+    public ResponseEntity<DataResponse> getMe() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserRestResponse userRestResponse = new UserRestResponse();
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
-        userRestResponse.setError("null");
-        UserRest userRest = userService.getUserByEmail(email);
+        DataResponse userRestResponse = new DataResponse();
+        userRestResponse.setTimestamp(Instant.now());
+        AuthData userRest = userService.getUserByEmail(email);
         userRestResponse.setData(userRest);
 
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
-        Integer userId;
-        try{
-            userId = Integer.valueOf(id);
 
-        } catch (NumberFormatException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<DataResponse> getUserById(@PathVariable String id) {
+        Integer userId;
+        try {
+            userId = Integer.parseInt(id);
+
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
         }
-        UserRestResponse userRestResponse = new UserRestResponse();
+        DataResponse userRestResponse = new DataResponse();
         try {
             userRestResponse.setData(userService.getUserById(userId));
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        catch (UsernameNotFoundException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
+        userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
 
     @PutMapping("/me")
-    public  ResponseEntity<UserRestResponse> updateUser(HttpEntity<String> httpEntity){
+    public ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserRest updates= new UserRest();
-        UserRequestModel userRequestModel = userService.updateUser(httpEntity);
+        AuthData updates = new AuthData();
+        UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
         BeanUtils.copyProperties(userRequestModel, updates);
         updates.setEMail(email);
-        UserRest updatedUser;
+        AuthData updatedUser;
         try {
             updatedUser = userService.updateUser(updates);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        catch (UsernameNotFoundException e){
-            throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        UserRestResponse userRestResponse = new UserRestResponse();
+        DataResponse userRestResponse = new DataResponse();
         userRestResponse.setData(updatedUser);
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
+        userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
-        return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
 
     }
 
+    @PostMapping("/me")
+    public void test() {
+        System.out.println("Teeest");
+    }
+
     @DeleteMapping("/me")
-    public  ResponseEntity<UserDeleteResponse> deleteUser(){
+    public ResponseEntity<DataResponse> deleteUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        try{
+        try {
             userService.deleteUser(email);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        catch (UsernameNotFoundException e){
-            throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        UserDeleteResponse userDeleteResponse = new UserDeleteResponse();
-        userDeleteResponse.setTimestamp(new Date().getTime() / 1000);
+        AccountResponse userDeleteResponse = new AccountResponse();
+        userDeleteResponse.setTimestamp(Instant.now());
         userDeleteResponse.setError("string");
         Map<String, String> dateMap = new HashMap<>();
         dateMap.put("message", "ok");
         userDeleteResponse.setData(dateMap);
         SecurityContextHolder.clearContext();
-        return new ResponseEntity<>(userDeleteResponse, HttpStatus.OK);
+        return new ResponseEntity(userDeleteResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/wall")
     public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
-                             @RequestParam(name = "offset", defaultValue = "0") int offset,
-                             @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
-                             ){
-        Integer userId;
-        try{
-            userId = Integer.valueOf(id);
+                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
+    ) {
 
-        } catch (NumberFormatException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
-        }
-        List<PostWallData> posts =new ArrayList<>();
+        List<PostWallData> posts;
         try {
-           posts= userService.getUserWall(id, offset, itemPerPage);
-        }
-        catch (UsernameNotFoundException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+            posts = userService.getUserWall(id, offset, itemPerPage);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
         PostWallResponse postWallResponse = new PostWallResponse();
         postWallResponse.setError("string");
@@ -151,16 +144,17 @@ public class UserController {
         return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
 
     }
+
     @PostMapping("/{id}/wall")
     public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,
-                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
-                            @RequestBody PostRequest postRequest, Principal principal
-                            ){
+                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+                                                            @RequestBody PostRequest postRequest, Principal principal
+    ) {
 
         PostCreationResponse postCreationResponse = new PostCreationResponse();
         postCreationResponse.setTimestamp(new Date().getTime());
         PostWallData postWallData = userService.createPost(id, publishDate, postRequest, principal);
         postCreationResponse.setData(postWallData);
-        return  new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
+        return new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
     }
 }

@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.api.request;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnetwork.api.response.AuthDTO.Place;
+import com.skillbox.socialnetwork.api.response.authdto.Place;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
 

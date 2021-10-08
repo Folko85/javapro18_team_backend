@@ -1,13 +1,15 @@
-package com.skillbox.socialnetwork.api.response.CommentDTO;
+package com.skillbox.socialnetwork.api.response.сommentdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 
 import java.time.Instant;
 import java.util.List;
 
 @Data
-public class CommentData {
+public class CommentData implements Dto {
     @JsonProperty("parent_id")
     private Integer parentId;
     @JsonProperty("comment_text")
@@ -16,10 +18,14 @@ public class CommentData {
     @JsonProperty("post_id")
     private int postId;
     private Instant time;
-    @JsonProperty("author_id")
-    private int authorId;
+    private AuthData author;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
+    @JsonProperty("is_deleted")
+    private boolean isDeleted;
     @JsonProperty("sub_comments")
     private List<CommentData> subComments;
+    private int likes;
+    @JsonProperty("my_like")
+    private boolean myLike;
 }

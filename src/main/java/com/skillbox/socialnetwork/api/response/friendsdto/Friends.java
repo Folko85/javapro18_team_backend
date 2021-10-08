@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.FriendsDTO;
+package com.skillbox.socialnetwork.api.response.friendsdto;
 
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
