@@ -5,11 +5,10 @@ import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
 import com.skillbox.socialnetwork.api.response.postDTO.Dto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private Principal principal;
 
     public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
@@ -55,12 +55,15 @@ public class PersonService {
 
         String firstName = searchUser.getFirstName();
         String lastName = searchUser.getLastName();
-        int itemPerPage = searchUser.getItemPerPage();
 
-        Pageable pageable = PageRequest.ofSize(itemPerPage);
+//        int itemPerPage = searchUser.getItemPerPage();
+//        Pageable pageable = PageRequest.ofSize(itemPerPage);
+//
+//        List<Person> personsList = personRepository
+//                .findAllByFirstNameAndLastName(firstName, lastName, pageable);
 
         List<Person> personsList = personRepository
-                .findAllByFirstNameAndLastName(firstName, lastName, pageable);
+                .findAllByFirstNameAndLastName(firstName, lastName);
 
         if (!personsList.isEmpty()) {
             return personsList
