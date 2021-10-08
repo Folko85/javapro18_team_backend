@@ -1,4 +1,4 @@
-image: maven:3.8.2-openjdk-16
+image: rvancea/maven-chrome-jdk8:latest
 stages:
   - build
   - deploy
@@ -11,7 +11,7 @@ build:
   stage: build
   when: always
   script:
-    - mvn clean compile
+    - mvn clean compile package
 deploy:
   stage: deploy
   only:
