@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.postDTO.Dto;
-import com.skillbox.socialnetwork.api.response.postDTO.PostData;
-import com.skillbox.socialnetwork.api.response.postDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.postdto.Dto;
+import com.skillbox.socialnetwork.api.response.postdto.PostData;
+import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;

@@ -1,11 +1,9 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
-import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
-import com.skillbox.socialnetwork.api.response.postDTO.Dto;
-import com.skillbox.socialnetwork.api.response.postDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.postdto.Dto;
+import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.entity.Friendship;
-import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
@@ -20,7 +18,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

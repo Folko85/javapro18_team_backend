@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.authDTO.UserDeleteResponse;
-import com.skillbox.socialnetwork.api.response.authDTO.UserRest;
-import com.skillbox.socialnetwork.api.response.authDTO.UserRestResponse;
+import com.skillbox.socialnetwork.api.response.authdto.UserDeleteResponse;
+import com.skillbox.socialnetwork.api.response.authdto.UserRest;
+import com.skillbox.socialnetwork.api.response.authdto.UserRestResponse;
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.service.UserServiceImpl;
 import org.springframework.beans.BeanUtils;

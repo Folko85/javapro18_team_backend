@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.SearchUser;
-import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
-import com.skillbox.socialnetwork.api.response.postDTO.Dto;
+import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
+import com.skillbox.socialnetwork.api.response.postdto.Dto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.stereotype.Service;

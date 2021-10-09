@@ -1,10 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
-import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
-import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsResponse200;
-import com.skillbox.socialnetwork.api.response.postDTO.Dto;
-import com.skillbox.socialnetwork.api.response.postDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
+import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
@@ -18,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 public class FriendshipController {

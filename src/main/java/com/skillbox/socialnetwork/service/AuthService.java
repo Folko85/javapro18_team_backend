@@ -2,8 +2,8 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
-import com.skillbox.socialnetwork.api.response.authDTO.AuthData;
-import com.skillbox.socialnetwork.api.response.authDTO.AuthResponse;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
+import com.skillbox.socialnetwork.api.response.authdto.AuthResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.entity.Person;

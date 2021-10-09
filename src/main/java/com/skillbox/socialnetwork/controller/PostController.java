@@ -1,6 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.postDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

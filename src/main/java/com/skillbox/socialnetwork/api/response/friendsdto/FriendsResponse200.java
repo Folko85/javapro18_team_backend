@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.friendsDTO;
+package com.skillbox.socialnetwork.api.response.friendsdto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

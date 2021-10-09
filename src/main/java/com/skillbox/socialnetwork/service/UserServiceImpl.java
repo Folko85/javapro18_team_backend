@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.authDTO.Place;
-import com.skillbox.socialnetwork.api.response.authDTO.UserRest;
+import com.skillbox.socialnetwork.api.response.authdto.Place;
+import com.skillbox.socialnetwork.api.response.authdto.UserRest;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.beans.BeanUtils;

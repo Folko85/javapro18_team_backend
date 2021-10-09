@@ -1,7 +1,7 @@
-package com.skillbox.socialnetwork.api.response.friendsDTO;
+package com.skillbox.socialnetwork.api.response.friendsdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnetwork.api.response.postDTO.Dto;
+import com.skillbox.socialnetwork.api.response.postdto.Dto;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
 
