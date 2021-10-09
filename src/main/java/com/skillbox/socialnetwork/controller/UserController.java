@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
+import com.skillbox.socialnetwork.api.request.UserRequestModel;
 
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
@@ -8,8 +9,10 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallResponse;
-import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpEntity;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +24,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import java.util.*;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/users")
 public class UserController {
     private UserService userService;
-    private PostService postService;
 
-    public UserController(UserService userService, PostService postService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.postService = postService;
 
     }
 
@@ -47,6 +54,8 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}")
+    public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
+
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
         DataResponse userRestResponse = new DataResponse();
@@ -62,13 +71,14 @@ public class UserController {
 
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse> updateUser(@RequestBody AuthData updates, Principal principal ){
-        AuthData updatedUser  = userService.updateUser(updates, principal);
-        DataResponse userRestResponse = new DataResponse();
-        userRestResponse.setData(updatedUser);
-        userRestResponse.setTimestamp(Instant.now());
-        userRestResponse.setError("null");
-        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+    public DataResponse updateUser(@RequestBody AuthData person, Principal principal) {
+        return userService.updateUser(person, principal);
+
+    }
+
+    @PostMapping("/me")
+    public void test() {
+        log.info("Teeest");
     }
 
     @DeleteMapping("/me")
@@ -128,4 +138,5 @@ public class UserController {
         postCreationResponse.setData(postWallData);
         return new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
     }
+
 }

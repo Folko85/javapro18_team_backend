@@ -48,7 +48,7 @@ public class DefaultAdvice {
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<BadRequestResponse> handleCommentNotFoundException(EntityNotFoundException exc) {
+    public ResponseEntity<BadRequestResponse> handleEntityNotFoundException(EntityNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription(exc.getMessage());

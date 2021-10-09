@@ -1,17 +1,21 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static java.time.ZoneOffset.UTC;
@@ -21,11 +25,10 @@ public class UserService {
 
     private AccountRepository accountRepository;
     private PostService postService;
-    private PostRepository postRepository;
-    public UserService(AccountRepository accountRepository, PostService postService, PostRepository postRepository) {
+
+    public UserService(AccountRepository accountRepository, PostService postService) {
         this.accountRepository = accountRepository;
         this.postService = postService;
-        this.postRepository = postRepository;
     }
 
     public AuthData getUserByEmail(Principal principal) {
@@ -45,23 +48,17 @@ public class UserService {
 
     }
 
-    public AuthData updateUser(AuthData updates, Principal principal){
-        System.out.println(principal.getName());
+    public DataResponse updateUser(AuthData updates, Principal principal) {
         Person person = accountRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("" + updates.getEMail()));
-        String updatedName = updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
-        person.setFirstName(updatedName);
-        String updatedLastName = updates.getLastName().isEmpty() ? person.getLastName() : updates.getLastName();
-        person.setLastName(updatedLastName);
-        person.setPhone(updates.getPhone());
-        person.setAbout(updates.getAbout());
-        System.out.println(updates.getBirthDate());
-        person.setBirthday(LocalDate.ofInstant(updates.getBirthDate(), ZoneId.systemDefault()));
-        person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
-        Person updatedPerson = accountRepository.save(person);
-        AuthData updated = new AuthData();
-        convertUserToUserRest(updatedPerson, updated);
-        return updated;
+                .orElseThrow(() -> new EntityNotFoundException("Person Not Found"));
+        updates.setId(person.getId());
+        updates.setEMail(person.getEMail());
+        BeanUtils.copyProperties(updates, person);
+        accountRepository.save(person);
+        DataResponse response = new DataResponse();
+        response.setTimestamp(Instant.now());
+        response.setData(updates);
+        return response;
     }
 
     public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage) {
@@ -102,15 +99,14 @@ public class UserService {
         userRest.setBirthDate(person.getBirthday() == null ? null: person.getBirthday().atStartOfDay().toInstant(UTC));
         userRest.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         userRest.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
+        if (person.getBirthday() != null){
+            userRest.setBirthDate(person.getBirthday().atStartOfDay().toInstant(UTC));
+        }
     }
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
         BeanUtils.copyProperties(person, userRest);
-
         userRest.setBirthDate(person.getBirthday() == null ? Instant.now() : person.getBirthday().atStartOfDay().toInstant(UTC));
-        userRest.setCountry(null);
-        userRest.setCity(null);
-        userRest.setPhone(person.getPhone() == null ? "" : person.getPhone());
         conventionsFromPersonTimesToUserRest(person, userRest);
     }
 
