@@ -1,18 +1,15 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.api.request.UserRequestModel;
 
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallResponse;
+
 import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpEntity;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +23,8 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import java.util.*;
 
 @RestController
 @Slf4j
@@ -54,8 +49,6 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
-
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
         DataResponse userRestResponse = new DataResponse();
@@ -73,12 +66,6 @@ public class UserController {
     @PreAuthorize("hasAuthority('user:write')")
     public DataResponse updateUser(@RequestBody AuthData person, Principal principal) {
         return userService.updateUser(person, principal);
-
-    }
-
-    @PostMapping("/me")
-    public void test() {
-        log.info("Teeest");
     }
 
     @DeleteMapping("/me")
@@ -99,31 +86,6 @@ public class UserController {
         SecurityContextHolder.clearContext();
         return new ResponseEntity(userDeleteResponse, HttpStatus.OK);
     }
-
-//    @GetMapping("/{id}/wall")
-//    @PreAuthorize("hasAuthority('user:write')")
-//    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
-//                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
-//                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
-//    ) {
-//
-//        List<PostWallData> posts;
-//        try {
-//            posts = userService.getUserWall(id, offset, itemPerPage);
-//        } catch (UsernameNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-//        }
-//        PostWallResponse postWallResponse = new PostWallResponse();
-//        postWallResponse.setError("string");
-//        postWallResponse.setTimestamp(new Date().getTime());
-//        postWallResponse.setTotal(posts.size());
-//        postWallResponse.setOffset(offset);
-//        postWallResponse.setPerPage(itemPerPage);
-//        postWallResponse.setData(posts);
-//
-//        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
-//
-//    }
 
     @PostMapping("/{id}/wall")
     @PreAuthorize("hasAuthority('user:write')")
