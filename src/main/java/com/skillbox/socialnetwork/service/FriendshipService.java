@@ -1,19 +1,14 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
-import com.skillbox.socialnetwork.api.response.postdto.Dto;
+import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import com.skillbox.socialnetwork.api.response.Dto;
-import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +18,11 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -32,10 +30,14 @@ import static java.time.ZoneOffset.UTC;
 @Service
 public class FriendshipService {
     private final PersonRepository personRepository;
+    private final FriendshipRepository friendshipRepository;
+    private final PersonService personService;
 
 
-    public FriendshipService(PersonRepository personRepository) {
+    public FriendshipService(PersonRepository personRepository, FriendshipRepository friendshipRepository, PersonService personService) {
         this.personRepository = personRepository;
+        this.friendshipRepository = friendshipRepository;
+        this.personService = personService;
     }
 
     public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
@@ -64,27 +66,10 @@ public class FriendshipService {
         return personDataList;
     }
 
+
     private Person findPerson(String eMail) {
         return personRepository.findPersonByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-@Service
-public class FriendshipService {
-
-    private final PersonService personService;
-    private final PersonRepository personRepository;
-    private final FriendshipRepository friendshipRepository;
-
-    public FriendshipService(FriendshipRepository friendshipRepository, PersonService personService,
-                             PersonRepository personRepository) {
-        this.friendshipRepository = friendshipRepository;
-        this.personService = personService;
-        this.personRepository = personRepository;
     }
 
     public Optional<Friendship> findMyFriendshipByIdMyFriend(Integer id) {
@@ -160,7 +145,7 @@ public class FriendshipService {
 
             List<Person> myFriends = findMyFriendByName(friendsName, itemPerPage);
 
-            if (myFriends.size() > 0) {
+            if (!myFriends.isEmpty()) {
                 List<Dto> friendsList = myFriends
                         .stream()
                         .map(personService::friendsToPojo)

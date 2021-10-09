@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.SearchUser;
-import com.skillbox.socialnetwork.api.response.postdto.Dto;
+import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.service.PersonService;
 import org.springframework.http.HttpStatus;

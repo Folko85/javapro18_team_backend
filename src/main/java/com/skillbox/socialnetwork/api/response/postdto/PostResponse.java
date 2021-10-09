@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.api.response.postdto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.skillbox.socialnetwork.api.response.Dto;
 
 import java.time.Instant;
 import java.util.List;

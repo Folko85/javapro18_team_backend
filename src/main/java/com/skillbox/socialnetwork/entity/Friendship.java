@@ -32,17 +32,17 @@ public class Friendship {
         return srcPerson;
     }
 
-    public void setSrcPerson(Person srcPerson) {
-        setSrcPerson(srcPerson, false);
-    }
-
-    public void setSrcPerson(Person srcPerson, boolean otherSideHasBeenSet) {
-        this.srcPerson = srcPerson;
-        if (otherSideHasBeenSet) {
-            return;
-        }
-        srcPerson.addFriend(this, true);
-    }
+//    public void setSrcPerson(Person srcPerson) {
+//        setSrcPerson(srcPerson, false);
+//    }
+//
+//    public void setSrcPerson(Person srcPerson, boolean otherSideHasBeenSet) {
+//        this.srcPerson = srcPerson;
+//        if (otherSideHasBeenSet) {
+//            return;
+//        }
+//        srcPerson.addFriend(this, true);
+//    }
 
     @Override
     public boolean equals(Object o) {

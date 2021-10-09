@@ -1,14 +1,13 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.SearchUser;
+import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
-import com.skillbox.socialnetwork.api.response.postdto.Dto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private Principal principal;
 
     public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;

@@ -1,17 +1,14 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
-import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
-import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
 import org.springframework.http.HttpStatus;
@@ -28,12 +25,12 @@ public class FriendshipController {
 
 
     private final FriendshipRepository friendshipRepository;
-    private final PersonRepository personRepository;
+    private final PersonService personService;
     private final FriendshipService friendshipService;
 
-    public FriendshipController(FriendshipRepository friendshipRepository, PersonRepository personRepository, FriendshipService friendshipService) {
+    public FriendshipController(FriendshipRepository friendshipRepository, PersonService personService, FriendshipService friendshipService) {
         this.friendshipRepository = friendshipRepository;
-        this.personRepository = personRepository;
+        this.personService = personService;
         this.friendshipService = friendshipService;
     }
 
@@ -47,10 +44,12 @@ public class FriendshipController {
     }
 
     @DeleteMapping("/api/v1/friends/{id}")
-    @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> stopBeingFriends(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable int id) {
 
-        Optional<Friendship> friendship = friendshipService.findMyFriendshipByIdMyFriend(id);
+        if (friendshipRepository.existsById(id)) {
+            friendshipRepository.deleteById(id);
+
+
 
             return new ResponseEntity<>(new AccountResponse(), HttpStatus.OK);
         } else {
@@ -85,7 +84,6 @@ public class FriendshipController {
             newFriendship.setSrcPerson(srcPerson);
             newFriendship.setDstPerson(dstPerson);
 
-        return new ResponseEntity<>(new AccountResponse(), HttpStatus.OK);
             //6. Сохраняем в БД
             friendshipService.save(newFriendship);
 
