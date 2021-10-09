@@ -4,7 +4,7 @@ import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.PostDTO.IdResponse;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostDataResponse;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostResponse;
+import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
