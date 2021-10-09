@@ -188,14 +188,6 @@ public class PostService {
      * @param principal
      * @return
      */
-    public ListResponse getWallPosts(int offset, int itemPerPage, Principal principal) {
-        Person person = findPerson(principal.getName());
-        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> page = postRepository.findUserPost(person.getId(), pageable);
-        return getPostResponse(offset, itemPerPage, page, person);
-
-    }
-
     /*public PostWallData createPost(long publishDate, PostRequest postRequest, AuthData userRest) {
 
         Post post = new Post();
