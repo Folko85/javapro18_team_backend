@@ -20,7 +20,7 @@ public class PostData implements Dto {
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private int likes;
-    private List<Dto> comments;
+    private List<?> comments;
     @JsonProperty("my_like")
     private boolean myLike;
 }

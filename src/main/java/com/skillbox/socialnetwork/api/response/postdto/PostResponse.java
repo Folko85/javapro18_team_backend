@@ -16,5 +16,5 @@ public class PostResponse {
     private int total;
     private int offset;
     private int perPage;
-    private List<Dto> data;
+    private List<?> data;
 }
