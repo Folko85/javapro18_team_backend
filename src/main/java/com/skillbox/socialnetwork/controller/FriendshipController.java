@@ -3,10 +3,15 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
+import com.skillbox.socialnetwork.repository.FriendshipRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
 import org.springframework.http.HttpStatus;
@@ -21,23 +26,24 @@ import java.util.Optional;
 @RestController
 public class FriendshipController {
 
-    private final PersonService personService;
+
+    private final FriendshipRepository friendshipRepository;
+    private final PersonRepository personRepository;
     private final FriendshipService friendshipService;
 
-    public FriendshipController(PersonService personService, FriendshipService friendshipService) {
-        this.personService = personService;
+    public FriendshipController(FriendshipRepository friendshipRepository, PersonRepository personRepository, FriendshipService friendshipService) {
+        this.friendshipRepository = friendshipRepository;
+        this.personRepository = personRepository;
         this.friendshipService = friendshipService;
     }
 
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public @ResponseBody
-    ResponseEntity<?> findMyFriends(@RequestBody GetFriendsListRequest getFriendsListRequest,
-                                         Principal principal) {
-
-        PostResponse postResponse = friendshipService.findMyFriends(getFriendsListRequest, principal);
-
-        return new ResponseEntity<>(postResponse, HttpStatus.OK);
+    public ResponseEntity<ListResponse> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
+                                                   @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                   @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                   Principal principal) {
+        return new ResponseEntity<>(friendshipService.getFriends(name, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/v1/friends/{id}")
@@ -46,15 +52,7 @@ public class FriendshipController {
 
         Optional<Friendship> friendship = friendshipService.findMyFriendshipByIdMyFriend(id);
 
-        if (friendship.isPresent()) {
-            friendshipService.stopBeingFriendsById(id);
-
-            FriendsResponse200 response = new FriendsResponse200();
-            response.setError("Successfully");
-            response.setTimestamp(LocalDateTime.now());
-            response.setMessage("Stop being friends");
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(new AccountResponse(), HttpStatus.OK);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -87,6 +85,7 @@ public class FriendshipController {
             newFriendship.setSrcPerson(srcPerson);
             newFriendship.setDstPerson(dstPerson);
 
+        return new ResponseEntity<>(new AccountResponse(), HttpStatus.OK);
             //6. Сохраняем в БД
             friendshipService.save(newFriendship);
 

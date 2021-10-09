@@ -56,10 +56,10 @@ public class ApiAccountController {
     public ResponseEntity<AccountResponse> passwdChange(@RequestBody PasswdChangeRequest passwdChangeRequest) {
         return new ResponseEntity<>(accountService.changePasswd(passwdChangeRequest), HttpStatus.OK);
     }
+
     @PutMapping("/notifications")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<AccountResponse> notifications(@RequestBody NotificationsRequest notificationsRequest, Principal principal)
-    {
-        return new ResponseEntity<>(accountService.setNotifications(notificationsRequest,principal),HttpStatus.OK);
+    public ResponseEntity<AccountResponse> notifications(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
+        return new ResponseEntity<>(accountService.setNotifications(notificationsRequest, principal), HttpStatus.OK);
     }
 }

@@ -1,104 +1,85 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.authdto.UserDeleteResponse;
-import com.skillbox.socialnetwork.api.response.authdto.UserRest;
-import com.skillbox.socialnetwork.api.response.authdto.UserRestResponse;
-import com.skillbox.socialnetwork.api.request.UserRequestModel;
-import com.skillbox.socialnetwork.service.UserServiceImpl;
-import org.springframework.beans.BeanUtils;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
+
+import com.skillbox.socialnetwork.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @RestController
-@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
+@Slf4j
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private  UserServiceImpl userService;
-    public UserController(UserServiceImpl userService){
-        this.userService= userService;
+    private UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
 
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserRestResponse> getMe() throws Exception {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            UserRestResponse userRestResponse = new UserRestResponse();
-            userRestResponse.setTimestamp(new Date().getTime() / 1000);
-            userRestResponse.setError("null");
-            userRestResponse.setData(userService.getUserByEmail(email));
-        System.out.println("####Principal##########:");
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return new ResponseEntity<UserRestResponse>(userRestResponse, HttpStatus.OK);
-    }
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<UserRestResponse> getUserById(@PathVariable String id) throws Exception {
-        Integer userId;
-        try{
-            userId = Integer.valueOf(id);
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getMe(Principal principal) {
+        DataResponse userRestResponse = new DataResponse();
+        userRestResponse.setTimestamp(Instant.now());
+        AuthData userRest = userService.getUserByEmail(principal);
+        userRestResponse.setData(userRest);
 
-        } catch (NumberFormatException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
-        }
-        UserRestResponse userRestResponse = new UserRestResponse();
+        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
+        DataResponse userRestResponse = new DataResponse();
         try {
-            userRestResponse.setData(userService.getUserById(userId));
+            userRestResponse.setData(userService.getUserById(id));
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        catch (UsernameNotFoundException e){
-            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
+        userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
 
     @PutMapping("/me")
-    public  ResponseEntity<UserRestResponse> updateUser(@RequestBody UserRequestModel userRequestModel){
-
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserRest updates= new UserRest();
-        BeanUtils.copyProperties(userRequestModel, updates);
-        updates.setEMail(email);
-        UserRest updatedUser;
-        try {
-            updatedUser = userService.updateUser(updates);
-        }
-        catch (UsernameNotFoundException e){
-            throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        UserRestResponse userRestResponse = new UserRestResponse();
-        userRestResponse.setData(updatedUser);
-        userRestResponse.setTimestamp(new Date().getTime() / 1000);
-        userRestResponse.setError("null");
-        return  new ResponseEntity<>(userRestResponse, HttpStatus.OK);
-
+    @PreAuthorize("hasAuthority('user:write')")
+    public DataResponse updateUser(@RequestBody AuthData person, Principal principal) {
+        return userService.updateUser(person, principal);
     }
 
     @DeleteMapping("/me")
-    public  ResponseEntity<UserDeleteResponse> deleteUser(){
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> deleteUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        try{
+        try {
             userService.deleteUser(email);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
-        catch (UsernameNotFoundException e){
-            throw  new  ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        UserDeleteResponse userDeleteResponse = new UserDeleteResponse();
-        userDeleteResponse.setTimestamp(new Date().getTime() / 1000);
+        AccountResponse userDeleteResponse = new AccountResponse();
+        userDeleteResponse.setTimestamp(Instant.now());
         userDeleteResponse.setError("string");
         Map<String, String> dateMap = new HashMap<>();
         dateMap.put("message", "ok");
         userDeleteResponse.setData(dateMap);
         SecurityContextHolder.clearContext();
-        return new ResponseEntity<>(userDeleteResponse, HttpStatus.OK);
-
+        return new ResponseEntity(userDeleteResponse, HttpStatus.OK);
     }
-
 }
