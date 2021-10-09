@@ -1,37 +1,36 @@
 package com.skillbox.socialnetwork.api.response.authdto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class AuthData {
+public class AuthData implements Dto {
     private int id;
     @JsonProperty("first_name")
     private String firstName;
     @JsonProperty("last_name")
     private String lastName;
     @JsonProperty("reg_date")
-    private LocalDateTime regDate;
+    private Instant regDate;
     @JsonProperty("birth_date")
-    private long birthDate;
+    private Instant birthDate;
     @JsonProperty("email")
     private String eMail;
     private String phone;
     private String photo;
     private String about;
-    private Place city;
-    private Place country;
+    private String city;
+    private String country;
     @JsonProperty("messages_permission")
-    private String messagesPermission;
+    private MessagesPermission messagesPermission;
     @JsonProperty("last_online_time")
-    private LocalDateTime lastOnlineTime;
+    private Instant lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private String token;
+
 }

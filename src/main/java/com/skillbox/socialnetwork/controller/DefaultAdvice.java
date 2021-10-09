@@ -1,15 +1,14 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
-import com.skillbox.socialnetwork.exception.CommentNotFoundException;
-import com.skillbox.socialnetwork.exception.PostLikeNotFoundException;
-import com.skillbox.socialnetwork.exception.PostNotFoundException;
-import com.skillbox.socialnetwork.exception.UserExistException;
+import com.skillbox.socialnetwork.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import javax.persistence.EntityNotFoundException;
 
 @ControllerAdvice
 public class DefaultAdvice {
@@ -34,8 +33,8 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription("Пользователь не существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(PostLikeNotFoundException.class)
-    public ResponseEntity<BadRequestResponse> handleUsernameNotFoundException(PostLikeNotFoundException exc) {
+    @ExceptionHandler(LikeNotFoundException.class)
+    public ResponseEntity<BadRequestResponse> handleLikeNotFoundException(LikeNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription("Like не существует");
@@ -46,6 +45,13 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription("Comment не существует");
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<BadRequestResponse> handleEntityNotFoundException(EntityNotFoundException exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("invalid_request");
+        badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 }

@@ -21,3 +21,4 @@ public class PostNotFoundException extends Exception{
         this.errorDescription = s;
     }
 }
+

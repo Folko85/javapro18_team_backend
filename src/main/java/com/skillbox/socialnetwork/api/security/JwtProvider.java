@@ -8,7 +8,6 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Component
-
 public class JwtProvider {
 
 

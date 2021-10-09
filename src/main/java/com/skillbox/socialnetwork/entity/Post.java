@@ -38,11 +38,10 @@ public class Post {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    @Column(name = "is_deleted")
     private boolean isDeleted;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
-    private List<PostComment> comments;
+    private Set<PostComment> comments;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<BlockHistory> blocks;
@@ -52,10 +51,6 @@ public class Post {
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "post_id")})
     private Set<Tag> tags;
-
-    @OneToMany
-    @JoinColumn(name = "post_id")
-    private Set<PostLike> postLikes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

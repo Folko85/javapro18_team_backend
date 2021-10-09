@@ -2,13 +2,12 @@ package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.entity.enums.Role;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -46,11 +45,14 @@ public class Person {
     @Column(name = "photo")
     private String photo;
 
-    @Column (columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String about;
 
-    @Column(name = "town", length = 50)
-    private String town;
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "country")
+    private String country;
 
     @Column(name = "confirmation_code", length = 50)
     private String confirmationCode;
@@ -68,30 +70,21 @@ public class Person {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    private boolean isDeleted;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    private Set<Post> posts;
+    private Set<Post> post;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<PostComment> comments;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    private Set<BlockHistory> blocks;
+    private Set<BlockHistory> blockHistories;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Person person = (Person) o;
-        return Objects.equals(id, person.id);
-    }
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<Notification> notifications;
 
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-
-    public Role getRole()
-    {
+    public Role getRole() {
         return Role.USER;
     }
 }

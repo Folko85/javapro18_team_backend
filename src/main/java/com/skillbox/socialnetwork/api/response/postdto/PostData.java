@@ -4,10 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
 import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 
 import java.time.Instant;
 import java.util.List;
+
 
 @Data
 public class PostData implements Dto {
@@ -20,7 +24,9 @@ public class PostData implements Dto {
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private int likes;
-    private List<?> comments;
+    private ListResponse comments;
     @JsonProperty("my_like")
     private boolean myLike;
+    private List<String> tags;
+
 }
