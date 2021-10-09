@@ -49,6 +49,9 @@ public class UserService {
         person.setLastName(updatedLastName);
         person.setPhone(updates.getPhone());
         person.setAbout(updates.getAbout());
+        person.setPhoto(updates.getPhoto());
+        person.setCity(updates.getCity());
+        person.setCountry(updates.getCountry());
         person.setBirthday(LocalDate.ofInstant(updates.getBirthDate(), ZoneId.systemDefault()));
         person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
         Person updatedPerson = accountRepository.save(person);
