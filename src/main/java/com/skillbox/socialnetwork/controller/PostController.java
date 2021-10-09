@@ -31,19 +31,30 @@ public class PostController {
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
-        return new ResponseEntity<>(postService.getPosts(text,dateFrom,dateTo,offset,itemPerPage,principal),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, principal), HttpStatus.OK);
     }
+
     @GetMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
-        return new ResponseEntity<>(postService.getPostById(id,principal),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
     }
+
     @GetMapping("/feeds")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse> getFeeds(@RequestParam(name = "text", defaultValue = "") String text,
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
-        return new ResponseEntity<>(postService.getFeeds(text,offset,itemPerPage,principal),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getFeeds(text, offset, itemPerPage, principal), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<ListResponse> getUserWall(@PathVariable int id,
+                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                    @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage,
+                                                    Principal principal) {
+        return new ResponseEntity<>(postService.getPersonWall(id, offset, itemPerPage, principal), HttpStatus.OK);
     }
 }

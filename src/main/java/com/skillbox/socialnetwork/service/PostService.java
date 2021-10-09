@@ -66,7 +66,12 @@ public class PostService {
         Page<Post> pageablePostList = postRepository.findPostsByTextContaining(text, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
-
+    public ListResponse getPersonWall(int id, int offset, int itemPerPage, Principal principal) {
+        Person person = findPerson(principal.getName());
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Post> pageablePostList = postRepository.findPostsByPersonId(id, pageable);
+        return getPostResponse(offset, itemPerPage, pageablePostList, person);
+    }
     public DataResponse getPostById(int id, Principal principal) throws PostNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         Person person = accountRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(""));

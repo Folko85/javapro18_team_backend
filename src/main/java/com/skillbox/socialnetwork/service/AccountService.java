@@ -62,11 +62,12 @@ public class AccountService {
 
     public String sendRecoveryMessage(RecoveryRequest recoveryRequest) {
         Person person = findPerson(recoveryRequest.getEMail());
-        String code = UUID.randomUUID().toString().replace("-", "");
+        String code = UUID.randomUUID().toString().replace("-", "").substring(0,4);
         person.setConfirmationCode(code);
         accountRepository.save(person);
-        mailSender.send(recoveryRequest.getEMail(), RECOVERY_URL + "key=" + code + "&eMail=" + recoveryRequest.getEMail());
-        return "Сообщение отправлено на почту";
+
+       // mailSender.send(recoveryRequest.getEMail(), RECOVERY_URL + "key=" + code + "&eMail=" + recoveryRequest.getEMail());
+        return code;
     }
 
     public String recoveryComplete(String key, String eMail) {
@@ -76,7 +77,7 @@ public class AccountService {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
             person.setPassword(passwordEncoder.encode(passwd));
             person.setConfirmationCode("");
-            mailSender.send(eMail, passwd);
+            //  mailSender.send(eMail, passwd);
             accountRepository.save(person);
         } else return "Неверный код";
         return "Новый пароль выслан";

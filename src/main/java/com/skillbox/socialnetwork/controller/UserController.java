@@ -121,29 +121,29 @@ public class UserController {
         return new ResponseEntity(userDeleteResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/wall")
-    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
-                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
-    ) {
-
-        List<PostWallData> posts;
-        try {
-            posts = userService.getUserWall(id, offset, itemPerPage);
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        PostWallResponse postWallResponse = new PostWallResponse();
-        postWallResponse.setError("string");
-        postWallResponse.setTimestamp(new Date().getTime());
-        postWallResponse.setTotal(posts.size());
-        postWallResponse.setOffset(offset);
-        postWallResponse.setPerPage(itemPerPage);
-        postWallResponse.setData(posts);
-
-        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
-
-    }
+//    @GetMapping("/{id}/wall")
+//    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
+//                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
+//                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
+//    ) {
+//
+//        List<PostWallData> posts;
+//        try {
+//            posts = userService.getUserWall(id, offset, itemPerPage);
+//        } catch (UsernameNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+//        }
+//        PostWallResponse postWallResponse = new PostWallResponse();
+//        postWallResponse.setError("string");
+//        postWallResponse.setTimestamp(new Date().getTime());
+//        postWallResponse.setTotal(posts.size());
+//        postWallResponse.setOffset(offset);
+//        postWallResponse.setPerPage(itemPerPage);
+//        postWallResponse.setData(posts);
+//
+//        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
+//
+//    }
 
     @PostMapping("/{id}/wall")
     public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,

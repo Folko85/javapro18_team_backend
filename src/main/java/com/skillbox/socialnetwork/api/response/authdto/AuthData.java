@@ -1,6 +1,5 @@
 package com.skillbox.socialnetwork.api.response.authdto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;

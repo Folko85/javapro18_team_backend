@@ -25,6 +25,14 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContaining(String query, Pageable pageable);
+    @Query("SELECT p " +
+            "FROM Post p " +
+            "LEFT JOIN Person per ON per.id = p.person.id " +
+            "LEFT JOIN PostComment pc ON pc.post.id = p.id " +
+            "WHERE p.isBlocked = false AND p.person.id = ?1 " +
+            "GROUP BY p.id " +
+            "ORDER BY p.datetime DESC")
+    Page<Post> findPostsByPersonId(int id, Pageable pageable);
 
     @Query("SELECT p " +
             "FROM Post p " +
