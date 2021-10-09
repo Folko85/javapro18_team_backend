@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -79,7 +80,7 @@ public class AccountService {
             person.setConfirmationCode("");
             //  mailSender.send(eMail, passwd);
             accountRepository.save(person);
-        } else return "Неверный код";
+        } else throw new EntityNotFoundException("");
         return "Новый пароль выслан";
     }
 
@@ -89,7 +90,7 @@ public class AccountService {
             person.setApproved(true);
             person.setConfirmationCode("");
             accountRepository.save(person);
-        } else return "Неверный код";
+        } else throw new EntityNotFoundException("");
         return "Аккаунт подтверждён";
     }
 
