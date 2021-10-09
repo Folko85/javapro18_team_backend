@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.AuthDTO;
+package com.skillbox.socialnetwork.api.response.authdto;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.PostDTO;
+package com.skillbox.socialnetwork.api.response.postdto;
 
 import com.skillbox.socialnetwork.api.response.Dto;
 import lombok.AllArgsConstructor;
