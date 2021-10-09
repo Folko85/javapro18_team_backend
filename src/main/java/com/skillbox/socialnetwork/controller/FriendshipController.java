@@ -3,6 +3,7 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.request.GetFriendsListRequest;
 import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsDto;
 import com.skillbox.socialnetwork.api.response.friendsDTO.FriendsResponse200;
+import com.skillbox.socialnetwork.api.response.postDTO.Dto;
 import com.skillbox.socialnetwork.api.response.postDTO.PostResponse;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
@@ -35,27 +36,13 @@ public class FriendshipController {
 
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> findMyFriend(@RequestBody GetFriendsListRequest getFriendsListRequest) {
+    public @ResponseBody
+    ResponseEntity<?> findMyFriends(@RequestBody GetFriendsListRequest getFriendsListRequest,
+                                         Principal principal) {
 
-        String friendsName = getFriendsListRequest.getName();
-        int itemPerPage = getFriendsListRequest.getItemPerPage();
+        PostResponse postResponse = friendshipService.findMyFriends(getFriendsListRequest, principal);
 
-        List<Person> myFriends = friendshipService.findMyFriendByName(friendsName, itemPerPage);
-
-        PostResponse response = new PostResponse();
-        response.setTotal(myFriends.size());
-        response.setTimestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC));
-
-        if (myFriends.size() > 0) {
-            List<FriendsDto> friendsList = myFriends
-                    .stream()
-                    .map(personService::friendsToPojo)
-                    .collect(Collectors.toList());
-
-            return new ResponseEntity<>(friendsList, HttpStatus.OK);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/api/v1/friends/{id}")
@@ -82,26 +69,33 @@ public class FriendshipController {
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> addingToFriends(@PathVariable int id, Principal principal) {
 
+        //1. Находи в БД пользователя ктороый добавляет
         String eMailSrcPerson = principal.getName();
-
         Person srcPerson = personService.findPersonByEmail(eMailSrcPerson);
+
+        //2. Находим в БД пользователя которого добавляют
         Optional<Person> optionalPerson = personService.findPersonById(id);
 
+        //3. Если пользователь с таки id существует и у srcPerson его нет в друзьях выполняем код
         if (optionalPerson.isPresent() && friendshipService.findMyFriendshipByIdMyFriend(id).isEmpty()) {
 
             Person dstPerson = optionalPerson.get();
 
+            //4. Создаем статус дружбы
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
             friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
 
+            //5. Создаем дружбу
             Friendship newFriendship = new Friendship();
             newFriendship.setStatus(friendshipStatus);
             newFriendship.setSrcPerson(srcPerson);
             newFriendship.setDstPerson(dstPerson);
 
+            //6. Сохраняем в БД
             friendshipService.save(newFriendship);
 
+            //7. Формируем ответ
             FriendsResponse200 addFriendResponse = new FriendsResponse200();
             addFriendResponse.setError("Successfully");
             addFriendResponse.setTimestamp(LocalDateTime.now());

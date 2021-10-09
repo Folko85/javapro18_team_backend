@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class GetFriendsListRequest {
 
+    @JsonProperty(value = "name", defaultValue = "")
     private String name;
     private Integer offset;
     @JsonProperty(value = "itemPerPage", defaultValue = "20")
