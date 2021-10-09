@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
@@ -14,7 +14,6 @@ import java.security.Principal;
 import java.time.*;
 import java.util.List;
 
-
 import static java.time.ZoneOffset.UTC;
 
 @Service
@@ -23,16 +22,15 @@ public class UserService {
     private AccountRepository accountRepository;
     private PostService postService;
     private PostRepository postRepository;
-
     public UserService(AccountRepository accountRepository, PostService postService, PostRepository postRepository) {
         this.accountRepository = accountRepository;
         this.postService = postService;
         this.postRepository = postRepository;
     }
 
-    public AuthData getUserByEmail(String email) {
-        Person person = accountRepository.findByEMail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+    public AuthData getUserByEmail(Principal principal) {
+        Person person = accountRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
         AuthData userRest = new AuthData();
         convertUserToUserRest(person, userRest);
         return userRest;
@@ -47,8 +45,9 @@ public class UserService {
 
     }
 
-    public AuthData updateUser(AuthData updates) {
-        Person person = accountRepository.findByEMail(updates.getEMail())
+    public AuthData updateUser(AuthData updates, Principal principal){
+        System.out.println(principal.getName());
+        Person person = accountRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("" + updates.getEMail()));
         String updatedName = updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
         person.setFirstName(updatedName);
@@ -56,6 +55,7 @@ public class UserService {
         person.setLastName(updatedLastName);
         person.setPhone(updates.getPhone());
         person.setAbout(updates.getAbout());
+        System.out.println(updates.getBirthDate());
         person.setBirthday(LocalDate.ofInstant(updates.getBirthDate(), ZoneId.systemDefault()));
         person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
         Person updatedPerson = accountRepository.save(person);
@@ -78,7 +78,6 @@ public class UserService {
         accountRepository.delete(person);
     }
 
-
     public static long convertLocalDate(LocalDate localDate) {
 
         if (localDate == null) return 0;
@@ -100,6 +99,7 @@ public class UserService {
     }
 
     public static void conventionsFromPersonTimesToUserRest(Person person, AuthData userRest) {
+        userRest.setBirthDate(person.getBirthday() == null ? null: person.getBirthday().atStartOfDay().toInstant(UTC));
         userRest.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         userRest.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
     }

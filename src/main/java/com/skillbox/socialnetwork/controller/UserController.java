@@ -1,13 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
 
-import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
@@ -17,10 +11,9 @@ import com.skillbox.socialnetwork.api.response.postdto.PostWallResponse;
 import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserService;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.*;
-
-import static com.skillbox.socialnetwork.service.UserService.convertLocalDate;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -47,28 +36,22 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<DataResponse> getMe() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getMe(Principal principal) {
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setTimestamp(Instant.now());
-        AuthData userRest = userService.getUserByEmail(email);
+        AuthData userRest = userService.getUserByEmail(principal);
         userRestResponse.setData(userRest);
 
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DataResponse> getUserById(@PathVariable String id) {
-        Integer userId;
-        try {
-            userId = Integer.parseInt(id);
-
-        } catch (NumberFormatException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
-        }
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
         DataResponse userRestResponse = new DataResponse();
         try {
-            userRestResponse.setData(userService.getUserById(userId));
+            userRestResponse.setData(userService.getUserById(id));
         } catch (UsernameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
@@ -78,32 +61,18 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AuthData updates = new AuthData();
-        UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
-        BeanUtils.copyProperties(userRequestModel, updates);
-        updates.setEMail(email);
-        AuthData updatedUser;
-        try {
-            updatedUser = userService.updateUser(updates);
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> updateUser(@RequestBody AuthData updates, Principal principal ){
+        AuthData updatedUser  = userService.updateUser(updates, principal);
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setData(updatedUser);
         userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
-
-    }
-
-    @PostMapping("/me")
-    public void test() {
-        System.out.println("Teeest");
     }
 
     @DeleteMapping("/me")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> deleteUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
@@ -144,8 +113,33 @@ public class UserController {
 //        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
 //
 //    }
+    @GetMapping("/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
+                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
+    ) {
+
+        List<PostWallData> posts;
+        try {
+            posts = userService.getUserWall(id, offset, itemPerPage);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
+        }
+        PostWallResponse postWallResponse = new PostWallResponse();
+        postWallResponse.setError("string");
+        postWallResponse.setTimestamp(new Date().getTime());
+        postWallResponse.setTotal(posts.size());
+        postWallResponse.setOffset(offset);
+        postWallResponse.setPerPage(itemPerPage);
+        postWallResponse.setData(posts);
+
+        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
+
+    }
 
     @PostMapping("/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,
                                                             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
                                                             @RequestBody PostRequest postRequest, Principal principal
@@ -157,27 +151,4 @@ public class UserController {
         postCreationResponse.setData(postWallData);
         return new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
     }
-
-    private UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        UserRequestModel userRequestModel = new UserRequestModel();
-        System.out.println(httpEntity.getBody());
-        try {
-            ObjectNode node = new ObjectMapper().readValue(httpEntity.getBody(), ObjectNode.class);
-            UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel = objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
-            if (userUpdateWithInstantRequestModel.getBirthday() != null)
-                userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC)));
-            else userRequestModel.setBirthday(0);
-            BeanUtils.copyProperties(userUpdateWithInstantRequestModel, userRequestModel);
-        } catch (JsonProcessingException e) {
-            try {
-                userRequestModel = objectMapper.readValue(httpEntity.getBody(), UserRequestModel.class);
-            } catch (JsonProcessingException g) {
-                throw new IllegalArgumentException();
-            }
-        }
-        return userRequestModel;
-    }
-
 }

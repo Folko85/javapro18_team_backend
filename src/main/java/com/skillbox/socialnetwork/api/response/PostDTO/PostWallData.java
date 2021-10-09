@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.postdto;
+package com.skillbox.socialnetwork.api.response.PostDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.CommentWallData;
@@ -22,4 +22,5 @@ public class PostWallData {
     private String type;
     @JsonProperty("my_like")
     private boolean myLike;
+    private List<String> tags;
 }

@@ -5,8 +5,8 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostData;
+import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
@@ -122,6 +122,21 @@ public class PostService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
+    /**
+     * {@link com.sun.xml.bind.v2.TODO}
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
+    public ListResponse getWallPosts(int offset, int itemPerPage, Principal principal){
+        Person person = findPerson(principal.getName());
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Post> page = postRepository.findUserPost(person.getId(), pageable);
+        return null;
+
+    }
+
     public PostWallData createPost(long publishDate, PostRequest postRequest, AuthData userRest) {
 
         Post post = new Post();
@@ -159,6 +174,9 @@ public class PostService {
         postWallData.setPostText(post.getPostText());
         postWallData.setAuthor(userRest);
         postWallData.setComments(getCommentWallData4Response(post.getComments()));
+        postWallData.setTags(List.of("tag","tagtagtagtagtagtag","tag","tag","tag","tag","tag","tag"));
+        Set<Like> likes = likeRepository.findLikesByItemAndType(post.getId(), "Post");
+        postWallData.setLikes(likes.size());
         postWallData.setId(post.getId());
         postWallData.setTime(convertLocalDateTime(post.getDatetime()));
         postWallData.setTitle(post.getTitle());

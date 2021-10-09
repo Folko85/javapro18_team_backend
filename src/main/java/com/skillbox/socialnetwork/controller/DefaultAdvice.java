@@ -1,10 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
-import com.skillbox.socialnetwork.exception.CommentNotFoundException;
-import com.skillbox.socialnetwork.exception.LikeNotFoundException;
-import com.skillbox.socialnetwork.exception.PostNotFoundException;
-import com.skillbox.socialnetwork.exception.UserExistException;
+import com.skillbox.socialnetwork.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

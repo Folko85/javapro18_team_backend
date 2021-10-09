@@ -55,6 +55,6 @@ services:
 #      monitoring:
 #        aliases:
 #          - prometheus
-networks:
-  monitoring:
+#networks:
+#monitoring:
 
