@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -46,13 +43,20 @@ public class UserService {
     public DataResponse updateUser(AuthData updates, Principal principal) {
         Person person = accountRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Person Not Found"));
-        updates.setId(person.getId());
-        updates.setEMail(person.getEMail());
-        BeanUtils.copyProperties(updates, person);
-        accountRepository.save(person);
+        String updatedName = updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
+        person.setFirstName(updatedName);
+        String updatedLastName = updates.getLastName().isEmpty() ? person.getLastName() : updates.getLastName();
+        person.setLastName(updatedLastName);
+        person.setPhone(updates.getPhone());
+        person.setAbout(updates.getAbout());
+        person.setBirthday(LocalDate.ofInstant(updates.getBirthDate(), ZoneId.systemDefault()));
+        person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
+        Person updatedPerson = accountRepository.save(person);
+        AuthData updated = new AuthData();
+        convertUserToUserRest(updatedPerson, updated);
         DataResponse response = new DataResponse();
         response.setTimestamp(Instant.now());
-        response.setData(updates);
+        response.setData(updated);
         return response;
     }
 
