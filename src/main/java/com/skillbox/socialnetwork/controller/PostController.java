@@ -1,10 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.DataResponse;
-import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
-import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.service.PostService;
@@ -38,13 +35,13 @@ public class PostController {
         return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+    public ResponseEntity<?> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
         return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> putPostById(@PathVariable int id,
                                          @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
@@ -53,7 +50,7 @@ public class PostController {
         return new ResponseEntity<>(postService.putPostById(id, publishDate, requestBody, principal), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> deletePostById(@PathVariable int id,
                                             Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
@@ -61,7 +58,7 @@ public class PostController {
     }
 
 
-    @PutMapping("/{id}/recover")
+    @PutMapping("/post/{id}/recover")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> putPostRecover(@PathVariable int id,
                                             Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {

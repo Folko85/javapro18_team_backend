@@ -1,23 +1,16 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
-import com.skillbox.socialnetwork.api.response.postdto.IdResponse;
-import com.skillbox.socialnetwork.api.response.postdto.PostData;
-import com.skillbox.socialnetwork.api.response.postdto.PostDataResponse;
-import com.skillbox.socialnetwork.api.response.postdto.PostResponse;
-import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
+import com.skillbox.socialnetwork.api.response.postdto.*;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
-import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
@@ -33,7 +26,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Set;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -68,18 +60,16 @@ public class PostService {
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    public ListResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
-    public PostDataResponse getPostById(int id, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
-        Person person = findPerson(principal.getName());
-        Post post = postRepository.findPostById(id).orElseThrow(PostNotFoundException::new);
-        if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
-        return getPostDataResponse(post, person);
+    private Post findPost(int itemId) throws PostNotFoundException {
+        return postRepository.findById(itemId)
+                .orElseThrow(PostNotFoundException::new);
     }
 
 
-    public PostDataResponse putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+    public DataResponse putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal
+            principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
-        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        Post post = findPost(id);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setTitle(requestBody.getTitle());
         post.setPostText(requestBody.getPostText());
@@ -88,7 +78,9 @@ public class PostService {
 
         return getPostDataResponse(post, person);
     }
-    public PostDataResponse deletePostById(int id, Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+
+    public DataResponse deletePostById(int id, Principal principal) throws
+            PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
@@ -97,7 +89,8 @@ public class PostService {
         return getPostDataResponse(post, person);
     }
 
-    public PostDataResponse putPostIdRecover(int id,  Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+    public PostDataResponse putPostIdRecover(int id, Principal principal) throws
+            PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
@@ -115,18 +108,20 @@ public class PostService {
         return postDataResponse;
     }
 
-    public PostResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
+    public ListResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContaining(text, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
+
     public ListResponse getPersonWall(int id, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByPersonId(id, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
+
     public DataResponse getPostById(int id, Principal principal) throws PostNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         Person person = accountRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(""));
@@ -163,10 +158,10 @@ public class PostService {
         postData.setId(post.getId());
         Set<Like> likes = likeRepository.findLikesByItemAndType(post.getId(), "Post");
         postData.setLikes(likes.size());
-        postData.setTime(post.getDatetime().toInstant(UTC));
+        postData.setTime(post.getDatetime());
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
-        postData.setTags(List.of("tag","tagtagtagtagtagtag","tag","tag","tag","tag","tag","tag"));
+        postData.setTags(List.of("tag", "tagtagtagtagtagtag", "tag", "tag", "tag", "tag", "tag", "tag"));
         postData.setMyLike(likes.stream()
                 .anyMatch(postLike -> postLike.getPerson().equals(person)));
         return postData;
@@ -177,31 +172,31 @@ public class PostService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
-    private PostDataResponse getPostDataResponse(Post post, Person person) {
-        PostDataResponse postDataResponse = new PostDataResponse();
-        PostData postData = getPostData(post, person);
-        postDataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC).toEpochMilli());
-        postDataResponse.setData(postData);
+    private DataResponse getPostDataResponse(Post post, Person person) {
+        DataResponse postDataResponse = new DataResponse();
+        postDataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        postDataResponse.setData(getPostData(post, person));
 
         return postDataResponse;
     }
 
     /**
      * {@link com.sun.xml.bind.v2.TODO}
+     *
      * @param offset
      * @param itemPerPage
      * @param principal
      * @return
      */
-    public ListResponse getWallPosts(int offset, int itemPerPage, Principal principal){
+    public ListResponse getWallPosts(int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> page = postRepository.findUserPost(person.getId(), pageable);
-        return null;
+        return getPostResponse(offset, itemPerPage, page, person);
 
     }
 
-    public PostWallData createPost(long publishDate, PostRequest postRequest, AuthData userRest) {
+    /*public PostWallData createPost(long publishDate, PostRequest postRequest, AuthData userRest) {
 
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
@@ -238,7 +233,7 @@ public class PostService {
         postWallData.setPostText(post.getPostText());
         postWallData.setAuthor(userRest);
         postWallData.setComments(getCommentWallData4Response(post.getComments()));
-        postWallData.setTags(List.of("tag","tagtagtagtagtagtag","tag","tag","tag","tag","tag","tag"));
+        postWallData.setTags(List.of("tag", "tagtagtagtagtagtag", "tag", "tag", "tag", "tag", "tag", "tag"));
         Set<Like> likes = likeRepository.findLikesByItemAndType(post.getId(), "Post");
         postWallData.setLikes(likes.size());
         postWallData.setId(post.getId());
@@ -255,5 +250,9 @@ public class PostService {
         }
         return postWallData;
     }
-
+*/
 }
+
+
+
+

@@ -61,13 +61,13 @@ public class UserService {
         return response;
     }
 
-    public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage) {
+    /*public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage) {
         Person person = accountRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("" + id));
         AuthData userRest = new AuthData();
         convertUserToUserRest(person, userRest);
         return postService.getPastWallData(offset, itemPerPage, userRest);
-    }
+    }*/
 
     public void deleteUser(String email) {
         Person person = accountRepository.findByEMail(email)
@@ -110,12 +110,12 @@ public class UserService {
         conventionsFromPersonTimesToUserRest(person, userRest);
     }
 
-    public PostWallData createPost(int id, long publishDate, PostRequest postRequest, Principal principal) {
+    /*public PostWallData createPost(int id, long publishDate, PostRequest postRequest, Principal principal) {
         AuthData userRest = getUserById(id);
         Person person = accountRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
         if (userRest.getId() != person.getId())
             throw new IllegalArgumentException();
         return postService.createPost(publishDate, postRequest, userRest);
-    }
+    }*/
 }
