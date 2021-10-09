@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
+import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;

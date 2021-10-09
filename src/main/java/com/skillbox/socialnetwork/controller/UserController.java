@@ -91,6 +91,7 @@ public class UserController {
     }
 
 //    @GetMapping("/{id}/wall")
+//    @PreAuthorize("hasAuthority('user:write')")
 //    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
 //                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
 //                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
@@ -113,30 +114,6 @@ public class UserController {
 //        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
 //
 //    }
-    @GetMapping("/{id}/wall")
-    @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<PostWallResponse> getUserWall(@PathVariable int id,
-                                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                        @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage
-    ) {
-
-        List<PostWallData> posts;
-        try {
-            posts = userService.getUserWall(id, offset, itemPerPage);
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        PostWallResponse postWallResponse = new PostWallResponse();
-        postWallResponse.setError("string");
-        postWallResponse.setTimestamp(new Date().getTime());
-        postWallResponse.setTotal(posts.size());
-        postWallResponse.setOffset(offset);
-        postWallResponse.setPerPage(itemPerPage);
-        postWallResponse.setData(posts);
-
-        return new ResponseEntity<>(postWallResponse, HttpStatus.OK);
-
-    }
 
     @PostMapping("/{id}/wall")
     @PreAuthorize("hasAuthority('user:write')")
