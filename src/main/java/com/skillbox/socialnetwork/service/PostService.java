@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -123,7 +125,12 @@ public class PostService {
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
-        post.setDatetime(UserService.convertToLocalDateTime(publishDate));
+        if(publishDate==0) {
+            post.setDatetime(LocalDateTime.now(UTC));
+        }
+        else {
+            post.setDatetime(UserService.convertToLocalDateTime(publishDate));
+        }
         post.setPerson(person);
         Post createdPost = postRepository.save(post);
         DataResponse dataResponse = new DataResponse();
