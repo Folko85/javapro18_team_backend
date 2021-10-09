@@ -2,18 +2,16 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
 
-import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostCreationResponse;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
+import com.skillbox.socialnetwork.exception.UpdatedAuthDataIdIsNotEqualPrincipalId;
 import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserService;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,12 +38,10 @@ public class UserController {
 
     @GetMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse> getMe() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(email);
+    public ResponseEntity<DataResponse> getMe(Principal principal) {
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setTimestamp(Instant.now());
-        AuthData userRest = userService.getUserByEmail(email);
+        AuthData userRest = userService.getUserByEmail(principal);
         userRestResponse.setData(userRest);
 
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
@@ -67,24 +63,13 @@ public class UserController {
 
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AuthData updates = new AuthData();
-        UserRequestModel userRequestModel = userService.updateUser(httpEntity);
-        BeanUtils.copyProperties(userRequestModel, updates);
-        updates.setEMail(email);
-        AuthData updatedUser;
-        try {
-            updatedUser = userService.updateUser(updates);
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
+    public ResponseEntity<DataResponse> updateUser(@RequestBody AuthData updates, Principal principal ) throws UpdatedAuthDataIdIsNotEqualPrincipalId {
+        AuthData updatedUser  = userService.updateUser(updates, principal);
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setData(updatedUser);
         userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setError("null");
         return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/me")
