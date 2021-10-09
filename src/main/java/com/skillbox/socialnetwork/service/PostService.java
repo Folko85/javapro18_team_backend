@@ -123,6 +123,7 @@ public class PostService {
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
+        post.setDatetime(UserService.convertToLocalDateTime(publishDate));
         post.setPerson(person);
         Post createdPost = postRepository.save(post);
         DataResponse dataResponse = new DataResponse();

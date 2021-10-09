@@ -21,7 +21,6 @@ import static java.time.ZoneOffset.UTC;
 public class UserService {
 
     private AccountRepository accountRepository;
-    private PostService postService;
 
     public UserService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
