@@ -21,7 +21,6 @@ public class AuthData implements Dto {
     @JsonProperty("email")
     private String eMail;
     private String phone;
-    @JsonProperty("photo_id")
     private String photo;
     private String about;
     private String city;
