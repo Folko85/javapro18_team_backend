@@ -1,12 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.api.request.UserUpdateWithInstantRequestModel;
-
 import com.skillbox.socialnetwork.api.request.UserRequestModel;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
@@ -14,13 +8,13 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallResponse;
-import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserService;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -28,21 +22,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.*;
-
-import static com.skillbox.socialnetwork.service.UserService.convertLocalDate;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/users")
 public class UserController {
     private UserService userService;
-    private PostService postService;
 
-    public UserController(UserService userService, PostService postService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.postService = postService;
 
     }
 
@@ -58,17 +50,11 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DataResponse> getUserById(@PathVariable String id) {
-        Integer userId;
-        try {
-            userId = Integer.parseInt(id);
+    public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
 
-        } catch (NumberFormatException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Path Variable");
-        }
         DataResponse userRestResponse = new DataResponse();
         try {
-            userRestResponse.setData(userService.getUserById(userId));
+            userRestResponse.setData(userService.getUserById(id));
         } catch (UsernameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
@@ -78,29 +64,15 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<DataResponse> updateUser(HttpEntity<String> httpEntity) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AuthData updates = new AuthData();
-        UserRequestModel userRequestModel = getUserRequestModelFromBody(httpEntity);
-        BeanUtils.copyProperties(userRequestModel, updates);
-        updates.setEMail(email);
-        AuthData updatedUser;
-        try {
-            updatedUser = userService.updateUser(updates);
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        DataResponse userRestResponse = new DataResponse();
-        userRestResponse.setData(updatedUser);
-        userRestResponse.setTimestamp(Instant.now());
-        userRestResponse.setError("null");
-        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+    @PreAuthorize("hasAuthority('user:write')")
+    public DataResponse updateUser(@RequestBody AuthData person, Principal principal) {
+        return userService.updateUser(person, principal);
 
     }
 
     @PostMapping("/me")
     public void test() {
-        System.out.println("Teeest");
+        log.info("Teeest");
     }
 
     @DeleteMapping("/me")
@@ -156,28 +128,6 @@ public class UserController {
         PostWallData postWallData = userService.createPost(id, publishDate, postRequest, principal);
         postCreationResponse.setData(postWallData);
         return new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
-    }
-
-    private UserRequestModel getUserRequestModelFromBody(HttpEntity<String> httpEntity) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        UserRequestModel userRequestModel = new UserRequestModel();
-        System.out.println(httpEntity.getBody());
-        try {
-            ObjectNode node = new ObjectMapper().readValue(httpEntity.getBody(), ObjectNode.class);
-            UserUpdateWithInstantRequestModel userUpdateWithInstantRequestModel = objectMapper.readValue(httpEntity.getBody(), UserUpdateWithInstantRequestModel.class);
-            if (userUpdateWithInstantRequestModel.getBirthday() != null)
-                userRequestModel.setBirthday(convertLocalDate(LocalDate.ofInstant(userUpdateWithInstantRequestModel.getBirthday(), ZoneOffset.UTC)));
-            else userRequestModel.setBirthday(0);
-            BeanUtils.copyProperties(userUpdateWithInstantRequestModel, userRequestModel);
-        } catch (JsonProcessingException e) {
-            try {
-                userRequestModel = objectMapper.readValue(httpEntity.getBody(), UserRequestModel.class);
-            } catch (JsonProcessingException g) {
-                throw new IllegalArgumentException();
-            }
-        }
-        return userRequestModel;
     }
 
 }

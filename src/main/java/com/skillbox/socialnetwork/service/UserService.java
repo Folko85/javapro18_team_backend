@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
@@ -9,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -46,20 +48,17 @@ public class UserService {
 
     }
 
-    public AuthData updateUser(AuthData updates) {
-        Person person = accountRepository.findByEMail(updates.getEMail())
-                .orElseThrow(() -> new UsernameNotFoundException("" + updates.getEMail()));
-        String updatedName = updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
-        person.setFirstName(updatedName);
-        String updatedLastName = updates.getLastName().isEmpty() ? person.getLastName() : updates.getLastName();
-        person.setLastName(updatedLastName);
-        person.setPhone(updates.getPhone());
-        person.setAbout(updates.getAbout());
-        person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
-        Person updatedPerson = accountRepository.save(person);
-        AuthData updated = new AuthData();
-        convertUserToUserRest(updatedPerson, updated);
-        return updated;
+    public DataResponse updateUser(AuthData updates, Principal principal) {
+        Person person = accountRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Person Not Found"));
+        updates.setId(person.getId());
+        updates.setEMail(person.getEMail());
+        BeanUtils.copyProperties(updates, person);
+        accountRepository.save(person);
+        DataResponse response = new DataResponse();
+        response.setTimestamp(Instant.now());
+        response.setData(updates);
+        return response;
     }
 
     public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage) {
@@ -100,12 +99,13 @@ public class UserService {
     public static void conventionsFromPersonTimesToUserRest(Person person, AuthData userRest) {
         userRest.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         userRest.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
+        if (person.getBirthday() != null){
+            userRest.setBirthDate(person.getBirthday().atStartOfDay().toInstant(UTC));
+        }
     }
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
         BeanUtils.copyProperties(person, userRest);
-        userRest.setCountry(null);
-        userRest.setCity(null);
         conventionsFromPersonTimesToUserRest(person, userRest);
     }
 

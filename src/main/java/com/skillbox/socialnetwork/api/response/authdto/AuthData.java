@@ -23,10 +23,11 @@ public class AuthData implements Dto {
     @JsonProperty("email")
     private String eMail;
     private String phone;
+    @JsonProperty("photo_id")
     private String photo;
     private String about;
-    private Place city;
-    private Place country;
+    private String city;
+    private String country;
     @JsonProperty("messages_permission")
     private MessagesPermission messagesPermission;
     @JsonProperty("last_online_time")
