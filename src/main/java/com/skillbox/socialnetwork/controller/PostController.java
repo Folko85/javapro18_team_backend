@@ -1,7 +1,9 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.PostService;
 import lombok.extern.slf4j.Slf4j;
@@ -56,5 +58,12 @@ public class PostController {
                                                     @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage,
                                                     Principal principal) {
         return new ResponseEntity<>(postService.getPersonWall(id, offset, itemPerPage, principal), HttpStatus.OK);
+    }
+    @PostMapping("/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getUserWall(@PathVariable int id,
+                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+                                                            @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {
+        return new ResponseEntity<>(postService.createPost(id, publishDate, postRequest, principal), HttpStatus.OK);
     }
 }

@@ -4,12 +4,11 @@ import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.postdto.PostData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
+import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
@@ -23,15 +22,11 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
-import static com.skillbox.socialnetwork.service.CommentService.getCommentWallData4Response;
-import static com.skillbox.socialnetwork.service.UserService.convertLocalDateTime;
-import static com.skillbox.socialnetwork.service.UserService.convertToLocalDateTime;
 import static java.time.ZoneOffset.UTC;
 
 
@@ -122,74 +117,17 @@ public class PostService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
-    /**
-     * {@link com.sun.xml.bind.v2.TODO}
-     * @param offset
-     * @param itemPerPage
-     * @param principal
-     * @return
-     */
-    public ListResponse getWallPosts(int offset, int itemPerPage, Principal principal){
+    public DataResponse createPost(int id, long publishDate, PostRequest postRequest, Principal principal) throws PostCreationExecption {
         Person person = findPerson(principal.getName());
-        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> page = postRepository.findUserPost(person.getId(), pageable);
-        return null;
-
-    }
-
-    public PostWallData createPost(long publishDate, PostRequest postRequest, AuthData userRest) {
-
+        if(person.getId()!=id) throw  new PostCreationExecption();
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
-        LocalDateTime publisDateTime = convertToLocalDateTime(publishDate);
-        if (publisDateTime == null) {
-            post.setDatetime(LocalDateTime.now(ZoneOffset.UTC));
-        } else {
-            post.setDatetime(publisDateTime);
-        }
-        Person person = new Person();
-        person.setId(userRest.getId());
-        post.setBlocked(false);
         post.setPerson(person);
-        Post saved = postRepository.save(post);
-        PostWallData postWallData = getPostWallData(saved, userRest);
-        return postWallData;
+        Post createdPost = postRepository.save(post);
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        dataResponse.setData(getPostData(createdPost, person));
+        return dataResponse;
     }
-
-    public List<PostWallData> getPastWallData(Integer offset, Integer itemPerPage, AuthData userRest) {
-        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> page = postRepository.findUserPost(userRest.getId(), pageable);
-        List<Post> posts = page.getContent();
-        List<PostWallData> postWallDataList = new ArrayList<>();
-        posts.forEach(post -> {
-            PostWallData postWallData = getPostWallData(post, userRest);
-            postWallDataList.add(postWallData);
-        });
-        return postWallDataList;
-    }
-
-    public PostWallData getPostWallData(Post post, AuthData userRest) {
-        PostWallData postWallData = new PostWallData();
-        postWallData.setPostText(post.getPostText());
-        postWallData.setAuthor(userRest);
-        postWallData.setComments(getCommentWallData4Response(post.getComments()));
-        postWallData.setTags(List.of("tag","tagtagtagtagtagtag","tag","tag","tag","tag","tag","tag"));
-        Set<Like> likes = likeRepository.findLikesByItemAndType(post.getId(), "Post");
-        postWallData.setLikes(likes.size());
-        postWallData.setId(post.getId());
-        postWallData.setTime(convertLocalDateTime(post.getDatetime()));
-        postWallData.setTitle(post.getTitle());
-        postWallData.setBlocked(post.isBlocked());
-        if (LocalDateTime.now().isBefore(post.getDatetime())) {
-            postWallData.setType("QUEUED");
-        } else {
-            postWallData.setType("POSTED");
-        }
-        if (post.isBlocked()) {
-            postWallData.setType("BLOCKED");
-        }
-        return postWallData;
-    }
-
 }

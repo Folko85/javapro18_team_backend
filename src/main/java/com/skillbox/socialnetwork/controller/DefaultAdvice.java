@@ -54,4 +54,11 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(PostCreationExecption.class)
+    public ResponseEntity<BadRequestResponse> handlePostCreationException(PostCreationExecption exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Вы не можете создавать пост на чужой странице");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
 }

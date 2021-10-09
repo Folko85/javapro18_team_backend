@@ -165,35 +165,4 @@ public class CommentService {
         commentResponse.setData(getCommentData(postComment, person));
         return commentResponse;
     }
-
-    public static List<CommentWallData> getCommentWallData4Response(Set<PostComment> comments)
-    {
-        List<CommentWallData> commentDataList = new ArrayList<>();
-        if(comments!=null) {
-            comments.forEach(postComment -> {
-                CommentWallData commentData = getCommentWallData(postComment);
-                if (commentData.getParentId() != null)
-                    commentDataList.stream()
-                            .filter(comment -> comment.getId() == commentData.getParentId())
-                            .forEach(comment -> comment.getSubComments().add(commentData));
-                else commentDataList.add(commentData);
-            });
-        }
-        return commentDataList;
-    }
-
-    public static CommentWallData getCommentWallData(PostComment postComment) {
-        CommentWallData commentData = new CommentWallData();
-        commentData.setCommentText(postComment.getCommentText());
-        commentData.setBlocked(postComment.isBlocked());
-        commentData.setAuthorId(postComment.getPerson().getId());
-        commentData.setId(postComment.getId());
-        commentData.setTime(UserService.convertLocalDateTime(postComment.getTime()));
-        if(postComment.getParent()!=null)
-            commentData.setParentId(postComment.getParent().getId());
-        commentData.setPostId(postComment.getPost().getId());
-        commentData.setSubComments(new ArrayList<>());
-        return commentData;
-    }
-
 }

@@ -1,9 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +14,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -26,9 +23,8 @@ public class UserService {
     private AccountRepository accountRepository;
     private PostService postService;
 
-    public UserService(AccountRepository accountRepository, PostService postService) {
+    public UserService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-        this.postService = postService;
     }
 
     public AuthData getUserByEmail(Principal principal) {
@@ -59,14 +55,6 @@ public class UserService {
         response.setTimestamp(Instant.now());
         response.setData(updates);
         return response;
-    }
-
-    public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage) {
-        Person person = accountRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("" + id));
-        AuthData userRest = new AuthData();
-        convertUserToUserRest(person, userRest);
-        return postService.getPastWallData(offset, itemPerPage, userRest);
     }
 
     public void deleteUser(String email) {
@@ -108,14 +96,5 @@ public class UserService {
         BeanUtils.copyProperties(person, userRest);
         userRest.setBirthDate(person.getBirthday() == null ? Instant.now() : person.getBirthday().atStartOfDay().toInstant(UTC));
         conventionsFromPersonTimesToUserRest(person, userRest);
-    }
-
-    public PostWallData createPost(int id, long publishDate, PostRequest postRequest, Principal principal) {
-        AuthData userRest = getUserById(id);
-        Person person = accountRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
-        if (userRest.getId() != person.getId())
-            throw new IllegalArgumentException();
-        return postService.createPost(publishDate, postRequest, userRest);
     }
 }

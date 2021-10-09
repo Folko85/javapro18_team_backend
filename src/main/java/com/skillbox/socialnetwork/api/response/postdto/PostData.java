@@ -25,5 +25,4 @@ public class PostData implements Dto {
     @JsonProperty("my_like")
     private boolean myLike;
     private List<String> tags;
-
 }

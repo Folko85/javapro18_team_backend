@@ -1,12 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.request.PostRequest;
-
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 
 import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -86,19 +82,4 @@ public class UserController {
         SecurityContextHolder.clearContext();
         return new ResponseEntity(userDeleteResponse, HttpStatus.OK);
     }
-
-    @PostMapping("/{id}/wall")
-    @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,
-                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
-                                                            @RequestBody PostRequest postRequest, Principal principal
-    ) {
-
-        PostCreationResponse postCreationResponse = new PostCreationResponse();
-        postCreationResponse.setTimestamp(new Date().getTime());
-        PostWallData postWallData = userService.createPost(id, publishDate, postRequest, principal);
-        postCreationResponse.setData(postWallData);
-        return new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
-    }
-
 }
