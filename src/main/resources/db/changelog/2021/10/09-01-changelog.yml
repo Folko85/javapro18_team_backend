@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021100901
+      author: m.gutorov
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: country
+                  type: varchar(255)
