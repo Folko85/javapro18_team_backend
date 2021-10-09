@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ImageDTO;
@@ -47,10 +48,12 @@ public class StorageService {
                 "api_secret", secret)));
 
         Map response = cloudinary.uploader().upload(image.getBytes(),
-                ObjectUtils.asMap("public_id", RandomStringUtils.randomAlphabetic(12)));
+                ObjectUtils.asMap("public_id", RandomStringUtils.randomAlphabetic(10)));
+
+        String imageUrl = cloudinary.url().transformation(new Transformation().crop("fill").width(300).height(300)).generate(response.get("public_id").toString());
 
         ImageDTO imageDTO = new ImageDTO()
-                .setId(response.get("url").toString())
+                .setId(imageUrl)
                 .setBytes(Integer.parseInt(response.get("bytes").toString()))
                 .setCreatedAt(Instant.parse(response.get("created_at").toString()))
                 .setFileFormat(response.get("format").toString())

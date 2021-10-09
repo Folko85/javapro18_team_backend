@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.friendsdto.FriendResponse;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
@@ -46,9 +46,7 @@ public class FriendshipController {
         if (friendshipRepository.existsById(id)) {
             friendshipRepository.deleteById(id);
 
-            FriendResponse response = new FriendResponse();
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(new AccountResponse(), HttpStatus.OK);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -68,12 +66,7 @@ public class FriendshipController {
         friendship.setSrcPerson(new Person()); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         friendship.setDstPerson(newFriend);
 
-        FriendResponse addFriend = new FriendResponse();
-        addFriend.setError("not error"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        addFriend.setTimestamp(LocalDateTime.now());
-        addFriend.setMessage("ok");
-
-        return new ResponseEntity<>(addFriend, HttpStatus.OK);
+        return new ResponseEntity<>(new AccountResponse(), HttpStatus.OK);
     }
 
 }
