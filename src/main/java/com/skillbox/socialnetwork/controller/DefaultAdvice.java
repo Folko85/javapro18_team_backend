@@ -54,11 +54,4 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(UpdatedAuthDataIdIsNotEqualPrincipalId.class)
-    public ResponseEntity<BadRequestResponse> handleUpdatedAuthDataIdIsNotEqualPrincipalId(UpdatedAuthDataIdIsNotEqualPrincipalId exc) {
-        BadRequestResponse badRequestResponse = new BadRequestResponse();
-        badRequestResponse.setError("invalid_request");
-        badRequestResponse.setErrorDescription(exc.getMessage());
-        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
-    }
 }

@@ -4,7 +4,6 @@ import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.exception.UpdatedAuthDataIdIsNotEqualPrincipalId;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.beans.BeanUtils;
@@ -46,7 +45,7 @@ public class UserService {
 
     }
 
-    public AuthData updateUser(AuthData updates, Principal principal) throws UpdatedAuthDataIdIsNotEqualPrincipalId {
+    public AuthData updateUser(AuthData updates, Principal principal){
         System.out.println(principal.getName());
         Person person = accountRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("" + updates.getEMail()));

@@ -8,7 +8,6 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostCreationResponse;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallData;
 import com.skillbox.socialnetwork.api.response.PostDTO.PostWallResponse;
-import com.skillbox.socialnetwork.exception.UpdatedAuthDataIdIsNotEqualPrincipalId;
 import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.UserService;
 
@@ -63,7 +62,7 @@ public class UserController {
 
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse> updateUser(@RequestBody AuthData updates, Principal principal ) throws UpdatedAuthDataIdIsNotEqualPrincipalId {
+    public ResponseEntity<DataResponse> updateUser(@RequestBody AuthData updates, Principal principal ){
         AuthData updatedUser  = userService.updateUser(updates, principal);
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setData(updatedUser);
