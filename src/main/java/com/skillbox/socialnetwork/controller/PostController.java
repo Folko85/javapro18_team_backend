@@ -16,7 +16,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class PostController {
     private final PostService postService;
 
@@ -83,4 +83,11 @@ public class PostController {
                                                     Principal principal) {
         return new ResponseEntity<>(postService.getPersonWall(id, offset, itemPerPage, principal), HttpStatus.OK);
     }
+//    @PostMapping("/users/{id}/wall")
+//    @PreAuthorize("hasAuthority('user:write')")
+//    public ResponseEntity<DataResponse> getUserWall(@PathVariable int id,
+//                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+//                                                            @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {
+//        return new ResponseEntity<>(postService.createPost(id, publishDate, postRequest, principal), HttpStatus.OK);
+//    }
 }

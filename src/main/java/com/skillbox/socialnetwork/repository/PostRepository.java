@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "WHERE p.isBlocked = false AND p.datetime >= ?2 AND p.datetime <= ?3 AND p.postText LIKE  %?1% " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
-    Page<Post> findPostsByTextContainingByDate(String query, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
+    Page<Post> findPostsByTextContainingByDate(String query, Instant dateFrom, Instant dateTo, Pageable pageable);
     @Query("SELECT p " +
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +

@@ -4,8 +4,9 @@ import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.*;
+import com.skillbox.socialnetwork.api.response.postdto.IdResponse;
+import com.skillbox.socialnetwork.api.response.postdto.PostData;
+import com.skillbox.socialnetwork.api.response.postdto.PostDataResponse;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
@@ -23,15 +24,11 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
-import static com.skillbox.socialnetwork.service.CommentService.getCommentWallData4Response;
-import static com.skillbox.socialnetwork.service.UserService.convertLocalDateTime;
-import static com.skillbox.socialnetwork.service.UserService.convertToLocalDateTime;
 import static java.time.ZoneOffset.UTC;
 
 
@@ -54,8 +51,8 @@ public class PostService {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
-                LocalDateTime.ofInstant(Instant.ofEpochMilli(dateFrom), UTC)
-                , LocalDateTime.ofInstant(Instant.ofEpochMilli(dateTo), UTC),
+                Instant.ofEpochMilli(dateFrom)
+                ,Instant.ofEpochMilli(dateTo),
                 pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }

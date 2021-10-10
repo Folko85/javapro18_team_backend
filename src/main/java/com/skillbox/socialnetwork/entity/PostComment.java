@@ -11,7 +11,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "post_comment")
-@Data
+@Getter
+@Setter
 public class PostComment {
 
     @Id
