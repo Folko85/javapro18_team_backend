@@ -59,7 +59,7 @@ public class PostController {
                                                     Principal principal) {
         return new ResponseEntity<>(postService.getPersonWall(id, offset, itemPerPage, principal), HttpStatus.OK);
     }
-    @PostMapping("/{id}/wall")
+    @PostMapping("/users/{id}/wall")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getUserWall(@PathVariable int id,
                                                             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
