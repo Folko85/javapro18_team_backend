@@ -1,17 +1,22 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.request.SearchUser;
 import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.time.ZoneOffset.UTC;
 
 @Service
 public class PersonService {
@@ -49,28 +54,20 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public List<Dto> searchPerson(SearchUser searchUser) {
+    public ListResponse searchPerson(String firstName, String lastName, int ageFrom, int ageTo,
+                                     int countryId, int cityId, int offset, int itemPerPage) {
 
-        String firstName = searchUser.getFirstName();
-        String lastName = searchUser.getLastName();
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Person> personPage;
 
-//        int itemPerPage = searchUser.getItemPerPage();
-//        Pageable pageable = PageRequest.ofSize(itemPerPage);
-//
-//        List<Person> personsList = personRepository
-//                .findAllByFirstNameAndLastName(firstName, lastName, pageable);
-
-        List<Person> personsList = personRepository
-                .findAllByFirstNameAndLastName(firstName, lastName);
-
-        if (!personsList.isEmpty()) {
-            return personsList
-                    .stream()
-                    .map(this::friendsToPojo)
-                    .collect(Collectors.toList());
+        if (lastName.isEmpty()) {
+            personPage = personRepository.findPersonByFirstName(firstName, pageable);
         } else {
-            return new ArrayList<>();
+            personPage = personRepository.findPersonByFirstNameAndLastName(firstName, lastName, pageable);
         }
+
+        return getPersonResponse(offset, itemPerPage, personPage);
+
     }
 
     @Transactional(readOnly = true)
@@ -78,5 +75,19 @@ public class PersonService {
         Optional<Person> personOptional = personRepository.findByEMail(eMail);
 
         return personOptional.orElseGet(Person::new);
+    }
+
+    private ListResponse getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
+        List<Dto> persons = pageablePersonList.stream().map(this::friendsToPojo).collect(Collectors.toList());
+
+        ListResponse postResponse = new ListResponse();
+
+        postResponse.setPerPage(itemPerPage);
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        postResponse.setOffset(offset);
+        postResponse.setTotal((int) pageablePersonList.getTotalElements());
+        postResponse.setData(persons);
+
+        return postResponse;
     }
 }
