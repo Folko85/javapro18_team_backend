@@ -44,14 +44,20 @@ public class FriendshipController {
     }
 
     @DeleteMapping("/api/v1/friends/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> stopBeingFriends(@PathVariable int id) {
 
-        if (friendshipRepository.existsById(id)) {
-            friendshipRepository.deleteById(id);
+        Optional<Friendship> friendship = friendshipService.findMyFriendshipByIdMyFriend(id);
 
+        if (friendship.isPresent()) {
+            friendshipService.stopBeingFriendsById(id);
 
+            FriendsResponse200 response = new FriendsResponse200();
+            response.setError("Successfully");
+            response.setTimestamp(LocalDateTime.now());
+            response.setMessage("Stop being friends");
 
-            return new ResponseEntity<>(new AccountResponse(), HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
