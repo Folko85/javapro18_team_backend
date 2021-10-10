@@ -110,7 +110,7 @@ public class FriendshipService {
         Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(person, id);
 
         if (optionalFriendship.isEmpty()) {
-            //1. Находи в БД пользователя который добавляет
+            //1. Находим в БД пользователя который добавляет
             Person srcPerson = personService.findPersonByEmail(principal.getName());
             //2. Находим в БД пользователя которого добавляют
             Person dstPerson = personService.findPersonById(id).get();
