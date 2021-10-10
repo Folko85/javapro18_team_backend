@@ -186,10 +186,10 @@ public class PostService {
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
         if(publishDate==0) {
-            post.setDatetime(LocalDateTime.now(UTC));
+            post.setDatetime(Instant.now());
         }
         else {
-            post.setDatetime(UserService.convertToLocalDateTime(publishDate));
+            post.setDatetime(Instant.ofEpochMilli(publishDate));
         }
         post.setPerson(person);
         Post createdPost = postRepository.save(post);
