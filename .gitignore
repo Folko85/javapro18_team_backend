@@ -33,3 +33,4 @@ build/
 .vscode/
 /web/
 /scripts/prometheus/
+/jars/

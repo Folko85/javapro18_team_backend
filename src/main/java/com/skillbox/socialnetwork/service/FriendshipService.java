@@ -110,54 +110,54 @@ public class FriendshipService {
         return friendshipRepository.save(friendship);
     }
 
-    public PostResponse findMyFriends(GetFriendsListRequest getFriendsListRequest,
-                                      Principal principal) {
-
-        PostResponse response = new PostResponse();
-        response.setTimestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC));
-        response.setOffset(0);
-        response.setError("Successfully");
-        response.setPerPage(20);
-
-        if (getFriendsListRequest.getName().length() == 0) {
-            String email = principal.getName();
-            List<Friendship> friendships = friendshipRepository.getAllFriends(email);
-
-            List<Dto> friends = friendships
-                    .stream()
-                    .map(friendship -> {
-                        if (friendship.getSrcPerson().getEMail().equals(email)) {
-                            return personService.friendsToPojo(friendship.getDstPerson());
-                        } else {
-                            return personService.friendsToPojo(friendship.getSrcPerson());
-                        }
-                    })
-                    .collect(Collectors.toList());
-
-            response.setTotal(friends.size());
-            response.setData(friends);
-            return response;
-
-        } else {
-
-            String friendsName = getFriendsListRequest.getName();
-            int itemPerPage = getFriendsListRequest.getItemPerPage();
-
-            List<Person> myFriends = findMyFriendByName(friendsName, itemPerPage);
-
-            if (!myFriends.isEmpty()) {
-                List<Dto> friendsList = myFriends
-                        .stream()
-                        .map(personService::friendsToPojo)
-                        .collect(Collectors.toList());
-
-                response.setTotal(myFriends.size());
-                response.setData(friendsList);
-                return response;
-            } else {
-                response.setData(new ArrayList<>());
-                return response;
-            }
-        }
-    }
+//    public PostResponse findMyFriends(GetFriendsListRequest getFriendsListRequest,
+//                                      Principal principal) {
+//
+//        PostResponse response = new PostResponse();
+//        response.setTimestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC));
+//        response.setOffset(0);
+//        response.setError("Successfully");
+//        response.setPerPage(20);
+//
+//        if (getFriendsListRequest.getName().length() == 0) {
+//            String email = principal.getName();
+//            List<Friendship> friendships = friendshipRepository.getAllFriends(email);
+//
+//            List<Dto> friends = friendships
+//                    .stream()
+//                    .map(friendship -> {
+//                        if (friendship.getSrcPerson().getEMail().equals(email)) {
+//                            return personService.friendsToPojo(friendship.getDstPerson());
+//                        } else {
+//                            return personService.friendsToPojo(friendship.getSrcPerson());
+//                        }
+//                    })
+//                    .collect(Collectors.toList());
+//
+//            response.setTotal(friends.size());
+//            response.setData(friends);
+//            return response;
+//
+//        } else {
+//
+//            String friendsName = getFriendsListRequest.getName();
+//            int itemPerPage = getFriendsListRequest.getItemPerPage();
+//
+//            List<Person> myFriends = findMyFriendByName(friendsName, itemPerPage);
+//
+//            if (!myFriends.isEmpty()) {
+//                List<Dto> friendsList = myFriends
+//                        .stream()
+//                        .map(personService::friendsToPojo)
+//                        .collect(Collectors.toList());
+//
+//                response.setTotal(myFriends.size());
+//                response.setData(friendsList);
+//                return response;
+//            } else {
+//                response.setData(new ArrayList<>());
+//                return response;
+//            }
+//        }
+//    }
 }

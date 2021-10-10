@@ -1,14 +1,10 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.AccountResponse;
-import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
-import com.skillbox.socialnetwork.repository.FriendshipRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
 import org.springframework.http.HttpStatus;
@@ -23,23 +19,20 @@ import java.util.Optional;
 @RestController
 public class FriendshipController {
 
-
-    private final FriendshipRepository friendshipRepository;
     private final PersonService personService;
     private final FriendshipService friendshipService;
 
-    public FriendshipController(FriendshipRepository friendshipRepository, PersonService personService, FriendshipService friendshipService) {
-        this.friendshipRepository = friendshipRepository;
+    public FriendshipController(PersonService personService, FriendshipService friendshipService) {
         this.personService = personService;
         this.friendshipService = friendshipService;
     }
 
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ListResponse> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
-                                                   @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                   @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                   Principal principal) {
+    public ResponseEntity<?> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
+                                        @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                        @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                        Principal principal) {
         return new ResponseEntity<>(friendshipService.getFriends(name, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
