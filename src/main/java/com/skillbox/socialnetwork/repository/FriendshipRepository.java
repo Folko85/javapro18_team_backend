@@ -21,9 +21,6 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
     @Query("select f from Friendship f where f.srcPerson.id = ?1 or f.dstPerson.id = ?1")
     Optional<Friendship> findById(Integer id);
 
-//    @Query("select f from Friendship f where f.dstPerson.eMail = ?1 or f.srcPerson.eMail = ?1")
-//    List<Friendship> getAllFriends(String email);
-
     @Query("SELECT p2 " +
             "FROM Person p " +
             "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
@@ -31,6 +28,10 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "WHERE p.isBlocked = false AND p.id = ?2  AND  p2.firstName LIKE  %?1% ")
     Page<Person> findPersonByFriendship(String name, int personId, Pageable pageable);
 
-
+    @Query("select f " +
+            "from Friendship f " +
+            "where f.srcPerson.id = ?1 and f.dstPerson.id = ?2 " +
+            "or f.srcPerson.id = ?2 and f.dstPerson.id = ?1")
+    Optional<Friendship> findFriendshipBySrcPersonAndDstPerson(int src, int dst);
 
 }

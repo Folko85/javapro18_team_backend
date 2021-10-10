@@ -1,10 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
-import com.skillbox.socialnetwork.entity.Friendship;
-import com.skillbox.socialnetwork.entity.FriendshipStatus;
-import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
 import org.springframework.http.HttpStatus;
@@ -13,8 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RestController
 public class FriendshipController {
@@ -38,61 +32,21 @@ public class FriendshipController {
 
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> stopBeingFriends(@PathVariable int id) {
+    public ResponseEntity<?> stopBeingFriends(@PathVariable int id, Principal principal) {
+        FriendsResponse200 response200 = friendshipService.stopBeingFriendsById(id, principal);
 
-        Optional<Friendship> friendship = friendshipService.findMyFriendshipByIdMyFriend(id);
+        return new ResponseEntity<>(response200, HttpStatus.OK);
 
-        if (friendship.isPresent()) {
-            friendshipService.stopBeingFriendsById(id);
-
-            FriendsResponse200 response = new FriendsResponse200();
-            response.setError("Successfully");
-            response.setTimestamp(LocalDateTime.now());
-            response.setMessage("Stop being friends");
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
     }
 
-    @PostMapping("/api/v1/friends{id}")
+    @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> addingToFriends(@PathVariable int id, Principal principal) {
 
-        //1. Находи в БД пользователя ктороый добавляет
-        String eMailSrcPerson = principal.getName();
-        Person srcPerson = personService.findPersonByEmail(eMailSrcPerson);
+        FriendsResponse200 response200 = friendshipService.addNewFriend(id, principal);
 
-        //2. Находим в БД пользователя которого добавляют
-        Optional<Person> optionalPerson = personService.findPersonById(id);
-
-        //3. Если пользователь с таки id существует и у srcPerson его нет в друзьях выполняем код
-        if (optionalPerson.isPresent() && friendshipService.findMyFriendshipByIdMyFriend(id).isEmpty()) {
-
-            Person dstPerson = optionalPerson.get();
-
-            //4. Создаем статус дружбы
-            FriendshipStatus friendshipStatus = new FriendshipStatus();
-            friendshipStatus.setTime(LocalDateTime.now());
-            friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
-
-            //5. Создаем дружбу
-            Friendship newFriendship = new Friendship();
-            newFriendship.setStatus(friendshipStatus);
-            newFriendship.setSrcPerson(srcPerson);
-            newFriendship.setDstPerson(dstPerson);
-
-            //6. Сохраняем в БД
-            friendshipService.save(newFriendship);
-
-            //7. Формируем ответ
-            FriendsResponse200 addFriendResponse = new FriendsResponse200();
-            addFriendResponse.setError("Successfully");
-            addFriendResponse.setTimestamp(LocalDateTime.now());
-            addFriendResponse.setMessage("Adding to friends");
-
-            return new ResponseEntity<>(addFriendResponse, HttpStatus.OK);
+        if (response200 != null) {
+            return new ResponseEntity<>(response200, HttpStatus.OK);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

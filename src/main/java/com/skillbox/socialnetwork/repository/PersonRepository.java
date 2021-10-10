@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public interface PersonRepository extends JpaRepository<Person, Integer> {
 
-    Optional<Person> findById(Integer id);
-
     @Query("select p from Person p where p.firstName = ?1 AND p.lastName = ?2")
     List<Person> findAllByFirstNameAndLastName(String firstName, String lastName);
 
@@ -28,10 +26,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "FROM Person p " +
             "WHERE p.firstName = ?1 ")
     Person findByName(String name);
-    @Query("SELECT p " +
-            "FROM Person p " +
-            "WHERE p.eMail = ?1 ")
-    Optional<Person> findPersonByEMail(String eMail);
+
     @Query("SELECT p2 " +
             "FROM Person p " +
             "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
