@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -18,9 +22,11 @@ import static java.time.ZoneOffset.UTC;
 public class UserService {
 
     private AccountRepository accountRepository;
+    private PostService postService;
 
-    public UserService(AccountRepository accountRepository) {
+    public UserService(AccountRepository accountRepository, PostService postService) {
         this.accountRepository = accountRepository;
+        this.postService = postService;
     }
 
     public AuthData getUserByEmail(Principal principal) {
