@@ -1,8 +1,12 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
+import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +19,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class PostController {
     private final PostService postService;
 
@@ -31,19 +35,62 @@ public class PostController {
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
-        return new ResponseEntity<>(postService.getPosts(text,dateFrom,dateTo,offset,itemPerPage,principal),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, principal), HttpStatus.OK);
     }
+
     @GetMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
-        return new ResponseEntity<>(postService.getPostById(id,principal),HttpStatus.OK);
+    public ResponseEntity<?> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
+        return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
     }
+
+    @PutMapping("/post/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> putPostById(@PathVariable int id,
+                                         @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
+                                         @RequestBody TitlePostTextRequest requestBody,
+                                         Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+        return new ResponseEntity<>(postService.putPostById(id, publishDate, requestBody, principal), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/post/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> deletePostById(@PathVariable int id,
+                                            Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+        return new ResponseEntity<>(postService.deletePostById(id, principal), HttpStatus.OK);
+    }
+
+
+    @PutMapping("/post/{id}/recover")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> putPostRecover(@PathVariable int id,
+                                            Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+        return new ResponseEntity<>(postService.putPostIdRecover(id, principal), HttpStatus.OK);
+    }
+
+
     @GetMapping("/feeds")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse> getFeeds(@RequestParam(name = "text", defaultValue = "") String text,
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
-        return new ResponseEntity<>(postService.getFeeds(text,offset,itemPerPage,principal),HttpStatus.OK);
+        return new ResponseEntity<>(postService.getFeeds(text, offset, itemPerPage, principal), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<ListResponse> getUserWall(@PathVariable int id,
+                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                    @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage,
+                                                    Principal principal) {
+        return new ResponseEntity<>(postService.getPersonWall(id, offset, itemPerPage, principal), HttpStatus.OK);
+    }
+    @PostMapping("/users/{id}/wall")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> getUserWall(@PathVariable int id,
+                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+                                                            @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {
+        return new ResponseEntity<>(postService.createPost(id, publishDate, postRequest, principal), HttpStatus.OK);
     }
 }

@@ -48,8 +48,11 @@ public class Person {
     @Column(columnDefinition = "text")
     private String about;
 
-    @Column(name = "town", length = 50)
-    private String town;
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "country")
+    private String country;
 
     @Column(name = "confirmation_code", length = 50)
     private String confirmationCode;

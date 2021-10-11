@@ -1,18 +1,21 @@
 package com.skillbox.socialnetwork.entity;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "post")
-@Getter
-@Setter
+@Data
 public class Post {
 
     @Id
@@ -20,7 +23,7 @@ public class Post {
     private Integer id;
 
     @Column(name = "time")
-    private LocalDateTime datetime;
+    private Instant datetime;
 
     @ManyToOne
     @JoinColumn(name = "author_id")

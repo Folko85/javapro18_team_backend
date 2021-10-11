@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -62,11 +63,12 @@ public class AccountService {
 
     public String sendRecoveryMessage(RecoveryRequest recoveryRequest) {
         Person person = findPerson(recoveryRequest.getEMail());
-        String code = UUID.randomUUID().toString().replace("-", "");
+        String code = UUID.randomUUID().toString().replace("-", "").substring(0,4);
         person.setConfirmationCode(code);
         accountRepository.save(person);
-        mailSender.send(recoveryRequest.getEMail(), RECOVERY_URL + "key=" + code + "&eMail=" + recoveryRequest.getEMail());
-        return "Сообщение отправлено на почту";
+
+       // mailSender.send(recoveryRequest.getEMail(), RECOVERY_URL + "key=" + code + "&eMail=" + recoveryRequest.getEMail());
+        return code;
     }
 
     public String recoveryComplete(String key, String eMail) {
@@ -76,9 +78,9 @@ public class AccountService {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
             person.setPassword(passwordEncoder.encode(passwd));
             person.setConfirmationCode("");
-            mailSender.send(eMail, passwd);
+            //  mailSender.send(eMail, passwd);
             accountRepository.save(person);
-        } else return "Неверный код";
+        } else throw new EntityNotFoundException("");
         return "Новый пароль выслан";
     }
 
@@ -88,7 +90,7 @@ public class AccountService {
             person.setApproved(true);
             person.setConfirmationCode("");
             accountRepository.save(person);
-        } else return "Неверный код";
+        } else throw new EntityNotFoundException("");
         return "Аккаунт подтверждён";
     }
 

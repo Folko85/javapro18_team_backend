@@ -2,9 +2,7 @@ package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -19,9 +17,10 @@ public class FriendshipStatus {
 
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column (name = "time")
+    @Column(name = "time")
     private LocalDateTime time;
 
     @Enumerated(EnumType.STRING)

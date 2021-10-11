@@ -1,6 +1,5 @@
 package com.skillbox.socialnetwork.api.response.authdto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
@@ -9,7 +8,6 @@ import lombok.Data;
 import java.time.Instant;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthData implements Dto {
     private int id;
     @JsonProperty("first_name")
@@ -25,8 +23,8 @@ public class AuthData implements Dto {
     private String phone;
     private String photo;
     private String about;
-    private Place city;
-    private Place country;
+    private String city;
+    private String country;
     @JsonProperty("messages_permission")
     private MessagesPermission messagesPermission;
     @JsonProperty("last_online_time")

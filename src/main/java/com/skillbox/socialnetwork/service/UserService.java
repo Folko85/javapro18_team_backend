@@ -1,19 +1,20 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.request.PostRequest;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.*;
-import java.util.List;
-
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -22,17 +23,15 @@ public class UserService {
 
     private AccountRepository accountRepository;
     private PostService postService;
-    private PostRepository postRepository;
 
-    public UserService(AccountRepository accountRepository, PostService postService, PostRepository postRepository) {
+    public UserService(AccountRepository accountRepository, PostService postService) {
         this.accountRepository = accountRepository;
         this.postService = postService;
-        this.postRepository = postRepository;
     }
 
-    public AuthData getUserByEmail(String email) {
-        Person person = accountRepository.findByEMail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+    public AuthData getUserByEmail(Principal principal) {
+        Person person = accountRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
         AuthData userRest = new AuthData();
         convertUserToUserRest(person, userRest);
         return userRest;
@@ -47,29 +46,27 @@ public class UserService {
 
     }
 
-    public AuthData updateUser(AuthData updates) {
-        Person person = accountRepository.findByEMail(updates.getEMail())
-                .orElseThrow(() -> new UsernameNotFoundException("" + updates.getEMail()));
+    public DataResponse updateUser(AuthData updates, Principal principal) {
+        Person person = accountRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Person Not Found"));
         String updatedName = updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
         person.setFirstName(updatedName);
         String updatedLastName = updates.getLastName().isEmpty() ? person.getLastName() : updates.getLastName();
         person.setLastName(updatedLastName);
         person.setPhone(updates.getPhone());
         person.setAbout(updates.getAbout());
+        person.setPhoto(updates.getPhoto());
+        person.setCity(updates.getCity());
+        person.setCountry(updates.getCountry());
         person.setBirthday(LocalDate.ofInstant(updates.getBirthDate(), ZoneId.systemDefault()));
         person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
         Person updatedPerson = accountRepository.save(person);
         AuthData updated = new AuthData();
         convertUserToUserRest(updatedPerson, updated);
-        return updated;
-    }
-
-    public List<PostWallData> getUserWall(int id, Integer offset, Integer itemPerPage) {
-        Person person = accountRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("" + id));
-        AuthData userRest = new AuthData();
-        convertUserToUserRest(person, userRest);
-        return postService.getPastWallData(offset, itemPerPage, userRest);
+        DataResponse response = new DataResponse();
+        response.setTimestamp(Instant.now());
+        response.setData(updated);
+        return response;
     }
 
     public void deleteUser(String email) {
@@ -77,7 +74,6 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         accountRepository.delete(person);
     }
-
 
     public static long convertLocalDate(LocalDate localDate) {
 
@@ -100,23 +96,17 @@ public class UserService {
     }
 
     public static void conventionsFromPersonTimesToUserRest(Person person, AuthData userRest) {
+        userRest.setBirthDate(person.getBirthday() == null ? null: person.getBirthday().atStartOfDay().toInstant(UTC));
         userRest.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         userRest.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
+        if (person.getBirthday() != null){
+            userRest.setBirthDate(person.getBirthday().atStartOfDay().toInstant(UTC));
+        }
     }
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
         BeanUtils.copyProperties(person, userRest);
-        userRest.setCountry(null);
-        userRest.setCity(null);
+        userRest.setBirthDate(person.getBirthday() == null ? Instant.now() : person.getBirthday().atStartOfDay().toInstant(UTC));
         conventionsFromPersonTimesToUserRest(person, userRest);
-    }
-
-    public PostWallData createPost(int id, long publishDate, PostRequest postRequest, Principal principal) {
-        AuthData userRest = getUserById(id);
-        Person person = accountRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
-        if (userRest.getId() != person.getId())
-            throw new IllegalArgumentException();
-        return postService.createPost(publishDate, postRequest, userRest);
     }
 }
