@@ -66,10 +66,9 @@ public class UserController {
 
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse> deleteUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<DataResponse> deleteUser(Principal principal) {
         try {
-            userService.deleteUser(email);
+            userService.deleteUser(principal);
         } catch (UsernameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         }
