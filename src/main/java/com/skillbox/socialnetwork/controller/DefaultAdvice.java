@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
 import com.skillbox.socialnetwork.exception.*;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +13,7 @@ import javax.persistence.EntityNotFoundException;
 
 @ControllerAdvice
 public class DefaultAdvice {
+
     @ExceptionHandler(UserExistException.class)
     public ResponseEntity<BadRequestResponse> handleRegisterUserExistException(UserExistException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -59,6 +61,14 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Вы не можете создавать пост на чужой странице");
         badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<BadRequestResponse> handleFileSizeException(FileSizeLimitExceededException exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("invalid_request");
+        badRequestResponse.setErrorDescription(exc.getMessage() +". It's have size " + exc.getActualSize() +
+                " but expected less than " + exc.getPermittedSize());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 }

@@ -9,6 +9,7 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,10 @@ public class StorageService {
     public DataResponse uploadImage(MultipartFile image, Principal principal) throws IOException {
         Person current = accountRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
+
+        if (image.getSize() >  5242880){
+            throw new FileSizeLimitExceededException("Please reduce image" + image.getOriginalFilename(), image.getSize(), 5242880);
+        }
 
         Cloudinary cloudinary = new Cloudinary((ObjectUtils.asMap(
                 "cloud_name", cloud,
