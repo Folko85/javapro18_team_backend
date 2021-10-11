@@ -1,4 +1,4 @@
-image: kroncosta/qmis_1101:1101
+image: openjdk:16-jdk-slim
 stages:
   - build
   - deploy
