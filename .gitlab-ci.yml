@@ -1,4 +1,4 @@
-image: maven:latest
+image: kroncosta/qmis_1101:228
 stages:
   - build
   - deploy
