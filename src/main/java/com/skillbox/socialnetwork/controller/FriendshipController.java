@@ -12,6 +12,7 @@ import com.skillbox.socialnetwork.service.FriendshipService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -57,7 +58,7 @@ public class FriendshipController {
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> add(@PathVariable int id, Principal principal) {
-        Person newFriend = personRepository.findByPersonId(id);
+        Person newFriend = personRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(""));
 
         FriendshipStatus friendshipStatus = new FriendshipStatus();
         friendshipStatus.setTime(LocalDateTime.now());

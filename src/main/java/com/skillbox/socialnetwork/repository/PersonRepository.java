@@ -10,7 +10,9 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface PersonRepository extends JpaRepository<Person, Integer> {
-
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE p.eMail = ?1 ")
     Optional<Person> findPersonByEMail(String eMail);
     @Query("SELECT p2 " +
             "FROM Person p " +
