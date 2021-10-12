@@ -164,6 +164,10 @@ public class PostService {
         postData.setTags(List.of("tag", "tagtagtagtagtagtag", "tag", "tag", "tag", "tag", "tag", "tag"));
         postData.setMyLike(likes.stream()
                 .anyMatch(postLike -> postLike.getPerson().equals(person)));
+        if(Instant.now().isBefore(post.getDatetime())){
+            postData.setType("QUEUED");
+        }
+        else postData.setType("POSTED");
         return postData;
     }
 
