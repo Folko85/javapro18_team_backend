@@ -84,7 +84,7 @@ public class DialogService {
     }
 
     private Person findPerson(String eMail) {
-        return personRepository.findPersonByEMail(eMail)
+        return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
