@@ -1,6 +1,7 @@
 version: '3.7'
 services:
   mysql_db_container:
+    container_name: database
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -19,42 +20,41 @@ services:
       NGINX_PORT: 80
     ports:
       - "80:80"
-#  zerone_back_container:
-#    image: openjdk:16-alpine
-#    volumes:
-#      - ./jars:/app
-#    working_dir: /app
-#    command: java -jar social-network-0.0.1-SNAPSHOT.jar  --spring.datasource.url=jdbc:mysql://mysql_db_container:3306/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC&autoReconnect=true&maxReconnects=10
-#    ports:
-#      - "8086:8086"
-#    depends_on:
-#      - mysql_db_container
-#    links:
-#      - mysql_db_container
-#  grafana:
-#    build: './scripts/config/grafana'
-#    ports:
-#      - 3000:3000
-#    volumes:
-#      - ./scripts/grafana:/var/lib/grafana
-#    environment:
-#      - GF_SECURITY_ADMIN_USER=admin
-#      - GF_SECURITY_ADMIN_PASSWORD=admin
-#    networks:
-#      monitoring:
-#        aliases:
-#          - grafana
-#  prometheus:
-#    image: prom/prometheus
-#    ports:
-#      - 9090:9090
-#    volumes:
-#      - ./scripts/config/prometheus.yml:/etc/prometheus/prometheus.yml
-#      - ./scripts/prometheus:/prometheus
-#    networks:
-#      monitoring:
-#        aliases:
-#          - prometheus
-#networks:
-#monitoring:
-
+  zerone_back_container:
+    image: openjdk:16-alpine
+    volumes:
+      - ./jars:/app
+    working_dir: /app
+    command: java -jar social-network-0.0.1-SNAPSHOT.jar  --spring.datasource.url=jdbc:mysql://mysql_db_container:3306/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC&autoReconnect=true&maxReconnects=10
+    ports:
+      - "8086:8086"
+    depends_on:
+      - mysql_db_container
+    links:
+      - mysql_db_container
+  grafana:
+    build: './scripts/config/grafana'
+    ports:
+      - 3000:3000
+    volumes:
+      - ./scripts/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      monitoring:
+        aliases:
+          - grafana
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./scripts/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./scripts/prometheus:/prometheus
+    networks:
+      monitoring:
+        aliases:
+          - prometheus
+networks:
+  monitoring:

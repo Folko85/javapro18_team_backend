@@ -1,12 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.request.PostRequest;
-
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.postdto.PostCreationResponse;
-import com.skillbox.socialnetwork.api.response.postdto.PostWallData;
 
 import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,26 +35,15 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getMe(Principal principal) {
-        DataResponse userRestResponse = new DataResponse();
-        userRestResponse.setTimestamp(Instant.now());
-        AuthData userRest = userService.getUserByEmail(principal);
-        userRestResponse.setData(userRest);
 
-        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserMe(principal), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getUserById(@PathVariable int id) {
-        DataResponse userRestResponse = new DataResponse();
-        try {
-            userRestResponse.setData(userService.getUserById(id));
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        userRestResponse.setTimestamp(Instant.now());
-        userRestResponse.setError("null");
-        return new ResponseEntity<>(userRestResponse, HttpStatus.OK);
+
+        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
     @PutMapping("/me")
@@ -70,35 +54,7 @@ public class UserController {
 
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse> deleteUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        try {
-            userService.deleteUser(email);
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
-        }
-        AccountResponse userDeleteResponse = new AccountResponse();
-        userDeleteResponse.setTimestamp(Instant.now());
-        userDeleteResponse.setError("string");
-        Map<String, String> dateMap = new HashMap<>();
-        dateMap.put("message", "ok");
-        userDeleteResponse.setData(dateMap);
-        SecurityContextHolder.clearContext();
-        return new ResponseEntity(userDeleteResponse, HttpStatus.OK);
+    public ResponseEntity<AccountResponse> deleteUser(Principal principal) {
+        return new ResponseEntity(userService.deleteUser(principal), HttpStatus.OK);
     }
-
-    @PostMapping("/{id}/wall")
-    @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<PostCreationResponse> getUserWall(@PathVariable int id,
-                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
-                                                            @RequestBody PostRequest postRequest, Principal principal
-    ) {
-
-        PostCreationResponse postCreationResponse = new PostCreationResponse();
-        postCreationResponse.setTimestamp(new Date().getTime());
-        PostWallData postWallData = userService.createPost(id, publishDate, postRequest, principal);
-        postCreationResponse.setData(postWallData);
-        return new ResponseEntity<>(postCreationResponse, HttpStatus.OK);
-    }
-
 }

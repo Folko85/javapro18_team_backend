@@ -33,3 +33,5 @@ build/
 .vscode/
 /web/
 /scripts/prometheus/
+/jars/
+/scripts/grafana/
