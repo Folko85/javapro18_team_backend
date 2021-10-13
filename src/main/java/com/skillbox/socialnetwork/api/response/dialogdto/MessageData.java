@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.api.response.dialogdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -19,6 +20,6 @@ public class MessageData implements Dto {
     private String messageText;
     @JsonProperty("read_status")
     private String readStatus;
-    @JsonProperty("recipient_id")
-    private int recipientId;
+    private boolean isSendByMe;
+
 }

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 
 public interface Person2DialogRepository extends JpaRepository<Person2Dialog, Integer> {
 
@@ -17,4 +19,6 @@ public interface Person2DialogRepository extends JpaRepository<Person2Dialog, In
             "WHERE p.id = ?2  AND  d.title LIKE  %?1% " +
             "GROUP BY p2d.id ")
     Page<Person2Dialog> findDialogByAuthorAndTitle(String name, int personId, Pageable pageable);
+
+    Optional<Person2Dialog> findPerson2DialogByDialogIdAndPersonId(int dialogId,int personId);
 }

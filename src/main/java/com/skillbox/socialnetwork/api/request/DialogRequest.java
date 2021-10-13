@@ -6,6 +6,6 @@ import lombok.Data;
 import java.util.List;
 @Data
 public class DialogRequest {
-    @JsonProperty("user_ids")
-    private List<Integer> userIds;
+    @JsonProperty("users_ids")
+    private List<Integer> usersIds;
 }

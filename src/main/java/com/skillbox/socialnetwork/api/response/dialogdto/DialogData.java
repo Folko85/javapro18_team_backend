@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.api.response.dialogdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,4 +14,6 @@ public class DialogData implements Dto {
     public long unreadCount;
     @JsonProperty("last_message")
     private MessageData lastMessage;
+    @JsonProperty("recipient_id")
+    private AuthData recipientId;
 }

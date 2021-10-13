@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
+import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
 @Service
@@ -31,11 +32,13 @@ public class DialogService {
     private final PersonRepository personRepository;
     private final Person2DialogRepository person2DialogRepository;
     private final DialogRepository dialogRepository;
+    private final MessageService messageService;
 
-    public DialogService(PersonRepository personRepository, Person2DialogRepository person2DialogRepository, DialogRepository dialogRepository) {
+    public DialogService(PersonRepository personRepository, Person2DialogRepository person2DialogRepository, DialogRepository dialogRepository, MessageService messageService) {
         this.personRepository = personRepository;
         this.person2DialogRepository = person2DialogRepository;
         this.dialogRepository = dialogRepository;
+        this.messageService = messageService;
     }
 
 
@@ -49,8 +52,8 @@ public class DialogService {
     public DataResponse postDialog(DialogRequest dialogRequest, Principal principal) {
         Person currentPerson = findPerson(principal.getName());
         Dialog dialog = new Dialog();
-        List<Person> personList = personRepository.findAllById(dialogRequest.getUserIds());
-        if (personList.size() != dialogRequest.getUserIds().size())
+        List<Person> personList = personRepository.findAllById(dialogRequest.getUsersIds());
+        if (personList.size() != dialogRequest.getUsersIds().size())
             throw new UsernameNotFoundException("");
         dialog.setTitle("Новый чат");
         dialog = dialogRepository.save(dialog);
@@ -98,21 +101,12 @@ public class DialogService {
         dialogData.setUnreadCount(person2Dialog.getDialog().getMessages()
                 .stream().filter(message -> message.getTime().isAfter(person2Dialog.getLastCheckTime())).count());
         if (person2Dialog.getDialog().getMessages().size() > 0)
-            dialogData.setLastMessage(getMessageData(person2Dialog.getDialog().getMessages()
+            dialogData.setLastMessage(messageService.getMessageData(person2Dialog.getDialog().getMessages()
                     .stream().max(Comparator.comparingInt(Message::getId)).get(), person2Dialog.getLastCheckTime()));
+        dialogData.setRecipientId(setAuthData(person2Dialog.getPerson()));
         return dialogData;
     }
 
-    private MessageData getMessageData(Message message, LocalDateTime checkTime) {
-        MessageData messageData = new MessageData();
-        messageData.setMessageText(message.getText())
-                .setAuthorId(message.getAuthor().getId())
-                .setId(message.getId())
-                .setTime(message.getTime().toInstant(UTC))
-                .setReadStatus(message.getTime().isAfter(checkTime) ? "SENT" : "READ")
-                .setRecipientId(1);
-        return messageData;
-    }
 
     private Person findPerson(String eMail) {
         return personRepository.findByEMail(eMail)
