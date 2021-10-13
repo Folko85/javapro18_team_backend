@@ -16,7 +16,7 @@ build:
   script:
     - pwd
     - mvn clean package -Pserver-build
-#   - mvn package
+#   - mvn package kek
 deploy:
   stage: deploy
   only:
@@ -33,6 +33,6 @@ deploy:
     - chmod 644 ~/.ssh/known_hosts
   script:
     - ssh $DEV_USER@$DEV_HOST "ls -l"
-    - $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/app_name.jar ] || mv $DEV_APP_PATH/app_name.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
-    - scp target/app_name.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/
-    - ssh $DEV_USER@$DEV_HOST "systemctl stop app_name_service && sudo systemctl start app_name_service"
+#    - $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/app_name.jar ] || mv $DEV_APP_PATH/app_name.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
+#    - scp target/app_name.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/
+#    - ssh $DEV_USER@$DEV_HOST "systemctl stop app_name_service && sudo systemctl start app_name_service"
