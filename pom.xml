@@ -126,6 +126,15 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>server-build</id>
+            <build>
+                <directory>./jars/test/</directory>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>

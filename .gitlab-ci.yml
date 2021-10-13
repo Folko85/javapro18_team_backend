@@ -5,7 +5,7 @@ stages:
 build:
   artifacts:
     paths:
-      - ./jars/
+      - /builds/javapro18/javapro18_team_backend/jars/test/*.jar
   only:
     - merge_request
     - dev
@@ -14,8 +14,9 @@ build:
   stage: build
   when: always
   script:
-    - mvn clean compile
-    - mvn package
+    - pwd
+    - mvn clean package -Pserver-build
+#   - mvn package kek
 deploy:
   stage: deploy
   only:
