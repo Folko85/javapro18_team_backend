@@ -14,7 +14,7 @@ build:
   stage: build
   when: always
   script:
-    - mvn clean compile
+    - mvn clean compile -Pserver-build
     - mvn package
 deploy:
   stage: deploy
