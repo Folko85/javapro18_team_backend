@@ -5,7 +5,7 @@ stages:
 build:
   artifacts:
     paths:
-      - opt/jars/test/*.jar
+      - /builds/javapro18/javapro18_team_backend/jars/test/*.jar
   only:
     - merge_request
     - dev
