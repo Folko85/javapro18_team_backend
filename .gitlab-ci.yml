@@ -5,7 +5,7 @@ stages:
 build:
   artifacts:
     paths:
-      - ./jars/test/*.jar
+      - root/jars/test/*.jar
   only:
     - merge_request
     - dev
