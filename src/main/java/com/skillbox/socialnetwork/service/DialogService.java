@@ -55,6 +55,7 @@ public class DialogService {
         List<Person> personList = personRepository.findAllById(dialogRequest.getUsersIds());
         if (personList.size() != dialogRequest.getUsersIds().size())
             throw new UsernameNotFoundException("");
+        personList.add(currentPerson);
         dialog.setTitle("Новый чат");
         dialog = dialogRepository.save(dialog);
         Dialog finalDialog = dialog;
@@ -72,6 +73,7 @@ public class DialogService {
         dataResponse.setTimestamp(Instant.now());
         DialogData dialogData = new DialogData();
         dialogData.setId(dialog.getId());
+        dialogData.setRecipientId(setAuthData(currentPerson));
         dataResponse.setData(dialogData);
         return dataResponse;
     }
@@ -102,8 +104,11 @@ public class DialogService {
                 .stream().filter(message -> message.getTime().isAfter(person2Dialog.getLastCheckTime())).count());
         if (person2Dialog.getDialog().getMessages().size() > 0)
             dialogData.setLastMessage(messageService.getMessageData(person2Dialog.getDialog().getMessages()
-                    .stream().max(Comparator.comparingInt(Message::getId)).get(), person2Dialog.getLastCheckTime()));
-        dialogData.setRecipientId(setAuthData(person2Dialog.getPerson()));
+                    .stream().max(Comparator.comparingInt(Message::getId)).get(), person2Dialog));
+        else dialogData.setLastMessage(new MessageData());
+        dialogData.setRecipientId(setAuthData(person2Dialog.getDialog().getPersons()
+                .stream().filter(person -> person.getId() != person2Dialog.getPerson().getId()).findFirst()
+                .orElse(person2Dialog.getPerson())));
         return dialogData;
     }
 

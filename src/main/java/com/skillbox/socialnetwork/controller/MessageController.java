@@ -1,5 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.skillbox.socialnetwork.api.request.MessageRequest;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +25,19 @@ public class MessageController {
     @GetMapping("/dialogs/{id}/messages")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse> getMessages(@PathVariable int id,
-                                                   @RequestParam(name = "query", defaultValue = "") String query,
-                                                   @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                   @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage,
-                                                   @RequestParam(name = "fromMessageId",defaultValue = "0") int fromMessageId,
-                                                   Principal principal) {
-        return new ResponseEntity<>(messageService.getMessages(id,query, offset, itemPerPage, principal), HttpStatus.OK);
+                                                    @RequestParam(name = "query", defaultValue = "") String query,
+                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                    @RequestParam(name = "itemPerPage", defaultValue = "1000") int itemPerPage,
+                                                    @RequestParam(name = "fromMessageId", defaultValue = "0") int fromMessageId,
+                                                    Principal principal) {
+        return new ResponseEntity<>(messageService.getMessages(id, query, offset, itemPerPage, principal), HttpStatus.OK);
+    }
+
+    @PostMapping("/dialogs/{id}/messages")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse> postMessages(@PathVariable int id,
+                                                    @RequestBody MessageRequest messageRequest,
+                                                    Principal principal) {
+        return new ResponseEntity<>(messageService.postMessage(id, messageRequest, principal), HttpStatus.OK);
     }
 }
