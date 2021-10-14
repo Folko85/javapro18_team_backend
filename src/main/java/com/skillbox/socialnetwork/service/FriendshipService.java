@@ -1,9 +1,11 @@
 package com.skillbox.socialnetwork.service;
 
+import com.skillbox.socialnetwork.api.request.IsFriends;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
+import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
@@ -105,40 +107,75 @@ public class FriendshipService {
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) {
 
-        int person = personRepository.findByEMail(principal.getName()).get().getId();
+        //1. Формируем ответ
+        FriendsResponse200 addFriendResponse = new FriendsResponse200();
+        addFriendResponse.setError("Successfully");
+        addFriendResponse.setTimestamp(LocalDateTime.now());
+        addFriendResponse.setMessage("Adding to friends");
 
-        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(person, id);
+        //2. Находим в БД пользователя который добавляет
+        Person srcPerson = personRepository.findByEMail(principal.getName()).get();
+        int srcPersonId = srcPerson.getId();
 
-        if (optionalFriendship.isEmpty()) {
-            //1. Находим в БД пользователя который добавляет
-            Person srcPerson = personService.findPersonByEmail(principal.getName());
-            //2. Находим в БД пользователя которого добавляют
+        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
+
+        if (optionalFriendship.isPresent() && id != srcPersonId) {
+
+            //3. Находим в БД пользователя которого добавляют
             Person dstPerson = personService.findPersonById(id).get();
 
-            //3. Создаем статус дружбы
-            FriendshipStatus friendshipStatus = new FriendshipStatus();
-            friendshipStatus.setTime(LocalDateTime.now());
-            friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
-            FriendshipStatus save = friendshipStatusRepository.save(friendshipStatus);
+            Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
 
-            //4. Создаем дружбу
-            Friendship newFriendship = new Friendship();
-            newFriendship.setStatus(save);
-            newFriendship.setSrcPerson(srcPerson);
-            newFriendship.setDstPerson(dstPerson);
+            if (friendshipOptional.isPresent()) {
+                FriendshipStatus friendshipStatusById = friendshipStatusRepository.findById(friendshipOptional.get().getId()).get();
+                friendshipStatusById.setTime(LocalDateTime.now());
+                friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
 
-            //5. Сохраняем в БД
-            friendshipRepository.save(newFriendship);
+                friendshipStatusRepository.save(friendshipStatusById);
+            } else {
 
-            //6. Формируем ответ
-            FriendsResponse200 addFriendResponse = new FriendsResponse200();
-            addFriendResponse.setError("Successfully");
-            addFriendResponse.setTimestamp(LocalDateTime.now());
-            addFriendResponse.setMessage("Adding to friends");
+                //4. Создаем статус дружбы
+                FriendshipStatus friendshipStatus = new FriendshipStatus();
+                friendshipStatus.setTime(LocalDateTime.now());
+                friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
 
+                FriendshipStatus saveFriendshipStatus = friendshipStatusRepository.save(friendshipStatus);
+
+                //5. Создаем дружбу
+                Friendship newFriendship = new Friendship();
+                newFriendship.setStatus(saveFriendshipStatus);
+                newFriendship.setSrcPerson(srcPerson);
+                newFriendship.setDstPerson(dstPerson);
+
+                //6. Сохраняем в БД
+                friendshipRepository.save(newFriendship);
+            }
             return addFriendResponse;
         } else {
             return null;
         }
+    }
+
+    public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
+//        int id = isFriends.getUserIds().get(0);
+//        int idPerson = personRepository.findByEMail(principal.getName()).get().getId();
+//        List<StatusFriend> f = friendshipRepository.isMyFriend(idPerson, id);
+//
+//        for (StatusFriend statusFriend : f) {
+//            System.out.println(statusFriend.getUserId() + " " + statusFriend.getFriendshipStatusCode());
+//        }
+
+
+//        StatusFriend statusFriend = new StatusFriend();
+//        statusFriend.setUserId(f.getDstPerson().getId());
+//        statusFriend.setFriendshipStatusCode(f.getStatus().getCode());
+//
+//        List<StatusFriend> statusList = new ArrayList<>();
+//        statusList.add(statusFriend);
+//
+        ResponseFriendsList responseFriendsList = new ResponseFriendsList();
+//        responseFriendsList.setData(statusList);
+
+        return responseFriendsList;
     }
 }
