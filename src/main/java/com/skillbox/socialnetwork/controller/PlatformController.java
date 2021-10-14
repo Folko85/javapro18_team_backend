@@ -1,11 +1,14 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.CityDTO;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.service.PlatformService;
 import com.vk.api.sdk.objects.base.Country;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,5 +39,12 @@ public class PlatformController {
     @Operation (summary = "Запрос списка городов в количестве itemPerPage содержащих city")
     List<CityDTO> getCities(@RequestParam int countryId) throws Exception {
         return platformService.getCities(countryId);
+    }
+    /*
+        TODO: Это заглушка
+    */
+    @GetMapping("/platform/languages")
+    public ResponseEntity<ListResponse> getLanguages(){
+        return  new ResponseEntity<>(platformService.getLanguages(), HttpStatus.OK);
     }
 }

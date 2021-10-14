@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table (name = "message")
+@Table(name = "message")
 public class Message {
 
     @Id
@@ -27,16 +27,12 @@ public class Message {
     @JoinColumn(name = "author_id", nullable = false)
     private Person author;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "recipient_id", nullable = false)
-    private Person recipient;
-
-
     @Column(name = "message_text", nullable = false, columnDefinition = "mediumtext")
     private String text;
 
-    @Column(name = "read_status")
-    private String readStatus;
+    @ManyToOne
+    @JoinColumn(name = "dialog_id")
+    private Dialog dialog;
 
     @Override
     public boolean equals(Object o) {

@@ -11,6 +11,7 @@ import com.skillbox.socialnetwork.api.response.postdto.PostDataResponse;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
+import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
@@ -30,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -55,7 +57,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
                 Instant.ofEpochMilli(dateFrom)
-                ,Instant.ofEpochMilli(dateTo),
+                , Instant.ofEpochMilli(dateTo),
                 pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
@@ -118,7 +120,9 @@ public class PostService {
     public ListResponse getPersonWall(int id, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> pageablePostList = postRepository.findPostsByPersonId(id, pageable);
+
+        Page<Post> pageablePostList = id == person.getId() ?
+                postRepository.findPostsByPersonId(id, pageable) : postRepository.findPostsByPersonIdAndCurrentDate(id, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
@@ -161,9 +165,12 @@ public class PostService {
         postData.setTime(post.getDatetime());
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
-        postData.setTags(List.of("tag", "tagtagtagtagtagtag", "tag", "tag", "tag", "tag", "tag", "tag"));
+        postData.setTags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()));
         postData.setMyLike(likes.stream()
                 .anyMatch(postLike -> postLike.getPerson().equals(person)));
+        if (Instant.now().isBefore(post.getDatetime())) {
+            postData.setType("QUEUED");
+        } else postData.setType("POSTED");
         return postData;
     }
 
@@ -179,16 +186,16 @@ public class PostService {
 
         return postDataResponse;
     }
+
     public DataResponse createPost(int id, long publishDate, PostRequest postRequest, Principal principal) throws PostCreationExecption {
         Person person = findPerson(principal.getName());
-        if(person.getId()!=id) throw  new PostCreationExecption();
+        if (person.getId() != id) throw new PostCreationExecption();
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
-        if(publishDate==0) {
+        if (publishDate == 0) {
             post.setDatetime(Instant.now());
-        }
-        else {
+        } else {
             post.setDatetime(Instant.ofEpochMilli(publishDate));
         }
         post.setPerson(person);
