@@ -2,12 +2,18 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.TagRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,19 +28,20 @@ public class TagService {
     }
 
     public ListResponse getTags(String tag, Integer offset, Integer itemPerPage) {
-        List<Tag> tags = tagRepository.findAll();
-        int total = tags.size();
-        if (tag != null && !tag.isEmpty()) {
-            tags = tags.stream().filter(x -> x.getTag().startsWith(tag)).collect(Collectors.toList());
-        }
-        if (itemPerPage != null && tags.size() > itemPerPage) {
-            tags = tags.subList(0, itemPerPage);
-        }
-        return new ListResponse(); //.setTimestamp(Instant.now()).setError("all right").setOffset(offset).setPerPage(itemPerPage).setTotal(total).setData(tags);
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Tag> pagebleTagList = tagRepository.findTagsByTextContaining(tag, pageable);
+        List<Dto> result = pagebleTagList.stream().map(x -> new TagDto().setId(x.getId()).setTag(x.getTag())).collect(Collectors.toList());
+        ListResponse response = new ListResponse();
+        response.setPerPage(itemPerPage);
+        response.setTimestamp(Instant.now());
+        response.setOffset(offset);
+        response.setTotal((int) pagebleTagList.getTotalElements());
+        response.setData(result);
+        return response;
     }
 
-    public DataResponse postTag(Tag tag) {
-        Tag savedTag = tagRepository.save(tagRepository.findByTag(tag.getTag()).orElse(tag));
+    public DataResponse postTag(TagDto tag) {
+        Tag savedTag = tagRepository.save(tagRepository.findByTag(tag.getTag()).orElse(new Tag().setTag(tag.getTag())));
         return new DataResponse();//.setError("all right").setTimestamp(Instant.now()).setData(savedTag);
     }
 

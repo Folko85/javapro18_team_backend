@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest(classes = {NetworkApplication.class})
@@ -34,14 +35,17 @@ public class TagControllerTest extends AbstractTest {
     }
 
     @Test
-    @WithMockUser (username = "test@test.ru", authorities = "user:write")
+    @WithMockUser(username = "test@test.ru", authorities = "user:write")
     public void testGetTags() throws Exception {
-        repository.save(new Tag().setTag("порно"));
+        repository.save(new Tag().setTag("porno"));
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/tags/")
-                        .param("tag", "по")
+                        .param("tag", "po")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].tag").value("porno"))
+                .andDo(MockMvcResultHandlers.print());
     }
 
 }
