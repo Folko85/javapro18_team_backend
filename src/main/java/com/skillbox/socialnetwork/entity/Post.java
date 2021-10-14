@@ -48,8 +48,8 @@ public class Post {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "Post2Tag",
-            joinColumns = {@JoinColumn(name = "tag_id")},
-            inverseJoinColumns = {@JoinColumn(name = "post_id")})
+            joinColumns = {@JoinColumn(name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags;
 
     @Override
