@@ -11,6 +11,7 @@ import com.skillbox.socialnetwork.api.response.postdto.PostDataResponse;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
+import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
@@ -30,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -163,7 +165,7 @@ public class PostService {
         postData.setTime(post.getDatetime());
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
-        postData.setTags(List.of("tag", "tagtagtagtagtagtag", "tag", "tag", "tag", "tag", "tag", "tag"));
+        postData.setTags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()));
         postData.setMyLike(likes.stream()
                 .anyMatch(postLike -> postLike.getPerson().equals(person)));
         if (Instant.now().isBefore(post.getDatetime())) {
