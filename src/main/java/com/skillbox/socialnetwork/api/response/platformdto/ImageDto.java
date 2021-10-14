@@ -1,5 +1,6 @@
-package com.skillbox.socialnetwork.api.response;
+package com.skillbox.socialnetwork.api.response.platformdto;
 
+import com.skillbox.socialnetwork.api.response.Dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -9,7 +10,7 @@ import java.time.Instant;
 @Data
 @Accessors (chain = true)
 @Schema(description = "Данные о загруженном изображении")
-public class ImageDTO implements Dto {
+public class ImageDto implements Dto {
 
     private String id;
     private int ownerId;
