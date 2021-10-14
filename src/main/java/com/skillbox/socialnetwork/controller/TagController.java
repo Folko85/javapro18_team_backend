@@ -4,13 +4,10 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
-import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Контроллер для работы с тегами")
@@ -41,8 +38,8 @@ public class TagController {
 
     @DeleteMapping
     @Operation (summary = "Удалить тег")
-    @PreAuthorize("hasAuthority('user:write')")
-    public AccountResponse deleteTag(@RequestParam int id){
+    @PreAuthorize("hasAuthority('user:administrate')")
+    public AccountResponse deleteTag(@RequestParam Integer id){
         return tagService.deleteTag(id);
     }
 }

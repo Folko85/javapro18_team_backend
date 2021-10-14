@@ -6,6 +6,7 @@ import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PostRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,13 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest(classes = {NetworkApplication.class})
-public class TagControllerTest extends AbstractTest {
+class TagControllerTest extends AbstractTest {
 
     @Autowired
     private TagRepository tagRepository;
@@ -45,7 +44,7 @@ public class TagControllerTest extends AbstractTest {
     }
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
-    public void testGetTags() throws Exception {
+    void testGetTags() throws Exception {
         tagRepository.save(new Tag().setTag("porno"));
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/tags/")
@@ -59,7 +58,7 @@ public class TagControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
-    public void testPostTags() throws Exception {
+    void testPostTags() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/tags/")
                         .content(mapper.writeValueAsString(new TagDto().setTag("ahaha")))   //постим задачу
@@ -67,8 +66,24 @@ public class TagControllerTest extends AbstractTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tag").value("ahaha"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").exists())
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").exists());
+//                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.ru", authorities = "user:administrate")
+    void testDeleteTags() throws Exception {
+        tagRepository.save(new Tag().setTag("java"));
+        String id = tagRepository.findByTag("java").get().getId().toString();
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/api/v1/tags/")
+                        .param("id", id)
+                        .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("nothing"));
+//                .andDo(MockMvcResultHandlers.print());
     }
 
 }

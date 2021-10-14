@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,6 @@ import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
-import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 
 @Service
 public class PostService {
@@ -165,7 +163,9 @@ public class PostService {
         postData.setTime(post.getDatetime());
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
-        postData.setTags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()));
+        if (post.getTags() != null){
+            postData.setTags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()));
+        }
         postData.setMyLike(likes.stream()
                 .anyMatch(postLike -> postLike.getPerson().equals(person)));
         if (Instant.now().isBefore(post.getDatetime())) {

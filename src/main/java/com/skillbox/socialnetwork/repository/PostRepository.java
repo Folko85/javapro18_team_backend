@@ -7,8 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.lang.annotation.Native;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
@@ -56,4 +58,13 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByPersonIdAndCurrentDate(int id, Pageable pageable);
+
+
+    @Query( nativeQuery = true, value =
+            "SELECT * " +
+            "FROM post p " +
+            "JOIN post2tag pt ON pt.post_id = p.id " +
+            "JOIN tag t ON t.id = pt.tag_id " +
+            "WHERE t.tag = ?1")
+    Set<Post> findPostsByTag(String tag);
 }
