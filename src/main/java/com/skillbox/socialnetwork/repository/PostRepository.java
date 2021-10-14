@@ -17,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
             "LEFT JOIN PostComment pc ON pc.post.id = p.id " +
-            "WHERE p.isBlocked = false AND p.datetime >= ?2 AND p.datetime <= ?3 AND p.datetime <= CURRENT_DATE AND p.postText LIKE  %?1% " +
+            "WHERE p.isBlocked = false AND p.datetime >= ?2 AND p.datetime <= ?3 AND p.datetime <= CURRENT_TIMESTAMP AND p.postText LIKE  %?1% " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContainingByDate(String query, Instant dateFrom, Instant dateTo, Pageable pageable);
@@ -25,7 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
             "LEFT JOIN PostComment pc ON pc.post.id = p.id " +
-            "WHERE p.isBlocked = false AND p.postText LIKE  %?1% AND p.datetime <= CURRENT_DATE " +
+            "WHERE p.isBlocked = false AND p.postText LIKE  %?1% AND p.datetime <= CURRENT_TIMESTAMP " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContaining(String query, Pageable pageable);
@@ -53,7 +53,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
             "LEFT JOIN PostComment pc ON pc.post.id = p.id " +
-            "WHERE p.isBlocked = false AND p.person.id = ?1 AND p.datetime <= CURRENT_DATE " +
+            "WHERE p.isBlocked = false AND p.person.id = ?1 AND p.datetime <= CURRENT_TIMESTAMP " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByPersonIdAndCurrentDate(int id, Pageable pageable);
