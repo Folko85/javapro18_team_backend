@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.TagRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,8 +42,13 @@ public class TagService {
     }
 
     public DataResponse postTag(TagDto tag) {
+        DataResponse response = new DataResponse();
         Tag savedTag = tagRepository.save(tagRepository.findByTag(tag.getTag()).orElse(new Tag().setTag(tag.getTag())));
-        return new DataResponse();//.setError("all right").setTimestamp(Instant.now()).setData(savedTag);
+        response.setError("all right");
+        response.setTimestamp(Instant.now());
+        BeanUtils.copyProperties(savedTag, tag);
+        response.setData(tag);
+        return response;
     }
 
 
