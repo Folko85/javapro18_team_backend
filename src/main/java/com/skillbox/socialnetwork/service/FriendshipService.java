@@ -117,43 +117,39 @@ public class FriendshipService {
         Person srcPerson = personRepository.findByEMail(principal.getName()).get();
         int srcPersonId = srcPerson.getId();
 
+        //3. Находим в БД пользователя которого добавляют
+        Person dstPerson = personService.findPersonById(id).get();
+
         Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
 
-        if (optionalFriendship.isPresent() && id != srcPersonId) {
 
-            //3. Находим в БД пользователя которого добавляют
-            Person dstPerson = personService.findPersonById(id).get();
+        Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
 
-            Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
+        if (friendshipOptional.isPresent()) {
+            FriendshipStatus friendshipStatusById = friendshipStatusRepository.findById(friendshipOptional.get().getId()).get();
+            friendshipStatusById.setTime(LocalDateTime.now());
+            friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
 
-            if (friendshipOptional.isPresent()) {
-                FriendshipStatus friendshipStatusById = friendshipStatusRepository.findById(friendshipOptional.get().getId()).get();
-                friendshipStatusById.setTime(LocalDateTime.now());
-                friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
-
-                friendshipStatusRepository.save(friendshipStatusById);
-            } else {
-
-                //4. Создаем статус дружбы
-                FriendshipStatus friendshipStatus = new FriendshipStatus();
-                friendshipStatus.setTime(LocalDateTime.now());
-                friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
-
-                FriendshipStatus saveFriendshipStatus = friendshipStatusRepository.save(friendshipStatus);
-
-                //5. Создаем дружбу
-                Friendship newFriendship = new Friendship();
-                newFriendship.setStatus(saveFriendshipStatus);
-                newFriendship.setSrcPerson(srcPerson);
-                newFriendship.setDstPerson(dstPerson);
-
-                //6. Сохраняем в БД
-                friendshipRepository.save(newFriendship);
-            }
-            return addFriendResponse;
+            friendshipStatusRepository.save(friendshipStatusById);
         } else {
-            return null;
+
+            //4. Создаем статус дружбы
+            FriendshipStatus friendshipStatus = new FriendshipStatus();
+            friendshipStatus.setTime(LocalDateTime.now());
+            friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
+
+            FriendshipStatus saveFriendshipStatus = friendshipStatusRepository.save(friendshipStatus);
+
+            //5. Создаем дружбу
+            Friendship newFriendship = new Friendship();
+            newFriendship.setStatus(saveFriendshipStatus);
+            newFriendship.setSrcPerson(srcPerson);
+            newFriendship.setDstPerson(dstPerson);
+
+            //6. Сохраняем в БД
+            friendshipRepository.save(newFriendship);
         }
+        return addFriendResponse;
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
