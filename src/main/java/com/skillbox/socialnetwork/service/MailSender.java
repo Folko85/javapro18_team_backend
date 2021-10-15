@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MailSender {
 
-    @Value("${mail.key}")
+    @Value("${external.mail.key}")
     private String key;
 
-    @Value("${mail.secret}")
+    @Value("${external.mail.secret}")
     private String secret;
 
     public void send(String emailTo, String message) throws MailjetSocketTimeoutException, MailjetException {
