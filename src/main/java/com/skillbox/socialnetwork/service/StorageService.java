@@ -4,7 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.skillbox.socialnetwork.api.response.DataResponse;
-import com.skillbox.socialnetwork.api.response.ImageDTO;
+import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class StorageService {
 
         String imageUrl = cloudinary.url().transformation(new Transformation().crop("fill").width(300).height(300)).generate(response.get("public_id").toString());
 
-        ImageDTO imageDTO = new ImageDTO()
+        ImageDto imageDTO = new ImageDto()
                 .setId(imageUrl)
                 .setBytes(Integer.parseInt(response.get("bytes").toString()))
                 .setCreatedAt(Instant.parse(response.get("created_at").toString()))

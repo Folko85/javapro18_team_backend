@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.repository;
 
+import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.StatusFriend;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
 import org.springframework.data.domain.Page;
@@ -34,4 +35,14 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "or f.srcPerson.id = ?2 and f.dstPerson.id = ?1")
     Optional<Friendship> findFriendshipBySrcPersonAndDstPerson(int src, int dst);
 
+//    @Query("select " +
+//            "case " +
+//            "when f.srcPerson.id = ?1 and f.dstPerson.id = ?2" +
+//            " then new StatusFriend(f.id, fs.code) " +
+//            "end " +
+//            "new com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.StatusFriend(f.id, fs.code) " +
+//            "from Friendship f " +
+//            "join FriendshipStatus fs on fs.id = f.id " +
+//            "where f.srcPerson = ?1 and fs.code = ?2")
+//    List<StatusFriend> isMyFriend(int idPerson, int idFriend);
 }
