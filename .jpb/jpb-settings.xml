@@ -8,4 +8,15 @@
       </database-info>
     </database-infos>
   </component>
+  <component name="JpaLiquibaseChangesConfig">
+    <exclude-change idName="friendship_status#name" tagName="dropColumn" />
+    <exclude-change idName="block_history#action" tagName="addColumn" />
+    <exclude-change idName="notification_type#code" tagName="addColumn" />
+    <exclude-change idName="notification_type#code" tagName="dropColumn" />
+    <exclude-change idName="notification#entity_id" tagName="addColumn" />
+    <exclude-change idName="person#messages_permission" tagName="addColumn" />
+    <exclude-change idName="friendship#status_id" tagName="dropColumn" />
+    <exclude-change idName="friendship#status_id" tagName="addColumn" />
+    <exclude-change idName="block_history#action" tagName="dropColumn" />
+  </component>
 </project>

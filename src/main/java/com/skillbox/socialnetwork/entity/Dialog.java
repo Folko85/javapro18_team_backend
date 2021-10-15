@@ -17,6 +17,8 @@ public class Dialog {
 
     private String title;
 
+    private boolean isDialog;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dialog")
     private Set<Message> messages;
 

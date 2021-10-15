@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -61,6 +62,8 @@ public class DialogService {
         Dialog finalDialog = dialog;
         List<Person2Dialog> person2DialogList = new ArrayList<>();
         personList.forEach(person -> {
+            if (person2DialogRepository.findPerson2DialogByPersonDialog(currentPerson.getId(), person.getId()).isPresent())
+                throw new EntityNotFoundException("");
             Person2Dialog person2Dialog = new Person2Dialog();
             person2Dialog.setDialog(finalDialog);
             person2Dialog.setPerson(person);
