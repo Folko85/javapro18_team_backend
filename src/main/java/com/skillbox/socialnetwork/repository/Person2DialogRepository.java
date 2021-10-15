@@ -23,13 +23,4 @@ public interface Person2DialogRepository extends JpaRepository<Person2Dialog, In
 
     Optional<Person2Dialog> findPerson2DialogByDialogIdAndPersonId(int dialogId, int personId);
 
-    @Query("SELECT COUNT(p) AS ct " +
-            "FROM Person2Dialog p2d " +
-            "LEFT JOIN Dialog d ON p2d.dialog.id = d.id " +
-            "LEFT JOIN Person p ON p.id = p2d.person.id " +
-            "LEFT JOIN Message m ON m.dialog.id = d.id " +
-            "WHERE (p.id = ?2  OR p.id = ?1) AND d.isDialog = true " +
-            "GROUP BY d.id " +
-            "HAVING ct > 1 ")
-    Optional<Integer> findPerson2DialogByPersonDialog(int currentPersonId, int personId);
 }
