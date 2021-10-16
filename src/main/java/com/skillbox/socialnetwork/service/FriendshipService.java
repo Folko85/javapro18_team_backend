@@ -160,15 +160,12 @@ public class FriendshipService {
         List<StatusFriend> statusFriendList = new ArrayList<>();
 
         for (int friendId : isFriends.getUserIds()) {
-            Optional<FriendshipStatusCode> optionalFriendshipStatusCode = friendshipRepository.isMyFriend(idPerson, friendId);
+            Optional<FriendshipStatusCode> optionalFriendshipStatusCode = friendshipRepository.isMyFriend(idPerson, friendId, FriendshipStatusCode.FRIEND);
 
             if (optionalFriendshipStatusCode.isPresent()) {
 
                 FriendshipStatusCode status = optionalFriendshipStatusCode.get();
-
-                if (status.equals(FriendshipStatusCode.FRIEND)) {
-                    statusFriendList.add(new StatusFriend(friendId, status));
-                }
+                statusFriendList.add(new StatusFriend(friendId, status));
             }
         }
 
