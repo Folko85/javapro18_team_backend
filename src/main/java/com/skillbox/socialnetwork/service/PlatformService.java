@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PlatformService {
 
-    @Value("${vk.id}")
+    @Value("${external.vk.id}")
     private String id;
 
-    @Value("${vk.token}")
+    @Value("${external.vk.token}")
     private String token;
 
 

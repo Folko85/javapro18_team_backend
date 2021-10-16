@@ -21,7 +21,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String eMail) throws UsernameNotFoundException {
         Optional<Person> optionalPerson = accountRepository.findByEMail(eMail);
-        if (optionalPerson.isPresent()) {
+        if (optionalPerson.isPresent() && optionalPerson.get().isApproved()) {
             Person person = optionalPerson.get();
             person.setLastOnlineTime(LocalDateTime.now());
             accountRepository.save(person);

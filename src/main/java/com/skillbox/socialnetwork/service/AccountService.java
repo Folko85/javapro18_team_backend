@@ -1,5 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
+import com.mailjet.client.errors.MailjetException;
+import com.mailjet.client.errors.MailjetSocketTimeoutException;
 import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
@@ -7,6 +9,7 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,13 +28,13 @@ import java.util.UUID;
 @Service
 public class AccountService {
     private final ZoneId UTC = ZoneId.of("UTC");
-    private final String RECOVERY_URL = "http://localhost:8080/api/v1/account/recovery_complete?";
-    private final String REGISTRATION_URL = "http://localhost:8080/api/v1/account/registration_complete?";
 
     private final AccountRepository accountRepository;
     private final MailSender mailSender;
     private final JwtProvider jwtProvider;
 
+    @Value("${registration.confirm.url}")
+    String regUrl;
 
     public AccountService(AccountRepository accountRepository,
                           MailSender mailSender,
@@ -41,7 +44,7 @@ public class AccountService {
         this.jwtProvider = jwtProvider;
     }
 
-    public AccountResponse register(RegisterRequest registerRequest) throws UserExistException {
+    public AccountResponse register(RegisterRequest registerRequest) throws UserExistException, MailjetSocketTimeoutException, MailjetException {
         if (accountRepository.findByEMail(registerRequest.getEMail()).isPresent())
             throw new UserExistException();
         Person person = new Person();
@@ -55,30 +58,30 @@ public class AccountService {
         person.setMessagesPermission(MessagesPermission.ALL);
         person.setLastOnlineTime(ZonedDateTime.now(UTC).toLocalDateTime());
         String code = UUID.randomUUID().toString().replace("-", "");
-        //mailSender.send(registerRequest.getEMail(), REGISTRATION_URL + "key=" + code + "&eMail=" + registerRequest.getEMail());
+        mailSender.send(registerRequest.getEMail(), regUrl + "?key=" + code + "&eMail=" + registerRequest.getEMail());
         person.setConfirmationCode(code);
         accountRepository.save(person);
         return getAccountResponse(UTC);
     }
 
-    public String sendRecoveryMessage(RecoveryRequest recoveryRequest) {
+    public String sendRecoveryMessage(RecoveryRequest recoveryRequest) throws MailjetSocketTimeoutException, MailjetException {
         Person person = findPerson(recoveryRequest.getEMail());
-        String code = UUID.randomUUID().toString().replace("-", "").substring(0,4);
+        String code = UUID.randomUUID().toString().replace("-", "").substring(0, 4);
         person.setConfirmationCode(code);
         accountRepository.save(person);
 
-       // mailSender.send(recoveryRequest.getEMail(), RECOVERY_URL + "key=" + code + "&eMail=" + recoveryRequest.getEMail());
+        mailSender.send(recoveryRequest.getEMail(), "Enter this code:" + code);
         return code;
     }
 
-    public String recoveryComplete(String key, String eMail) {
+    public String recoveryComplete(String key, String eMail) throws MailjetSocketTimeoutException, MailjetException {
         Person person = findPerson(eMail);
         if (person.getConfirmationCode().equals(key)) {
             String passwd = UUID.randomUUID().toString().replace("-", "");
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
             person.setPassword(passwordEncoder.encode(passwd));
             person.setConfirmationCode("");
-            //  mailSender.send(eMail, passwd);
+            mailSender.send(eMail, passwd);
             accountRepository.save(person);
         } else throw new EntityNotFoundException("");
         return "Новый пароль выслан";
@@ -104,11 +107,12 @@ public class AccountService {
         return getAccountResponse(UTC);
 
     }
-    public AccountResponse setNotifications(NotificationsRequest notificationsRequest, Principal principal)
-    {
+
+    public AccountResponse setNotifications(NotificationsRequest notificationsRequest, Principal principal) {
         Person person = findPerson(principal.getName());
         return getAccountResponse(UTC);
     }
+
     public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {
         Person person = findPerson(jwtProvider.getLoginFromToken(passwdChangeRequest.getToken()));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
