@@ -26,13 +26,13 @@ public class StorageService {
 
     private final AccountRepository accountRepository;
 
-    @Value("${cloudinary.cloud}")
+    @Value("${external.cloudinary.cloud}")
     private String cloud;
 
-    @Value("${cloudinary.key}")
+    @Value("${external.cloudinary.key}")
     private String key;
 
-    @Value("${cloudinary.secret}")
+    @Value("${external.cloudinary.secret}")
     private String secret;
 
     public StorageService(AccountRepository accountRepository) {

@@ -1,5 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
+import com.mailjet.client.errors.MailjetException;
+import com.mailjet.client.errors.MailjetSocketTimeoutException;
 import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.exception.UserExistException;
@@ -27,20 +29,20 @@ public class ApiAccountController {
 
     @PostMapping("/register")
     @Operation(summary = "Регистрация")
-    public ResponseEntity<AccountResponse> register(@RequestBody RegisterRequest registerRequest) throws UserExistException {
+    public ResponseEntity<AccountResponse> register(@RequestBody RegisterRequest registerRequest) throws UserExistException, MailjetSocketTimeoutException, MailjetException {
         return new ResponseEntity<>(accountService.register(registerRequest), HttpStatus.OK);
     }
 
     @PutMapping("/recovery")
     @Operation(summary = "Восстановление пароля")
-    public ResponseEntity<String> recoverySend(@RequestBody RecoveryRequest recoveryRequest) {
+    public ResponseEntity<String> recoverySend(@RequestBody RecoveryRequest recoveryRequest) throws MailjetSocketTimeoutException, MailjetException {
         return new ResponseEntity<>(accountService.sendRecoveryMessage(recoveryRequest), HttpStatus.OK);
     }
 
     @GetMapping("/recovery_complete")
     @Operation(summary = "Подтверждение восстановления пароля")
     public ResponseEntity<String> recoveryComplete(@RequestParam String key,
-                                                   @RequestParam String eMail) {
+                                                   @RequestParam String eMail) throws MailjetSocketTimeoutException, MailjetException {
         return new ResponseEntity<>(accountService.recoveryComplete(key, eMail), HttpStatus.OK);
     }
 
