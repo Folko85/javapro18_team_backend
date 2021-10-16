@@ -41,5 +41,4 @@ jasypt:
     bean: encryptorBean
 
 cors:
-  - http://localhost:8086/
   - http://localhost/
