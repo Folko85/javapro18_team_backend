@@ -35,7 +35,7 @@ deploy:
     - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar ] || mv $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
+#    - $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar ] || mv $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
     - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/
 
 #  Проверяем наличие старого jar и переименовываем его. $CI_PIPELINE_ID — это глобальный номер сборки Pipeline.
