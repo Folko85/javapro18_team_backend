@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.IsFriends;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
+import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
@@ -58,9 +59,9 @@ public class FriendshipController {
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> isFriends(@RequestBody IsFriends isFriends, Principal principal) {
 
-        friendshipService.isPersonsFriends(isFriends, principal);
+        ResponseFriendsList personsFriends = friendshipService.isPersonsFriends(isFriends, principal);
 
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(personsFriends, HttpStatus.OK);
     }
 
 }
