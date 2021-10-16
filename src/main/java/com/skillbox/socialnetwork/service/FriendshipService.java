@@ -6,6 +6,7 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
+import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.StatusFriend;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
@@ -153,24 +154,26 @@ public class FriendshipService {
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
-//        int id = isFriends.getUserIds().get(0);
-//        int idPerson = personRepository.findByEMail(principal.getName()).get().getId();
-//        List<StatusFriend> f = friendshipRepository.isMyFriend(idPerson, id);
-//
-//        for (StatusFriend statusFriend : f) {
-//            System.out.println(statusFriend.getUserId() + " " + statusFriend.getFriendshipStatusCode());
-//        }
 
+        int idPerson = personRepository.findByEMail(principal.getName()).get().getId();
 
-//        StatusFriend statusFriend = new StatusFriend();
-//        statusFriend.setUserId(f.getDstPerson().getId());
-//        statusFriend.setFriendshipStatusCode(f.getStatus().getCode());
-//
-//        List<StatusFriend> statusList = new ArrayList<>();
-//        statusList.add(statusFriend);
-//
+        List<StatusFriend> statusFriendList = new ArrayList<>();
+
+        for (int friendId : isFriends.getUserIds()) {
+            Optional<FriendshipStatusCode> optionalFriendshipStatusCode = friendshipRepository.isMyFriend(idPerson, friendId);
+
+            if (optionalFriendshipStatusCode.isPresent()) {
+
+                FriendshipStatusCode status = optionalFriendshipStatusCode.get();
+
+                if (status.equals(FriendshipStatusCode.FRIEND)) {
+                    statusFriendList.add(new StatusFriend(friendId, status));
+                }
+            }
+        }
+
         ResponseFriendsList responseFriendsList = new ResponseFriendsList();
-//        responseFriendsList.setData(statusList);
+        responseFriendsList.setData(statusFriendList);
 
         return responseFriendsList;
     }
