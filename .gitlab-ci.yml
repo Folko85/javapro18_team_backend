@@ -3,9 +3,9 @@ stages:
   - build
   - deploy
 build:
-  artifacts:
-    paths:
-      - /builds/javapro18/javapro18_team_backend/jars/test/*.jar
+#  artifacts:
+#    paths:
+#      - /builds/javapro18/javapro18_team_backend/jars/test/*.jar
   only:
     - merge_request
     - dev
