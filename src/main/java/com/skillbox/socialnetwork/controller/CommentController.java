@@ -6,6 +6,7 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Контроллер для работы с коментариями")
 @RequestMapping("/api/v1")
 public class CommentController {
     private final CommentService commentService;
@@ -25,6 +27,7 @@ public class CommentController {
     }
 
     @PostMapping("/post/{id}/comments")
+    @Operation(summary = "Написать коментарий")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> postComment(@PathVariable int id,
                                                     @RequestBody CommentRequest commentRequest,
@@ -33,6 +36,7 @@ public class CommentController {
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}")
+    @Operation(summary = "Редактировать коментарий")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> putComment(@PathVariable int id,
                                                    @PathVariable(name = "comment_id") int commentId,
@@ -42,6 +46,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/post/{id}/comments/{comment_id}")
+    @Operation(summary = "Удалить коментарий")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> deleteComment(@PathVariable int id,
                                                       @PathVariable(name = "comment_id") int commentId,
@@ -50,6 +55,7 @@ public class CommentController {
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}/recover")
+    @Operation(summary = "Восстановить коментарий")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> recoveryComment(@PathVariable int id,
                                                         @PathVariable(name = "comment_id") int commentId,
@@ -58,6 +64,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{id}/comments")
+    @Operation(summary = "Получить коментарии")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse> getFeeds(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "5") int itemPerPage,

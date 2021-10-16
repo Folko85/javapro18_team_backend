@@ -4,6 +4,7 @@ import lombok.Data;
 
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,6 +18,8 @@ public class Dialog {
 
     private String title;
 
+    private boolean isDialog;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dialog")
     private Set<Message> messages;
 
@@ -25,4 +28,5 @@ public class Dialog {
             joinColumns = {@JoinColumn(name = "dialog_id")},
             inverseJoinColumns = {@JoinColumn(name = "person_id")})
     private Set<Person> persons;
+
 }

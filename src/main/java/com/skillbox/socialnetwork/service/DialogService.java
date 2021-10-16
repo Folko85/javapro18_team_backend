@@ -10,12 +10,14 @@ import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.repository.DialogRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import java.util.List;
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
+@Slf4j
 @Service
 public class DialogService {
     private final PersonRepository personRepository;
@@ -51,29 +54,38 @@ public class DialogService {
 
     public DataResponse postDialog(DialogRequest dialogRequest, Principal principal) {
         Person currentPerson = findPerson(principal.getName());
-        Dialog dialog = new Dialog();
         List<Person> personList = personRepository.findAllById(dialogRequest.getUsersIds());
         if (personList.size() != dialogRequest.getUsersIds().size())
             throw new UsernameNotFoundException("");
-        personList.add(currentPerson);
-        dialog.setTitle("Новый чат");
-        dialog = dialogRepository.save(dialog);
-        Dialog finalDialog = dialog;
-        List<Person2Dialog> person2DialogList = new ArrayList<>();
-        personList.forEach(person -> {
-            Person2Dialog person2Dialog = new Person2Dialog();
-            person2Dialog.setDialog(finalDialog);
-            person2Dialog.setPerson(person);
-            person2Dialog.setAddTime(LocalDateTime.now(UTC));
-            person2Dialog.setLastCheckTime(LocalDateTime.now(UTC));
-            person2DialogList.add(person2Dialog);
-        });
-        person2DialogRepository.saveAll(person2DialogList);
+        Person personDst = personList.stream().findFirst().get();
+        List<Dialog> dialogs = dialogRepository.findPerson2DialogByPersonDialog(currentPerson.getId(), personDst.getId());
+        DialogData dialogData = new DialogData();
+        if (dialogs.size() == 0) {
+            Dialog dialog = new Dialog();
+            personList.add(currentPerson);
+            dialog.setTitle("Новый чат");
+            dialog.setDialog(true);
+            dialog = dialogRepository.save(dialog);
+            Dialog finalDialog = dialog;
+            List<Person2Dialog> person2DialogList = new ArrayList<>();
+            personList.forEach(person -> {
+                if (dialogRepository.findPerson2DialogByPersonDialog(currentPerson.getId(), person.getId()).size() > 0)
+                    throw new EntityNotFoundException("");
+                Person2Dialog person2Dialog = new Person2Dialog();
+                person2Dialog.setDialog(finalDialog);
+                person2Dialog.setPerson(person);
+                person2Dialog.setAddTime(LocalDateTime.now(UTC));
+                person2Dialog.setLastCheckTime(LocalDateTime.now(UTC));
+                person2DialogList.add(person2Dialog);
+            });
+            person2DialogRepository.saveAll(person2DialogList);
+            dialogData.setId(dialog.getId());
+        }
+        else dialogData.setId(dialogs.stream().findFirst().get().getId());
+
         DataResponse dataResponse = new DataResponse();
         dataResponse.setTimestamp(Instant.now());
-        DialogData dialogData = new DialogData();
-        dialogData.setId(dialog.getId());
-        dialogData.setRecipientId(setAuthData(currentPerson));
+        dialogData.setRecipientId(setAuthData(personDst));
         dataResponse.setData(dialogData);
         return dataResponse;
     }

@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.exception.LikeNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.LikeService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Контроллер для работы с лайками")
 @RequestMapping("/api/v1/")
 public class LikeController {
     private final LikeService likeService;
@@ -24,6 +26,7 @@ public class LikeController {
     }
 
     @PutMapping("/likes")
+    @Operation(summary = "Поставить лайк")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> putLikes(@RequestBody LikeRequest likeRequest,
                                                  Principal principal) throws LikeNotFoundException, PostNotFoundException {
@@ -31,6 +34,7 @@ public class LikeController {
     }
 
     @DeleteMapping("/likes")
+    @Operation(summary = "Удалить лайк")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> deleteLikes(@RequestParam(name = "item_id") int itemId,
                                                     @RequestParam(name = "type") String type,
@@ -39,17 +43,10 @@ public class LikeController {
     }
 
     @GetMapping("/likes")
+    @Operation(summary = "Получить лайки")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getLikes(@RequestParam(name = "item_id") int itemId,
                                                  @RequestParam(name = "type") String type) throws PostNotFoundException {
         return new ResponseEntity<>(likeService.getLikes(itemId, type), HttpStatus.OK);
     }
-
-//    @GetMapping("/liked")
-//    @PreAuthorize("hasAuthority('user:write')")
-//    public ResponseEntity<DataResponse> getLiked(@RequestParam(name = "user_id") int userId,
-//                                                 @RequestParam(name = "item_id") int itemId,
-//                                                 @RequestParam(name = "type") String type) throws PostNotFoundException {
-//        return new ResponseEntity<>(likeService.getLiked(itemId,userId), HttpStatus.OK);
-//    }
 }

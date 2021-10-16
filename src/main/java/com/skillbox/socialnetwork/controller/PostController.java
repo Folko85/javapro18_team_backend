@@ -8,6 +8,7 @@ import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Контроллер для работы с постами")
 @RequestMapping("/api/v1")
 public class PostController {
     private final PostService postService;
@@ -28,6 +30,7 @@ public class PostController {
     }
 
     @GetMapping("/post")
+    @Operation(summary = "Получить посты в поиске")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse> getPosts(@RequestParam(name = "text", defaultValue = "") String text,
                                                  @RequestParam(name = "date_from", defaultValue = "0") long dateFrom,
@@ -39,6 +42,7 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
+    @Operation(summary = "Получить пост")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
         return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
@@ -70,6 +74,7 @@ public class PostController {
 
 
     @GetMapping("/feeds")
+    @Operation(summary = "Получить посты новостях")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse> getFeeds(@RequestParam(name = "text", defaultValue = "") String text,
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
@@ -79,6 +84,7 @@ public class PostController {
     }
 
     @GetMapping("/users/{id}/wall")
+    @Operation(summary = "Получить посты на стене")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse> getUserWall(@PathVariable int id,
                                                     @RequestParam(name = "offset", defaultValue = "0") int offset,
