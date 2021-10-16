@@ -23,6 +23,9 @@ public class MailSender {
     @Value("${external.mail.secret}")
     private String secret;
 
+    @Value("${external.mail.from}")
+    private String from;
+
     public void send(String emailTo, String message) throws MailjetSocketTimeoutException, MailjetException {
         MailjetClient client;
         MailjetRequest request;
@@ -32,14 +35,14 @@ public class MailSender {
                 .property(Emailv31.MESSAGES, new JSONArray()
                         .put(new JSONObject()
                                 .put(Emailv31.Message.FROM, new JSONObject()
-                                        .put("Email", "folko85@yandex.ru")
-                                        .put("Name", "Mikhail"))
+                                        .put("Email", from)
+                                        .put("Name", "ZeroNetwork"))
                                 .put(Emailv31.Message.TO, new JSONArray()
                                         .put(new JSONObject()
                                                 .put("Email", emailTo)
-                                                .put("Name", "Mikhail")))
+                                                .put("Name", "Dear User")))
                                 .put(Emailv31.Message.SUBJECT, "Greetings from Zeronetwork.")
-                                .put(Emailv31.Message.TEXTPART, "My first Mailjet email")
+                                .put(Emailv31.Message.TEXTPART, "Welcome to our network")
                                 .put(Emailv31.Message.HTMLPART, message)
                                 .put(Emailv31.Message.CUSTOMID, "AppGettingStartedTest")));
         response = client.post(request);

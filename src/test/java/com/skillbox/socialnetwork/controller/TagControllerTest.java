@@ -6,7 +6,6 @@ import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.AccountRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

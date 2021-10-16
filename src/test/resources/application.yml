@@ -19,6 +19,10 @@ spring:
       dialect: org.h2.Driver
       ddl-auto: update
 
+registration:
+  confirm:
+    url: "http://195.234.208.58:8086/api/v1/account/registration_complete"
+
 external:
   vk:
     id: ENC(m7rHhgvZf1a3XykimmtX9A==)
@@ -30,6 +34,7 @@ external:
   mail:
     key: ENC(cbiIlGM7COCT2LWMVF8KHGK51r+I+M2yvPUwbrQBo+FP6qYiSXqJEgIpH0DeWqet)
     secret: ENC(ej/k4xIoS2SQYjlcvgMdMjJ5nYNkYWijRoaBtknf+UWeBB5UETd1yRO0GA9udfEg)
+    from: ENC(pJ86R3iKC6yiWVTA3UOSQXiSyFWgWQ2NcwrY6fcCEVo=)
 
 jasypt:
   encryptor:
