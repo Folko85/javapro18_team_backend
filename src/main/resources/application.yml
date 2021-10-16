@@ -14,6 +14,10 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: validate
 
+registration:
+  confirm:
+    url: "http://195.234.208.58:8086/api/v1/account/registration_complete"
+
 management:
   endpoints:
     web:

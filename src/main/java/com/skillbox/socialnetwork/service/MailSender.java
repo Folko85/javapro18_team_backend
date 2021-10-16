@@ -38,7 +38,7 @@ public class MailSender {
                                         .put(new JSONObject()
                                                 .put("Email", emailTo)
                                                 .put("Name", "Mikhail")))
-                                .put(Emailv31.Message.SUBJECT, "Greetings from Mailjet.")
+                                .put(Emailv31.Message.SUBJECT, "Greetings from Zeronetwork.")
                                 .put(Emailv31.Message.TEXTPART, "My first Mailjet email")
                                 .put(Emailv31.Message.HTMLPART, message)
                                 .put(Emailv31.Message.CUSTOMID, "AppGettingStartedTest")));
