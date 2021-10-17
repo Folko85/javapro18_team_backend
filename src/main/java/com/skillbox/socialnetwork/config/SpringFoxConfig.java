@@ -9,7 +9,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
-// Сваггер будет доступен на  http://localhost:8086/swagger-ui/index.html
+// Сваггер будет доступен на  http://localhost:8086/swagger-ui.html
 // JSON при этом находится на http://localhost:8086/v3/api-docs
 // позже выгружу это же в yaml в корень
 @Configuration

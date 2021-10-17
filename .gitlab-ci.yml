@@ -1,19 +1,33 @@
 image: kroncosta/qmis_1101:228
 stages:
   - build
-
+  - deploy
 build:
 #  artifacts:
 #    paths:
-#      - /builds/javapro18/javapro18_team_backend/jars/test/*.jar # путь для хранения артефакта
-  only: # условия выполнения
+#      - /builds/javapro18/javapro18_team_backend/jars/test/*.jar
+  only:
     - merge_request
     - dev
   except:
     - tags
   stage: build
   when: always
-  before_script: # подключение к ссерверу по SSH
+  script:
+    - pwd
+    - mvn clean package -Pserver-build
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+deploy:
+  stage: deploy
+  only:
+    - dev
+  except:
+    - tags
+  before_script:
+#    - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | ssh-add -
     - mkdir -p ~/.ssh
@@ -21,11 +35,9 @@ build:
     - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - echo pwd
-    - mvn clean package -Pserver-build
-#    - ssh $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar ] || mv $DEV_APP_PATH/app_name.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
+#    - $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar ] || mv $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
     - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/
-  cache:
-    paths:
-      - ./target
-      - ./.m2
+
+#  Проверяем наличие старого jar и переименовываем его. $CI_PIPELINE_ID — это глобальный номер сборки Pipeline.
+#  Копируем новый jar на сервер.
+#  Останавливаем и запускаем службу, отвечающую за приложение.
