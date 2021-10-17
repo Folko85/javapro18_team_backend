@@ -2,7 +2,6 @@ package com.skillbox.socialnetwork.api.response.dialogdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
-import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

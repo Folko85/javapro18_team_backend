@@ -47,6 +47,7 @@ services:
           - grafana
   prometheus:
     image: prom/prometheus
+    user: root
     ports:
       - 9090:9090
     volumes:

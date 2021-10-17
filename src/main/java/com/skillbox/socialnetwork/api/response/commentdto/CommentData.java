@@ -2,16 +2,11 @@ package com.skillbox.socialnetwork.api.response.commentdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
-import com.skillbox.socialnetwork.entity.PostComment;
-import com.skillbox.socialnetwork.repository.CommentRepository;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
