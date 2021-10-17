@@ -1,9 +1,9 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.IsFriends;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
-import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
 import org.springframework.http.HttpStatus;
@@ -53,6 +53,17 @@ public class FriendshipController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    @GetMapping("/api/v1/friends/request")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> listApplications(@RequestParam(name = "name", defaultValue = "") String name,
+                                              @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                              @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                              Principal principal) {
+        ListResponse listOfApplications = friendshipService.getListOfApplications(name, offset, itemPerPage, principal);
+
+        return new ResponseEntity<>(listOfApplications, HttpStatus.OK);
     }
 
     @PostMapping("/api/v1/is/friends")

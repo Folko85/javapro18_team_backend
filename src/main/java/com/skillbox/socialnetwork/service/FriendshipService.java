@@ -89,7 +89,8 @@ public class FriendshipService {
             Friendship friendship = optionalFriendship.get();
             int statusId = friendship.getStatus().getId();
 
-            FriendshipStatus friendshipStatus = friendshipStatusRepository.findById(statusId).get();
+            FriendshipStatus friendshipStatus = friendshipStatusRepository
+                    .findById(statusId).orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
             friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
 
             friendship.setStatus(friendshipStatus);
@@ -115,19 +116,19 @@ public class FriendshipService {
         addFriendResponse.setMessage("Adding to friends");
 
         //2. Находим в БД пользователя который добавляет
-        Person srcPerson = personRepository.findByEMail(principal.getName()).get();
+        Person srcPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("person not found"));
         int srcPersonId = srcPerson.getId();
 
         //3. Находим в БД пользователя которого добавляют
-        Person dstPerson = personService.findPersonById(id).get();
+        Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
-        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
+//        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
 
 
         Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
 
         if (friendshipOptional.isPresent()) {
-            FriendshipStatus friendshipStatusById = friendshipStatusRepository.findById(friendshipOptional.get().getId()).get();
+            FriendshipStatus friendshipStatusById = friendshipStatusRepository.findById(friendshipOptional.get().getId()).orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
             friendshipStatusById.setTime(LocalDateTime.now());
             friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
 
@@ -137,7 +138,7 @@ public class FriendshipService {
             //4. Создаем статус дружбы
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
-            friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
+            friendshipStatus.setCode(FriendshipStatusCode.REQUEST);
 
             FriendshipStatus saveFriendshipStatus = friendshipStatusRepository.save(friendshipStatus);
 
@@ -153,20 +154,27 @@ public class FriendshipService {
         return addFriendResponse;
     }
 
+    public ListResponse getListOfApplications(String name, int offset, int itemPerPage, Principal principal) {
+        Person person = findPerson(principal.getName());
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Person> personByStatusCode = friendshipRepository.findPersonByStatusCode(name, person.getId(), FriendshipStatusCode.REQUEST, pageable);
+
+        return getPersonResponse(offset, itemPerPage, personByStatusCode);
+    }
+
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
 
-        int idPerson = personRepository.findByEMail(principal.getName()).get().getId();
+        int idPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
 
         List<StatusFriend> statusFriendList = new ArrayList<>();
 
+        FriendshipStatusCode friendshipStatusCode;
+
         for (int friendId : isFriends.getUserIds()) {
-            Optional<FriendshipStatusCode> optionalFriendshipStatusCode = friendshipRepository.isMyFriend(idPerson, friendId, FriendshipStatusCode.FRIEND);
+            friendshipStatusCode = friendshipRepository.isMyFriend(idPerson, friendId, FriendshipStatusCode.FRIEND).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
-            if (optionalFriendshipStatusCode.isPresent()) {
-
-                FriendshipStatusCode status = optionalFriendshipStatusCode.get();
-                statusFriendList.add(new StatusFriend(friendId, status));
-            }
+            FriendshipStatusCode status = friendshipStatusCode;
+            statusFriendList.add(new StatusFriend(friendId, status));
         }
 
         ResponseFriendsList responseFriendsList = new ResponseFriendsList();
