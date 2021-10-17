@@ -51,34 +51,13 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, pageablePersonList);
     }
 
-    private ListResponse getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
-        ListResponse postResponse = new ListResponse();
-        postResponse.setPerPage(itemPerPage);
-        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
-        postResponse.setOffset(offset);
-        postResponse.setTotal((int) pageablePersonList.getTotalElements());
-        postResponse.setData(getPerson4Response(pageablePersonList.toList()));
-        return postResponse;
-    }
-
-    private List<Dto> getPerson4Response(List<Person> persons) {
-        List<Dto> personDataList = new ArrayList<>();
-        persons.forEach(person -> {
-            AuthData personData = setAuthData(person);
-            personDataList.add(personData);
-        });
-        return personDataList;
-    }
-
-
     private Person findPerson(String eMail) {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
     public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
-        FriendsResponse200 response = new FriendsResponse200();
-        response.setTimestamp(LocalDateTime.now());
+        FriendsResponse200 response;
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
         int srcId = srcPerson.getId();
@@ -98,57 +77,46 @@ public class FriendshipService {
             friendshipStatusRepository.save(friendshipStatus);
             friendshipRepository.save(friendship);
 
-            response.setError("Successfully");
-            response.setMessage("Stop being friends");
+            response = getFriendResponse200("Successfully", "Stop being friends");
         } else {
-            response.setError("Unsuccessfully");
-            response.setMessage("Don't stop being friends");
+            response = getFriendResponse200("Unsuccessfully", "Don't stop being friends");
         }
         return response;
     }
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) {
 
-        //1. Формируем ответ
-        FriendsResponse200 addFriendResponse = new FriendsResponse200();
-        addFriendResponse.setError("Successfully");
-        addFriendResponse.setTimestamp(LocalDateTime.now());
-        addFriendResponse.setMessage("Adding to friends");
+        FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
 
-        //2. Находим в БД пользователя который добавляет
-        Person srcPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("person not found"));
+        Person srcPerson = personRepository
+                .findByEMail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("person not found"));
         int srcPersonId = srcPerson.getId();
 
-        //3. Находим в БД пользователя которого добавляют
         Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
-
-//        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
-
 
         Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
 
         if (friendshipOptional.isPresent()) {
-            FriendshipStatus friendshipStatusById = friendshipStatusRepository.findById(friendshipOptional.get().getId()).orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
+            FriendshipStatus friendshipStatusById = friendshipStatusRepository
+                    .findById(friendshipOptional.get().getId())
+                    .orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
             friendshipStatusById.setTime(LocalDateTime.now());
             friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
 
             friendshipStatusRepository.save(friendshipStatusById);
         } else {
-
-            //4. Создаем статус дружбы
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
             friendshipStatus.setCode(FriendshipStatusCode.REQUEST);
 
             FriendshipStatus saveFriendshipStatus = friendshipStatusRepository.save(friendshipStatus);
 
-            //5. Создаем дружбу
             Friendship newFriendship = new Friendship();
             newFriendship.setStatus(saveFriendshipStatus);
             newFriendship.setSrcPerson(srcPerson);
             newFriendship.setDstPerson(dstPerson);
 
-            //6. Сохраняем в БД
             friendshipRepository.save(newFriendship);
         }
         return addFriendResponse;
@@ -157,29 +125,58 @@ public class FriendshipService {
     public ListResponse getListOfApplications(String name, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> personByStatusCode = friendshipRepository.findPersonByStatusCode(name, person.getId(), FriendshipStatusCode.REQUEST, pageable);
+        Page<Person> personByStatusCode = friendshipRepository
+                .findPersonByStatusCode(name, person.getId(), FriendshipStatusCode.REQUEST, pageable);
 
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
 
-        int idPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
+        int idPerson = personRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
 
         List<StatusFriend> statusFriendList = new ArrayList<>();
-
         FriendshipStatusCode friendshipStatusCode;
 
         for (int friendId : isFriends.getUserIds()) {
-            friendshipStatusCode = friendshipRepository.isMyFriend(idPerson, friendId, FriendshipStatusCode.FRIEND).orElseThrow(() -> new UsernameNotFoundException("user not found"));
+            friendshipStatusCode = friendshipRepository
+                    .isMyFriend(idPerson, friendId, FriendshipStatusCode.FRIEND).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
-            FriendshipStatusCode status = friendshipStatusCode;
-            statusFriendList.add(new StatusFriend(friendId, status));
+            statusFriendList.add(new StatusFriend(friendId, friendshipStatusCode));
         }
 
         ResponseFriendsList responseFriendsList = new ResponseFriendsList();
         responseFriendsList.setData(statusFriendList);
 
         return responseFriendsList;
+    }
+
+    //==========================================================================================================
+    private ListResponse getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
+        ListResponse postResponse = new ListResponse();
+        postResponse.setPerPage(itemPerPage);
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        postResponse.setOffset(offset);
+        postResponse.setTotal((int) pageablePersonList.getTotalElements());
+        postResponse.setData(getPerson4Response(pageablePersonList.toList()));
+        return postResponse;
+    }
+
+    private List<Dto> getPerson4Response(List<Person> persons) {
+        List<Dto> personDataList = new ArrayList<>();
+        persons.forEach(person -> {
+            AuthData personData = setAuthData(person);
+            personDataList.add(personData);
+        });
+        return personDataList;
+    }
+
+    private FriendsResponse200 getFriendResponse200(String error, String message) {
+        FriendsResponse200 response = new FriendsResponse200();
+        response.setTimestamp(LocalDateTime.now());
+        response.setError(error);
+        response.setMessage(message);
+        return response;
     }
 }

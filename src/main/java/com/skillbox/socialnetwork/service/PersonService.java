@@ -8,6 +8,7 @@ import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,9 +73,8 @@ public class PersonService {
 
     @Transactional(readOnly = true)
     public Person findPersonByEmail(String eMail) {
-        Optional<Person> personOptional = personRepository.findByEMail(eMail);
-
-        return personOptional.orElseGet(Person::new);
+        return personRepository
+                .findByEMail(eMail).orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 
     private ListResponse getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
