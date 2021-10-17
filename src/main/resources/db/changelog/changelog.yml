@@ -38,3 +38,6 @@ databaseChangeLog:
   - include:
       file: 2021/10/15-01-changelog.xml
       relativeToChangelogFile: true
+  - include:
+      file: 2021/10/17-01-changelog.xml
+      relativeToChangelogFile: true
