@@ -44,6 +44,18 @@ external:
     secret: ENC(ej/k4xIoS2SQYjlcvgMdMjJ5nYNkYWijRoaBtknf+UWeBB5UETd1yRO0GA9udfEg)
     from: ENC(pJ86R3iKC6yiWVTA3UOSQXiSyFWgWQ2NcwrY6fcCEVo=)
 
+logging:
+  level:
+    liquibase: INFO
+    org:
+      springframework: INFO
+      hibernate: INFO
+    com:
+      skillbox:
+        socialnetwork: INFO
+  pattern:
+    console: "%date{dd.MM-HH:mm:ss.SSS} %highlight(%5level) [%thread] %logger{45}: %message %n"
+
 jasypt:
   encryptor:
     bean: encryptorBean
