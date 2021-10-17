@@ -3,5 +3,4 @@ scrape_configs:
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-#      - targets: ['host.docker.internal:8086']
-      - targets: ['zeronenetwork.design:8086']
+      - targets: ['127.0.0.1:8086']
