@@ -40,9 +40,9 @@ external:
     key: ENC(Dw9PMgrkxd0Q7YTIBowaLFI/ixt2nvHf)
     secret: ENC(hQVnqsRAm3jW1tjWc3zDAOu19ppToSJ7czBD5CHa0E6coGq36y7wVA==)
   mail:
-    key: ENC(cbiIlGM7COCT2LWMVF8KHGK51r+I+M2yvPUwbrQBo+FP6qYiSXqJEgIpH0DeWqet)
-    secret: ENC(ej/k4xIoS2SQYjlcvgMdMjJ5nYNkYWijRoaBtknf+UWeBB5UETd1yRO0GA9udfEg)
-    from: ENC(pJ86R3iKC6yiWVTA3UOSQXiSyFWgWQ2NcwrY6fcCEVo=)
+    key: ENC(K7d4bRWHYCdbITscwoIqPIi9SZx6rbteqan1VTjzniHFyBzcsTb5rogbtnljp3hh)
+    secret: ENC(GXKUX11aEp43FY4B8CpX79OmUI9ryLyY6yHSLBz33RSWAFf47jYk+c1SlLYUuKdG)
+    from: ENC(H4dZAhFspV/470tWbOY7Jk6mllp/EYJYns4oVTKaDqHkMqYtrtBK8Q==)
 
 jasypt:
   encryptor:
