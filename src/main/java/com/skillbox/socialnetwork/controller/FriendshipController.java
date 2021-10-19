@@ -6,6 +6,8 @@ import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
+@Tag(name = "Друзья", description = "Работа с друзьями")
 public class FriendshipController {
 
     private final PersonService personService;
@@ -24,6 +27,8 @@ public class FriendshipController {
         this.friendshipService = friendshipService;
     }
 
+    @Operation(summary = "Список друзей",
+            description = "Получить список друзей")
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
@@ -35,6 +40,8 @@ public class FriendshipController {
         return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 
+    @Operation(summary = "Удаление пользователя",
+            description = "Удаление пользователя из друзей")
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> stopBeingFriends(@PathVariable int id, Principal principal) {
@@ -44,6 +51,8 @@ public class FriendshipController {
 
     }
 
+    @Operation(summary = "Добавление в друзья",
+            description = "Принть/добавить пользователя в друзья")
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> addingToFriends(@PathVariable int id, Principal principal) {
@@ -57,6 +66,8 @@ public class FriendshipController {
         }
     }
 
+    @Operation(summary = "Список заявок",
+            description = "Получить список заявок")
     @GetMapping("/api/v1/friends/request")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> listApplications(@RequestParam(name = "name", defaultValue = "") String name,
@@ -68,6 +79,8 @@ public class FriendshipController {
         return new ResponseEntity<>(listOfApplications, HttpStatus.OK);
     }
 
+    @Operation(summary = "Рекомендации",
+            description = "Получить список рекомендаций")
     @GetMapping("/api/v1/friends/recommendations")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
@@ -78,6 +91,8 @@ public class FriendshipController {
         return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 
+    @Operation(summary = "Являются ли пользователи друзьями",
+            description = "Получить информацию является ли пользователь другом указанных пользователей")
     @PostMapping("/api/v1/is/friends")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> isFriends(@RequestBody IsFriends isFriends, Principal principal) {

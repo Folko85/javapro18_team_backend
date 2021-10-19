@@ -2,6 +2,8 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.service.PersonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "Профиль", description = "Работа с профилем и с публичной информацией пользователя")
 public class ProfileController {
 
     private final PersonService personService;
@@ -19,6 +22,7 @@ public class ProfileController {
         this.personService = personService;
     }
 
+    @Operation(summary = "Поиск пользователя")
     @GetMapping("/api/v1/users/search")
     @PreAuthorize("hasAuthority('user:write')")
     public @ResponseBody
