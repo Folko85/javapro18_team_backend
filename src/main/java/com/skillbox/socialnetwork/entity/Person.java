@@ -86,7 +86,5 @@ public class Person {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", columnDefinition = "enum('USER', 'MODERATOR', 'ADMIN')")
-    public Role getRole() {
-        return Role.USER;
-    }
+    private Role role;
 }
