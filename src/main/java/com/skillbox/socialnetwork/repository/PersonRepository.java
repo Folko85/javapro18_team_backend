@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,4 +45,9 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "FROM Person p " +
             "WHERE p.firstName = ?1 and p.lastName LIKE ?2%")
     Page<Person> findPersonByFirstNameAndLastName(String firstName, String lastName, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE p.birthday between ?1 and ?2")
+    Page<Person> findPersonByBirthday(LocalDate date1, LocalDate date2, Pageable pageable);
 }

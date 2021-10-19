@@ -30,14 +30,16 @@ public class FriendshipController {
                                         @RequestParam(name = "offset", defaultValue = "0") int offset,
                                         @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                         Principal principal) {
-        return new ResponseEntity<>(friendshipService.getFriends(name, offset, itemPerPage, principal), HttpStatus.OK);
+
+        ListResponse listResponse = friendshipService.getFriends(name, offset, itemPerPage, principal);
+        return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> stopBeingFriends(@PathVariable int id, Principal principal) {
-        FriendsResponse200 response200 = friendshipService.stopBeingFriendsById(id, principal);
 
+        FriendsResponse200 response200 = friendshipService.stopBeingFriendsById(id, principal);
         return new ResponseEntity<>(response200, HttpStatus.OK);
 
     }
@@ -61,9 +63,19 @@ public class FriendshipController {
                                               @RequestParam(name = "offset", defaultValue = "0") int offset,
                                               @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                               Principal principal) {
-        ListResponse listOfApplications = friendshipService.getListOfApplications(name, offset, itemPerPage, principal);
 
+        ListResponse listOfApplications = friendshipService.getListOfApplications(name, offset, itemPerPage, principal);
         return new ResponseEntity<>(listOfApplications, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/v1/friends/recommendations")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<?> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                 @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                 Principal principal) {
+
+        ListResponse listResponse = friendshipService.recommendedUsers(offset, itemPerPage, principal);
+        return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 
     @PostMapping("/api/v1/is/friends")
@@ -71,7 +83,6 @@ public class FriendshipController {
     public ResponseEntity<?> isFriends(@RequestBody IsFriends isFriends, Principal principal) {
 
         ResponseFriendsList personsFriends = friendshipService.isPersonsFriends(isFriends, principal);
-
         return new ResponseEntity<>(personsFriends, HttpStatus.OK);
     }
 

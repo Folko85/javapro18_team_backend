@@ -131,6 +131,15 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
+    public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
+        Person person = findPerson(principal.getName());
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        //подбираем пользователей, возрост которых отличается на +-2 года
+        Page<Person> pageablePersonList = personRepository
+                .findPersonByBirthday(person.getBirthday().minusYears(2), person.getBirthday().plusYears(2), pageable);
+        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+    }
+
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
 
         int idPerson = personRepository.findByEMail(principal.getName())
