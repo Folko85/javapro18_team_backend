@@ -1,19 +1,13 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
-import com.skillbox.socialnetwork.api.request.LikeRequest;
-import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import com.skillbox.socialnetwork.service.LikeService;
-import liquibase.pro.packaged.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -21,18 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import springfox.documentation.spring.web.json.Json;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Principal;
-import java.time.LocalDateTime;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
