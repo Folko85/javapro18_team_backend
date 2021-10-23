@@ -5,7 +5,7 @@ stages:
 build:
   artifacts:
     paths:
-      - /builds/javapro18/javapro18_team_backend/jars/test/*.jar
+      - /builds/javapro18/javapro18_team_backend/jars/*.jar
   only:
     - merge_request
     - dev
@@ -14,19 +14,17 @@ build:
   stage: build
   when: always
   script:
-    - pwd
     - mvn clean package -Pserver-build
   cache:
     paths:
       - ./.maven2
 deploy:
   stage: deploy
-  only:
-    - dev
+#  only:
+#    - dev
   except:
     - tags
   before_script:
-#    - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | ssh-add -
     - mkdir -p ~/.ssh
@@ -34,9 +32,4 @@ deploy:
     - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-#    - $DEV_USER@$DEV_HOST "[ ! -f $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar ] || mv $DEV_APP_PATH/social-network-0.0.1-SNAPSHOT.jar $DEV_APP_PATH/app_name-build-$CI_PIPELINE_ID.jar"
-    - scp jars/test/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/
-
-#  Проверяем наличие старого jar и переименовываем его. $CI_PIPELINE_ID — это глобальный номер сборки Pipeline.
-#  Копируем новый jar на сервер.
-#  Останавливаем и запускаем службу, отвечающую за приложение.
+    - scp jars/* $DEV_USER@$DEV_HOST:$DEV_APP_PATH/test
