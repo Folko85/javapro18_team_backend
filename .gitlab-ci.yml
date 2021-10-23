@@ -6,9 +6,9 @@ build:
   artifacts:
     paths:
       - /builds/javapro18/javapro18_team_backend/jars/*.jar
-  only:
-    - merge_request
-    - dev
+#  only:
+#    - merge_request
+#    - dev
   except:
     - tags
   stage: build
