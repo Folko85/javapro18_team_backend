@@ -36,7 +36,7 @@ public class AccountService {
     @Value("${registration.confirm.url}")
     private String regUrl;
 
-    @Value("${registration.confirm.need:}")
+    @Value("${registration.confirm.need}")
     private boolean needConfirm;
 
     public AccountService(AccountRepository accountRepository,
