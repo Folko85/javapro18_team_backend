@@ -1,21 +1,22 @@
 package com.skillbox.socialnetwork.service;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import com.skillbox.socialnetwork.api.request.MessageRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.dialogdto.DialogData;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
-import com.skillbox.socialnetwork.entity.Dialog;
 import com.skillbox.socialnetwork.entity.Message;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Person2Dialog;
 import com.skillbox.socialnetwork.repository.MessageRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.repository.SessionTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +30,25 @@ import static java.time.ZoneOffset.UTC;
 
 @Service
 public class MessageService {
+    private final SimpMessagingTemplate messagingTemplate;
     private final PersonRepository personRepository;
     private final MessageRepository messageRepository;
     private final Person2DialogRepository person2DialogRepository;
+    private final SessionTemplate sessionTemplate;
+    private final SocketIOServer server;
 
-    public MessageService(PersonRepository personRepository, MessageRepository messageRepository, Person2DialogRepository person2DialogRepository) {
+    public MessageService(PersonRepository personRepository,
+                          MessageRepository messageRepository,
+                          Person2DialogRepository person2DialogRepository,
+                          SimpMessagingTemplate messagingTemplate,
+                          SessionTemplate sessionTemplate,
+                          SocketIOServer server) {
         this.personRepository = personRepository;
         this.messageRepository = messageRepository;
         this.person2DialogRepository = person2DialogRepository;
+        this.messagingTemplate = messagingTemplate;
+        this.sessionTemplate = sessionTemplate;
+        this.server = server;
     }
 
     public ListResponse getMessages(int id, String query, int offset, int itemPerPage, Principal principal) {
@@ -63,9 +75,15 @@ public class MessageService {
         message.setText(messageRequest.getMessageText());
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
+
+        server.getClient(sessionTemplate.findByUserId(message.getDialog().getPersons().stream()
+                        .filter(person1 -> person1.getId() != person.getId()).findFirst().get().getId())
+                        .orElseThrow(() -> new UsernameNotFoundException("")))
+                .sendEvent("message", "111111111111111");
+        //  messagingTemplate.convertAndSendToUser(message.getDialog().toString(), "/queue/messages", message);
+
         return dataResponse;
     }
-
 
     private ListResponse getDialogResponse(int offset, int itemPerPage, Page<Message> messagePage, Person2Dialog person2Dialog) {
         ListResponse dialogResponse = new ListResponse();

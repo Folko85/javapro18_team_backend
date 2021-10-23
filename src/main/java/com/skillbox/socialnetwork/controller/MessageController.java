@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +40,9 @@ public class MessageController {
                                                     @RequestBody MessageRequest messageRequest,
                                                     Principal principal) {
         return new ResponseEntity<>(messageService.postMessage(id, messageRequest, principal), HttpStatus.OK);
+    }
+    @SubscribeMapping("/{id}/notifications")
+    public String getPositions(@PathVariable int id, Principal principal) {
+        return principal.getName();
     }
 }
