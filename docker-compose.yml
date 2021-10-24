@@ -12,6 +12,7 @@ services:
     ports:
       - "3307:3306"
   vue_js_container:
+    container_name: frontend
     image: nginx:latest
     volumes:
       - ./web/:/usr/share/nginx/html
@@ -21,6 +22,7 @@ services:
     ports:
       - "80:80"
   zerone_back_container:
+    container_name: backend
     image: openjdk:16-alpine
     volumes:
       - ./jars:/app
@@ -33,11 +35,12 @@ services:
     links:
       - mysql_db_container
   grafana:
-    build: './scripts/config/grafana'
+    container_name: grafana
+    image: grafana/grafana
     ports:
       - 3000:3000
     volumes:
-      - ./scripts/grafana:/var/lib/grafana
+      - ./scripts/grafana/provisioning:/etc/grafana/provisioning
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -46,20 +49,20 @@ services:
         aliases:
           - grafana
   prometheus:
+    container_name: prometheus
     image: prom/prometheus
     user: root
     ports:
       - 9090:9090
     volumes:
       - ./scripts/config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./scripts/prometheus:/prometheus
     networks:
       monitoring:
         aliases:
           - prometheus
   promtail:
+    container_name: promtail
     image: grafana/promtail:1.4.1
-    container_name: monitoring.promtail
     expose:
       - 9080
     ports:
@@ -73,6 +76,7 @@ services:
         aliases:
           - promtail
   loki:
+    container_name: loki
     image: grafana/loki:2.3.0
     ports:
       - "3100:3100"
