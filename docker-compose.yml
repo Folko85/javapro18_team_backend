@@ -40,7 +40,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./scripts/grafana/provisioning:/etc/grafana/provisioning
+      - ./scripts/grafana:/var/lib/grafana/
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -69,6 +69,7 @@ services:
       - "9080:9080"
     volumes:
       - ./scripts/config/promtail.yml:/etc/promtail/promtail.yml
+      - ./jars/logs:/app/logs
     command:
       - '-config.file=/etc/promtail/promtail.yml'
     networks:
