@@ -6,9 +6,8 @@ build:
   artifacts:
     paths:
       - /builds/javapro18/javapro18_team_backend/jars/*.jar
-#  only:
-#    - merge_request
-#    - dev
+  only:
+    - dev
   except:
     - tags
   stage: build
@@ -20,8 +19,8 @@ build:
       - ./.maven2
 deploy:
   stage: deploy
-#  only:
-#    - dev
+  only:
+    - dev
   except:
     - tags
   before_script:
@@ -33,7 +32,7 @@ deploy:
     - chmod 644 ~/.ssh/known_hosts
   script:
     - ssh $DEV_USER@$DEV_HOST docker-compose stop zerone_back_container
-    - ssh $DEV_USER@$DEV_HOST docker-compose rm zerone_back_container
+    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f zerone_back_container
     - ssh $DEV_USER@$DEV_HOST cp jars/social-network-0.0.1-SNAPSHOT.jar jars/social-network-0.0.1-SNAPSHOT.jar.bac
     - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
     - scp application.yml.example $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
