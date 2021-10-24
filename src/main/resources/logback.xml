@@ -2,6 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
     <logger name="com.skillbox.socialnetwork" level="info" />
+    <logger name="org.springframework" level="warn" />
     <appender name="root" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>logs/main-%d{yyyy-MM-dd}.log</FileNamePattern>
