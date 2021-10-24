@@ -32,4 +32,9 @@ deploy:
     - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH
+    - ssh $DEV_USER@$DEV_HOST docker-compose stop zerone_back_container
+    - ssh $DEV_USER@$DEV_HOST docker-compose rm zerone_back_container
+    - ssh $DEV_USER@$DEV_HOST cp jars/social-network-0.0.1-SNAPSHOT.jar jars/social-network-0.0.1-SNAPSHOT.jar.bac
+    - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - scp application.yml.example $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - ssh $DEV_USER@$DEV_HOST docker-compose up -d
