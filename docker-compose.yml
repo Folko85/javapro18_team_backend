@@ -1,7 +1,6 @@
 version: '3.7'
 services:
   mysql_db_container:
-    container_name: database
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -12,7 +11,6 @@ services:
     ports:
       - "3307:3306"
   vue_js_container:
-    container_name: frontend
     image: nginx:latest
     volumes:
       - ./web/:/usr/share/nginx/html
@@ -22,7 +20,6 @@ services:
     ports:
       - "80:80"
   zerone_back_container:
-    container_name: backend
     image: openjdk:16-alpine
     volumes:
       - ./jars:/app
@@ -35,7 +32,6 @@ services:
     links:
       - mysql_db_container
   grafana:
-    container_name: grafana
     image: grafana/grafana
     ports:
       - 3000:3000
@@ -49,7 +45,6 @@ services:
         aliases:
           - grafana
   prometheus:
-    container_name: prometheus
     image: prom/prometheus
     user: root
     ports:
@@ -62,7 +57,6 @@ services:
         aliases:
           - prometheus
   promtail:
-    container_name: promtail
     image: grafana/promtail:1.4.1
     expose:
       - 9080
@@ -78,7 +72,6 @@ services:
         aliases:
           - promtail
   loki:
-    container_name: loki
     image: grafana/loki:2.3.0
     ports:
       - "3100:3100"
