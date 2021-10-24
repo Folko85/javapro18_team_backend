@@ -1,0 +1,10 @@
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    static_configs:
+      - targets: ['host.docker.internal:8086']
+        labels:
+          job: varlogs
+          __path__: ./logs/*.log
