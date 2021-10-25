@@ -34,7 +34,10 @@ public class AccountService {
     private final JwtProvider jwtProvider;
 
     @Value("${registration.confirm.url}")
-    String regUrl;
+    private String regUrl;
+
+    @Value("${registration.confirm.need}")
+    private boolean needConfirm;
 
     public AccountService(AccountRepository accountRepository,
                           MailSender mailSender,
@@ -58,8 +61,12 @@ public class AccountService {
         person.setMessagesPermission(MessagesPermission.ALL);
         person.setLastOnlineTime(ZonedDateTime.now(UTC).toLocalDateTime());
         String code = UUID.randomUUID().toString().replace("-", "");
-        mailSender.send(registerRequest.getEMail(), regUrl + "?key=" + code + "&eMail=" + registerRequest.getEMail());
-        person.setConfirmationCode(code);
+        if (needConfirm) {
+            mailSender.send(registerRequest.getEMail(), regUrl + "?key=" + code + "&eMail=" + registerRequest.getEMail());
+            person.setConfirmationCode(code);
+        } else {
+            person.setApproved(true);
+        }
         accountRepository.save(person);
         return getAccountResponse(UTC);
     }
