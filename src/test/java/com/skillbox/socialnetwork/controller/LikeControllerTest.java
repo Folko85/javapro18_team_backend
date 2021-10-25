@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -34,26 +35,15 @@ class LikeControllerTest extends AbstractTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private LikeController likeController;
-
-    @Autowired
     private AccountRepository accountRepository;
-
-    @Autowired
-    private LikeRepository likeRepository;
 
     @Autowired
     private PostRepository postRepository;
 
-    @Autowired
-    private LikeService likeService;
-
-    private Person person;
-
     @BeforeEach
     public void setup() {
         super.setup();
-        person = new Person();
+        Person person = new Person();
         person.setEMail("test@test.ru");
         person.setPassword("password");
         person = accountRepository.save(person);
@@ -61,6 +51,7 @@ class LikeControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
+    @DirtiesContext
     void putLikes() throws Exception {
         Post post = postRepository.save(new Post());
         String json = "{\"item_id\": " + post.getId() + ", \"type\": \"Post\"}";
@@ -74,6 +65,7 @@ class LikeControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
+    @DirtiesContext
     void deleteLikes() throws Exception {
         Post post = postRepository.save(new Post());
         String id = String.valueOf(post.getId());
@@ -87,11 +79,11 @@ class LikeControllerTest extends AbstractTest {
                 .param("type", "Post"))
                 .andDo(print())
                 .andExpect(status().isOk());
-
     }
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
+    @DirtiesContext
     void getLikes() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/v1//likes")
