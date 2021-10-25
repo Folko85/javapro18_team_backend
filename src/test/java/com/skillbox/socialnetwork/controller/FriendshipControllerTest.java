@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,21 +28,39 @@ class FriendshipControllerTest extends AbstractTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private PersonRepository personRepository;
+
+    @Autowired
     private AccountRepository accountRepository;
 
     @BeforeEach
     public void setup() {
         super.setup();
-        Person ivan = new Person();
-        ivan.setEMail("ivanov@test.ru");
-        ivan.setPassword("password");
+        Person oleg = new Person();
+        oleg.setId(1);
+        oleg.setFirstName("Олег");
+        oleg.setLastName("Иванов");
+        oleg.setDateAndTimeOfRegistration(LocalDateTime.now());
+        oleg.setEMail("ivanov@test.ru");
+        oleg.setPassword("password");
+        oleg.setApproved(true);
+        oleg.setBlocked(false);
 
         Person petr = new Person();
+        petr.setId(2);
+        petr.setFirstName("Петр");
+        petr.setLastName("Петров");
+        petr.setDateAndTimeOfRegistration(LocalDateTime.now());
         petr.setEMail("petrov@test.ru");
         petr.setPassword("password");
+        petr.setApproved(true);
+        petr.setBlocked(false);
 
-        accountRepository.save(ivan);
+        accountRepository.save(oleg);
         accountRepository.save(petr);
+
+        personRepository.save(oleg);
+        personRepository.save(petr);
     }
 
 //    @AfterEach
@@ -47,13 +68,13 @@ class FriendshipControllerTest extends AbstractTest {
 //        accountRepository.deleteAll();
 //    }
 
-    @Test
-    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
-    void findFriend() throws Exception {
-        mockMvc.perform(get("/api/v1/friends", "", "0", "20")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
+//    void findFriend() throws Exception {
+//        mockMvc.perform(get("/api/v1/friends", "", "0", "20")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//    }
 
     @Test
     @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
