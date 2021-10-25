@@ -61,7 +61,7 @@ public class UserService {
         return userRestResponse;
     }
 
-    public DataResponse createResponse(AuthData authData) { ;
+    public DataResponse createResponse(AuthData authData) {
         return createResponse(authData, "null");
     }
 
@@ -69,14 +69,13 @@ public class UserService {
         Person current = accountRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
         AuthData requested = getUserById(id);
-        if(friendshipService.isBlockedBy(requested.getId(), current.getId())){
+        if (friendshipService.isBlockedBy(requested.getId(), current.getId())) {
             AuthData response = new AuthData();
             response.setId(requested.getId());
             response.setFirstName(requested.getFirstName());
             response.setLastName(requested.getLastName());
             return createResponse(response, "BLOCKED");
-        }
-        else{
+        } else {
             return createResponse(getUserById(id));
         }
 

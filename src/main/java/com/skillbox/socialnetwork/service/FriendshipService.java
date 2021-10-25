@@ -205,7 +205,7 @@ public class FriendshipService {
         Person current = findPerson(principal.getName());
         Person blocking = findPerson(id);
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
-        if (!isBlockedBy(current.getId(), blocking.getId())) {
+        if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
             if (optional.isEmpty()) {
                 createFriendship(current, blocking, FriendshipStatusCode.BLOCKED);
             } else {
@@ -213,7 +213,7 @@ public class FriendshipService {
                 FriendshipStatus friendshipStatus = friendship.getStatus();
                 if (friendshipStatus.getCode().equals(FriendshipStatusCode.WASBLOCKEDBY)) {
                     friendshipStatus.setCode(FriendshipStatusCode.DEADLOCK);
-                } else if (current.getId() == friendship.getSrcPerson().getId()) {
+                } else if (current.getId().equals(friendship.getSrcPerson().getId())) {
                     friendshipStatus.setCode(FriendshipStatusCode.BLOCKED);
                 } else {
                     friendshipStatus.setCode(FriendshipStatusCode.WASBLOCKEDBY);
@@ -251,7 +251,7 @@ public class FriendshipService {
         Person current = findPerson(principal.getName());
         Person unblocking = findPerson(id);
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
-        if (!isBlockedBy(current.getId(), id)) {
+        if (!isBlockedBy(current.getId(), id, optional)) {
             throw new UnBlockingException();
         }
         Friendship friendship = optional.get();
@@ -259,7 +259,7 @@ public class FriendshipService {
             friendshipRepository.delete(friendship);
             friendshipStatusRepository.delete(friendship.getStatus());
         } else {
-            if (current.getId() == friendship.getSrcPerson().getId()) {
+            if (current.getId().equals(friendship.getSrcPerson().getId())) {
                 friendship.getStatus().setCode(FriendshipStatusCode.WASBLOCKEDBY);
                 friendshipStatusRepository.save(friendship.getStatus());
             } else {
