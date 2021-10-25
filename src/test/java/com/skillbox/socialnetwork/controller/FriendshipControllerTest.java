@@ -4,8 +4,6 @@ import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +26,6 @@ class FriendshipControllerTest extends AbstractTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private PersonRepository personRepository;
-
-    @Autowired
     private AccountRepository accountRepository;
 
     @BeforeEach
@@ -44,6 +39,7 @@ class FriendshipControllerTest extends AbstractTest {
         oleg.setEMail("ivanov@test.ru");
         oleg.setPassword("password");
         oleg.setApproved(true);
+        oleg.setLastOnlineTime(LocalDateTime.now());
         oleg.setBlocked(false);
 
         Person petr = new Person();
@@ -54,13 +50,12 @@ class FriendshipControllerTest extends AbstractTest {
         petr.setEMail("petrov@test.ru");
         petr.setPassword("password");
         petr.setApproved(true);
+        petr.setLastOnlineTime(LocalDateTime.now());
         petr.setBlocked(false);
 
         accountRepository.save(oleg);
         accountRepository.save(petr);
 
-        personRepository.save(oleg);
-        personRepository.save(petr);
     }
 
 //    @AfterEach
@@ -68,13 +63,13 @@ class FriendshipControllerTest extends AbstractTest {
 //        accountRepository.deleteAll();
 //    }
 
-//    @Test
-//    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
-//    void findFriend() throws Exception {
-//        mockMvc.perform(get("/api/v1/friends", "", "0", "20")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
+    void findFriend() throws Exception {
+        mockMvc.perform(get("/api/v1/friends", "", "0", "20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
     @Test
     @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
