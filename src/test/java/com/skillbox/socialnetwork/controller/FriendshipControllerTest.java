@@ -14,8 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {NetworkApplication.class})
@@ -54,8 +53,14 @@ class FriendshipControllerTest extends AbstractTest {
         mockMvc.perform(get("/api/v1/friends", "", "0", "20")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
 
-
+    @Test
+    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
+    void stopBeingFriends() throws Exception {
+        mockMvc.perform(delete("/api/v1/friends/{id}", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -64,6 +69,29 @@ class FriendshipControllerTest extends AbstractTest {
         mockMvc.perform(post("/api/v1/friends/{id}", "2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
+
+    @Test
+    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
+    void listApplications() throws Exception {
+        mockMvc.perform(get("/api/v1/friends/request", "", "0", "20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
+    void getRecommendedUsers() throws Exception {
+        mockMvc.perform(get("/api/v1/friends/request", "0", "20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+//    @Test
+//    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
+//    void isFriends() throws Exception {
+//        mockMvc.perform(post("/api/v1/is/friends")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//    }
 }
