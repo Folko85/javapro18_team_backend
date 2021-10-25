@@ -51,4 +51,5 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "or f.srcPerson.id = ?2 and f.dstPerson.firstName = ?1) " +
             "and fs.code = ?3")
     Page<Person> findPersonByStatusCode(String name, int idFriend, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
+
 }
