@@ -21,6 +21,7 @@ spring:
 
 registration:
   confirm:
+    need: false
     url: "http://195.234.208.58:8086/api/v1/account/registration_complete"
 
 external:

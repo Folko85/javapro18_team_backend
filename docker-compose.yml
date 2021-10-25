@@ -1,7 +1,6 @@
 version: '3.7'
 services:
   mysql_db_container:
-    container_name: database
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -33,7 +32,7 @@ services:
     links:
       - mysql_db_container
   grafana:
-    build: './scripts/config/grafana'
+    image: grafana/grafana
     ports:
       - 3000:3000
     volumes:
@@ -57,5 +56,31 @@ services:
       monitoring:
         aliases:
           - prometheus
+  promtail:
+    image: grafana/promtail:1.4.1
+    expose:
+      - 9080
+    ports:
+      - "9080:9080"
+    volumes:
+      - ./scripts/config/promtail.yml:/etc/promtail/promtail.yml
+      - ./jars/logs:/app/logs
+    command:
+      - '-config.file=/etc/promtail/promtail.yml'
+    networks:
+      monitoring:
+        aliases:
+          - promtail
+  loki:
+    image: grafana/loki:2.3.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./scripts/config/loki.yml:/etc/loki-local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      monitoring:
+        aliases:
+          - loki
 networks:
   monitoring:

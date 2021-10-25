@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,9 +135,31 @@ public class FriendshipService {
     public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        //подбираем пользователей, возрост которых отличается на +-2 года
-        Page<Person> pageablePersonList = personRepository
-                .findPersonByBirthday(person.getBirthday().minusYears(2), person.getBirthday().plusYears(2), pageable);
+
+        LocalDate birthday = person.getBirthday();
+        LocalDate startDate = birthday.minusYears(2);
+        LocalDate stopDate = birthday.minusYears(2);
+        String city = person.getCity();
+
+        Page<Person> pageablePersonList = null;
+
+        //если дата есть, а города нет
+        if (!birthday.toString().isEmpty() && city.isEmpty()) {
+            //подбираем пользователей, возрост которых отличается на +-2 года
+            pageablePersonList = personRepository
+                    .findPersonByBirthday(startDate, stopDate, pageable);
+
+            //если дата есть и город есть
+        } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
+            //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
+            pageablePersonList = personRepository
+                    .findPersonByBirthdayAndCity(startDate, stopDate, city, pageable);
+
+            //поиск рандомных 10 пользователей
+        } else {
+            pageablePersonList = personRepository.findAllPerson(pageable);
+        }
+
         return getPersonResponse(offset, itemPerPage, pageablePersonList);
     }
 
