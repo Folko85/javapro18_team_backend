@@ -25,10 +25,12 @@ import static java.time.ZoneOffset.UTC;
 @Service
 public class UserService {
 
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final FriendshipService friendshipService;
 
-    public UserService(AccountRepository accountRepository) {
+    public UserService(AccountRepository accountRepository, FriendshipService friendshipService) {
         this.accountRepository = accountRepository;
+        this.friendshipService = friendshipService;
     }
 
     public AuthData getUserByEmail(Principal principal) {
@@ -47,20 +49,37 @@ public class UserService {
         return userRest;
     }
 
-    public DataResponse getUserMe(Principal principal){
+    public DataResponse getUserMe(Principal principal) {
         return createResponse(getUserByEmail(principal));
     }
 
-    public  DataResponse createResponse(AuthData authData){
+    public DataResponse createResponse(AuthData authData, String error) {
         DataResponse userRestResponse = new DataResponse();
         userRestResponse.setTimestamp(Instant.now());
         userRestResponse.setData(authData);
-        userRestResponse.setError("null");
+        userRestResponse.setError(error);
         return userRestResponse;
     }
 
-    public DataResponse getUser(int id){
-        return createResponse(getUserById(id));
+    public DataResponse createResponse(AuthData authData) { ;
+        return createResponse(authData, "null");
+    }
+
+    public DataResponse getUser(int id, Principal principal) {
+        Person current = accountRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
+        AuthData requested = getUserById(id);
+        if(friendshipService.isBlockedBy(requested.getId(), current.getId())){
+            AuthData response = new AuthData();
+            response.setId(requested.getId());
+            response.setFirstName(requested.getFirstName());
+            response.setLastName(requested.getLastName());
+            return createResponse(response, "BLOCKED");
+        }
+        else{
+            return createResponse(getUserById(id));
+        }
+
     }
 
     public DataResponse updateUser(AuthData updates, Principal principal) {
@@ -88,8 +107,8 @@ public class UserService {
 
 
     /**
-     *{@link com.sun.xml.bind.v2.TODO}
-     *Вернутся к этому методу, когда будет настроено удаление остального.
+     * {@link com.sun.xml.bind.v2.TODO}
+     * Вернутся к этому методу, когда будет настроено удаление остального.
      */
     public AccountResponse deleteUser(Principal principal) {
         Person person = accountRepository.findByEMail(principal.getName())
@@ -126,10 +145,10 @@ public class UserService {
     }
 
     public static void conventionsFromPersonTimesToUserRest(Person person, AuthData userRest) {
-        userRest.setBirthDate(person.getBirthday() == null ? null: person.getBirthday().atStartOfDay().toInstant(UTC));
+        userRest.setBirthDate(person.getBirthday() == null ? null : person.getBirthday().atStartOfDay().toInstant(UTC));
         userRest.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         userRest.setRegDate(person.getDateAndTimeOfRegistration().toInstant(UTC));
-        if (person.getBirthday() != null){
+        if (person.getBirthday() != null) {
             userRest.setBirthDate(person.getBirthday().atStartOfDay().toInstant(UTC));
         }
     }

@@ -41,13 +41,14 @@ public class PostService {
     private final AccountRepository accountRepository;
     private final CommentService commentService;
     private final LikeRepository likeRepository;
+    private final FriendshipService friendshipService;
 
-    public PostService(PostRepository postRepository, AccountRepository accountRepository, CommentService commentService, LikeRepository likeRepository) {
+    public PostService(PostRepository postRepository, AccountRepository accountRepository, CommentService commentService, LikeRepository likeRepository, FriendshipService friendshipService) {
         this.postRepository = postRepository;
         this.accountRepository = accountRepository;
         this.commentService = commentService;
         this.likeRepository = likeRepository;
-
+        this.friendshipService = friendshipService;
     }
 
     public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
@@ -118,9 +119,17 @@ public class PostService {
     public ListResponse getPersonWall(int id, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Post> pageablePostList;
+        if(id == person.getId()){
+            pageablePostList = postRepository.findPostsByPersonId(id, pageable);
+        }
+        else if (!friendshipService.isBlockedBy(id, person.getId())) {
+            pageablePostList = postRepository.findPostsByPersonIdAndCurrentDate(id, pageable);
+        }
+        else {
+            pageablePostList = Page.empty();
+        }
 
-        Page<Post> pageablePostList = id == person.getId() ?
-                postRepository.findPostsByPersonId(id, pageable) : postRepository.findPostsByPersonIdAndCurrentDate(id, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 

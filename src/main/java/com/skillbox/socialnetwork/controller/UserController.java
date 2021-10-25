@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse> getUserById(@PathVariable int id, Principal principal) {
-        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUser(id, principal), HttpStatus.OK);
     }
 
     @PutMapping("/me")
