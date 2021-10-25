@@ -233,7 +233,7 @@ public class FriendshipService {
     }
 
     List<Person> get10Users() {
-        return personRepository.findAllPerson();
+        return personRepository.find10Person();
     }
 
 }
