@@ -39,7 +39,7 @@ public class ProfileController {
                              Principal principal) {
 
         ListResponse listResponse = personService.searchPerson(firstName, lastName, ageFrom, ageTo,
-                countryId, cityId, offset, itemPerPage);
+                countryId, cityId, offset, itemPerPage, principal);
 
         return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }

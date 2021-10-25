@@ -138,29 +138,39 @@ public class FriendshipService {
 
         LocalDate birthday = person.getBirthday();
         LocalDate startDate = birthday.minusYears(2);
-        LocalDate stopDate = birthday.minusYears(2);
+        LocalDate stopDate = birthday.plusYears(2);
         String city = person.getCity();
 
         Page<Person> pageablePersonList = null;
+        List<Person> personArrayList = null;
+
+        boolean isList = false;
 
         //если дата есть, а города нет
-        if (!birthday.toString().isEmpty() && city.isEmpty()) {
+        if (birthday != null && city == null) {
             //подбираем пользователей, возрост которых отличается на +-2 года
             pageablePersonList = personRepository
-                    .findPersonByBirthday(startDate, stopDate, pageable);
+                    .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
             //если дата есть и город есть
         } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             pageablePersonList = personRepository
-                    .findPersonByBirthdayAndCity(startDate, stopDate, city, pageable);
+                    .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
             //поиск рандомных 10 пользователей
         } else {
-            pageablePersonList = personRepository.findAllPerson(pageable);
+            isList = true;
+            personArrayList = get10Users();
         }
 
-        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+        if (isList) {
+            return getPersonResponseList(offset, itemPerPage, personArrayList);
+        } else {
+            return getPersonResponse(offset, itemPerPage, pageablePersonList);
+
+        }
+
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
@@ -195,6 +205,16 @@ public class FriendshipService {
         return postResponse;
     }
 
+    private ListResponse getPersonResponseList(int offset, int itemPerPage, List<Person> personList) {
+        ListResponse postResponse = new ListResponse();
+        postResponse.setPerPage(itemPerPage);
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        postResponse.setOffset(offset);
+        postResponse.setTotal(personList.size());
+        postResponse.setData(getPerson4Response(personList));
+        return postResponse;
+    }
+
     private List<Dto> getPerson4Response(List<Person> persons) {
         List<Dto> personDataList = new ArrayList<>();
         persons.forEach(person -> {
@@ -211,4 +231,9 @@ public class FriendshipService {
         response.setMessage(message);
         return response;
     }
+
+    List<Person> get10Users() {
+        return personRepository.findAllPerson();
+    }
+
 }

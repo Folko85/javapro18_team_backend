@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,7 +58,7 @@ public class PersonService {
 
     @Transactional(readOnly = true)
     public ListResponse searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
-                                     int cityId, int offset, int itemPerPage) {
+                                     int cityId, int offset, int itemPerPage, Principal principal) {
 
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> personPage = null;
@@ -65,11 +66,14 @@ public class PersonService {
         LocalDate to = LocalDate.now().minusYears(ageFrom);
 
         if (firstName.isEmpty() && lastName.isEmpty()) {
-            personPage = personRepository.findPersonByBirthday(from, to, pageable);
+            personPage = personRepository
+                    .findPersonByBirthday(principal.getName(), from, to, pageable);
         } else if (!firstName.isEmpty() && lastName.isEmpty()) {
-            personPage = personRepository.findPersonByFirstNameAndBirthday(firstName, from, to, pageable);
+            personPage = personRepository
+                    .findPersonByFirstNameAndBirthday(principal.getName(), firstName, from, to, pageable);
         } else if (!firstName.isEmpty() && !lastName.isEmpty()){
-            personPage = personRepository.findPersonByFirstNameAndLastNameAndBirthday(firstName, lastName, from, to, pageable);
+            personPage = personRepository
+                    .findPersonByFirstNameAndLastNameAndBirthday(principal.getName(), firstName, lastName, from, to, pageable);
         } else {
             return null;
         }
