@@ -19,6 +19,7 @@ import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ import java.util.*;
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
+@Slf4j
 @Service
 public class FriendshipService {
     private final PersonRepository personRepository;
@@ -50,6 +52,7 @@ public class FriendshipService {
     }
 
     public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
+        log.info ("метод получения друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), pageable);
@@ -67,6 +70,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
+        log.info ("метод удаления из друзей");
         FriendsResponse200 response;
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
@@ -95,6 +99,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) {
+        log.info ("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
 
@@ -142,6 +147,7 @@ public class FriendshipService {
     }
 
     public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
+        log.info ("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
 
@@ -155,23 +161,27 @@ public class FriendshipService {
 
         boolean isList = false;
 
-        //дата рождения есть, города нет
+        //дата рождения указана, города не указан
         if (!birthday.toString().isEmpty() && city == null) {
+            log.info ("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
             personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
-            //дата рождения есть и город есть
+            //дата рождения указана и город указан
         } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
+            log.info ("дата рождения указана и город указан");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
-            //даты рождения нет, город есть
+            //дата рождения не указана, город указан
         } else if (birthday.toString().isEmpty() && !city.isEmpty()) {
+            log.info ("дата рождения не указана, город указан");
             personList = personRepository.findPersonByCity(city, pageable);
 
         } else {
+            log.info ("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
             isList = true;
             //выбираем 10 рандомных пользователей
         }
@@ -186,7 +196,7 @@ public class FriendshipService {
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
-
+        log.info ("метод проверки являются ли переданные друзбя друзьями");
         int idPerson = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
 
