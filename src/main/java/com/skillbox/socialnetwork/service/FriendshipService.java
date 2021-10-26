@@ -177,14 +177,14 @@ public class FriendshipService {
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
             //дата рождения указана и город указан
-        } else if (birthdayPerson != null && city != null) {
+        } else if (birthdayPerson != null) {
             log.debug("дата рождения указана и город указан");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
             //дата рождения не указана, город указан
-        } else if (birthdayPerson == null && city != null) {
+        } else if (city != null) {
             log.debug("дата рождения не указана, город указан");
             personList = personRepository.findPersonByCity(city, pageable);
 
