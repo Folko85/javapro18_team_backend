@@ -302,7 +302,8 @@ public class FriendshipService {
             throw new UnBlockingException();
         }
         Friendship friendship = optional.get();
-        if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)) {
+        if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)
+                || friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY) && current.getId().equals(friendship.getDstPerson().getId())) {
             friendshipRepository.delete(friendship);
             friendshipStatusRepository.delete(friendship.getStatus());
         } else {
