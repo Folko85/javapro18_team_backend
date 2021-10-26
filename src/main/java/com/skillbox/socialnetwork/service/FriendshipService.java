@@ -141,34 +141,37 @@ public class FriendshipService {
         LocalDate stopDate = birthday.plusYears(2);
         String city = person.getCity();
 
-        Page<Person> pageablePersonList = null;
-        List<Person> personArrayList = null;
+        Page<Person> personList = null;
+        List<Person> personArrayList;
 
         boolean isList = false;
 
-        //если дата есть, а города нет
-        if (birthday != null && city == null) {
+        //дата рождения есть, города нет
+        if (!birthday.toString().isEmpty() && city == null) {
             //подбираем пользователей, возрост которых отличается на +-2 года
-            pageablePersonList = personRepository
+            personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
-            //если дата есть и город есть
+            //дата рождения есть и город есть
         } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
-            pageablePersonList = personRepository
+            personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
-            //поиск рандомных 10 пользователей
+            //даты рождения нет, город есть
+        } else if (birthday.toString().isEmpty() && !city.isEmpty()) {
+            personList = personRepository.findPersonByCity(city, pageable);
+
         } else {
             isList = true;
-            personArrayList = get10Users();
+            //выбираем 10 рандомных пользователей
         }
 
-        if (isList) {
+        if (isList || personList == null) {
+            personArrayList = get10Users();
             return getPersonResponseList(offset, itemPerPage, personArrayList);
         } else {
-            return getPersonResponse(offset, itemPerPage, pageablePersonList);
-
+            return getPersonResponse(offset, itemPerPage, personList);
         }
 
     }
