@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 @Tag(name = "Профиль", description = "Работа с профилем и с публичной информацией пользователя")
 public class ProfileController {
@@ -26,16 +28,18 @@ public class ProfileController {
     @GetMapping("/api/v1/users/search")
     @PreAuthorize("hasAuthority('user:write')")
     public @ResponseBody
-    ResponseEntity<?> search(@RequestParam(name = "first_name") String firstName,
+    ResponseEntity<?> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
                              @RequestParam(name = "last_name", defaultValue = "") String lastName,
-                             @RequestParam(name = "age_from", defaultValue = "0") int ageFrom,
+                             @RequestParam(name = "age_from", defaultValue = "1") int ageFrom,
                              @RequestParam(name = "age_to", defaultValue = "120") int ageTo,
                              @RequestParam(name = "country_id", defaultValue = "1") int countryId,
                              @RequestParam(name = "city_id", defaultValue = "1") int cityId,
                              @RequestParam(name = "offset", defaultValue = "0") int offset,
-                             @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage) {
+                             @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                             Principal principal) {
 
-        ListResponse listResponse = personService.searchPerson(firstName, lastName, ageFrom, ageTo, countryId, cityId, offset, itemPerPage);
+        ListResponse listResponse = personService.searchPerson(firstName, lastName, ageFrom, ageTo,
+                countryId, cityId, offset, itemPerPage, principal);
 
         return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }

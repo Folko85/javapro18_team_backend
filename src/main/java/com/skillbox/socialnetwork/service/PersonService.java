@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -55,16 +57,25 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse searchPerson(String firstName, String lastName, int ageFrom, int ageTo,
-                                     int countryId, int cityId, int offset, int itemPerPage) {
+    public ListResponse searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
+                                     int cityId, int offset, int itemPerPage, Principal principal) {
 
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> personPage;
+        Page<Person> personPage = null;
+        LocalDate from = LocalDate.now().minusYears(ageTo);
+        LocalDate to = LocalDate.now().minusYears(ageFrom);
 
-        if (lastName.isEmpty()) {
-            personPage = personRepository.findPersonByFirstName(firstName, pageable);
+        if (firstName.isEmpty() && lastName.isEmpty()) {
+            personPage = personRepository
+                    .findPersonByBirthday(principal.getName(), from, to, pageable);
+        } else if (!firstName.isEmpty() && lastName.isEmpty()) {
+            personPage = personRepository
+                    .findPersonByFirstNameAndBirthday(principal.getName(), firstName, from, to, pageable);
+        } else if (!firstName.isEmpty() && !lastName.isEmpty()){
+            personPage = personRepository
+                    .findPersonByFirstNameAndLastNameAndBirthday(principal.getName(), firstName, lastName, from, to, pageable);
         } else {
-            personPage = personRepository.findPersonByFirstNameAndLastName(firstName, lastName, pageable);
+            return null;
         }
 
         return getPersonResponse(offset, itemPerPage, personPage);

@@ -84,7 +84,7 @@ public class Person {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<Notification> notifications;
 
-    public Role getRole() {
-        return Role.USER;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", columnDefinition = "enum('USER', 'MODERATOR', 'ADMIN')")
+    private Role role;
 }

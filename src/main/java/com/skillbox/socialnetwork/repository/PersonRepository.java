@@ -36,18 +36,30 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "WHERE p.isBlocked = false AND p.id = ?2  AND  p2.firstName LIKE  ?1% ")
     Page<Person> findPersonByFriendship(String name, int personId, Pageable pageable);
 
-    @Query("SELECT p " +
-            "FROM Person p " +
-            "WHERE p.firstName LIKE ?1%")
-    Page<Person> findPersonByFirstName(String firstName, Pageable pageable);
 
     @Query("SELECT p " +
             "FROM Person p " +
-            "WHERE p.firstName = ?1 and p.lastName LIKE ?2%")
-    Page<Person> findPersonByFirstNameAndLastName(String firstName, String lastName, Pageable pageable);
+            "WHERE p.firstName LIKE ?2 and p.birthday between ?3 and ?4 and p.eMail not like ?1")
+    Page<Person> findPersonByFirstNameAndBirthday(String email, String firstName, LocalDate ageFrom, LocalDate ageTo, Pageable pageable);
 
     @Query("SELECT p " +
             "FROM Person p " +
-            "WHERE p.birthday between ?1 and ?2")
-    Page<Person> findPersonByBirthday(LocalDate date1, LocalDate date2, Pageable pageable);
+            "WHERE p.firstName = ?2 and p.lastName LIKE ?3% and p.birthday between ?4 and ?5 and p.eMail not like ?1")
+    Page<Person> findPersonByFirstNameAndLastNameAndBirthday(String email, String firstName, String lastName, LocalDate ageFrom, LocalDate ageTo, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE p.birthday between ?2 and ?3 and p.eMail not like ?1")
+    Page<Person> findPersonByBirthday(String email, LocalDate date1, LocalDate date2, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE p.birthday between ?2 and ?3 and p.city = ?4 and p.eMail not like ?1")
+    Page<Person> findPersonByBirthdayAndCity(String email, LocalDate date1, LocalDate date2, String city, Pageable pageable);
+
+    @Query("select p from Person p")
+    Page<Person> findAllPerson(Pageable pageable);
+
+    @Query(value = "select * from limit 10", nativeQuery = true)
+    List<Person> find10Person();
 }

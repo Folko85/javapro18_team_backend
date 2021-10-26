@@ -26,9 +26,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -143,10 +145,42 @@ public class FriendshipService {
     public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        //подбираем пользователей, возрост которых отличается на +-2 года
-        Page<Person> pageablePersonList = personRepository
-                .findPersonByBirthday(person.getBirthday().minusYears(2), person.getBirthday().plusYears(2), pageable);
-        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+
+        LocalDate birthday = person.getBirthday();
+        LocalDate startDate = birthday.minusYears(2);
+        LocalDate stopDate = birthday.plusYears(2);
+        String city = person.getCity();
+
+        Page<Person> pageablePersonList = null;
+        List<Person> personArrayList = null;
+
+        boolean isList = false;
+
+        //если дата есть, а города нет
+        if (birthday != null && city == null) {
+            //подбираем пользователей, возрост которых отличается на +-2 года
+            pageablePersonList = personRepository
+                    .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
+
+            //если дата есть и город есть
+        } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
+            //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
+            pageablePersonList = personRepository
+                    .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
+
+            //поиск рандомных 10 пользователей
+        } else {
+            isList = true;
+            personArrayList = get10Users();
+        }
+
+        if (isList) {
+            return getPersonResponseList(offset, itemPerPage, personArrayList);
+        } else {
+            return getPersonResponse(offset, itemPerPage, pageablePersonList);
+
+        }
+
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
@@ -178,6 +212,16 @@ public class FriendshipService {
         postResponse.setOffset(offset);
         postResponse.setTotal((int) pageablePersonList.getTotalElements());
         postResponse.setData(getPerson4Response(pageablePersonList.toList()));
+        return postResponse;
+    }
+
+    private ListResponse getPersonResponseList(int offset, int itemPerPage, List<Person> personList) {
+        ListResponse postResponse = new ListResponse();
+        postResponse.setPerPage(itemPerPage);
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        postResponse.setOffset(offset);
+        postResponse.setTotal(personList.size());
+        postResponse.setData(getPerson4Response(personList));
         return postResponse;
     }
 
@@ -300,4 +344,9 @@ public class FriendshipService {
         }
         return false;
     }
+
+    List<Person> get10Users() {
+        return personRepository.find10Person();
+    }
+
 }
