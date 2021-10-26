@@ -6,6 +6,8 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 
 import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
 import com.skillbox.socialnetwork.exception.UnBlockingException;
+import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-
 
 
 @RestController
@@ -59,14 +60,13 @@ public class UserController {
 
     @PutMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public  ResponseEntity<AccountResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException {
-        return  new ResponseEntity<>(friendshipService.blockUser(principal, id), HttpStatus.OK);
+    public ResponseEntity<AccountResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException {
+        return new ResponseEntity<>(friendshipService.blockUser(principal, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public  ResponseEntity<AccountResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException {
-        return  new ResponseEntity<>(friendshipService.unBlockUser(principal, id), HttpStatus.OK);
+    public ResponseEntity<AccountResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException {
+        return new ResponseEntity<>(friendshipService.unBlockUser(principal, id), HttpStatus.OK);
     }
-
 }

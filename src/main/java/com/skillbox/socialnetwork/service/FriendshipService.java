@@ -14,6 +14,8 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
 import com.skillbox.socialnetwork.exception.UnBlockingException;
+import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -201,8 +203,9 @@ public class FriendshipService {
      * Dest person WASBLOCKEDBY Src Person or
      * Src and Dest blocked Each other (DEADLOCK)
      */
-    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException {
+    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException {
         Person current = findPerson(principal.getName());
+        if (current.getId() == id) throw new UserBlocksHimSelfException();
         Person blocking = findPerson(id);
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
@@ -247,8 +250,9 @@ public class FriendshipService {
 
     }
 
-    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException {
+    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException {
         Person current = findPerson(principal.getName());
+        if (current.getId() == id) throw new UserUnBlocksHimSelfException();
         Person unblocking = findPerson(id);
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
         if (!isBlockedBy(current.getId(), id, optional)) {
