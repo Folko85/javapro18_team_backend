@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,7 @@ import java.time.ZoneOffset;
 
 import static java.time.ZoneOffset.UTC;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -35,17 +37,25 @@ public class UserService {
 
     public AuthData getUserByEmail(Principal principal) {
         Person person = accountRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
+                .orElseThrow(() -> {
+                    log.error("Get User By Email Failed in UserService Class, email: "+principal.getName());
+                    return new UsernameNotFoundException("Email was not found");
+                });
         AuthData userRest = new AuthData();
         convertUserToUserRest(person, userRest);
+        log.info("User with email "+userRest.getEMail()+" was received");
         return userRest;
     }
 
     public AuthData getUserById(Integer id) {
         Person person = accountRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("" + id));
+                .orElseThrow(() -> {
+                    log.error("Get User By Id Failed in UserService Class, id: "+id);
+                    return new UsernameNotFoundException("Id was not found " + id);
+                });
         AuthData userRest = new AuthData();
         convertUserToUserRest(person, userRest);
+        log.info("User with id "+userRest.getId()+" was received");
         return userRest;
     }
 
@@ -66,24 +76,30 @@ public class UserService {
     }
 
     public DataResponse getUser(int id, Principal principal) {
-        Person current = accountRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
+        AuthData current = getUserByEmail(principal);
         AuthData requested = getUserById(id);
+        log.info("Attempt to get user by Id, requester id: " +current.getId() + "target id: "+id);
         if (friendshipService.isBlockedBy(requested.getId(), current.getId())) {
             AuthData response = new AuthData();
             response.setId(requested.getId());
             response.setFirstName(requested.getFirstName());
             response.setLastName(requested.getLastName());
+            log.warn("Requester id: " +current.getId() + "was blocked by "+ id);
             return createResponse(response, "BLOCKED");
         } else {
-            return createResponse(getUserById(id));
+            log.info("Attempt to get user by id" +id +"is successful");
+            return createResponse(requested);
         }
 
     }
 
     public DataResponse updateUser(AuthData updates, Principal principal) {
         Person person = accountRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Person Not Found"));
+                .orElseThrow(() -> {
+                    log.error("Update User Failed. Email was not found, email: "+principal.getName());
+                    return new UsernameNotFoundException("Update User Failed");
+                });
+        log.info("Attempt to update user, id: " + person.getId());
         String updatedName = updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
         person.setFirstName(updatedName);
         String updatedLastName = updates.getLastName().isEmpty() ? person.getLastName() : updates.getLastName();
@@ -101,6 +117,7 @@ public class UserService {
         DataResponse response = new DataResponse();
         response.setTimestamp(Instant.now());
         response.setData(updated);
+        log.info("User "+person.getId()+" was updated");
         return response;
     }
 
