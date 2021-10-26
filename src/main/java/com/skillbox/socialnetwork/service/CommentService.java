@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.сommentdto.CommentData;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
@@ -36,14 +37,16 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
+    private final FriendshipService friendshipService;
 
     public CommentService(AccountRepository accountRepository,
                           PostRepository postRepository,
-                          CommentRepository commentRepository, LikeRepository likeRepository) {
+                          CommentRepository commentRepository, LikeRepository likeRepository, FriendshipService friendshipService) {
         this.accountRepository = accountRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
+        this.friendshipService = friendshipService;
     }
 
     public ListResponse getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
@@ -118,7 +121,16 @@ public class CommentService {
         CommentData commentData = new CommentData();
         commentData.setCommentText(postComment.getCommentText());
         commentData.setBlocked(postComment.isBlocked());
-        commentData.setAuthor(setAuthData(postComment.getPerson()));
+        if(postComment.getPerson().getId().equals(person.getId()) || !friendshipService.isBlockedBy(postComment.getPerson().getId(), person.getId())) {
+            commentData.setAuthor(setAuthData(postComment.getPerson()));
+        }
+        else{
+            AuthData authData = new AuthData();
+            authData.setId(postComment.getPerson().getId());
+            authData.setFirstName(postComment.getPerson().getFirstName());
+            authData.setLastName(postComment.getPerson().getLastName());
+            commentData.setAuthor(authData);
+        }
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
         commentData.setDeleted(postComment.isDeleted());

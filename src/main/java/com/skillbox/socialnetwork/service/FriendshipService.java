@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.IsFriends;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
@@ -11,6 +12,10 @@ import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
+import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
+import com.skillbox.socialnetwork.exception.UnBlockingException;
+import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -23,9 +28,8 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -55,6 +59,11 @@ public class FriendshipService {
     private Person findPerson(String eMail) {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
+    }
+
+    private Person findPerson(int id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("" + id));
     }
 
     public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
@@ -138,29 +147,39 @@ public class FriendshipService {
 
         LocalDate birthday = person.getBirthday();
         LocalDate startDate = birthday.minusYears(2);
-        LocalDate stopDate = birthday.minusYears(2);
+        LocalDate stopDate = birthday.plusYears(2);
         String city = person.getCity();
 
         Page<Person> pageablePersonList = null;
+        List<Person> personArrayList = null;
+
+        boolean isList = false;
 
         //если дата есть, а города нет
-        if (!birthday.toString().isEmpty() && city.isEmpty()) {
+        if (birthday != null && city == null) {
             //подбираем пользователей, возрост которых отличается на +-2 года
             pageablePersonList = personRepository
-                    .findPersonByBirthday(startDate, stopDate, pageable);
+                    .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
             //если дата есть и город есть
         } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             pageablePersonList = personRepository
-                    .findPersonByBirthdayAndCity(startDate, stopDate, city, pageable);
+                    .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
             //поиск рандомных 10 пользователей
         } else {
-            pageablePersonList = personRepository.findAllPerson(pageable);
+            isList = true;
+            personArrayList = get10Users();
         }
 
-        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+        if (isList) {
+            return getPersonResponseList(offset, itemPerPage, personArrayList);
+        } else {
+            return getPersonResponse(offset, itemPerPage, pageablePersonList);
+
+        }
+
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
@@ -195,6 +214,16 @@ public class FriendshipService {
         return postResponse;
     }
 
+    private ListResponse getPersonResponseList(int offset, int itemPerPage, List<Person> personList) {
+        ListResponse postResponse = new ListResponse();
+        postResponse.setPerPage(itemPerPage);
+        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
+        postResponse.setOffset(offset);
+        postResponse.setTotal(personList.size());
+        postResponse.setData(getPerson4Response(personList));
+        return postResponse;
+    }
+
     private List<Dto> getPerson4Response(List<Person> persons) {
         List<Dto> personDataList = new ArrayList<>();
         persons.forEach(person -> {
@@ -211,4 +240,112 @@ public class FriendshipService {
         response.setMessage(message);
         return response;
     }
+
+    /**
+     * Src Person BlOCKED Dest Person or
+     * Dest person WASBLOCKEDBY Src Person or
+     * Src and Dest blocked Each other (DEADLOCK)
+     */
+    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException {
+        Person current = findPerson(principal.getName());
+        if (current.getId() == id) throw new UserBlocksHimSelfException();
+        Person blocking = findPerson(id);
+        Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
+        if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
+            if (optional.isEmpty()) {
+                createFriendship(current, blocking, FriendshipStatusCode.BLOCKED);
+            } else {
+                Friendship friendship = optional.get();
+                FriendshipStatus friendshipStatus = friendship.getStatus();
+                if (friendshipStatus.getCode().equals(FriendshipStatusCode.WASBLOCKEDBY)) {
+                    friendshipStatus.setCode(FriendshipStatusCode.DEADLOCK);
+                } else if (current.getId().equals(friendship.getSrcPerson().getId())) {
+                    friendshipStatus.setCode(FriendshipStatusCode.BLOCKED);
+                } else {
+                    friendshipStatus.setCode(FriendshipStatusCode.WASBLOCKEDBY);
+                }
+                friendshipStatusRepository.save(friendshipStatus);
+                friendshipRepository.save(friendship);
+            }
+        } else {
+            throw new BlockAlreadyExistsException();
+
+        }
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
+        Map<String, String> dateMap = new HashMap<>();
+        dateMap.put("message", "ok");
+        accountResponse.setData(dateMap);
+        return accountResponse;
+
+    }
+
+    public void createFriendship(Person src, Person dest, FriendshipStatusCode friendshipStatusCode) {
+        FriendshipStatus friendshipStatus = new FriendshipStatus();
+        friendshipStatus.setTime(LocalDateTime.now());
+        friendshipStatus.setCode(friendshipStatusCode);
+        FriendshipStatus saveFriendshipStatus = friendshipStatusRepository.save(friendshipStatus);
+        Friendship newFriendship = new Friendship();
+        newFriendship.setStatus(saveFriendshipStatus);
+        newFriendship.setSrcPerson(src);
+        newFriendship.setDstPerson(dest);
+        friendshipRepository.save(newFriendship);
+
+    }
+
+    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException {
+        Person current = findPerson(principal.getName());
+        if (current.getId() == id) throw new UserUnBlocksHimSelfException();
+        Person unblocking = findPerson(id);
+        Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
+        if (!isBlockedBy(current.getId(), id, optional)) {
+            throw new UnBlockingException();
+        }
+        Friendship friendship = optional.get();
+        if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)) {
+            friendshipRepository.delete(friendship);
+            friendshipStatusRepository.delete(friendship.getStatus());
+        } else {
+            if (current.getId().equals(friendship.getSrcPerson().getId())) {
+                friendship.getStatus().setCode(FriendshipStatusCode.WASBLOCKEDBY);
+                friendshipStatusRepository.save(friendship.getStatus());
+            } else {
+                friendship.getStatus().setCode(FriendshipStatusCode.BLOCKED);
+                friendshipStatusRepository.save(friendship.getStatus());
+            }
+            friendshipRepository.save(friendship);
+
+        }
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
+        Map<String, String> dateMap = new HashMap<>();
+        dateMap.put("message", "ok");
+        accountResponse.setData(dateMap);
+        return accountResponse;
+
+    }
+
+    /**
+     * Src Person BlOCKED Dest Person or
+     * Dest person WASBLOCKEDBY Src Person or
+     * Src and Dest blocked Each other (DEADLOCK)
+     */
+    public boolean isBlockedBy(int blocker, int blocked) {
+        Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(blocker, blocked);
+        return isBlockedBy(blocker, blocked, optional);
+    }
+
+    private boolean isBlockedBy(int blocker, int blocked, Optional<Friendship> optional) {
+        if (optional.isPresent()) {
+            return (blocker == optional.get().getSrcPerson().getId() && optional.get().getStatus().getCode().equals(FriendshipStatusCode.BLOCKED))
+                    || (blocked == optional.get().getSrcPerson().getId() && optional.get().getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY))
+                    || optional.get().getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK);
+        }
+        return false;
+    }
+
+    List<Person> get10Users() {
+        return personRepository.find10Person();
+    }
+
 }
