@@ -57,9 +57,14 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "WHERE p.birthday between ?2 and ?3 and p.city = ?4 and p.eMail not like ?1")
     Page<Person> findPersonByBirthdayAndCity(String email, LocalDate date1, LocalDate date2, String city, Pageable pageable);
 
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE p.city = ?1")
+    Page<Person> findPersonByCity(String city, Pageable pageable);
+
     @Query("select p from Person p")
     Page<Person> findAllPerson(Pageable pageable);
 
-    @Query(value = "select * from limit 10", nativeQuery = true)
+    @Query(value = "select * from person limit 10", nativeQuery = true)
     List<Person> find10Person();
 }

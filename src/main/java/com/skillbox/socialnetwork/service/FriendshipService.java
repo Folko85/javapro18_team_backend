@@ -30,6 +30,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -52,6 +53,7 @@ public class FriendshipService {
     }
 
     public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
+        log.info("метод получения друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), pageable);
@@ -69,6 +71,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
+        log.info("метод удаления из друзей");
         FriendsResponse200 response;
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
@@ -97,6 +100,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) {
+        log.info("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
 
@@ -144,48 +148,63 @@ public class FriendshipService {
     }
 
     public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
+        log.info("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
-        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        log.info("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
+        Pageable pageable = PageRequest.of(0, 10);
+        LocalDate birthdayPerson = null;
+        LocalDate startDate = null;
+        LocalDate stopDate = null;
 
-        LocalDate birthday = person.getBirthday();
-        LocalDate startDate = birthday.minusYears(2);
-        LocalDate stopDate = birthday.plusYears(2);
+        if (person.getBirthday() != null) {
+            birthdayPerson = person.getBirthday();
+            startDate = birthdayPerson.minusYears(2);
+            stopDate = birthdayPerson.plusYears(2);
+        }
+
         String city = person.getCity();
 
-        Page<Person> pageablePersonList = null;
-        List<Person> personArrayList = null;
+        Page<Person> personList = null;
+        List<Person> personArrayList;
 
         boolean isList = false;
 
-        //если дата есть, а города нет
-        if (birthday != null && city == null) {
+        //дата рождения указана, города не указан
+        if (birthdayPerson != null && city == null) {
+            log.debug("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
-            pageablePersonList = personRepository
+            personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
-            //если дата есть и город есть
-        } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
+            //дата рождения указана и город указан
+        } else if (birthdayPerson != null) {
+            log.debug("дата рождения указана и город указан");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
-            pageablePersonList = personRepository
+            personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
-            //поиск рандомных 10 пользователей
+            //дата рождения не указана, город указан
+        } else if (city != null) {
+            log.debug("дата рождения не указана, город указан");
+            personList = personRepository.findPersonByCity(city, pageable);
+
         } else {
+            log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
             isList = true;
-            personArrayList = get10Users();
+            //выбираем 10 рандомных пользователей
         }
 
-        if (isList) {
+        if (isList || personList.isEmpty()) {
+            personArrayList = get10Users();
             return getPersonResponseList(offset, itemPerPage, personArrayList);
         } else {
-            return getPersonResponse(offset, itemPerPage, pageablePersonList);
-
+            return getPersonResponse(offset, itemPerPage, personList);
         }
 
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
-
+        log.info("метод проверки являются ли переданные друзбя друзьями");
         int idPerson = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
 
