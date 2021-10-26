@@ -151,10 +151,14 @@ public class FriendshipService {
         Person person = findPerson(principal.getName());
         log.info("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-
         LocalDate birthday = person.getBirthday();
-        LocalDate startDate = birthday.minusYears(2);
-        LocalDate stopDate = birthday.plusYears(2);
+        LocalDate startDate = null;
+        LocalDate stopDate = null;
+
+        if (!birthday.toString().isEmpty()) {
+            startDate = birthday.minusYears(2);
+            stopDate = birthday.plusYears(2);
+        }
         String city = person.getCity();
 
         Page<Person> personList = null;
