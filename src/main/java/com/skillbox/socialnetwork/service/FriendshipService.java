@@ -30,6 +30,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -151,13 +152,14 @@ public class FriendshipService {
         Person person = findPerson(principal.getName());
         log.info("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        LocalDate birthday = person.getBirthday();
+        LocalDate birthdayPerson = null;
         LocalDate startDate = null;
         LocalDate stopDate = null;
 
-        if (birthday != null) {
-            startDate = birthday.minusYears(2);
-            stopDate = birthday.plusYears(2);
+        if (person.getBirthday() != null) {
+            birthdayPerson = person.getBirthday();
+            startDate = birthdayPerson.minusYears(2);
+            stopDate = birthdayPerson.plusYears(2);
         }
 
         String city = person.getCity();
@@ -168,21 +170,21 @@ public class FriendshipService {
         boolean isList = false;
 
         //дата рождения указана, города не указан
-        if (birthday != null && city == null) {
+        if (birthdayPerson != null && city == null) {
             log.info("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
             personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
             //дата рождения указана и город указан
-        } else if (birthday != null && city != null) {
+        } else if (birthdayPerson != null && city != null) {
             log.info("дата рождения указана и город указан");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
             //дата рождения не указана, город указан
-        } else if (birthday == null && city != null) {
+        } else if (birthdayPerson == null && city != null) {
             log.info("дата рождения не указана, город указан");
             personList = personRepository.findPersonByCity(city, pageable);
 
