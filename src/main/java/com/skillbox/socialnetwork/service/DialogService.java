@@ -119,7 +119,7 @@ public class DialogService {
                     .stream().max(Comparator.comparingInt(Message::getId)).get(), person2Dialog));
         else dialogData.setLastMessage(new MessageData());
         dialogData.setRecipientId(setAuthData(person2Dialog.getDialog().getPersons()
-                .stream().filter(person -> person.getId() != person2Dialog.getPerson().getId()).findFirst()
+                .stream().filter(person -> !person.getId().equals(person2Dialog.getPerson().getId())).findFirst()
                 .orElse(person2Dialog.getPerson())));
         return dialogData;
     }

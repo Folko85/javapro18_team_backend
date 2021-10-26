@@ -1,13 +1,11 @@
 package com.skillbox.socialnetwork.service;
 
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.skillbox.socialnetwork.api.request.MessageRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
-import com.skillbox.socialnetwork.api.socketiodto.MessageSocketDTO;
 import com.skillbox.socialnetwork.entity.Message;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Person2Dialog;
@@ -77,10 +75,9 @@ public class MessageService {
         message.setText(messageRequest.getMessageText());
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
-        MessageSocketDTO messageSocketDTO = new MessageSocketDTO(message.getId(), message.getTime().toString(), message.getAuthor().getId(), message.getText(), message.getDialog().getId());
         sessionTemplate.findByUserId(message.getDialog().getPersons().stream()
-                .filter(person1 -> person1.getId() != person.getId()).findFirst().get().getId())
-                .ifPresent(uuid -> server.getClient(uuid).sendEvent("message", messageSocketDTO));
+                .filter(person1 -> !person1.getId().equals(person.getId())).findFirst().get().getId())
+                .ifPresent(uuid -> server.getClient(uuid).sendEvent("message", dataResponse));
         //  messagingTemplate.convertAndSendToUser(message.getDialog().toString(), "/queue/messages", message);
 
         return dataResponse;

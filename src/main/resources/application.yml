@@ -13,12 +13,17 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: validate
-
+  rsocket:
+    server:
+      port:
+ws:
+  server:
+    port: 1111
+    host: 0.0.0.0
 registration:
   confirm:
     need: false
     url: "http://147.78.64.57:8086/api/v1/account/registration_complete"
-
 management:
   endpoints:
     web:
@@ -60,4 +65,3 @@ cors:
   - http://195.234.208.58:80/
   - http://www.zeronenetwork.design/
   - http://10.186.0.2:8086/
-  - http://10.186.0.2/%22
