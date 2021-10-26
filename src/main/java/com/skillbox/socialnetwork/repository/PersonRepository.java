@@ -65,6 +65,6 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("select p from Person p")
     Page<Person> findAllPerson(Pageable pageable);
 
-    @Query(value = "select * from limit 10", nativeQuery = true)
+    @Query(value = "select * from person limit 10", nativeQuery = true)
     List<Person> find10Person();
 }
