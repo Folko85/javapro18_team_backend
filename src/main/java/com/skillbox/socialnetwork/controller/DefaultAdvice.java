@@ -80,4 +80,36 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(BlockAlreadyExistsException.class)
+    public ResponseEntity<BadRequestResponse> handleBlockAlreadyExistsException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Block Already Exist");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnBlockingException.class)
+    public ResponseEntity<BadRequestResponse> handleUnBlockingException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Block not Exists");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserBlocksHimSelfException.class)
+    public ResponseEntity<BadRequestResponse> handleUserBlocksHimSelfException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("User Blocks Him Self Exception");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserUnBlocksHimSelfException.class)
+    public ResponseEntity<BadRequestResponse> handleUserUnBlocksHimSelfException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("User Unblocks Him Self Exception");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
 }

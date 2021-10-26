@@ -5,5 +5,7 @@ public enum FriendshipStatusCode {
     FRIEND,
     BLOCKED,
     DECLINED,
-    SUBSCRIBED
+    SUBSCRIBED,
+    WASBLOCKEDBY,
+    DEADLOCK
 }
