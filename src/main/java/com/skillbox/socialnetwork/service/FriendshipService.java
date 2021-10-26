@@ -149,6 +149,7 @@ public class FriendshipService {
     public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
         log.info ("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
+        log.info("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
 
         LocalDate birthday = person.getBirthday();
