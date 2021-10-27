@@ -30,7 +30,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -53,10 +52,10 @@ public class FriendshipService {
     }
 
     public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
-        log.info("метод получения друзей");
+        log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), pageable);
+        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
         return getPersonResponse(offset, itemPerPage, pageablePersonList);
     }
 
@@ -71,7 +70,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
-        log.info("метод удаления из друзей");
+        log.debug("метод удаления из друзей");
         FriendsResponse200 response;
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
@@ -100,7 +99,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) {
-        log.info("метод добавления в друзья");
+        log.debug("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
 
@@ -148,9 +147,9 @@ public class FriendshipService {
     }
 
     public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
-        log.info("метод получения рекомендованных друзей");
+        log.debug("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
-        log.info("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
+        log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(0, 10);
         LocalDate birthdayPerson = null;
         LocalDate startDate = null;
@@ -165,9 +164,6 @@ public class FriendshipService {
         String city = person.getCity();
 
         Page<Person> personList = null;
-        List<Person> personArrayList;
-
-        boolean isList = false;
 
         //дата рождения указана, города не указан
         if (birthdayPerson != null && city == null) {
@@ -190,21 +186,16 @@ public class FriendshipService {
 
         } else {
             log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
-            isList = true;
             //выбираем 10 рандомных пользователей
+            personList = get10Users(pageable);
         }
 
-        if (isList || personList.isEmpty()) {
-            personArrayList = get10Users();
-            return getPersonResponseList(offset, itemPerPage, personArrayList);
-        } else {
-            return getPersonResponse(offset, itemPerPage, personList);
-        }
+        return getPersonResponse(offset, itemPerPage, personList);
 
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
-        log.info("метод проверки являются ли переданные друзбя друзьями");
+        log.debug("метод проверки являются ли переданные друзбя друзьями");
         int idPerson = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
 
@@ -365,8 +356,8 @@ public class FriendshipService {
         return false;
     }
 
-    List<Person> get10Users() {
-        return personRepository.find10Person();
+    Page<Person> get10Users(Pageable pageable) {
+        return personRepository.find10Person(pageable);
     }
 
 }
