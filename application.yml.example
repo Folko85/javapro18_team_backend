@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3307/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
-    username: user
-    password: password
+    username: ENC(PWu0QZMimWB0juSsNBfwTQ==)
+    password: ENC(62tVsgv8KdaO7f+lI79ZF6h99njiI82z)
   liquibase:
     change-log: /db/changelog/changelog.yml
   jpa:

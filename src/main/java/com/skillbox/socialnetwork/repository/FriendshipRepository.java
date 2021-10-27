@@ -15,41 +15,45 @@ import java.util.Optional;
 @Repository
 public interface FriendshipRepository extends PagingAndSortingRepository<Friendship, Integer> {
 
-    @Query("select f from Friendship f where f.srcPerson.firstName = ?1 or f.dstPerson.firstName = ?1")
+    @Query("SELECT f FROM Friendship f " +
+            "WHERE f.srcPerson.firstName = ?1 " +
+            "OR f.dstPerson.firstName = ?1")
     List<Friendship> findBySrcPersonFirstNameOrDstPersonFirstName(String firstName, Pageable pageable);
 
     @Override
-    @Query("select f from Friendship f where f.srcPerson.id = ?1 or f.dstPerson.id = ?1")
+    @Query("SELECT f FROM Friendship f " +
+            "WHERE f.srcPerson.id = ?1 " +
+            "OR f.dstPerson.id = ?1")
     Optional<Friendship> findById(Integer id);
 
-    @Query("SELECT p2 " +
-            "FROM Person p " +
+    @Query("SELECT p2 FROM Person p " +
             "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
             "LEFT JOIN Person p2 ON p2.id = f.dstPerson.id " +
-            "WHERE p.isBlocked = false AND p.id = ?2  AND  p2.firstName LIKE  %?1% ")
+            "WHERE p.isBlocked = false " +
+            "AND p.id = ?2 " +
+            "AND p2.firstName LIKE  %?1% ")
     Page<Person> findPersonByFriendship(String name, int personId, Pageable pageable);
 
-    @Query("select f " +
-            "from Friendship f " +
-            "where f.srcPerson.id = ?1 and f.dstPerson.id = ?2 " +
-            "or f.srcPerson.id = ?2 and f.dstPerson.id = ?1")
+    @Query("SELECT f FROM Friendship f " +
+            "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
+            "WHERE f.srcPerson.id = ?1 AND f.dstPerson.id = ?2 " +
+            "OR f.srcPerson.id = ?2 AND f.dstPerson.id = ?1 ")
     Optional<Friendship> findFriendshipBySrcPersonAndDstPerson(int src, int dst);
 
-    @Query("select fs.code from FriendshipStatus fs " +
-            "left join Friendship f on f.id = fs.id " +
-            "where (f.srcPerson.id = ?1 and f.dstPerson.id = ?2 " +
-            "or f.srcPerson.id = ?2 and f.dstPerson.id = ?1) " +
-            "and fs.code = ?3")
+    @Query("SELECT fs.code FROM FriendshipStatus fs " +
+            "LEFT JOIN Friendship f ON f.id = fs.id " +
+            "WHERE (f.srcPerson.id = ?1 AND f.dstPerson.id = ?2 " +
+            "OR f.srcPerson.id = ?2 AND f.dstPerson.id = ?1) " +
+            "AND fs.code = ?3 ")
     Optional<FriendshipStatusCode> isMyFriend(int idPerson, int idFriend, FriendshipStatusCode friendshipStatusCode);
 
-    @Query("SELECT p2 " +
-            "FROM Person p " +
+    @Query("SELECT p2 FROM Person p " +
             "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
             "LEFT JOIN Person p2 ON p2.id = f.dstPerson.id " +
-            "where (f.srcPerson.firstName = ?1 and f.dstPerson.id = ?2 " +
-            "or f.srcPerson.id = ?2 and f.dstPerson.firstName = ?1) " +
-            "and fs.code = ?3")
+            "WHERE (f.srcPerson.firstName = ?1 AND f.dstPerson.id = ?2 " +
+            "or f.srcPerson.id = ?2 AND f.dstPerson.firstName = ?1) " +
+            "AND fs.code = ?3 AND p.isBlocked = false")
     Page<Person> findPersonByStatusCode(String name, int idFriend, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
 
 }

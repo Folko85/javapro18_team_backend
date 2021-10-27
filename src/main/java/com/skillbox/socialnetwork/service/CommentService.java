@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Set;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
+import static com.skillbox.socialnetwork.service.AuthService.setBlockerAuthData;
+import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
+
 import static java.time.ZoneOffset.UTC;
 
 @Service
@@ -121,15 +124,14 @@ public class CommentService {
         CommentData commentData = new CommentData();
         commentData.setCommentText(postComment.getCommentText());
         commentData.setBlocked(postComment.isBlocked());
-        if(postComment.getPerson().getId().equals(person.getId()) || !friendshipService.isBlockedBy(postComment.getPerson().getId(), person.getId())) {
+        if(postComment.getPerson().isDeleted()){
+            commentData.setAuthor(setDeletedAuthData(postComment.getPerson()));
+        }
+        else if(postComment.getPerson().getId().equals(person.getId()) || !friendshipService.isBlockedBy(postComment.getPerson().getId(), person.getId())) {
             commentData.setAuthor(setAuthData(postComment.getPerson()));
         }
         else{
-            AuthData authData = new AuthData();
-            authData.setId(postComment.getPerson().getId());
-            authData.setFirstName(postComment.getPerson().getFirstName());
-            authData.setLastName(postComment.getPerson().getLastName());
-            commentData.setAuthor(authData);
+            commentData.setAuthor(setBlockerAuthData(postComment.getPerson()));
         }
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));

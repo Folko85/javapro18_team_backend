@@ -12,13 +12,11 @@ import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
-import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
-import com.skillbox.socialnetwork.exception.UnBlockingException;
-import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
-import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +32,7 @@ import java.util.*;
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
+@Slf4j
 @Service
 public class FriendshipService {
     private final PersonRepository personRepository;
@@ -50,6 +49,7 @@ public class FriendshipService {
     }
 
     public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
+        log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), pageable);
@@ -67,6 +67,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
+        log.debug("метод удаления из друзей");
         FriendsResponse200 response;
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
@@ -95,6 +96,7 @@ public class FriendshipService {
     }
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) {
+        log.debug("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
 
@@ -142,48 +144,65 @@ public class FriendshipService {
     }
 
     public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
+        log.debug("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
-        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
+        Pageable pageable = PageRequest.of(offset/itemPerPage, itemPerPage);
+        LocalDate birthdayPerson = null;
+        LocalDate startDate = null;
+        LocalDate stopDate = null;
 
-        LocalDate birthday = person.getBirthday();
-        LocalDate startDate = birthday.minusYears(2);
-        LocalDate stopDate = birthday.plusYears(2);
+        if (person.getBirthday() != null) {
+            birthdayPerson = person.getBirthday();
+            startDate = birthdayPerson.minusYears(2);
+            stopDate = birthdayPerson.plusYears(2);
+        }
+
         String city = person.getCity();
 
-        Page<Person> pageablePersonList = null;
-        List<Person> personArrayList = null;
+        Page<Person> personList = null;
 
-        boolean isList = false;
-
-        //если дата есть, а города нет
-        if (birthday != null && city == null) {
+        //дата рождения указана, города не указан
+        if (birthdayPerson != null && city == null) {
+            System.out.println("дата рождения указана, города не указан");
+            log.debug("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
-            pageablePersonList = personRepository
+            personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
-            //если дата есть и город есть
-        } else if (!birthday.toString().isEmpty() && !city.isEmpty()) {
+            //дата рождения указана
+        } else if (birthdayPerson != null) {
+            System.out.println("дата рождения указана");
+            log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
-            pageablePersonList = personRepository
+            personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
-            //поиск рандомных 10 пользователей
+            //город указан
+        } else if (city != null) {
+            System.out.println("город указан");
+            log.debug("город указан");
+            personList = personRepository.findPersonByCity(city, pageable);
+
         } else {
-            isList = true;
-            personArrayList = get10Users();
+            System.out.println("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
+            log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
+            pageable = PageRequest.of(0, 10);
+            //выбираем 10 рандомных пользователей
+            personList = get10Users(pageable);
         }
 
-        if (isList) {
-            return getPersonResponseList(offset, itemPerPage, personArrayList);
-        } else {
-            return getPersonResponse(offset, itemPerPage, pageablePersonList);
-
+        if (personList.isEmpty()) {
+            pageable = PageRequest.of(0, 10);
+            personList = get10Users(pageable);
         }
+
+        return getPersonResponse(offset, itemPerPage, personList);
 
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
-
+        log.debug("метод проверки являются ли переданные друзбя друзьями");
         int idPerson = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
 
@@ -246,10 +265,11 @@ public class FriendshipService {
      * Dest person WASBLOCKEDBY Src Person or
      * Src and Dest blocked Each other (DEADLOCK)
      */
-    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException {
+    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserBlocksHimSelfException();
         Person blocking = findPerson(id);
+        if(blocking.isDeleted()) throw new BlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
             if (optional.isEmpty()) {
@@ -293,16 +313,18 @@ public class FriendshipService {
 
     }
 
-    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException {
+    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserUnBlocksHimSelfException();
         Person unblocking = findPerson(id);
+        if(unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
         if (!isBlockedBy(current.getId(), id, optional)) {
             throw new UnBlockingException();
         }
         Friendship friendship = optional.get();
-        if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)) {
+        if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)
+                || friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY) && current.getId().equals(friendship.getDstPerson().getId())) {
             friendshipRepository.delete(friendship);
             friendshipStatusRepository.delete(friendship.getStatus());
         } else {
@@ -344,8 +366,8 @@ public class FriendshipService {
         return false;
     }
 
-    List<Person> get10Users() {
-        return personRepository.find10Person();
+    Page<Person> get10Users(Pageable pageable) {
+        return personRepository.find10Person(pageable);
     }
 
 }

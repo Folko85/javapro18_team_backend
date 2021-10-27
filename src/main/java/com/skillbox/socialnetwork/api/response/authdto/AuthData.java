@@ -31,6 +31,7 @@ public class AuthData implements Dto {
     private Instant lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
+    private boolean isDeleted;
     private String token;
 
 }
