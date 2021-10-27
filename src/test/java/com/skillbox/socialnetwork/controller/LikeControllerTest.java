@@ -5,7 +5,9 @@ import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -38,6 +39,9 @@ class LikeControllerTest extends AbstractTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    LikeRepository likeRepository;
+
     @BeforeEach
     public void setup() {
         super.setup();
@@ -47,9 +51,15 @@ class LikeControllerTest extends AbstractTest {
         person = accountRepository.save(person);
     }
 
+    @AfterEach
+    public void cleanup() {
+        likeRepository.deleteAll();
+        postRepository.deleteAll();
+        accountRepository.deleteAll();
+    }
+
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
-    @DirtiesContext
     void putLikes() throws Exception {
         Post post = postRepository.save(new Post());
         String json = "{\"item_id\": " + post.getId() + ", \"type\": \"Post\"}";
@@ -63,7 +73,6 @@ class LikeControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
-    @DirtiesContext
     void deleteLikes() throws Exception {
         Post post = postRepository.save(new Post());
         String id = String.valueOf(post.getId());
@@ -81,11 +90,12 @@ class LikeControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
-    @DirtiesContext
     void getLikes() throws Exception {
+        Post post = postRepository.save(new Post());
+        String id = String.valueOf(post.getId());
         this.mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/v1//likes")
-                .param("item_id", "5")
+                .param("item_id", id)
                 .param("type", "Post"))
                 .andDo(print())
                 .andExpect(status().isOk());
