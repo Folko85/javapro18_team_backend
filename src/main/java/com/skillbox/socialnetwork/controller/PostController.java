@@ -94,6 +94,7 @@ public class PostController {
     }
     @PostMapping("/users/{id}/wall")
     @PreAuthorize("hasAuthority('user:write')")
+    @Operation(summary = "Создать пост на стене")
     public ResponseEntity<DataResponse> getUserWall(@PathVariable int id,
                                                             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
                                                             @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {

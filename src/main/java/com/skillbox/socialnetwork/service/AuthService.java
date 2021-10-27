@@ -7,7 +7,9 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,8 +19,10 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 
 import static com.skillbox.socialnetwork.service.AccountService.getAccountResponse;
+import static com.skillbox.socialnetwork.service.UserService.deletedImage;
 import static java.time.ZoneOffset.UTC;
 
+@Slf4j
 @Service
 public class AuthService {
     private final AccountRepository accountRepository;
@@ -37,11 +41,16 @@ public class AuthService {
     }
 
 
-    public DataResponse auth(LoginRequest loginRequest) {
+    public DataResponse auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
         UserDetails userDetails = userDetailService.loadUserByUsername(loginRequest.getEMail());
         String token;
         Person person = accountRepository.findByEMail(loginRequest.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
+        if(person.isDeleted()){
+            log.error("Deleted User with email "+person.getEMail() +"tries to login");
+            throw new DeletedAccountLoginException();
+        }
+
         if (passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
@@ -78,6 +87,21 @@ public class AuthService {
         authData.setPhoto(person.getPhoto());
         authData.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         return authData;
+    }
+
+    static AuthData setBlockerAuthData(Person person){
+        AuthData authData = new AuthData();
+        authData.setId(person.getId());
+        authData.setFirstName(person.getFirstName());
+        authData.setLastName(person.getLastName());
+        return authData;
+    }
+
+    static AuthData setDeletedAuthData(Person person){
+        AuthData authData = setBlockerAuthData(person);
+        authData.setAbout("Страница удалена");
+        authData.setPhoto(deletedImage);
+        return  authData;
     }
 
 }

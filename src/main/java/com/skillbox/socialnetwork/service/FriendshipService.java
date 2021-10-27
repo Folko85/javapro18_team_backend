@@ -12,10 +12,7 @@ import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
-import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
-import com.skillbox.socialnetwork.exception.UnBlockingException;
-import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
-import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -258,10 +255,11 @@ public class FriendshipService {
      * Dest person WASBLOCKEDBY Src Person or
      * Src and Dest blocked Each other (DEADLOCK)
      */
-    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException {
+    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserBlocksHimSelfException();
         Person blocking = findPerson(id);
+        if(blocking.isDeleted()) throw new BlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
             if (optional.isEmpty()) {
@@ -305,16 +303,18 @@ public class FriendshipService {
 
     }
 
-    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException {
+    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserUnBlocksHimSelfException();
         Person unblocking = findPerson(id);
+        if(unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
         if (!isBlockedBy(current.getId(), id, optional)) {
             throw new UnBlockingException();
         }
         Friendship friendship = optional.get();
-        if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)) {
+        if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)
+                || friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY) && current.getId().equals(friendship.getDstPerson().getId())) {
             friendshipRepository.delete(friendship);
             friendshipStatusRepository.delete(friendship.getStatus());
         } else {

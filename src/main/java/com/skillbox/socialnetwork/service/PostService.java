@@ -123,7 +123,7 @@ public class PostService {
         if(id == person.getId()){
             pageablePostList = postRepository.findPostsByPersonId(id, pageable);
         }
-        else if (!friendshipService.isBlockedBy(id, person.getId())) {
+        else if (!friendshipService.isBlockedBy(id, person.getId()) && !person.isDeleted()) {
             pageablePostList = postRepository.findPostsByPersonIdAndCurrentDate(id, pageable);
         }
         else {
