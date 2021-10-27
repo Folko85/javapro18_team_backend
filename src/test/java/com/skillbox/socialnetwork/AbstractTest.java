@@ -14,14 +14,21 @@ import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(SpringExtension.class)
 public abstract class AbstractTest {
-    /** Web application context. */
+    /**
+     * Web application context.
+     */
     @Autowired
     protected WebApplicationContext ctx;
 
-    /** Mock mvc. */
+    /**
+     * Mock mvc.
+     */
     protected MockMvc mockMvc;
 
-    /** Object mapper. */
+
+    /**
+     * Object mapper.
+     */
     @Autowired
     protected ObjectMapper mapper; // это нам пригодится в следующем ДЗ для проверки более сложного API
 

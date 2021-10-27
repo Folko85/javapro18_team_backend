@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -31,12 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class ProfileControllerTest extends AbstractTest {
 
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private PersonRepository personRepository;
 
     Person person;
-
 
 
     @BeforeEach
@@ -46,7 +48,7 @@ class ProfileControllerTest extends AbstractTest {
         person.setPassword("password");
         person.setFirstName("Valera");
         person.setLastName("Jma");
-        person.setEMail("jma@test.ru");
+        person.setEMail("test@test.ru");
         person.setPassword("password");
         person.setBirthday(LocalDate.of(1988, 1, 5));
         person.setRole(Role.USER);
@@ -64,7 +66,7 @@ class ProfileControllerTest extends AbstractTest {
 
 
     @Test
-    @WithMockUser(username = "jma@test.ru", authorities = "user:write")
+    @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void search() throws Exception {
 
         this.mockMvc.perform(get("/api/v1/users/search")
@@ -76,12 +78,6 @@ class ProfileControllerTest extends AbstractTest {
                 .param("city_id", "")
                 .param("offset", "")
                 .param("itemPerPage", "20"))
-//                .principal(new Principal() {
-//                    @Override
-//                    public String getName() {
-//                        return "jma";
-//                    }
-//                }))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

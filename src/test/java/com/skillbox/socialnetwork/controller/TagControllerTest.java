@@ -11,17 +11,23 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest(classes = {NetworkApplication.class})
+@AutoConfigureMockMvc
 class TagControllerTest extends AbstractTest {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private AccountRepository accountRepository;
@@ -41,14 +47,15 @@ class TagControllerTest extends AbstractTest {
         tagRepository.deleteAll();
 
     }
+
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testGetTags() throws Exception {
         tagRepository.save(new Tag().setTag("porno"));
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/tags/")
-                        .param("tag", "po")
-                        .accept(MediaType.APPLICATION_JSON))
+                .get("/api/v1/tags/")
+                .param("tag", "po")
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].tag").value("porno"));
@@ -59,10 +66,10 @@ class TagControllerTest extends AbstractTest {
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testPostTags() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/v1/tags/")
-                        .content(mapper.writeValueAsString(new TagDto().setTag("ahaha")))   //постим задачу
-                        .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
-                        .accept(MediaType.APPLICATION_JSON))
+                .post("/api/v1/tags/")
+                .content(mapper.writeValueAsString(new TagDto().setTag("ahaha")))   //постим задачу
+                .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tag").value("ahaha"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").exists());
@@ -75,10 +82,10 @@ class TagControllerTest extends AbstractTest {
         tagRepository.save(new Tag().setTag("java"));
         String id = tagRepository.findByTag("java").get().getId().toString();
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/api/v1/tags/")
-                        .param("id", id)
-                        .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
-                        .accept(MediaType.APPLICATION_JSON))
+                .delete("/api/v1/tags/")
+                .param("id", id)
+                .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("nothing"));

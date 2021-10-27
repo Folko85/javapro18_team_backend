@@ -4,7 +4,9 @@ import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -71,7 +73,7 @@ public class PersonService {
         } else if (!firstName.isEmpty() && lastName.isEmpty()) {
             personPage = personRepository
                     .findPersonByFirstNameAndBirthday(principal.getName(), firstName, from, to, pageable);
-        } else if (!firstName.isEmpty() && !lastName.isEmpty()){
+        } else if (!firstName.isEmpty() && !lastName.isEmpty()) {
             personPage = personRepository
                     .findPersonByFirstNameAndLastNameAndBirthday(principal.getName(), firstName, lastName, from, to, pageable);
         } else {
