@@ -147,7 +147,7 @@ public class FriendshipService {
         log.debug("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
         log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(offset/itemPerPage, itemPerPage);
         LocalDate birthdayPerson = null;
         LocalDate startDate = null;
         LocalDate stopDate = null;
@@ -164,26 +164,36 @@ public class FriendshipService {
 
         //дата рождения указана, города не указан
         if (birthdayPerson != null && city == null) {
+            System.out.println("дата рождения указана, города не указан");
             log.debug("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
             personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
-            //дата рождения указана и город указан
+            //дата рождения указана
         } else if (birthdayPerson != null) {
-            log.debug("дата рождения указана и город указан");
+            System.out.println("дата рождения указана");
+            log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
 
-            //дата рождения не указана, город указан
+            //город указан
         } else if (city != null) {
-            log.debug("дата рождения не указана, город указан");
+            System.out.println("город указан");
+            log.debug("город указан");
             personList = personRepository.findPersonByCity(city, pageable);
 
         } else {
+            System.out.println("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
             log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
+            pageable = PageRequest.of(0, 10);
             //выбираем 10 рандомных пользователей
+            personList = get10Users(pageable);
+        }
+
+        if (personList.isEmpty()) {
+            pageable = PageRequest.of(0, 10);
             personList = get10Users(pageable);
         }
 
