@@ -43,7 +43,6 @@ class ProfileControllerTest extends AbstractTest {
     public void setup() {
         super.setup();
         person = new Person();
-        person.setEMail("test@test.ru");
         person.setPassword("password");
         person.setFirstName("Valera");
         person.setLastName("Jma");
@@ -55,7 +54,6 @@ class ProfileControllerTest extends AbstractTest {
         person.setDateAndTimeOfRegistration(LocalDateTime.now());
         person.setLastOnlineTime(LocalDateTime.now());
         person.setBlocked(false);
-
         personRepository.save(person);
     }
 
@@ -70,20 +68,20 @@ class ProfileControllerTest extends AbstractTest {
     void search() throws Exception {
 
         this.mockMvc.perform(get("/api/v1/users/search")
-                .param("first_name", "Valera")
-                .param("last_name", "")
+                .param("first_name", person.getFirstName())
+                .param("last_name", person.getLastName())
                 .param("age_from", "")
                 .param("age_to", "")
                 .param("country_id", "")
                 .param("city_id", "")
                 .param("offset", "")
-                .param("itemPerPage", "20")
-                .principal(new Principal() {
-                    @Override
-                    public String getName() {
-                        return "jma";
-                    }
-                }))
+                .param("itemPerPage", "20"))
+//                .principal(new Principal() {
+//                    @Override
+//                    public String getName() {
+//                        return "jma";
+//                    }
+//                }))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
