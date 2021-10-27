@@ -42,8 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
-//                .and()
-//                .logout().logoutUrl("/api/v1/auth/logout")
                 .and()
                 .formLogin().disable()
                 .httpBasic()
