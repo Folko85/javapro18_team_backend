@@ -7,7 +7,7 @@ import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.LikeNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
@@ -23,16 +23,16 @@ import java.util.List;
 @Service
 public class LikeService {
     private final LikeRepository likeRepository;
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
     public LikeService(LikeRepository likeRepository,
-                       AccountRepository accountRepository,
+                       PersonRepository personRepository,
                        PostRepository postRepository,
                        CommentRepository commentRepository) {
         this.likeRepository = likeRepository;
-        this.accountRepository = accountRepository;
+        this.personRepository = personRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
     }
@@ -75,7 +75,7 @@ public class LikeService {
 //    }
 
     private Person findPerson(String eMail) {
-        return accountRepository.findByEMail(eMail)
+        return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
