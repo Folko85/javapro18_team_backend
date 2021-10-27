@@ -63,9 +63,9 @@ public class FriendshipService {
             int idDst = f.getDstPerson().getId();
 
             if (idSrc == idPerson) {
-                id.add(idSrc);
-            } else {
                 id.add(idDst);
+            } else {
+                id.add(idSrc);
             }
         }
         Page<Person> byPersonIdList = personRepository.findByPersonIdList(id, pageable);
