@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {NetworkApplication.class})
-@AutoConfigureMockMvc
 class FriendshipControllerTest extends AbstractTest {
 
     @Autowired
