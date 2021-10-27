@@ -51,8 +51,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("SELECT f " +
             "FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
-            "WHERE f.srcPerson.id = ?1 " +
-            "OR f.dstPerson.id = ?1 " +
+            "WHERE (f.srcPerson.id = ?1 " +
+            "OR f.dstPerson.id = ?1) " +
             "AND fs.code = ?2 ")
     List<Friendship> findPersonByFriendship(int personId, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
 
