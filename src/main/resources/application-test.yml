@@ -6,8 +6,8 @@ spring:
     banner-mode: 'off'
   jmx.default-domain: test
   datasource: # настройки источника данных (базы)
-    username: user # логин для подключения к базе
-    password: password # пароль для подключения к базе
+    username: ENC(PWu0QZMimWB0juSsNBfwTQ==)
+    password: ENC(62tVsgv8KdaO7f+lI79ZF6h99njiI82z)
     driverClassName: org.h2.Driver #драйвер для подключения к базе
     url: jdbc:h2:mem:mydb1 #url для подключения к базе
   liquibase:
