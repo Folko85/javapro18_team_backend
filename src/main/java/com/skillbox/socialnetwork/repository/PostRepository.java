@@ -54,7 +54,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
             "LEFT JOIN PostComment pc ON pc.post.id = p.id " +
-            "WHERE p.isBlocked = false AND p.person.id = ?1 AND p.datetime <= CURRENT_TIMESTAMP " +
+            "WHERE p.isBlocked = false AND per.isDeleted = false AND p.person.id = ?1 AND p.datetime <= CURRENT_TIMESTAMP " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByPersonIdAndCurrentDate(int id, Pageable pageable);
