@@ -52,9 +52,25 @@ public class FriendshipService {
     public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
+        int idPerson = person.getId();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
-        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+//        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
+//        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+        List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
+        List<Integer> id = new ArrayList<>();
+
+        for (Friendship f : friendshipList) {
+            int idSrc = f.getSrcPerson().getId();
+            int idDst = f.getDstPerson().getId();
+
+            if (idSrc == idPerson) {
+                id.add(idDst);
+            } else {
+                id.add(idSrc);
+            }
+        }
+        Page<Person> byPersonIdList = personRepository.findByPersonIdList(id, pageable);
+        return getPersonResponse(offset, itemPerPage, byPersonIdList);
     }
 
     private Person findPerson(String eMail) {
@@ -280,7 +296,7 @@ public class FriendshipService {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserBlocksHimSelfException();
         Person blocking = findPerson(id);
-        if(blocking.isDeleted()) throw new BlockingDeletedAccountException();
+        if (blocking.isDeleted()) throw new BlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
             if (optional.isEmpty()) {
@@ -328,7 +344,7 @@ public class FriendshipService {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserUnBlocksHimSelfException();
         Person unblocking = findPerson(id);
-        if(unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
+        if (unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
         if (!isBlockedBy(current.getId(), id, optional)) {
             throw new UnBlockingException();

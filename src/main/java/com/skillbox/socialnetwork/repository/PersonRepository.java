@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.repository;
 
+import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import org.springframework.data.domain.Page;
@@ -29,20 +30,31 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT p " +
             "FROM Person p " +
+            "WHERE p.id IN ?1")
+    Page<Person> findByPersonIdList(List<Integer> id, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Person p " +
             "WHERE p.firstName = ?1 ")
     Person findByName(String name);
 
-    @Query("SELECT p2 " +
-            "FROM Person p " +
-            "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
-            "LEFT JOIN Person p2 ON p2.id = f.dstPerson.id " +
-            "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
-            "WHERE p.isBlocked = false " +
-            "AND p.id = ?2 " +
-            "AND p2.firstName LIKE ?1% " +
-            "AND fs.code = ?3")
-    Page<Person> findPersonByFriendship(String name, int personId, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
+    //    @Query("SELECT p2 " +
+//            "FROM Person p " +
+//            "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
+//            "LEFT JOIN Person p2 ON p2.id = f.dstPerson.id " +
+//            "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
+//            "WHERE p.isBlocked = false " +
+//            "AND p.id = ?2 " +
+//            "AND p2.firstName LIKE ?1% " +
+//            "AND fs.code = ?3")
 
+    @Query("SELECT f " +
+            "FROM Friendship f " +
+            "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
+            "WHERE f.srcPerson.id = ?1 " +
+            "OR f.dstPerson.id = ?1 " +
+            "AND fs.code = ?2 ")
+    List<Friendship> findPersonByFriendship(int personId, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
 
     @Query("SELECT p " +
             "FROM Person p " +

@@ -35,7 +35,7 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription("Пользователь не существует");
-        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(LikeNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleLikeNotFoundException(LikeNotFoundException exc) {
