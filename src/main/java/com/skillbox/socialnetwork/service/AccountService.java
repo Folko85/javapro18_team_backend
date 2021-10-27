@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
+import com.skillbox.socialnetwork.entity.enums.Role;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +68,7 @@ public class AccountService {
         } else {
             person.setApproved(true);
         }
+        person.setRole(Role.USER);
         accountRepository.save(person);
         return getAccountResponse(UTC);
     }
