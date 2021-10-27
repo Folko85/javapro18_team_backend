@@ -52,7 +52,7 @@ public class FriendshipService {
         log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), pageable);
+        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
         return getPersonResponse(offset, itemPerPage, pageablePersonList);
     }
 
@@ -161,9 +161,6 @@ public class FriendshipService {
         String city = person.getCity();
 
         Page<Person> personList = null;
-        List<Person> personArrayList;
-
-        boolean isList = false;
 
         //дата рождения указана, города не указан
         if (birthdayPerson != null && city == null) {
@@ -186,16 +183,11 @@ public class FriendshipService {
 
         } else {
             log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
-            isList = true;
             //выбираем 10 рандомных пользователей
+            personList = get10Users(pageable);
         }
 
-        if (isList || personList.isEmpty()) {
-            personArrayList = get10Users();
-            return getPersonResponseList(offset, itemPerPage, personArrayList);
-        } else {
-            return getPersonResponse(offset, itemPerPage, personList);
-        }
+        return getPersonResponse(offset, itemPerPage, personList);
 
     }
 
@@ -364,8 +356,8 @@ public class FriendshipService {
         return false;
     }
 
-    List<Person> get10Users() {
-        return personRepository.find10Person();
+    Page<Person> get10Users(Pageable pageable) {
+        return personRepository.find10Person(pageable);
     }
 
 }
