@@ -15,7 +15,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(SpringExtension.class)
 public abstract class AbstractTest {
     /**
      * Web application context.
