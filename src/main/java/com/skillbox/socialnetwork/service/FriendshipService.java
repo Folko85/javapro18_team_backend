@@ -52,7 +52,7 @@ public class FriendshipService {
         log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), pageable);
+        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
         return getPersonResponse(offset, itemPerPage, pageablePersonList);
     }
 
@@ -147,7 +147,7 @@ public class FriendshipService {
         log.debug("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
         log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
-        Pageable pageable = PageRequest.of(offset/itemPerPage, itemPerPage);
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         LocalDate birthdayPerson = null;
         LocalDate startDate = null;
         LocalDate stopDate = null;
@@ -163,16 +163,16 @@ public class FriendshipService {
         Page<Person> personList = null;
 
         //дата рождения указана, города не указан
-        if (birthdayPerson != null && city == null) {
+        if (birthdayPerson != null && city.isEmpty()) {
             System.out.println("дата рождения указана, города не указан");
             log.debug("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
             personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
-            //дата рождения указана
-        } else if (birthdayPerson != null) {
-            System.out.println("дата рождения указана");
+            //дата рождения указана и город указан
+        } else if (birthdayPerson != null && !city.isEmpty()) {
+            System.out.println("дата рождения указана и город указан");
             log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
@@ -193,6 +193,7 @@ public class FriendshipService {
         }
 
         if (personList.isEmpty()) {
+            System.out.println("IF");
             pageable = PageRequest.of(0, 10);
             personList = get10Users(pageable);
         }
