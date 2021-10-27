@@ -4,10 +4,7 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 
-import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
-import com.skillbox.socialnetwork.exception.UnBlockingException;
-import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
-import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,14 +65,14 @@ public class UserController {
     @PutMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Заблокировать пользователя")
-    public ResponseEntity<AccountResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException {
+    public ResponseEntity<AccountResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         return new ResponseEntity<>(friendshipService.blockUser(principal, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Разблокировать пользователя")
-    public ResponseEntity<AccountResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException {
+    public ResponseEntity<AccountResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         return new ResponseEntity<>(friendshipService.unBlockUser(principal, id), HttpStatus.OK);
     }
 }

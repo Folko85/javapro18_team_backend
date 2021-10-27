@@ -112,4 +112,28 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(BlockingDeletedAccountException.class)
+    public ResponseEntity<BadRequestResponse> handleBlockingDeletedAccountException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("User Blocks Deleted account");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnBlockingDeletedAccountException.class)
+    public ResponseEntity<BadRequestResponse> handleUnBlockingDeletedAccountException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("User UnBlocks Deleted account");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DeletedAccountLoginException.class)
+    public ResponseEntity<BadRequestResponse> handleDeletedAccountLoginException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Deleted account login");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
 }

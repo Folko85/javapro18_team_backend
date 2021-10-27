@@ -27,6 +27,8 @@ import static java.time.ZoneOffset.UTC;
 @Service
 public class UserService {
 
+    public static String deletedImage="http://res.cloudinary.com/mmm-skillbox/image/upload/c_fill,h_300,w_300/NkbgPAkUQT";
+
     private final AccountRepository accountRepository;
     private final FriendshipService friendshipService;
 
@@ -36,27 +38,33 @@ public class UserService {
     }
 
     public AuthData getUserByEmail(Principal principal) {
-        Person person = accountRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> {
-                    log.error("Get User By Email Failed in UserService Class, email: "+principal.getName());
-                    return new UsernameNotFoundException("Email was not found");
-                });
         AuthData userRest = new AuthData();
-        convertUserToUserRest(person, userRest);
+        convertUserToUserRest(getPersonByEmail(principal), userRest);
         log.info("User with email "+userRest.getEMail()+" was received");
         return userRest;
     }
 
+    public Person getPersonByEmail(Principal principal){
+        return accountRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> {
+                    log.error("Get User By Email Failed in UserService Class, email: "+principal.getName());
+                    return new UsernameNotFoundException("Email was not found");
+                });
+    }
+
     public AuthData getUserById(Integer id) {
-        Person person = accountRepository.findById(id)
+        AuthData userRest = new AuthData();
+        convertUserToUserRest(getPersonById(id), userRest);
+        log.info("User with id "+userRest.getId()+" was received");
+        return userRest;
+    }
+
+    public Person getPersonById(Integer id){
+        return accountRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Get User By Id Failed in UserService Class, id: "+id);
                     return new UsernameNotFoundException("Id was not found " + id);
                 });
-        AuthData userRest = new AuthData();
-        convertUserToUserRest(person, userRest);
-        log.info("User with id "+userRest.getId()+" was received");
-        return userRest;
     }
 
     public DataResponse getUserMe(Principal principal) {
@@ -77,13 +85,14 @@ public class UserService {
 
     public DataResponse getUser(int id, Principal principal) {
         AuthData current = getUserByEmail(principal);
+        log.info("Attempt to get user by Id, requester id: " +current.getId() + " target id: "+id);
         AuthData requested = getUserById(id);
-        log.info("Attempt to get user by Id, requester id: " +current.getId() + "target id: "+id);
-        if (friendshipService.isBlockedBy(requested.getId(), current.getId())) {
+        if (friendshipService.isBlockedBy(requested.getId(), current.getId()) && !requested.isDeleted()) {
             AuthData response = new AuthData();
             response.setId(requested.getId());
             response.setFirstName(requested.getFirstName());
             response.setLastName(requested.getLastName());
+            response.setAbout("Отдыхай в чс, пыль");
             log.warn("Requester id: " +current.getId() + "was blocked by "+ id);
             return createResponse(response, "BLOCKED");
         } else {
@@ -121,15 +130,11 @@ public class UserService {
         return response;
     }
 
-
-    /**
-     * {@link com.sun.xml.bind.v2.TODO}
-     * Вернутся к этому методу, когда будет настроено удаление остального.
-     */
     public AccountResponse deleteUser(Principal principal) {
         Person person = accountRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
-        accountRepository.delete(person);
+        person.setDeleted(true);
+        accountRepository.save(person);
         AccountResponse userDeleteResponse = new AccountResponse();
         userDeleteResponse.setTimestamp(Instant.now());
         userDeleteResponse.setError("string");
@@ -170,8 +175,19 @@ public class UserService {
     }
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
-        BeanUtils.copyProperties(person, userRest);
-        userRest.setBirthDate(person.getBirthday() == null ? Instant.now() : person.getBirthday().atStartOfDay().toInstant(UTC));
-        conventionsFromPersonTimesToUserRest(person, userRest);
+        if(person.isDeleted()){
+            log.info("Getting a deleted account id: " +person.getId());
+            userRest.setId(person.getId());
+            userRest.setFirstName(person.getFirstName());
+            userRest.setLastName(person.getLastName());
+            userRest.setAbout("Страница удалена");
+            userRest.setPhoto(deletedImage);
+            userRest.setDeleted(true);
+        }
+        else {
+            BeanUtils.copyProperties(person, userRest);
+            userRest.setBirthDate(person.getBirthday() == null ? Instant.now() : person.getBirthday().atStartOfDay().toInstant(UTC));
+            conventionsFromPersonTimesToUserRest(person, userRest);
+        }
     }
 }
