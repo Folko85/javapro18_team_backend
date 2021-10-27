@@ -39,9 +39,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
             "WHERE p.isBlocked = false " +
             "AND p.id = ?2 " +
-            "AND p2.firstName LIKE  ?1% " +
-            "AND fs.code = ?3")
-    Page<Person> findPersonByFriendship(String name, int personId, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
+            "AND p2.firstName LIKE  ?1% ")
+    Page<Person> findPersonByFriendship(String name, int personId, Pageable pageable);
 
 
     @Query("SELECT p " +

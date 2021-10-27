@@ -52,7 +52,7 @@ public class FriendshipService {
         log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
+        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), pageable);
         return getPersonResponse(offset, itemPerPage, pageablePersonList);
     }
 
