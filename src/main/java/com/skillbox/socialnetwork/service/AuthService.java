@@ -46,8 +46,8 @@ public class AuthService {
         String token;
         Person person = accountRepository.findByEMail(loginRequest.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
-        if(person.isDeleted()){
-            log.error("Deleted User with email "+person.getEMail() +"tries to login");
+        if (person.isDeleted()) {
+            log.error("Deleted User with email " + person.getEMail() + "tries to login");
             throw new DeletedAccountLoginException();
         }
 
@@ -77,6 +77,10 @@ public class AuthService {
         authData.setAbout(person.getAbout());
         if (person.getBirthday() != null)
             authData.setBirthDate(person.getBirthday().atStartOfDay().toInstant(UTC));
+        if (person.getCountry() != null)
+            authData.setCountry(person.getCountry());
+        if (person.getCity() != null)
+            authData.setCity(person.getCity());
         authData.setFirstName(person.getFirstName());
         authData.setLastName(person.getLastName());
         authData.setId(person.getId());
@@ -89,7 +93,7 @@ public class AuthService {
         return authData;
     }
 
-    static AuthData setBlockerAuthData(Person person){
+    static AuthData setBlockerAuthData(Person person) {
         AuthData authData = new AuthData();
         authData.setId(person.getId());
         authData.setFirstName(person.getFirstName());
@@ -97,11 +101,11 @@ public class AuthService {
         return authData;
     }
 
-    static AuthData setDeletedAuthData(Person person){
+    static AuthData setDeletedAuthData(Person person) {
         AuthData authData = setBlockerAuthData(person);
         authData.setAbout("Страница удалена");
         authData.setPhoto(deletedImage);
-        return  authData;
+        return authData;
     }
 
 }
