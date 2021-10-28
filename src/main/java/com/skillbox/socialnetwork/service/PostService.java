@@ -51,12 +51,13 @@ public class PostService {
         this.friendshipService = friendshipService;
     }
 
-    public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
+    public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
                 Instant.ofEpochMilli(dateFrom)
                 , Instant.ofEpochMilli(dateTo),
+                author,
                 pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
@@ -120,13 +121,11 @@ public class PostService {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList;
-        if(id == person.getId()){
+        if (id == person.getId()) {
             pageablePostList = postRepository.findPostsByPersonId(id, pageable);
-        }
-        else if (!friendshipService.isBlockedBy(id, person.getId()) && !person.isDeleted()) {
+        } else if (!friendshipService.isBlockedBy(id, person.getId()) && !person.isDeleted()) {
             pageablePostList = postRepository.findPostsByPersonIdAndCurrentDate(id, pageable);
-        }
-        else {
+        } else {
             pageablePostList = Page.empty();
         }
 
@@ -172,7 +171,7 @@ public class PostService {
         postData.setTime(post.getDatetime());
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
-        if (post.getTags() != null){
+        if (post.getTags() != null) {
             postData.setTags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()));
         }
         postData.setMyLike(likes.stream()

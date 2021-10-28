@@ -37,8 +37,9 @@ public class PostController {
                                                  @RequestParam(name = "date_to", defaultValue = "1701214256861") long dateTo,
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                 @RequestParam(name = "author", defaultValue = "") String author,
                                                  Principal principal) {
-        return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, principal), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, author, principal), HttpStatus.OK);
     }
 
     @GetMapping("/post/{id}")
@@ -92,12 +93,13 @@ public class PostController {
                                                     Principal principal) {
         return new ResponseEntity<>(postService.getPersonWall(id, offset, itemPerPage, principal), HttpStatus.OK);
     }
+
     @PostMapping("/users/{id}/wall")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Создать пост на стене")
     public ResponseEntity<DataResponse> getUserWall(@PathVariable int id,
-                                                            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
-                                                            @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {
+                                                    @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+                                                    @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {
         return new ResponseEntity<>(postService.createPost(id, publishDate, postRequest, principal), HttpStatus.OK);
     }
 }
