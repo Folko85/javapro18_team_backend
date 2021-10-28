@@ -7,6 +7,7 @@ import com.vk.api.sdk.exceptions.ClientException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,6 +38,15 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription("Пользователь не существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<BadRequestResponse> handleLockedException(LockedException exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("invalid_request");
+        badRequestResponse.setErrorDescription("Пользователь не подтверждён");
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(LikeNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleLikeNotFoundException(LikeNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
