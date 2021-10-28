@@ -56,19 +56,25 @@ public class FriendshipService {
 //        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
 //        return getPersonResponse(offset, itemPerPage, pageablePersonList);
         List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
-        List<Integer> id = new ArrayList<>();
+        Page<Person> byPersonIdList = null;
 
-        for (Friendship f : friendshipList) {
-            int idSrc = f.getSrcPerson().getId();
-            int idDst = f.getDstPerson().getId();
+        if (!friendshipList.isEmpty()) {
+            List<Integer> id = new ArrayList<>();
 
-            if (idSrc == idPerson) {
-                id.add(idDst);
-            } else {
-                id.add(idSrc);
+            for (Friendship f : friendshipList) {
+                int idSrc = f.getSrcPerson().getId();
+                int idDst = f.getDstPerson().getId();
+
+                if (idSrc == idPerson) {
+                    id.add(idDst);
+                } else {
+                    id.add(idSrc);
+                }
             }
+            byPersonIdList = personRepository.findByPersonIdList(id, pageable);
+
         }
-        Page<Person> byPersonIdList = personRepository.findByPersonIdList(id, pageable);
+        assert byPersonIdList != null;
         return getPersonResponse(offset, itemPerPage, byPersonIdList);
     }
 

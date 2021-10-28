@@ -51,14 +51,21 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("SELECT f " +
             "FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
-            "WHERE f.srcPerson.id = ?1 " +
-            "OR f.dstPerson.id = ?1 " +
+            "WHERE (f.srcPerson.id = ?1 " +
+            "OR f.dstPerson.id = ?1) " +
             "AND fs.code = ?2 ")
     List<Friendship> findPersonByFriendship(int personId, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
 
     @Query("SELECT p " +
             "FROM Person p " +
-            "WHERE p.firstName LIKE ?2 " +
+            "WHERE p.firstName LIKE ?2% " +
+            "AND p.eMail NOT LIKE ?1 " +
+            "AND p.isBlocked = false")
+    Page<Person> findPersonByFirstName(String email, String firstName, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE p.firstName LIKE ?2% " +
             "AND p.birthday BETWEEN ?3 AND ?4 " +
             "AND p.eMail NOT LIKE ?1 " +
             "AND p.isBlocked = false")
@@ -66,7 +73,15 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT p " +
             "FROM Person p " +
-            "WHERE p.firstName = ?2 " +
+            "WHERE p.firstName LIKE ?2% " +
+            "AND p.lastName LIKE ?3% " +
+            "AND p.eMail not like ?1 " +
+            "AND p.isBlocked = false ")
+    Page<Person> findPersonByFirstNameAndLastName(String email, String firstName, String lastName, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE p.firstName LIKE ?2% " +
             "AND p.lastName LIKE ?3% " +
             "AND p.birthday BETWEEN ?4 AND ?5 " +
             "AND p.eMail not like ?1 " +
