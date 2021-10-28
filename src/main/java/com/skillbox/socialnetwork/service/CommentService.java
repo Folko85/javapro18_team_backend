@@ -4,7 +4,6 @@ import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.сommentdto.CommentData;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
@@ -12,9 +11,9 @@ import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostComment;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
-import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,26 +25,26 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.AuthService.setBlockerAuthData;
 import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
-
 import static java.time.ZoneOffset.UTC;
 
 @Service
 public class CommentService {
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
     private final FriendshipService friendshipService;
 
-    public CommentService(AccountRepository accountRepository,
+    public CommentService(PersonRepository personRepository,
                           PostRepository postRepository,
                           CommentRepository commentRepository, LikeRepository likeRepository, FriendshipService friendshipService) {
-        this.accountRepository = accountRepository;
+        this.personRepository = personRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
@@ -158,7 +157,7 @@ public class CommentService {
     }
 
     private Person findPerson(String eMail) {
-        return accountRepository.findByEMail(eMail)
+        return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 

@@ -17,4 +17,5 @@ public interface DialogRepository extends JpaRepository<Dialog, Integer> {
             "GROUP BY d.id " +
             "HAVING COUNT(p) > 1 ")
     List<Dialog> findPerson2DialogByPersonDialog(int currentPersonId, int personId);
+
 }

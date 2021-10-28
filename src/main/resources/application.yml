@@ -16,8 +16,8 @@ spring:
 
 registration:
   confirm:
-    need: false
-    url: "http://147.78.64.57:8086/api/v1/account/registration_complete"
+    need: true
+    url: "http://localhost:8086/api/v1/account/registration_complete"
 
 management:
   endpoints:

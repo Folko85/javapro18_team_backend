@@ -4,7 +4,7 @@ import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +34,7 @@ class LikeControllerTest extends AbstractTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private PersonRepository personRepository;
 
     @Autowired
     private PostRepository postRepository;
@@ -48,14 +48,14 @@ class LikeControllerTest extends AbstractTest {
         Person person = new Person();
         person.setEMail("test@test.ru");
         person.setPassword("password");
-        person = accountRepository.save(person);
+        personRepository.save(person);
     }
 
     @AfterEach
     public void cleanup() {
         likeRepository.deleteAll();
         postRepository.deleteAll();
-        accountRepository.deleteAll();
+        personRepository.deleteAll();
     }
 
     @Test

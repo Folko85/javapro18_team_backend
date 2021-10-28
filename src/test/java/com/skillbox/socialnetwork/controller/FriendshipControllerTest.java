@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class FriendshipControllerTest extends AbstractTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private PersonRepository personRepository;
 
     @Autowired
     private FriendshipRepository friendshipRepository;
@@ -60,15 +60,15 @@ class FriendshipControllerTest extends AbstractTest {
         petr.setLastOnlineTime(LocalDateTime.now());
         petr.setBlocked(false);
 
-        oleg = accountRepository.save(oleg);
-        petr = accountRepository.save(petr);
+        oleg = personRepository.save(oleg);
+        petr = personRepository.save(petr);
 
     }
 
     @AfterEach
     public void resetDb() {
         friendshipRepository.deleteAll();
-        accountRepository.deleteAll();
+        personRepository.deleteAll();
     }
 
     @Test

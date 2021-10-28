@@ -15,8 +15,8 @@ import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
-import com.skillbox.socialnetwork.repository.AccountRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,25 +38,26 @@ import static java.time.ZoneOffset.UTC;
 @Service
 public class PostService {
     private final PostRepository postRepository;
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
     private final CommentService commentService;
     private final LikeRepository likeRepository;
     private final FriendshipService friendshipService;
 
-    public PostService(PostRepository postRepository, AccountRepository accountRepository, CommentService commentService, LikeRepository likeRepository, FriendshipService friendshipService) {
+    public PostService(PostRepository postRepository, PersonRepository personRepository, CommentService commentService, LikeRepository likeRepository, FriendshipService friendshipService) {
         this.postRepository = postRepository;
-        this.accountRepository = accountRepository;
+        this.personRepository = personRepository;
         this.commentService = commentService;
         this.likeRepository = likeRepository;
         this.friendshipService = friendshipService;
     }
 
-    public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, Principal principal) {
+    public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
                 Instant.ofEpochMilli(dateFrom)
                 , Instant.ofEpochMilli(dateTo),
+                author,
                 pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
@@ -120,13 +121,11 @@ public class PostService {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList;
-        if(id == person.getId()){
+        if (id == person.getId()) {
             pageablePostList = postRepository.findPostsByPersonId(id, pageable);
-        }
-        else if (!friendshipService.isBlockedBy(id, person.getId()) && !person.isDeleted()) {
+        } else if (!friendshipService.isBlockedBy(id, person.getId()) && !person.isDeleted()) {
             pageablePostList = postRepository.findPostsByPersonIdAndCurrentDate(id, pageable);
-        }
-        else {
+        } else {
             pageablePostList = Page.empty();
         }
 
@@ -135,7 +134,7 @@ public class PostService {
 
     public DataResponse getPostById(int id, Principal principal) throws PostNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
-        Person person = accountRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(""));
+        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(""));
         DataResponse dataResponse = new DataResponse();
         dataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         dataResponse.setData(getPostData(post, person));
@@ -172,7 +171,7 @@ public class PostService {
         postData.setTime(post.getDatetime());
         postData.setTitle(post.getTitle());
         postData.setBlocked(post.isBlocked());
-        if (post.getTags() != null){
+        if (post.getTags() != null) {
             postData.setTags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()));
         }
         postData.setMyLike(likes.stream()
@@ -184,7 +183,7 @@ public class PostService {
     }
 
     private Person findPerson(String eMail) {
-        return accountRepository.findByEMail(eMail)
+        return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 

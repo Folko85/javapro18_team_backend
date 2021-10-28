@@ -30,6 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
+import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
 import static java.time.ZoneOffset.UTC;
 
 @Slf4j
@@ -117,7 +118,7 @@ public class FriendshipService {
         return response;
     }
 
-    public FriendsResponse200 addNewFriend(int id, Principal principal) {
+    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException {
         log.debug("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
@@ -128,8 +129,16 @@ public class FriendshipService {
         int srcPersonId = srcPerson.getId();
 
         Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
-
+        if(dstPerson.isDeleted()){
+            throw new DeletedAccountException("This Account was deleted");
+        }
         Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
+        if(isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)){
+            throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
+        }
+        if(isBlockedBy(srcPerson.getId(),dstPerson.getId(),  friendshipOptional)){
+            throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
+        }
 
         if (friendshipOptional.isPresent()) {
             FriendshipStatus friendshipStatusById = friendshipStatusRepository
@@ -264,7 +273,13 @@ public class FriendshipService {
     private List<Dto> getPerson4Response(List<Person> persons) {
         List<Dto> personDataList = new ArrayList<>();
         persons.forEach(person -> {
-            AuthData personData = setAuthData(person);
+            AuthData personData;
+            if(person.isDeleted()){
+                personData = setDeletedAuthData(person);
+            }
+            else{
+                personData = setAuthData(person);
+            }
             personDataList.add(personData);
         });
         return personDataList;
