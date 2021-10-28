@@ -5,7 +5,7 @@ import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Tag;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ class TagControllerTest extends AbstractTest {
     private TagRepository tagRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private PersonRepository personRepository;
 
     @BeforeEach
     public void setup() {
@@ -32,12 +32,12 @@ class TagControllerTest extends AbstractTest {
         Person person = new Person();
         person.setEMail("test@test.ru");
         person.setPassword("password");
-        accountRepository.save(person);
+        personRepository.save(person);
     }
 
     @AfterEach
     public void cleanup() {
-        accountRepository.deleteAll();
+        personRepository.deleteAll();
         tagRepository.deleteAll();
 
     }

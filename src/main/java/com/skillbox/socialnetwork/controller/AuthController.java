@@ -6,7 +6,9 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 
 
 import com.skillbox.socialnetwork.service.AuthService;
+
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@io.swagger.v3.oas.annotations.tags.Tag(name = "Контроллер для авторизации")
+@Tag(name = "Контроллер для авторизации")
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 

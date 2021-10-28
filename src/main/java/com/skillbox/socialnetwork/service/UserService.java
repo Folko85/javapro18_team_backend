@@ -4,22 +4,21 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.time.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -29,11 +28,11 @@ public class UserService {
 
     public static String deletedImage="http://res.cloudinary.com/mmm-skillbox/image/upload/c_fill,h_300,w_300/NkbgPAkUQT";
 
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
     private final FriendshipService friendshipService;
 
-    public UserService(AccountRepository accountRepository, FriendshipService friendshipService) {
-        this.accountRepository = accountRepository;
+    public UserService(PersonRepository personRepository, FriendshipService friendshipService) {
+        this.personRepository = personRepository;
         this.friendshipService = friendshipService;
     }
 
@@ -45,7 +44,7 @@ public class UserService {
     }
 
     public Person getPersonByEmail(Principal principal){
-        return accountRepository.findByEMail(principal.getName())
+        return personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
                     log.error("Get User By Email Failed in UserService Class, email: "+principal.getName());
                     return new UsernameNotFoundException("Email was not found");
@@ -60,7 +59,7 @@ public class UserService {
     }
 
     public Person getPersonById(Integer id){
-        return accountRepository.findById(id)
+        return personRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Get User By Id Failed in UserService Class, id: "+id);
                     return new UsernameNotFoundException("Id was not found " + id);
@@ -103,7 +102,7 @@ public class UserService {
     }
 
     public DataResponse updateUser(AuthData updates, Principal principal) {
-        Person person = accountRepository.findByEMail(principal.getName())
+        Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
                     log.error("Update User Failed. Email was not found, email: "+principal.getName());
                     return new UsernameNotFoundException("Update User Failed");
@@ -120,7 +119,7 @@ public class UserService {
         person.setCountry(updates.getCountry());
         person.setBirthday(LocalDate.ofInstant(updates.getBirthDate(), ZoneId.systemDefault()));
         person.setMessagesPermission(updates.getMessagesPermission() == null ? person.getMessagesPermission() : updates.getMessagesPermission());
-        Person updatedPerson = accountRepository.save(person);
+        Person updatedPerson = personRepository.save(person);
         AuthData updated = new AuthData();
         convertUserToUserRest(updatedPerson, updated);
         DataResponse response = new DataResponse();
@@ -131,10 +130,10 @@ public class UserService {
     }
 
     public AccountResponse deleteUser(Principal principal) {
-        Person person = accountRepository.findByEMail(principal.getName())
+        Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
         person.setDeleted(true);
-        accountRepository.save(person);
+        personRepository.save(person);
         AccountResponse userDeleteResponse = new AccountResponse();
         userDeleteResponse.setTimestamp(Instant.now());
         userDeleteResponse.setError("string");

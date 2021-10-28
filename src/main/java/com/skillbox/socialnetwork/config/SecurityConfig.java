@@ -2,6 +2,8 @@ package com.skillbox.socialnetwork.config;
 
 
 import com.skillbox.socialnetwork.api.security.JwtFilter;
+import com.skillbox.socialnetwork.api.security.JwtProvider;
+import com.skillbox.socialnetwork.api.security.TokenAuthenticationManager;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,11 +24,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailServiceImpl userDetailsService;
-    private final JwtFilter jwtFilter;
+    private final JwtProvider jwtProvider;
+    private final TokenAuthenticationManager authenticationManager;
 
-    public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtFilter jwtFilter) {
+    public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtProvider jwtProvider, TokenAuthenticationManager authenticationManager) {
         this.userDetailsService = userDetailsService;
-        this.jwtFilter = jwtFilter;
+        this.jwtProvider = jwtProvider;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -42,13 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
-//                .and()
-//                .logout().logoutUrl("/api/v1/auth/logout")
                 .and()
                 .formLogin().disable()
                 .httpBasic()
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -68,6 +70,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean(name = "restTokenAuthenticationFilter")
+    public JwtFilter jwtFilter() {
+        JwtFilter restTokenAuthenticationFilter = new JwtFilter(jwtProvider ,userDetailsService);
+        restTokenAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        return restTokenAuthenticationFilter;
     }
 
 }
