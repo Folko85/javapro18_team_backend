@@ -31,29 +31,24 @@ public class JwtFilter extends AbstractAuthenticationProcessingFilter {
         super("/**");
         this.jwtProvider = jwtProvider;
         this.userDetailService = userDetailService;
-        setAuthenticationSuccessHandler((request, response, authentication) ->
-        {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            request.getRequestDispatcher(request.getServletPath() + request.getPathInfo()).forward(request, response);
-        });
-        setAuthenticationFailureHandler(JwtFilter::onAuthenticationFailure);
-    }
-
-    private static void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException {
-        response.getOutputStream().print(authenticationException.getMessage());
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        String token = getTokenFromRequest((HttpServletRequest) servletRequest);
-        if (token != null && jwtProvider.validateToken(token)) {
-            String userLogin = jwtProvider.getLoginFromToken(token);
-            UserDetails userDetails = userDetailService.loadUserByUsername(userLogin);
-            if (userDetails != null)
-                SecurityContextHolder.getContext()
-                        .setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+        try {
+            String token = getTokenFromRequest((HttpServletRequest) servletRequest);
+            if (token != null && jwtProvider.validateToken(token)) {
+                String userLogin = jwtProvider.getLoginFromToken(token);
+                UserDetails userDetails = userDetailService.loadUserByUsername(userLogin);
+                if (userDetails != null)
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+            }
+            filterChain.doFilter(servletRequest, servletResponse);
+        } catch (AuthenticationException ex) {
+            unsuccessfulAuthentication((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, ex);
         }
-        filterChain.doFilter(servletRequest, servletResponse);
+
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.skillbox.socialnetwork.config;
 
 import com.skillbox.socialnetwork.api.security.JwtFilter;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
-import com.skillbox.socialnetwork.api.security.TokenAuthenticationManager;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -25,12 +26,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailServiceImpl userDetailsService;
     private final JwtProvider jwtProvider;
-    private final TokenAuthenticationManager authenticationManager;
 
-    public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtProvider jwtProvider, TokenAuthenticationManager authenticationManager) {
+    public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtProvider jwtProvider) {
         this.userDetailsService = userDetailsService;
         this.jwtProvider = jwtProvider;
-        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -72,11 +71,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Bean(name = "restTokenAuthenticationFilter")
+    @Bean
     public JwtFilter jwtFilter() {
-        JwtFilter restTokenAuthenticationFilter = new JwtFilter(jwtProvider ,userDetailsService);
-        restTokenAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        return restTokenAuthenticationFilter;
+        JwtFilter jwtFilter = new JwtFilter(jwtProvider, userDetailsService);
+        jwtFilter.setAuthenticationManager(jwtProvider);
+        jwtFilter.setAuthenticationFailureHandler(new ExceptionMappingAuthenticationFailureHandler());
+        return jwtFilter;
     }
 
 }
