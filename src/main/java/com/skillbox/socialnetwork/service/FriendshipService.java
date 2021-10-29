@@ -75,9 +75,12 @@ public class FriendshipService {
                 }
             }
             byPersonIdList = personRepository.findByPersonIdList(id, pageable);
-
         }
-        assert byPersonIdList != null;
+
+        if (byPersonIdList == null) {
+            byPersonIdList = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
+
         return getPersonResponse(offset, itemPerPage, byPersonIdList);
     }
 
