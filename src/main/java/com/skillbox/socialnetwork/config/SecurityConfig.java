@@ -13,10 +13,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -73,9 +73,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JwtFilter jwtFilter() {
-        JwtFilter restTokenAuthenticationFilter = new JwtFilter(jwtProvider ,userDetailsService);
-        restTokenAuthenticationFilter.setAuthenticationManager(jwtProvider);
-        return restTokenAuthenticationFilter;
+        JwtFilter jwtFilter = new JwtFilter(jwtProvider, userDetailsService);
+        jwtFilter.setAuthenticationManager(jwtProvider);
+        jwtFilter.setAuthenticationFailureHandler(new ExceptionMappingAuthenticationFailureHandler());
+        return jwtFilter;
     }
 
 }
