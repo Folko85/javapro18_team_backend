@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
 import com.skillbox.socialnetwork.exception.*;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Arrays;
 
+@Slf4j
 @ControllerAdvice
 public class DefaultAdvice {
 
@@ -36,6 +39,7 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription("Пользователь не существует");
+        log.error(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
 
@@ -44,6 +48,7 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription("Пользователь не подтверждён");
+        log.error(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
 
