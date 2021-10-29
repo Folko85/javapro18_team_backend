@@ -203,7 +203,7 @@ public class FriendshipService {
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
             //дата рождения указана и город указан
-        } else if (birthdayPerson != null) {
+        } else if (birthdayPerson != null && city != null) {
             log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
