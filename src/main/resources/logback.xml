@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
-    <logger name="com.skillbox.socialnetwork" level="info" />
+
     <logger name="org.springframework" level="info" />
     <appender name="root" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -11,6 +11,10 @@
             <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} : %msg %n</Pattern>
         </encoder>
     </appender>
+    <logger name="javax.net" level="info"/>
+    <logger name="javax.management" level="info"/>
+    <logger name="org.springframework" level="info"/>
+    <logger name="com.skillbox.socialnetwork" level="info" />
     <root level="info">
         <appender-ref ref="root" />
     </root>
