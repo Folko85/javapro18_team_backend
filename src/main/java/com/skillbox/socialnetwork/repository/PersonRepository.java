@@ -91,7 +91,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("SELECT p " +
             "FROM Person p " +
             "WHERE p.birthday BETWEEN ?2 AND ?3 " +
-            "AND p.eMail NOT LIKE ?1 " +
+            "AND p.eMail NOT LIKE %?1% " +
             "AND p.isBlocked = false " +
             "AND p.isDeleted = false")
     Page<Person> findPersonByBirthday(String email, LocalDate date1, LocalDate date2, Pageable pageable);

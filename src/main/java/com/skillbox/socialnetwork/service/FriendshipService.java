@@ -18,6 +18,7 @@ import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
@@ -129,14 +131,14 @@ public class FriendshipService {
         int srcPersonId = srcPerson.getId();
 
         Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
-        if(dstPerson.isDeleted()){
+        if (dstPerson.isDeleted()) {
             throw new DeletedAccountException("This Account was deleted");
         }
         Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
-        if(isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)){
+        if (isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)) {
             throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
         }
-        if(isBlockedBy(srcPerson.getId(),dstPerson.getId(),  friendshipOptional)){
+        if (isBlockedBy(srcPerson.getId(), dstPerson.getId(), friendshipOptional)) {
             throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
         }
 
@@ -201,7 +203,7 @@ public class FriendshipService {
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
             //дата рождения указана и город указан
-        } else if (birthdayPerson != null && !city.isEmpty()) {
+        } else if (birthdayPerson != null && city != null) {
             log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
@@ -223,6 +225,18 @@ public class FriendshipService {
             pageable = PageRequest.of(0, 10);
             personList = get10Users(pageable);
         }
+
+//        if (personList.getTotalElements() < 10) {
+//            Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
+//            Page<Person> personList2 = get10Users(pageable2);
+//
+//            List<Person> persons = personList.stream().collect(Collectors.toList());
+//            List<Person> persons2 = personList2.stream().collect(Collectors.toList());
+//
+//            persons.addAll(persons2);
+//
+//            personList = new PageImpl<>(persons, pageable, persons.size());
+//        }
 
         return getPersonResponse(offset, itemPerPage, personList);
 
@@ -274,10 +288,9 @@ public class FriendshipService {
         List<Dto> personDataList = new ArrayList<>();
         persons.forEach(person -> {
             AuthData personData;
-            if(person.isDeleted()){
+            if (person.isDeleted()) {
                 personData = setDeletedAuthData(person);
-            }
-            else{
+            } else {
                 personData = setAuthData(person);
             }
             personDataList.add(personData);
