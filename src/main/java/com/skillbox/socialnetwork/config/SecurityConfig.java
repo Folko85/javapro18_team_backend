@@ -15,8 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -75,7 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtFilter jwtFilter() {
         JwtFilter jwtFilter = new JwtFilter(jwtProvider, userDetailsService);
         jwtFilter.setAuthenticationManager(jwtProvider);
-        jwtFilter.setAuthenticationFailureHandler(new ExceptionMappingAuthenticationFailureHandler());
+        jwtFilter.setAuthenticationFailureHandler(new ForwardAuthenticationFailureHandler("http://www.zeronenetwork.design"));
         return jwtFilter;
     }
 
