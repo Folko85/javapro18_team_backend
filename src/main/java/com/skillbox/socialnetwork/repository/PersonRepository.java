@@ -108,16 +108,18 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("SELECT p " +
             "FROM Person p " +
             "WHERE p.city = ?1 " +
+            "AND p.eMail NOT LIKE ?2 " +
             "AND p.isBlocked = false " +
             "AND p.isDeleted = false")
-    Page<Person> findPersonByCity(String city, Pageable pageable);
+    Page<Person> findPersonByCity(String city, String email, Pageable pageable);
 
     @Query("SELECT p FROM Person p " +
             "WHERE p.isBlocked = false")
     Page<Person> findAllPerson(Pageable pageable);
 
     @Query("SELECT p FROM Person p " +
-            "WHERE p.isBlocked = false " +
+            "WHERE p.eMail NOT LIKE ?1 " +
+            "AND p.isBlocked = false " +
             "AND p.isDeleted = false")
-    Page<Person> find10Person(Pageable pageable);
+    Page<Person> find10Person(String email, Pageable pageable);
 }

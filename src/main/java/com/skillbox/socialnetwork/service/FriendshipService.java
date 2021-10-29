@@ -196,8 +196,9 @@ public class FriendshipService {
         Page<Person> personList = null;
 
         //дата рождения указана, города не указан
-        if (birthdayPerson != null && city.isEmpty()) {
+        if (birthdayPerson != null && city == null) {
             log.debug("дата рождения указана, города не указан");
+            System.out.println("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
             personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
@@ -205,6 +206,7 @@ public class FriendshipService {
             //дата рождения указана и город указан
         } else if (birthdayPerson != null && city != null) {
             log.debug("дата рождения указана");
+            System.out.println("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
                     .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
@@ -212,18 +214,21 @@ public class FriendshipService {
             //город указан
         } else if (city != null) {
             log.debug("город указан");
-            personList = personRepository.findPersonByCity(city, pageable);
+            System.out.println("город указан");
+            personList = personRepository.findPersonByCity(city,person.getEMail(), pageable);
 
         } else {
             log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
+            System.out.println("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
             pageable = PageRequest.of(0, 10);
             //выбираем 10 рандомных пользователей
-            personList = get10Users(pageable);
+            personList = get10Users(person.getEMail(), pageable);
         }
 
         if (personList.isEmpty()) {
+            System.out.println("лист пустой");
             pageable = PageRequest.of(0, 10);
-            personList = get10Users(pageable);
+            personList = get10Users(person.getEMail(), pageable);
         }
 
 //        if (personList.getTotalElements() < 10) {
@@ -412,8 +417,8 @@ public class FriendshipService {
         return false;
     }
 
-    Page<Person> get10Users(Pageable pageable) {
-        return personRepository.find10Person(pageable);
+    Page<Person> get10Users(String email, Pageable pageable) {
+        return personRepository.find10Person(email, pageable);
     }
 
 }
