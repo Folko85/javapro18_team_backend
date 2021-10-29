@@ -26,8 +26,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
             if (optionalPerson.get().isApproved()) {
                 Person person = optionalPerson.get();
                 person.setLastOnlineTime(LocalDateTime.now());
-                personRepository.save(person);
-                return SecurityUser.fromUser(person);
+                return personRepository.save(person);
             } else throw new LockedException("Учётная запись не подтверждена");
         } else throw new UsernameNotFoundException("Пользователь не найден");
     }

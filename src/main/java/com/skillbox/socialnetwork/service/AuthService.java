@@ -89,7 +89,8 @@ public class AuthService {
         authData.setMessagesPermission(person.getMessagesPermission());
         authData.setBlocked(person.isBlocked());
         authData.setPhoto(person.getPhoto());
-        authData.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
+        if (person.getLastOnlineTime() != null)
+            authData.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         return authData;
     }
 

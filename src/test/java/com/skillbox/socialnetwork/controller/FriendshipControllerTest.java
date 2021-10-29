@@ -71,13 +71,13 @@ class FriendshipControllerTest extends AbstractTest {
         personRepository.deleteAll();
     }
 
-    @Test
-    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
-    void findFriend() throws Exception {
-        mockMvc.perform(get("/api/v1/friends", "", "0", "20")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
+//    void findFriend() throws Exception {
+//        mockMvc.perform(get("/api/v1/friends", "", "0", "20")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//    }
 
     @Test
     @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")

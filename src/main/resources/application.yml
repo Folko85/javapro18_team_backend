@@ -16,7 +16,7 @@ spring:
 
 registration:
   confirm:
-    need: true
+    need: false
     url: "http://localhost:8086/api/v1/account/registration_complete"
 
 management:
@@ -50,8 +50,8 @@ jasypt:
     bean: encryptorBean
 
 cors:
-  - http://localhost:8086/
-  - http://127.0.0.1:8086/
+  - http://localhost:8081/
+  - http://127.0.0.1:8081/
   - http://localhost/
   - http://127.0.0.1/
   - http://195.234.208.58/
