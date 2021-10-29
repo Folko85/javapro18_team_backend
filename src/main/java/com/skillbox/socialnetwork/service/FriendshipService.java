@@ -229,17 +229,17 @@ public class FriendshipService {
             personList = get10Users(person.getEMail(), pageable);
         }
 
-//        if (personList.getTotalElements() < 10) {
-//            Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
-//            Page<Person> personList2 = get10Users(pageable2);
-//
-//            List<Person> persons = personList.stream().collect(Collectors.toList());
-//            List<Person> persons2 = personList2.stream().collect(Collectors.toList());
-//
-//            persons.addAll(persons2);
-//
-//            personList = new PageImpl<>(persons, pageable, persons.size());
-//        }
+        if (personList.getTotalElements() < 10) {
+            Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
+            Page<Person> personList2 = get10Users(person.getEMail(), pageable2);
+
+            List<Person> persons = personList.stream().collect(Collectors.toList());
+            List<Person> persons2 = personList2.stream().collect(Collectors.toList());
+
+            persons.addAll(persons2);
+
+            personList = new PageImpl<>(persons, pageable, persons.size());
+        }
 
         return getPersonResponse(offset, itemPerPage, personList);
 
