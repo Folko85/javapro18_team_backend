@@ -1,18 +1,15 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.AbstractTest;
-import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Tag;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +25,7 @@ class TagControllerTest extends AbstractTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private PersonRepository accountRepository;
 
     @BeforeEach
     public void setup() {
