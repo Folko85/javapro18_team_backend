@@ -74,7 +74,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtFilter jwtFilter() {
         JwtFilter jwtFilter = new JwtFilter(jwtProvider, userDetailsService);
         jwtFilter.setAuthenticationManager(jwtProvider);
-        jwtFilter.setAuthenticationFailureHandler(new ForwardAuthenticationFailureHandler("http://www.zeronenetwork.design"));
         return jwtFilter;
     }
 
