@@ -1,17 +1,22 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.AbstractTest;
+import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -20,13 +25,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {NetworkApplication.class})
+@AutoConfigureMockMvc
 class LikeControllerTest extends AbstractTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private PersonRepository accountRepository;
+    private PersonRepository personRepository;
 
     @Autowired
     private PostRepository postRepository;
@@ -40,14 +48,14 @@ class LikeControllerTest extends AbstractTest {
         Person person = new Person();
         person.setEMail("test@test.ru");
         person.setPassword("password");
-        person = accountRepository.save(person);
+        personRepository.save(person);
     }
 
     @AfterEach
     public void cleanup() {
         likeRepository.deleteAll();
         postRepository.deleteAll();
-        accountRepository.deleteAll();
+        personRepository.deleteAll();
     }
 
     @Test

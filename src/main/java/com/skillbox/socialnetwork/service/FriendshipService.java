@@ -30,6 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
+import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
 import static java.time.ZoneOffset.UTC;
 
 @Slf4j
@@ -51,9 +52,31 @@ public class FriendshipService {
     public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
+        int idPerson = person.getId();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
-        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+//        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
+//        return getPersonResponse(offset, itemPerPage, pageablePersonList);
+        List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
+        Page<Person> byPersonIdList = null;
+
+        if (!friendshipList.isEmpty()) {
+            List<Integer> id = new ArrayList<>();
+
+            for (Friendship f : friendshipList) {
+                int idSrc = f.getSrcPerson().getId();
+                int idDst = f.getDstPerson().getId();
+
+                if (idSrc == idPerson) {
+                    id.add(idDst);
+                } else {
+                    id.add(idSrc);
+                }
+            }
+            byPersonIdList = personRepository.findByPersonIdList(id, pageable);
+
+        }
+        assert byPersonIdList != null;
+        return getPersonResponse(offset, itemPerPage, byPersonIdList);
     }
 
     private Person findPerson(String eMail) {
@@ -95,7 +118,7 @@ public class FriendshipService {
         return response;
     }
 
-    public FriendsResponse200 addNewFriend(int id, Principal principal) {
+    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException {
         log.debug("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
@@ -106,8 +129,16 @@ public class FriendshipService {
         int srcPersonId = srcPerson.getId();
 
         Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
-
+        if(dstPerson.isDeleted()){
+            throw new DeletedAccountException("This Account was deleted");
+        }
         Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
+        if(isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)){
+            throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
+        }
+        if(isBlockedBy(srcPerson.getId(),dstPerson.getId(),  friendshipOptional)){
+            throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
+        }
 
         if (friendshipOptional.isPresent()) {
             FriendshipStatus friendshipStatusById = friendshipStatusRepository
@@ -242,7 +273,13 @@ public class FriendshipService {
     private List<Dto> getPerson4Response(List<Person> persons) {
         List<Dto> personDataList = new ArrayList<>();
         persons.forEach(person -> {
-            AuthData personData = setAuthData(person);
+            AuthData personData;
+            if(person.isDeleted()){
+                personData = setDeletedAuthData(person);
+            }
+            else{
+                personData = setAuthData(person);
+            }
             personDataList.add(personData);
         });
         return personDataList;
@@ -265,7 +302,7 @@ public class FriendshipService {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserBlocksHimSelfException();
         Person blocking = findPerson(id);
-        if(blocking.isDeleted()) throw new BlockingDeletedAccountException();
+        if (blocking.isDeleted()) throw new BlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
             if (optional.isEmpty()) {
@@ -313,7 +350,7 @@ public class FriendshipService {
         Person current = findPerson(principal.getName());
         if (current.getId() == id) throw new UserUnBlocksHimSelfException();
         Person unblocking = findPerson(id);
-        if(unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
+        if (unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
         if (!isBlockedBy(current.getId(), id, optional)) {
             throw new UnBlockingException();

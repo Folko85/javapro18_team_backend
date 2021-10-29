@@ -6,7 +6,7 @@ import com.cloudinary.utils.ObjectUtils;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
@@ -24,7 +24,7 @@ import java.util.Map;
 @Slf4j
 public class StorageService {
 
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
 
     @Value("${external.cloudinary.cloud}")
     private String cloud;
@@ -35,12 +35,12 @@ public class StorageService {
     @Value("${external.cloudinary.secret}")
     private String secret;
 
-    public StorageService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public StorageService(PersonRepository personRepository) {
+        this.personRepository = personRepository;
     }
 
     public DataResponse uploadImage(MultipartFile image, Principal principal) throws IOException {
-        Person current = accountRepository.findByEMail(principal.getName())
+        Person current = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
 
         if (image.getSize() >  5242880){

@@ -16,7 +16,7 @@ build:
     - mvn clean package -Pserver-build
   cache:
     paths:
-      - ./.maven2
+      - ./.m2
 deploy:
   stage: deploy
   only:

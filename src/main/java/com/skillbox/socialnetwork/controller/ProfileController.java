@@ -30,8 +30,8 @@ public class ProfileController {
     public @ResponseBody
     ResponseEntity<?> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
                              @RequestParam(name = "last_name", defaultValue = "") String lastName,
-                             @RequestParam(name = "age_from", defaultValue = "1") int ageFrom,
-                             @RequestParam(name = "age_to", defaultValue = "120") int ageTo,
+                             @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
+                             @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
                              @RequestParam(name = "country_id", defaultValue = "1") int countryId,
                              @RequestParam(name = "city_id", defaultValue = "1") int cityId,
                              @RequestParam(name = "offset", defaultValue = "0") int offset,

@@ -8,7 +8,7 @@ import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,16 +25,16 @@ import static java.time.ZoneOffset.UTC;
 @Slf4j
 @Service
 public class AuthService {
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final UserDetailServiceImpl userDetailService;
 
-    public AuthService(AccountRepository accountRepository,
+    public AuthService(PersonRepository accountRepository,
                        PasswordEncoder passwordEncoder,
                        JwtProvider jwtProvider,
                        UserDetailServiceImpl userDetailService) {
-        this.accountRepository = accountRepository;
+        this.personRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
         this.userDetailService = userDetailService;
@@ -44,7 +44,7 @@ public class AuthService {
     public DataResponse auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
         UserDetails userDetails = userDetailService.loadUserByUsername(loginRequest.getEMail());
         String token;
-        Person person = accountRepository.findByEMail(loginRequest.getEMail())
+        Person person = personRepository.findByEMail(loginRequest.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
         if (person.isDeleted()) {
             log.error("Deleted User with email " + person.getEMail() + "tries to login");
