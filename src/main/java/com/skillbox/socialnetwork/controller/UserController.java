@@ -44,7 +44,6 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получение текущего пользователя")
     public ResponseEntity<DataResponse> getMe(Principal principal) {
         return new ResponseEntity<>(userService.getUserMe(principal), HttpStatus.OK);
