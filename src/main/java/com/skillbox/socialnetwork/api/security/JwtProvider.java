@@ -28,7 +28,7 @@ public class JwtProvider {
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException expEx) {
-            throw new UsernameNotFoundException("Пользователь не найден");
+            return false;
         }
     }
 
