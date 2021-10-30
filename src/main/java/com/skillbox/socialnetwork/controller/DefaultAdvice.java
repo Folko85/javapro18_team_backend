@@ -1,7 +1,21 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
-import com.skillbox.socialnetwork.exception.*;
+import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockedPersonException;
+import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockerPersonException;
+import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
+import com.skillbox.socialnetwork.exception.BlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.CommentNotFoundException;
+import com.skillbox.socialnetwork.exception.DeletedAccountException;
+import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
+import com.skillbox.socialnetwork.exception.LikeNotFoundException;
+import com.skillbox.socialnetwork.exception.PostCreationExecption;
+import com.skillbox.socialnetwork.exception.PostNotFoundException;
+import com.skillbox.socialnetwork.exception.UnBlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.UnBlockingException;
+import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.UserExistException;
+import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,13 +23,11 @@ import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededExceptio
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 
 @Slf4j

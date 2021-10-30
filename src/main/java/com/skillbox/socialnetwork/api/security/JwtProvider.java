@@ -7,10 +7,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -18,7 +14,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Component
-public class JwtProvider implements AuthenticationManager {
+public class JwtProvider {
 
 
     private final String JWT_SECRET = "jwtSecret"; // пока так
@@ -46,8 +42,4 @@ public class JwtProvider implements AuthenticationManager {
         return claims.getSubject();
     }
 
-    @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        return null;
-    }
 }
