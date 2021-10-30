@@ -46,8 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .formLogin().disable()
-                .httpBasic()
-                .and()
+                .httpBasic().disable()
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 

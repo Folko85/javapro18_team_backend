@@ -44,11 +44,9 @@ public class UserController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получение текущего пользователя")
     public ResponseEntity<DataResponse> getMe(Principal principal) {
-        if (principal == null){
-            throw new UsernameNotFoundException("unauthorized");
-        }
         return new ResponseEntity<>(userService.getUserMe(principal), HttpStatus.OK);
     }
 

@@ -38,7 +38,7 @@ public class DefaultAdvice {
     public ResponseEntity<BadRequestResponse> handleUsernameNotFoundException(UsernameNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
-        badRequestResponse.setErrorDescription("Пользователь не существует");
+        badRequestResponse.setErrorDescription(exc.getMessage());
         log.error(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
@@ -47,7 +47,7 @@ public class DefaultAdvice {
     public ResponseEntity<BadRequestResponse> handleLockedException(LockedException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
-        badRequestResponse.setErrorDescription("Пользователь не подтверждён");
+        badRequestResponse.setErrorDescription(exc.getMessage());
         log.error(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
