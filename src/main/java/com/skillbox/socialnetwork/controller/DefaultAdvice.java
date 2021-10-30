@@ -9,6 +9,7 @@ import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededExceptio
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -148,6 +149,30 @@ public class DefaultAdvice {
     public ResponseEntity<BadRequestResponse> handleDeletedAccountLoginException(Exception exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Deleted account login");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AddingOrSubcribingOnBlockerPersonException.class)
+    public ResponseEntity<BadRequestResponse> handleAddingOrSubcribingOnBlockerPersonException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Block Exception");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AddingOrSubcribingOnBlockedPersonException.class)
+    public ResponseEntity<BadRequestResponse> handleAddingOrSubcribingOnBlockedPersonException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Block Exception");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DeletedAccountException.class)
+    public ResponseEntity<BadRequestResponse> handleDeletedAccountException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Страница удалена");
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }

@@ -18,6 +18,7 @@ import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,8 +29,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
+import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
 import static java.time.ZoneOffset.UTC;
 
 @Slf4j
@@ -56,19 +59,28 @@ public class FriendshipService {
 //        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
 //        return getPersonResponse(offset, itemPerPage, pageablePersonList);
         List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
-        List<Integer> id = new ArrayList<>();
+        Page<Person> byPersonIdList = null;
 
-        for (Friendship f : friendshipList) {
-            int idSrc = f.getSrcPerson().getId();
-            int idDst = f.getDstPerson().getId();
+        if (!friendshipList.isEmpty()) {
+            List<Integer> id = new ArrayList<>();
 
-            if (idSrc == idPerson) {
-                id.add(idDst);
-            } else {
-                id.add(idSrc);
+            for (Friendship f : friendshipList) {
+                int idSrc = f.getSrcPerson().getId();
+                int idDst = f.getDstPerson().getId();
+
+                if (idSrc == idPerson) {
+                    id.add(idDst);
+                } else {
+                    id.add(idSrc);
+                }
             }
+            byPersonIdList = personRepository.findByPersonIdList(id, pageable);
         }
-        Page<Person> byPersonIdList = personRepository.findByPersonIdList(id, pageable);
+
+        if (byPersonIdList == null) {
+            byPersonIdList = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
+
         return getPersonResponse(offset, itemPerPage, byPersonIdList);
     }
 
@@ -111,7 +123,7 @@ public class FriendshipService {
         return response;
     }
 
-    public FriendsResponse200 addNewFriend(int id, Principal principal) {
+    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException {
         log.debug("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
@@ -122,8 +134,16 @@ public class FriendshipService {
         int srcPersonId = srcPerson.getId();
 
         Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
-
+        if (dstPerson.isDeleted()) {
+            throw new DeletedAccountException("This Account was deleted");
+        }
         Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
+        if (isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)) {
+            throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
+        }
+        if (isBlockedBy(srcPerson.getId(), dstPerson.getId(), friendshipOptional)) {
+            throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
+        }
 
         if (friendshipOptional.isPresent()) {
             FriendshipStatus friendshipStatusById = friendshipStatusRepository
@@ -179,14 +199,14 @@ public class FriendshipService {
         Page<Person> personList = null;
 
         //дата рождения указана, города не указан
-        if (birthdayPerson != null && city.isEmpty()) {
+        if (birthdayPerson != null && city == null) {
             log.debug("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
             personList = personRepository
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
 
             //дата рождения указана и город указан
-        } else if (birthdayPerson != null && !city.isEmpty()) {
+        } else if (birthdayPerson != null && city != null) {
             log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
@@ -195,18 +215,30 @@ public class FriendshipService {
             //город указан
         } else if (city != null) {
             log.debug("город указан");
-            personList = personRepository.findPersonByCity(city, pageable);
+            personList = personRepository.findPersonByCity(city, person.getEMail(), pageable);
 
         } else {
             log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
             pageable = PageRequest.of(0, 10);
             //выбираем 10 рандомных пользователей
-            personList = get10Users(pageable);
+            personList = get10Users(person.getEMail(), pageable);
         }
 
         if (personList.isEmpty()) {
             pageable = PageRequest.of(0, 10);
-            personList = get10Users(pageable);
+            personList = get10Users(person.getEMail(), pageable);
+        }
+
+        if (personList.getTotalElements() < 10) {
+            Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
+            Page<Person> personList2 = get10Users(person.getEMail(), pageable2);
+
+            List<Person> persons = personList.stream().collect(Collectors.toList());
+            List<Person> persons2 = personList2.stream().collect(Collectors.toList());
+
+            persons.addAll(persons2);
+
+            personList = new PageImpl<>(persons, pageable, persons.size());
         }
 
         return getPersonResponse(offset, itemPerPage, personList);
@@ -258,7 +290,12 @@ public class FriendshipService {
     private List<Dto> getPerson4Response(List<Person> persons) {
         List<Dto> personDataList = new ArrayList<>();
         persons.forEach(person -> {
-            AuthData personData = setAuthData(person);
+            AuthData personData;
+            if (person.isDeleted()) {
+                personData = setDeletedAuthData(person);
+            } else {
+                personData = setAuthData(person);
+            }
             personDataList.add(personData);
         });
         return personDataList;
@@ -378,8 +415,8 @@ public class FriendshipService {
         return false;
     }
 
-    Page<Person> get10Users(Pageable pageable) {
-        return personRepository.find10Person(pageable);
+    Page<Person> get10Users(String email, Pageable pageable) {
+        return personRepository.find10Person(email, pageable);
     }
 
 }

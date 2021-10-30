@@ -4,17 +4,20 @@ import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.entity.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Set;
 
 @Entity
 @Table(name = "person")
 @Getter
 @Setter
-public class Person {
+public class Person implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,4 +90,34 @@ public class Person {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", columnDefinition = "enum('USER', 'MODERATOR', 'ADMIN')")
     private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.getRole().getAuthorities();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.eMail;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.isDeleted;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.isBlocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isApproved;
+    }
 }
