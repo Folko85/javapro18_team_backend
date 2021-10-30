@@ -7,6 +7,8 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,9 @@ public class UserService {
     }
 
     public Person getPersonByEmail(Principal principal){
+        if (principal == null){
+            throw new BadCredentialsException("Доступ запрещён");
+        }
         return personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
                     log.error("Get User By Email Failed in UserService Class, email: "+principal.getName());

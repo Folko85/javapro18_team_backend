@@ -4,15 +4,20 @@ import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
 import com.skillbox.socialnetwork.exception.*;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 
+@Slf4j
 @ControllerAdvice
 public class DefaultAdvice {
 
@@ -33,10 +38,20 @@ public class DefaultAdvice {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleUsernameNotFoundException(UsernameNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
-        badRequestResponse.setError("invalid_request");
+        badRequestResponse.setError("unauthorized");
         badRequestResponse.setErrorDescription("Пользователь не существует");
+        log.error(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<BadRequestResponse> handleAccessDeniedException(BadCredentialsException exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("access_denied");
+        badRequestResponse.setErrorDescription("Доступ запрещён");
+        log.error(Arrays.toString(exc.getStackTrace()));
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(LikeNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleLikeNotFoundException(LikeNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
