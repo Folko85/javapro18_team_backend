@@ -1,9 +1,6 @@
 package com.skillbox.socialnetwork.config;
 
 
-import com.skillbox.socialnetwork.api.security.JwtFilter;
-import com.skillbox.socialnetwork.api.security.JwtProvider;
-import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,21 +12,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserDetailServiceImpl userDetailsService;
-    private final JwtProvider jwtProvider;
-
-    public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtProvider jwtProvider) {
-        this.userDetailsService = userDetailsService;
-        this.jwtProvider = jwtProvider;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -46,15 +34,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .formLogin().disable()
-                .httpBasic().disable()
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .httpBasic().disable();
     }
 
     @Bean
     protected DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         return daoAuthenticationProvider;
     }
 
@@ -67,13 +53,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public JwtFilter jwtFilter() {
-        JwtFilter jwtFilter = new JwtFilter(jwtProvider, userDetailsService);
-        jwtFilter.setAuthenticationManager(jwtProvider);
-        return jwtFilter;
     }
 
 }
