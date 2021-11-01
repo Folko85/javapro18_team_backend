@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.DialogRequest;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
@@ -21,9 +22,7 @@ import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -80,14 +79,23 @@ public class DialogService {
             });
             person2DialogRepository.saveAll(person2DialogList);
             dialogData.setId(dialog.getId());
-        }
-        else dialogData.setId(dialogs.stream().findFirst().get().getId());
+        } else dialogData.setId(dialogs.stream().findFirst().get().getId());
 
         DataResponse dataResponse = new DataResponse();
         dataResponse.setTimestamp(Instant.now());
         dialogData.setRecipientId(setAuthData(personDst));
         dataResponse.setData(dialogData);
         return dataResponse;
+    }
+
+    public AccountResponse getUnreaded(Principal principal) {
+        Person person = findPerson(principal.getName());
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setTimestamp(Instant.now());
+        Map<String, String> mapData = new HashMap<>();
+        mapData.put("count", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString());
+        accountResponse.setData(mapData);
+        return accountResponse;
     }
 
     private ListResponse getDialogResponse(int offset, int itemPerPage, Page<Person2Dialog> person2DialogPage) {

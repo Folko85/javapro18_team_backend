@@ -1,19 +1,36 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
-import com.skillbox.socialnetwork.exception.*;
+import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockedPersonException;
+import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockerPersonException;
+import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
+import com.skillbox.socialnetwork.exception.BlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.CommentNotFoundException;
+import com.skillbox.socialnetwork.exception.DeletedAccountException;
+import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
+import com.skillbox.socialnetwork.exception.LikeNotFoundException;
+import com.skillbox.socialnetwork.exception.PostCreationExecption;
+import com.skillbox.socialnetwork.exception.PostNotFoundException;
+import com.skillbox.socialnetwork.exception.UnBlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.UnBlockingException;
+import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.UserExistException;
+import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Arrays;
 
+@Slf4j
 @ControllerAdvice
 public class DefaultAdvice {
 
@@ -34,17 +51,18 @@ public class DefaultAdvice {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleUsernameNotFoundException(UsernameNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
-        badRequestResponse.setError("invalid_request");
+        badRequestResponse.setError("unauthorized");
         badRequestResponse.setErrorDescription("Пользователь не существует");
+        log.error(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
-
-    @ExceptionHandler(LockedException.class)
-    public ResponseEntity<BadRequestResponse> handleLockedException(LockedException exc) {
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<BadRequestResponse> handleAccessDeniedException(BadCredentialsException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
-        badRequestResponse.setError("invalid_request");
-        badRequestResponse.setErrorDescription("Пользователь не подтверждён");
-        return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
+        badRequestResponse.setError("access_denied");
+        badRequestResponse.setErrorDescription("Доступ запрещён");
+        log.error(Arrays.toString(exc.getStackTrace()));
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(LikeNotFoundException.class)
