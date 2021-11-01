@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.util.StringUtils.hasText;
 
 public class JwtFilter extends AbstractAuthenticationProcessingFilter {
@@ -40,7 +42,7 @@ public class JwtFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     private static void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException {
-        response.getOutputStream().print(authenticationException.getMessage());
+        response.sendError(FORBIDDEN.value());
     }
 
     @Override

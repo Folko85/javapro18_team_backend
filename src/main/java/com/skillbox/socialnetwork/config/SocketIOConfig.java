@@ -4,9 +4,9 @@ package com.skillbox.socialnetwork.config;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
-import com.skillbox.socialnetwork.repository.AccountRepository;
 
 
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,13 +22,13 @@ public class SocketIOConfig {
 
     private final JwtProvider jwtProvider;
 
-    private final AccountRepository accountRepository;
+    private final PersonRepository personRepository;
 
     private SocketIOServer server;
 
-    public SocketIOConfig(JwtProvider jwtProvider, AccountRepository accountRepository) {
+    public SocketIOConfig(JwtProvider jwtProvider, PersonRepository personRepository) {
         this.jwtProvider = jwtProvider;
-        this.accountRepository = accountRepository;
+        this.personRepository = personRepository;
     }
 
 
@@ -42,7 +42,7 @@ public class SocketIOConfig {
             // http://localhost:8081?token=xxxxxxx
             String token = data.getSingleUrlParam("token");
 
-            return accountRepository.findByEMail(jwtProvider.getLoginFromToken(token)).isPresent();
+            return personRepository.findByEMail(jwtProvider.getLoginFromToken(token)).isPresent();
         });
 
         server = new SocketIOServer(config);

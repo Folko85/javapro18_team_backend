@@ -6,7 +6,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
-import com.skillbox.socialnetwork.repository.AccountRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.SessionTemplate;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +17,12 @@ import java.util.UUID;
 public class SocketEventHandler {
     private final SocketIOServer server;
     private final SessionTemplate template;
-    private final AccountRepository accountRepository;
+    private final PersonRepository accountRepository;
     private final JwtProvider jwtProvider;
 
     public SocketEventHandler(SocketIOServer server,
                               SessionTemplate template,
-                              AccountRepository accountRepository,
+                              PersonRepository accountRepository,
                               JwtProvider jwtProvider) {
         this.server = server;
         this.template = template;
