@@ -30,7 +30,6 @@ import static java.time.ZoneOffset.UTC;
 
 @Service
 public class MessageService {
-    private final SimpMessagingTemplate messagingTemplate;
     private final PersonRepository personRepository;
     private final MessageRepository messageRepository;
     private final Person2DialogRepository person2DialogRepository;
@@ -40,13 +39,11 @@ public class MessageService {
     public MessageService(PersonRepository personRepository,
                           MessageRepository messageRepository,
                           Person2DialogRepository person2DialogRepository,
-                          SimpMessagingTemplate messagingTemplate,
                           SessionTemplate sessionTemplate,
                           SocketIOServer server) {
         this.personRepository = personRepository;
         this.messageRepository = messageRepository;
         this.person2DialogRepository = person2DialogRepository;
-        this.messagingTemplate = messagingTemplate;
         this.sessionTemplate = sessionTemplate;
         this.server = server;
     }
@@ -78,7 +75,6 @@ public class MessageService {
         sessionTemplate.findByUserId(message.getDialog().getPersons().stream()
                 .filter(person1 -> !person1.getId().equals(person.getId())).findFirst().get().getId())
                 .ifPresent(uuid -> server.getClient(uuid).sendEvent("message", dataResponse));
-        //  messagingTemplate.convertAndSendToUser(message.getDialog().toString(), "/queue/messages", message);
 
         return dataResponse;
     }

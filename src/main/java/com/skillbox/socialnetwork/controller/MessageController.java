@@ -41,8 +41,5 @@ public class MessageController {
                                                     Principal principal) {
         return new ResponseEntity<>(messageService.postMessage(id, messageRequest, principal), HttpStatus.OK);
     }
-    @SubscribeMapping("/{id}/notifications")
-    public String getPositions(@PathVariable int id, Principal principal) {
-        return principal.getName();
-    }
+
 }
