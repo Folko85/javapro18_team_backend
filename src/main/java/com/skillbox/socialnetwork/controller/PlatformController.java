@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.CityDto;
+import com.skillbox.socialnetwork.api.response.platformdto.Language;
 import com.skillbox.socialnetwork.service.PlatformService;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
@@ -45,7 +46,7 @@ public class PlatformController {
     }
 
     @GetMapping("/platform/languages")
-    public ListResponse getLanguages() {
+    public ListResponse<Language> getLanguages() {
         return platformService.getLanguages();
     }
 }

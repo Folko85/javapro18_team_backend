@@ -23,7 +23,7 @@ public class TagController {
     @GetMapping
     @Operation (summary = "Получить теги")
     @PreAuthorize("hasAuthority('user:write')")
-    public ListResponse getTags(@RequestParam(required = false, defaultValue = "") String tag,
+    public ListResponse<TagDto> getTags(@RequestParam(required = false, defaultValue = "") String tag,
                                 @RequestParam(required = false, defaultValue = "0") Integer offset,
                                 @RequestParam(required = false, defaultValue = "10") Integer itemPerPage){
         return tagService.getTags(tag, offset, itemPerPage);
@@ -32,7 +32,7 @@ public class TagController {
     @PostMapping
     @Operation (summary = "Добавить тег")
     @PreAuthorize("hasAuthority('user:write')")
-    public DataResponse postTag(@RequestBody TagDto tag){
+    public DataResponse<TagDto> postTag(@RequestBody TagDto tag){
         return tagService.postTag(tag);
     }
 

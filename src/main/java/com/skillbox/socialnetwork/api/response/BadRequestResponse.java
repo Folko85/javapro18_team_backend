@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.exceptionDTO;
+package com.skillbox.socialnetwork.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

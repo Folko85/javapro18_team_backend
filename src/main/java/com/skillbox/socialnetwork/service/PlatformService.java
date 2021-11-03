@@ -57,8 +57,8 @@ public class PlatformService {
         }).collect(Collectors.toList());
     }
 
-    public ListResponse getLanguages() {
-        ListResponse listResponse = new ListResponse();
+    public ListResponse<Language> getLanguages() {
+        ListResponse<Language> listResponse = new ListResponse<>();
         listResponse.setTimestamp(Instant.now());
         listResponse.setTotal(1);
         listResponse.setOffset(0);
@@ -66,7 +66,7 @@ public class PlatformService {
         Language language = new Language();
         language.setId(1);
         language.setTitle("Русский");
-        List<Dto> languages= new ArrayList<>();
+        List<Language> languages= new ArrayList<>();
         languages.add(language);
         listResponse.setData(languages);
         return listResponse;

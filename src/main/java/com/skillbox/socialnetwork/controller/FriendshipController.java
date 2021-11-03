@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.IsFriends;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockedPersonException;
@@ -39,7 +40,7 @@ public class FriendshipController {
                                         @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                         Principal principal) {
 
-        ListResponse listResponse = friendshipService.getFriends(name, offset, itemPerPage, principal);
+        ListResponse<AuthData> listResponse = friendshipService.getFriends(name, offset, itemPerPage, principal);
         return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 
@@ -73,12 +74,12 @@ public class FriendshipController {
             description = "Получить список заявок")
     @GetMapping("/api/v1/friends/request")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> listApplications(@RequestParam(name = "name", defaultValue = "") String name,
+    public ResponseEntity<ListResponse<AuthData>> listApplications(@RequestParam(name = "name", defaultValue = "") String name,
                                               @RequestParam(name = "offset", defaultValue = "0") int offset,
                                               @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                               Principal principal) {
 
-        ListResponse listOfApplications = friendshipService.getListOfApplications(name, offset, itemPerPage, principal);
+        ListResponse<AuthData> listOfApplications = friendshipService.getListOfApplications(name, offset, itemPerPage, principal);
         return new ResponseEntity<>(listOfApplications, HttpStatus.OK);
     }
 
@@ -86,11 +87,11 @@ public class FriendshipController {
             description = "Получить список рекомендаций")
     @GetMapping("/api/v1/friends/recommendations")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
+    public ResponseEntity<ListResponse<AuthData>> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                  Principal principal) {
 
-        ListResponse listResponse = friendshipService.recommendedUsers(offset, itemPerPage, principal);
+        ListResponse<AuthData> listResponse = friendshipService.recommendedUsers(offset, itemPerPage, principal);
         return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 
@@ -98,7 +99,7 @@ public class FriendshipController {
             description = "Получить информацию является ли пользователь другом указанных пользователей")
     @PostMapping("/api/v1/is/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> isFriends(@RequestBody IsFriends isFriends, Principal principal) {
+    public ResponseEntity<ResponseFriendsList> isFriends(@RequestBody IsFriends isFriends, Principal principal) {
 
         ResponseFriendsList personsFriends = friendshipService.isPersonsFriends(isFriends, principal);
         return new ResponseEntity<>(personsFriends, HttpStatus.OK);

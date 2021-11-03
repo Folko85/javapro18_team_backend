@@ -37,12 +37,12 @@ public class LikeService {
         this.commentRepository = commentRepository;
     }
 
-    public DataResponse getLikes(int itemId, String type) throws PostNotFoundException {
+    public DataResponse<LikeData> getLikes(int itemId, String type) throws PostNotFoundException {
 
         return getLikesResponse(itemId, type);
     }
 
-    public DataResponse putLikes(LikeRequest likeRequest, Principal principal) throws PostNotFoundException, LikeNotFoundException {
+    public DataResponse<LikeData> putLikes(LikeRequest likeRequest, Principal principal) throws PostNotFoundException, LikeNotFoundException {
         Person person = findPerson(principal.getName());
         if (likeRepository.findLikeByItemAndTypeAndPerson(likeRequest.getItemId(), likeRequest.getType(), person).isPresent())
             throw new LikeNotFoundException();
@@ -56,7 +56,7 @@ public class LikeService {
         return getLikesResponse(likeRequest.getItemId(), likeRequest.getType());
     }
 
-    public DataResponse deleteLike(int itemId, String type, Principal principal) throws PostNotFoundException, LikeNotFoundException {
+    public DataResponse<LikeData> deleteLike(int itemId, String type, Principal principal) throws PostNotFoundException, LikeNotFoundException {
         Person person = findPerson(principal.getName());
         Like like = likeRepository.findLikeByItemAndTypeAndPerson(itemId, type, person)
                 .orElseThrow(LikeNotFoundException::new);
@@ -89,8 +89,8 @@ public class LikeService {
 //                .orElseThrow(CommentNotFoundException::new);
 //    }
 
-    private DataResponse getLikesResponse(int itemId, String type) {
-        DataResponse likeResponse = new DataResponse();
+    private DataResponse<LikeData> getLikesResponse(int itemId, String type) {
+        DataResponse<LikeData> likeResponse = new DataResponse<>();
         LikeData likeData = new LikeData();
         List<Integer> users = new ArrayList<>();
         likeRepository.findLikesByItemAndType(itemId, type).forEach(postLike1 -> {

@@ -7,7 +7,6 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors (chain = true)
-@Schema(description = "Данные о загруженном изображении")
 public class ImageDto implements Dto {
 
     @Schema (description = "Идентификатор изображения")

@@ -62,7 +62,7 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
+    public ListResponse<FriendsDto> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
                                      int cityId, int offset, int itemPerPage, Principal principal) {
 
         log.debug("поиск пользователя");
@@ -119,10 +119,10 @@ public class PersonService {
                 .findByEMail(eMail).orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 
-    private ListResponse getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
-        List<Dto> persons = pageablePersonList.stream().map(this::friendsToPojo).collect(Collectors.toList());
+    private ListResponse<FriendsDto> getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
+        List<FriendsDto> persons = pageablePersonList.stream().map(this::friendsToPojo).collect(Collectors.toList());
 
-        ListResponse postResponse = new ListResponse();
+        ListResponse<FriendsDto> postResponse = new ListResponse<>();
 
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));

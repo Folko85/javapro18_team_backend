@@ -1,6 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.exceptionDTO.BadRequestResponse;
+import com.skillbox.socialnetwork.api.response.BadRequestResponse;
 import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockedPersonException;
 import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockerPersonException;
 import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;

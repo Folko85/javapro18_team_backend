@@ -9,11 +9,11 @@ import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ListResponse {
+public class ListResponse<T extends Dto> {
     private String error;
     private Instant timestamp;
     private int total;
     private int offset;
     private int perPage;
-    private List<Dto> data;
+    private List<T> data;
 }

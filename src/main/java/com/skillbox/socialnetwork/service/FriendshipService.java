@@ -51,7 +51,7 @@ public class FriendshipService {
         this.friendshipStatusRepository = friendshipStatusRepository;
     }
 
-    public ListResponse getFriends(String name, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
         int idPerson = person.getId();
@@ -170,7 +170,7 @@ public class FriendshipService {
         return addFriendResponse;
     }
 
-    public ListResponse getListOfApplications(String name, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<AuthData> getListOfApplications(String name, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> personByStatusCode = friendshipRepository
@@ -179,7 +179,7 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
-    public ListResponse recommendedUsers(int offset, int itemPerPage, Principal principal) {
+    public ListResponse<AuthData> recommendedUsers(int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
         log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
@@ -196,7 +196,7 @@ public class FriendshipService {
 
         String city = person.getCity();
 
-        Page<Person> personList = null;
+        Page<Person> personList;
 
         //дата рождения указана, города не указан
         if (birthdayPerson != null && city == null) {
@@ -267,8 +267,8 @@ public class FriendshipService {
     }
 
     //==========================================================================================================
-    private ListResponse getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
-        ListResponse postResponse = new ListResponse();
+    private ListResponse<AuthData> getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
+        ListResponse<AuthData> postResponse = new ListResponse<>();
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setOffset(offset);
@@ -277,8 +277,8 @@ public class FriendshipService {
         return postResponse;
     }
 
-    private ListResponse getPersonResponseList(int offset, int itemPerPage, List<Person> personList) {
-        ListResponse postResponse = new ListResponse();
+    private ListResponse<AuthData> getPersonResponseList(int offset, int itemPerPage, List<Person> personList) {
+        ListResponse<AuthData> postResponse = new ListResponse<>();
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setOffset(offset);
@@ -287,8 +287,8 @@ public class FriendshipService {
         return postResponse;
     }
 
-    private List<Dto> getPerson4Response(List<Person> persons) {
-        List<Dto> personDataList = new ArrayList<>();
+    private List<AuthData> getPerson4Response(List<Person> persons) {
+        List<AuthData> personDataList = new ArrayList<>();
         persons.forEach(person -> {
             AuthData personData;
             if (person.isDeleted()) {

@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +29,7 @@ public class ProfileController {
     @GetMapping("/api/v1/users/search")
     @PreAuthorize("hasAuthority('user:write')")
     public @ResponseBody
-    ResponseEntity<?> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
+    ResponseEntity<ListResponse<FriendsDto>> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
                              @RequestParam(name = "last_name", defaultValue = "") String lastName,
                              @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
                              @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
@@ -38,7 +39,7 @@ public class ProfileController {
                              @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                              Principal principal) {
 
-        ListResponse listResponse = personService.searchPerson(firstName, lastName, ageFrom, ageTo,
+        ListResponse<FriendsDto> listResponse = personService.searchPerson(firstName, lastName, ageFrom, ageTo,
                 countryId, cityId, offset, itemPerPage, principal);
 
         return new ResponseEntity<>(listResponse, HttpStatus.OK);

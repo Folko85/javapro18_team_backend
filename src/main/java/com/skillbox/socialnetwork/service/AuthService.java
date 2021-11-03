@@ -37,7 +37,7 @@ public class AuthService {
     }
 
 
-    public DataResponse auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
+    public DataResponse<AuthData> auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
         Person person = personRepository.findByEMail(loginRequest.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
         if (person.isDeleted()) {
@@ -53,7 +53,7 @@ public class AuthService {
             token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
 
-        DataResponse authResponse = new DataResponse();
+        DataResponse<AuthData> authResponse = new DataResponse<>();
         authResponse.setTimestamp(ZonedDateTime.now().toInstant());
         AuthData authData;
         authData = setAuthData(person);

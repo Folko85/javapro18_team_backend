@@ -51,20 +51,20 @@ public class CommentService {
         this.friendshipService = friendshipService;
     }
 
-    public ListResponse getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
+    public ListResponse<CommentData> getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
         Person person = findPerson(principal.getName());
         Post post = findPost(id);
         return getPage4PostComments(offset, itemPerPage, post, person);
     }
 
-    public ListResponse getPage4PostComments(int offset, int itemPerPage, Post post, Person person) {
+    public ListResponse<CommentData> getPage4PostComments(int offset, int itemPerPage, Post post, Person person) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<PostComment> pageablePostCommentList = commentRepository
                 .findPostCommentsByPostIdAndParentIsNull(post.getId(), pageable);
         return getPostResponse(offset, itemPerPage, pageablePostCommentList, person);
     }
 
-    public DataResponse postComment(int itemId, CommentRequest commentRequest, Principal principal) throws PostNotFoundException, CommentNotFoundException {
+    public DataResponse<CommentData> postComment(int itemId, CommentRequest commentRequest, Principal principal) throws PostNotFoundException, CommentNotFoundException {
         Person person = findPerson(principal.getName());
         Post post = findPost(itemId);
         PostComment postComment = new PostComment();
@@ -81,7 +81,7 @@ public class CommentService {
         return getCommentResponse(postComment, person);
     }
 
-    public DataResponse putComment(int itemId, int commentId, CommentRequest commentRequest, Principal principal) throws CommentNotFoundException, PostNotFoundException {
+    public DataResponse<CommentData> putComment(int itemId, int commentId, CommentRequest commentRequest, Principal principal) throws CommentNotFoundException, PostNotFoundException {
         Person person = findPerson(principal.getName());
         findPost(itemId);
         if (commentRequest.getParentId() != null)
@@ -92,7 +92,7 @@ public class CommentService {
         return getCommentResponse(postComment, person);
     }
 
-    public DataResponse deleteComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+    public DataResponse<CommentData> deleteComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
         postComment.setDeleted(postComment.getPerson().getId() == person.getId() || postComment.isDeleted());
@@ -100,7 +100,7 @@ public class CommentService {
         return getCommentResponse(postComment, person);
     }
 
-    public DataResponse recoveryComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+    public DataResponse<CommentData> recoveryComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
         postComment.setDeleted(postComment.getPerson().getId() != person.getId() && postComment.isDeleted());
@@ -108,7 +108,7 @@ public class CommentService {
         return getCommentResponse(postComment, person);
     }
 
-    public List<Dto> getCommentData4Response(Set<PostComment> comments, Person person) {
+    public List<CommentData> getCommentData4Response(Set<PostComment> comments, Person person) {
         List<CommentData> commentDataList = new ArrayList<>();
         comments.forEach(postComment -> {
             CommentData commentData = getCommentData(postComment, person);
@@ -146,8 +146,8 @@ public class CommentService {
         return commentData;
     }
 
-    private ListResponse getPostResponse(int offset, int itemPerPage, Page<PostComment> pageablePostCommentList, Person person) {
-        ListResponse postCommentResponse = new ListResponse();
+    private ListResponse<CommentData> getPostResponse(int offset, int itemPerPage, Page<PostComment> pageablePostCommentList, Person person) {
+        ListResponse<CommentData> postCommentResponse = new ListResponse<>();
         postCommentResponse.setPerPage(itemPerPage);
         postCommentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postCommentResponse.setOffset(offset);
@@ -171,8 +171,8 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
     }
 
-    public DataResponse getCommentResponse(PostComment postComment, Person person) {
-        DataResponse commentResponse = new DataResponse();
+    public DataResponse<CommentData> getCommentResponse(PostComment postComment, Person person) {
+        DataResponse<CommentData> commentResponse = new DataResponse<>();
         commentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         commentResponse.setData(getCommentData(postComment, person));
         return commentResponse;

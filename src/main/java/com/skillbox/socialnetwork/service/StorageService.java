@@ -41,7 +41,7 @@ public class StorageService {
         this.personRepository = personRepository;
     }
 
-    public DataResponse uploadImage(MultipartFile image, String type, Principal principal) throws IOException {
+    public DataResponse<ImageDto> uploadImage(MultipartFile image, String type, Principal principal) throws IOException {
         Person current = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
 
@@ -71,7 +71,7 @@ public class StorageService {
         ImageDto imageDTO = new ImageDto()
                 .setId(String.valueOf(ThreadLocalRandom.current().nextInt(100))).setUrl(imageUrl);
 
-        DataResponse dataResponse = new DataResponse();
+        DataResponse<ImageDto> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(Instant.now());
         dataResponse.setData(imageDTO);
         return dataResponse;

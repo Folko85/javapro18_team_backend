@@ -7,8 +7,8 @@ import lombok.Data;
 import java.time.Instant;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DataResponse {
+public class DataResponse<T extends Dto> {
     private String error;
     private Instant timestamp;
-    private Dto data;
+    private T data;
 }

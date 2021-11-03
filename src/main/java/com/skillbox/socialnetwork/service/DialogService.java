@@ -44,14 +44,14 @@ public class DialogService {
     }
 
 
-    public ListResponse getDialogs(String text, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<DialogData> getDialogs(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person2Dialog> person2DialogPage = person2DialogRepository.findDialogByAuthorAndTitle(text, person.getId(), pageable);
         return getDialogResponse(offset, itemPerPage, person2DialogPage);
     }
 
-    public DataResponse postDialog(DialogRequest dialogRequest, Principal principal) {
+    public DataResponse<DialogData> postDialog(DialogRequest dialogRequest, Principal principal) {
         Person currentPerson = findPerson(principal.getName());
         List<Person> personList = personRepository.findAllById(dialogRequest.getUsersIds());
         if (personList.size() != dialogRequest.getUsersIds().size())
@@ -81,7 +81,7 @@ public class DialogService {
             dialogData.setId(dialog.getId());
         } else dialogData.setId(dialogs.stream().findFirst().get().getId());
 
-        DataResponse dataResponse = new DataResponse();
+        DataResponse<DialogData> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(Instant.now());
         dialogData.setRecipientId(setAuthData(personDst));
         dataResponse.setData(dialogData);
@@ -98,8 +98,8 @@ public class DialogService {
         return accountResponse;
     }
 
-    private ListResponse getDialogResponse(int offset, int itemPerPage, Page<Person2Dialog> person2DialogPage) {
-        ListResponse dialogResponse = new ListResponse();
+    private ListResponse<DialogData> getDialogResponse(int offset, int itemPerPage, Page<Person2Dialog> person2DialogPage) {
+        ListResponse<DialogData> dialogResponse = new ListResponse<>();
         dialogResponse.setPerPage(itemPerPage);
         dialogResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         dialogResponse.setOffset(offset);
@@ -108,8 +108,8 @@ public class DialogService {
         return dialogResponse;
     }
 
-    private List<Dto> getDialogs4Response(List<Person2Dialog> person2Dialogs) {
-        List<Dto> dialogDataList = new ArrayList<>();
+    private List<DialogData> getDialogs4Response(List<Person2Dialog> person2Dialogs) {
+        List<DialogData> dialogDataList = new ArrayList<>();
         person2Dialogs.forEach(person2Dialog -> {
             DialogData dialogDataData = getDialogData(person2Dialog);
             dialogDataList.add(dialogDataData);
