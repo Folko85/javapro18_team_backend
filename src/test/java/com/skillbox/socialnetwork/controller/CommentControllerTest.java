@@ -1,6 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.AbstractTest;
+import com.skillbox.socialnetwork.NetworkApplication;
+import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostComment;
@@ -12,8 +14,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -23,6 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SpringBootTest(classes = {NetworkApplication.class})
+@DirtiesContext
 class CommentControllerTest extends AbstractTest {
 
     @Autowired
@@ -84,12 +90,14 @@ class CommentControllerTest extends AbstractTest {
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void postComment() throws Exception {
-        String postId = post.getId().toString();
-        String body = "{\"parent_id\": " + postId + ",\"comment_text\": \"ABOBA\"}";
+        Integer postId = post.getId();
+        CommentRequest request = new CommentRequest();
+        request.setParentId(postId);
+        request.setCommentText("ABOBAB");
 
         this.mockMvc.perform(post("/api/v1/post/{id}/comments", postId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
+                .content(mapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -97,13 +105,15 @@ class CommentControllerTest extends AbstractTest {
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void putComment() throws Exception {
-        String postId = post.getId().toString();
+        Integer postId = post.getId();
         String commentID = postComment.getId().toString();
-        String body = "{\"parent_id\": " + postId + ",\"comment_text\": \"ABOBA\"}";
+        CommentRequest request = new CommentRequest();
+        request.setParentId(postId);
+        request.setCommentText("ABOBAB");
 
         this.mockMvc.perform(put("/api/v1/post/{id}/comments/{comment_id}", postId, commentID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
+                .content(mapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
