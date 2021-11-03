@@ -95,7 +95,7 @@ class CommentControllerTest extends AbstractTest {
     void postComment() throws Exception {
         Integer postId = post.getId();
         CommentRequest request = new CommentRequest();
-        request.setParentId(postId);
+        request.setParentId(postComment.getId());
         request.setCommentText("ABOBAB");
 
         this.mockMvc.perform(post("/api/v1/post/{id}/comments", postId)
@@ -109,27 +109,27 @@ class CommentControllerTest extends AbstractTest {
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void putComment() throws Exception {
         Integer postId = post.getId();
-        String commentID = postComment.getId().toString();
+        String commentId = postComment.getId().toString();
         CommentRequest request = new CommentRequest();
-        request.setParentId(postId);
+        request.setParentId(postComment.getId());
         request.setCommentText("ABOBAB");
 
-        this.mockMvc.perform(put("/api/v1/post/{id}/comments/{comment_id}", postId, commentID)
+        this.mockMvc.perform(put("/api/v1/post/{id}/comments/{comment_id}", postId, commentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
-//    @Test
-//    @WithMockUser(username = "test@test.ru", authorities = "user:write")
-//    void deleteComment() throws Exception {
-//        String postId = post.getId().toString();
-//        String commentID = postComment.getId().toString();
-//        this.mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", postId, commentID))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    @WithMockUser(username = "test@test.ru", authorities = "user:write")
+    void deleteComment() throws Exception {
+        String postId = post.getId().toString();
+        String commentID = postComment.getId().toString();
+        this.mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", postId, commentID))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
