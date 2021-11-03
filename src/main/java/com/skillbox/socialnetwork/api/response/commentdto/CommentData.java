@@ -20,9 +20,14 @@ public class CommentData implements Dto {
     private int postId;
     private Instant time;
     @JsonProperty("author_id")
-    private int authorId;
+    private Integer authorId;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
+    @JsonProperty("is_deleted")
+    private boolean isDeleted;
     @JsonProperty("sub_comments")
     private List<CommentData> subComments;
+    private int likes;
+    @JsonProperty("my_like")
+    private boolean myLike;
 }

@@ -2,9 +2,8 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
-import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.сommentdto.CommentData;
+import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
@@ -25,7 +24,6 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -124,13 +122,13 @@ public class CommentService {
         commentData.setCommentText(postComment.getCommentText());
         commentData.setBlocked(postComment.isBlocked());
         if(postComment.getPerson().isDeleted()){
-            commentData.setAuthor(setDeletedAuthData(postComment.getPerson()));
+            commentData.setAuthorId(setDeletedAuthData(postComment.getPerson()).getId());
         }
         else if(postComment.getPerson().getId().equals(person.getId()) || !friendshipService.isBlockedBy(postComment.getPerson().getId(), person.getId())) {
-            commentData.setAuthor(setAuthData(postComment.getPerson()));
+            commentData.setAuthorId(setAuthData(postComment.getPerson()).getId());
         }
         else{
-            commentData.setAuthor(setBlockerAuthData(postComment.getPerson()));
+            commentData.setAuthorId(setBlockerAuthData(postComment.getPerson()).getId());
         }
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
