@@ -121,15 +121,15 @@ class CommentControllerTest extends AbstractTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @WithMockUser(username = "test@test.ru", authorities = "user:write")
-    void deleteComment() throws Exception {
-        String postId = post.getId().toString();
-        String commentID = postComment.getId().toString();
-        this.mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", postId, commentID))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    @WithMockUser(username = "test@test.ru", authorities = "user:write")
+//    void deleteComment() throws Exception {
+//        String postId = post.getId().toString();
+//        String commentID = postComment.getId().toString();
+//        this.mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", postId, commentID))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//    }
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
