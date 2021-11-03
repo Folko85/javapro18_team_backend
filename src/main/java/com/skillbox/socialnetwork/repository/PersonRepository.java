@@ -60,7 +60,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "FROM Person p " +
             "WHERE p.firstName LIKE ?2% " +
             "AND p.eMail NOT LIKE ?1 " +
-            "AND p.isBlocked = false")
+            "AND p.isBlocked = false " +
+            "AND p.isDeleted = false")
     Page<Person> findPersonByFirstName(String email, String firstName, Pageable pageable);
 
     @Query("SELECT p " +
@@ -68,7 +69,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "WHERE p.firstName LIKE ?2% " +
             "AND p.birthday BETWEEN ?3 AND ?4 " +
             "AND p.eMail NOT LIKE ?1 " +
-            "AND p.isBlocked = false")
+            "AND p.isBlocked = false " +
+            "AND p.isDeleted = false")
     Page<Person> findPersonByFirstNameAndBirthday(String email, String firstName, LocalDate ageFrom, LocalDate ageTo, Pageable pageable);
 
     @Query("SELECT p " +
@@ -76,7 +78,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "WHERE p.firstName LIKE ?2% " +
             "AND p.lastName LIKE ?3% " +
             "AND p.eMail not like ?1 " +
-            "AND p.isBlocked = false ")
+            "AND p.isBlocked = false " +
+            "AND p.isDeleted = false")
     Page<Person> findPersonByFirstNameAndLastName(String email, String firstName, String lastName, Pageable pageable);
 
     @Query("SELECT p " +
@@ -85,13 +88,14 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "AND p.lastName LIKE ?3% " +
             "AND p.birthday BETWEEN ?4 AND ?5 " +
             "AND p.eMail not like ?1 " +
-            "AND p.isBlocked = false ")
+            "AND p.isBlocked = false " +
+            "AND p.isDeleted = false")
     Page<Person> findPersonByFirstNameAndLastNameAndBirthday(String email, String firstName, String lastName, LocalDate ageFrom, LocalDate ageTo, Pageable pageable);
 
     @Query("SELECT p " +
             "FROM Person p " +
             "WHERE p.birthday BETWEEN ?2 AND ?3 " +
-            "AND p.eMail NOT LIKE ?1 " +
+            "AND p.eMail NOT LIKE %?1% " +
             "AND p.isBlocked = false " +
             "AND p.isDeleted = false")
     Page<Person> findPersonByBirthday(String email, LocalDate date1, LocalDate date2, Pageable pageable);
@@ -108,16 +112,18 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("SELECT p " +
             "FROM Person p " +
             "WHERE p.city = ?1 " +
+            "AND p.eMail NOT LIKE ?2 " +
             "AND p.isBlocked = false " +
             "AND p.isDeleted = false")
-    Page<Person> findPersonByCity(String city, Pageable pageable);
+    Page<Person> findPersonByCity(String city, String email, Pageable pageable);
 
     @Query("SELECT p FROM Person p " +
             "WHERE p.isBlocked = false")
     Page<Person> findAllPerson(Pageable pageable);
 
     @Query("SELECT p FROM Person p " +
-            "WHERE p.isBlocked = false " +
+            "WHERE p.eMail NOT LIKE ?1 " +
+            "AND p.isBlocked = false " +
             "AND p.isDeleted = false")
-    Page<Person> find10Person(Pageable pageable);
+    Page<Person> find10Person(String email, Pageable pageable);
 }

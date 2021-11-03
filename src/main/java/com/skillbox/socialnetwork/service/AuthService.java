@@ -5,13 +5,12 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
-import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,34 +27,33 @@ public class AuthService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final UserDetailServiceImpl userDetailService;
 
     public AuthService(PersonRepository accountRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtProvider jwtProvider,
-                       UserDetailServiceImpl userDetailService) {
+                       JwtProvider jwtProvider) {
         this.personRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
-        this.userDetailService = userDetailService;
     }
 
 
-    public DataResponse auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
-        UserDetails userDetails = userDetailService.loadUserByUsername(loginRequest.getEMail());
-        String token;
+    public DataResponse<AuthData> auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
         Person person = personRepository.findByEMail(loginRequest.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
         if (person.isDeleted()) {
-            log.error("Deleted User with email " + person.getEMail() + "tries to login");
+            log.error("Deleted User with email {} tries to login", person.getEMail());
             throw new DeletedAccountLoginException();
         }
-
-        if (passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
+        if (!person.isApproved()) {
+            log.error("Not approved User with email {} tries to login", person.getEMail());
+            throw new BadCredentialsException("Доступ запрещён");
+        }
+        String token;
+        if (passwordEncoder.matches(loginRequest.getPassword(), person.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
 
-        DataResponse authResponse = new DataResponse();
+        DataResponse<AuthData> authResponse = new DataResponse<>();
         authResponse.setTimestamp(ZonedDateTime.now().toInstant());
         AuthData authData;
         authData = setAuthData(person);
@@ -89,7 +87,8 @@ public class AuthService {
         authData.setMessagesPermission(person.getMessagesPermission());
         authData.setBlocked(person.isBlocked());
         authData.setPhoto(person.getPhoto());
-        authData.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
+        if (person.getLastOnlineTime() != null)
+            authData.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
         return authData;
     }
 

@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 
 
+import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "login")
-    public ResponseEntity<DataResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
+    public ResponseEntity<DataResponse<AuthData>> login(@RequestBody LoginRequest loginRequest) throws Exception {
         return new ResponseEntity<>(authService.auth(loginRequest), HttpStatus.OK);
     }
 

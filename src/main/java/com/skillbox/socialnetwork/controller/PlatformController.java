@@ -2,11 +2,15 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.CityDto;
+import com.skillbox.socialnetwork.api.response.platformdto.Language;
 import com.skillbox.socialnetwork.service.PlatformService;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.base.Country;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,13 +40,13 @@ public class PlatformController {
     }
 
     @GetMapping("/platform/cities")
-    @Operation (summary = "Запрос списка городов в количестве itemPerPage содержащих city")
+    @Operation(summary = "Запрос списка городов в количестве itemPerPage содержащих city")
     public List<CityDto> getCities(@RequestParam int countryId) throws ClientException, ApiException {
         return platformService.getCities(countryId);
     }
 
     @GetMapping("/platform/languages")
-    public ListResponse getLanguages(){
-        return  platformService.getLanguages();
+    public ListResponse<Language> getLanguages() {
+        return platformService.getLanguages();
     }
 }

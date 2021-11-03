@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,13 +62,13 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
+    public ListResponse<FriendsDto> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
                                      int cityId, int offset, int itemPerPage, Principal principal) {
 
         log.debug("поиск пользователя");
         String emailPerson = principal.getName();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> personPage = null;
+        Page<Person> personPage;
         LocalDate from = LocalDate.now().minusYears(ageTo);
         LocalDate to = LocalDate.now().minusYears(ageFrom);
 
@@ -116,10 +119,10 @@ public class PersonService {
                 .findByEMail(eMail).orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 
-    private ListResponse getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
-        List<Dto> persons = pageablePersonList.stream().map(this::friendsToPojo).collect(Collectors.toList());
+    private ListResponse<FriendsDto> getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
+        List<FriendsDto> persons = pageablePersonList.stream().map(this::friendsToPojo).collect(Collectors.toList());
 
-        ListResponse postResponse = new ListResponse();
+        ListResponse<FriendsDto> postResponse = new ListResponse<>();
 
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));

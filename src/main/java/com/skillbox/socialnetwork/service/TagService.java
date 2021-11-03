@@ -34,11 +34,11 @@ public class TagService {
         this.postRepository = postRepository;
     }
 
-    public ListResponse getTags(String tag, Integer offset, Integer itemPerPage) {
+    public ListResponse<TagDto> getTags(String tag, Integer offset, Integer itemPerPage) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Tag> pagebleTagList = tagRepository.findTagsByTextContaining(tag, pageable);
-        List<Dto> result = pagebleTagList.stream().map(x -> new TagDto().setId(x.getId()).setTag(x.getTag())).collect(Collectors.toList());
-        ListResponse response = new ListResponse();
+        List<TagDto> result = pagebleTagList.stream().map(x -> new TagDto().setId(x.getId()).setTag(x.getTag())).collect(Collectors.toList());
+        ListResponse<TagDto> response = new ListResponse<>();
         response.setPerPage(itemPerPage);
         response.setTimestamp(Instant.now());
         response.setOffset(offset);
@@ -47,8 +47,8 @@ public class TagService {
         return response;
     }
 
-    public DataResponse postTag(TagDto tag) {
-        DataResponse response = new DataResponse();
+    public DataResponse<TagDto> postTag(TagDto tag) {
+        DataResponse<TagDto> response = new DataResponse<>();
         Tag savedTag = tagRepository.save(tagRepository.findByTag(tag.getTag()).orElse(new Tag().setTag(tag.getTag())));
         response.setError("all right");
         response.setTimestamp(Instant.now());

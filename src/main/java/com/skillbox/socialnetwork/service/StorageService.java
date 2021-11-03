@@ -13,12 +13,14 @@ import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededExceptio
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Slf4j
@@ -39,11 +41,11 @@ public class StorageService {
         this.personRepository = personRepository;
     }
 
-    public DataResponse uploadImage(MultipartFile image, Principal principal) throws IOException {
+    public DataResponse<ImageDto> uploadImage(MultipartFile image, String type, Principal principal) throws IOException {
         Person current = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
 
-        if (image.getSize() >  5242880){
+        if (image.getSize() > 5242880) {
             throw new FileSizeLimitExceededException("Please reduce image" + image.getOriginalFilename(), image.getSize(), 5242880);
         }
 
@@ -55,19 +57,21 @@ public class StorageService {
         Map response = cloudinary.uploader().upload(image.getBytes(),
                 ObjectUtils.asMap("public_id", RandomStringUtils.randomAlphabetic(10)));
 
-        String imageUrl = cloudinary.url().transformation(new Transformation().crop("fill").width(300).height(300)).generate(response.get("public_id").toString());
+
+        String imageUrl = (type.equals("IMAGE"))
+                ? cloudinary.url()
+                .transformation(new Transformation()
+                        .crop("fill")
+                        .width(300)
+                        .height(300))
+                .generate(response.get("public_id").toString())
+                : response.get("url").toString();
+
 
         ImageDto imageDTO = new ImageDto()
-                .setId(imageUrl)
-                .setBytes(Integer.parseInt(response.get("bytes").toString()))
-                .setCreatedAt(Instant.parse(response.get("created_at").toString()))
-                .setFileFormat(response.get("format").toString())
-                .setFileName(response.get("original_filename").toString())
-                .setFileType(response.get("resource_type").toString())
-                .setOwnerId(current.getId())
-                .setRelativeFilePath("");
+                .setId(String.valueOf(ThreadLocalRandom.current().nextInt(100))).setUrl(imageUrl);
 
-        DataResponse dataResponse = new DataResponse();
+        DataResponse<ImageDto> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(Instant.now());
         dataResponse.setData(imageDTO);
         return dataResponse;

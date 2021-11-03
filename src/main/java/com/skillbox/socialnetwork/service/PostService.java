@@ -51,7 +51,7 @@ public class PostService {
         this.friendshipService = friendshipService;
     }
 
-    public ListResponse getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
+    public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
@@ -68,7 +68,7 @@ public class PostService {
     }
 
 
-    public DataResponse putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal
+    public DataResponse<PostData> putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal
             principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = findPost(id);
@@ -81,7 +81,7 @@ public class PostService {
         return getPostDataResponse(post, person);
     }
 
-    public DataResponse deletePostById(int id, Principal principal) throws
+    public DataResponse<PostData> deletePostById(int id, Principal principal) throws
             PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
@@ -110,14 +110,14 @@ public class PostService {
         return postDataResponse;
     }
 
-    public ListResponse getFeeds(String text, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<PostData> getFeeds(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList = postRepository.findPostsByTextContaining(text, pageable);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    public ListResponse getPersonWall(int id, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<PostData> getPersonWall(int id, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Post> pageablePostList;
@@ -132,17 +132,17 @@ public class PostService {
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
-    public DataResponse getPostById(int id, Principal principal) throws PostNotFoundException {
+    public DataResponse<PostData> getPostById(int id, Principal principal) throws PostNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(""));
-        DataResponse dataResponse = new DataResponse();
+        DataResponse<PostData> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         dataResponse.setData(getPostData(post, person));
         return dataResponse;
     }
 
-    private ListResponse getPostResponse(int offset, int itemPerPage, Page<Post> pageablePostList, Person person) {
-        ListResponse postResponse = new ListResponse();
+    private ListResponse<PostData> getPostResponse(int offset, int itemPerPage, Page<Post> pageablePostList, Person person) {
+        ListResponse<PostData> postResponse = new ListResponse<>();
         postResponse.setPerPage(itemPerPage);
         postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postResponse.setOffset(offset);
@@ -151,8 +151,8 @@ public class PostService {
         return postResponse;
     }
 
-    private List<Dto> getPost4Response(List<Post> posts, Person person) {
-        List<Dto> postDataList = new ArrayList<>();
+    private List<PostData> getPost4Response(List<Post> posts, Person person) {
+        List<PostData> postDataList = new ArrayList<>();
         posts.forEach(post -> {
             PostData postData = getPostData(post, person);
             postDataList.add(postData);
@@ -187,15 +187,15 @@ public class PostService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
-    private DataResponse getPostDataResponse(Post post, Person person) {
-        DataResponse postDataResponse = new DataResponse();
+    private DataResponse<PostData> getPostDataResponse(Post post, Person person) {
+        DataResponse<PostData> postDataResponse = new DataResponse<>();
         postDataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         postDataResponse.setData(getPostData(post, person));
 
         return postDataResponse;
     }
 
-    public DataResponse createPost(int id, long publishDate, PostRequest postRequest, Principal principal) throws PostCreationExecption {
+    public DataResponse<PostData> createPost(int id, long publishDate, PostRequest postRequest, Principal principal) throws PostCreationExecption {
         Person person = findPerson(principal.getName());
         if (person.getId() != id) throw new PostCreationExecption();
         Post post = new Post();
@@ -208,7 +208,7 @@ public class PostService {
         }
         post.setPerson(person);
         Post createdPost = postRepository.save(post);
-        DataResponse dataResponse = new DataResponse();
+        DataResponse<PostData> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         dataResponse.setData(getPostData(createdPost, person));
         return dataResponse;

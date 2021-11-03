@@ -2,12 +2,9 @@ package com.skillbox.socialnetwork.config;
 
 
 import com.skillbox.socialnetwork.api.security.JwtFilter;
-import com.skillbox.socialnetwork.api.security.JwtProvider;
-import com.skillbox.socialnetwork.api.security.TokenAuthenticationManager;
 import com.skillbox.socialnetwork.api.security.UserDetailServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,13 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailServiceImpl userDetailsService;
-    private final JwtProvider jwtProvider;
-    private final TokenAuthenticationManager authenticationManager;
+    private final JwtFilter jwtFilter;
 
-    public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtProvider jwtProvider, TokenAuthenticationManager authenticationManager) {
+    public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtFilter jwtFilter) {
         this.userDetailsService = userDetailsService;
-        this.jwtProvider = jwtProvider;
-        this.authenticationManager = authenticationManager;
+        this.jwtFilter = jwtFilter;
     }
 
     @Override
@@ -48,9 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .formLogin().disable()
-                .httpBasic()
-                .and()
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .httpBasic().disable()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -66,17 +60,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder(12);
     }
 
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Bean(name = "restTokenAuthenticationFilter")
-    public JwtFilter jwtFilter() {
-        JwtFilter restTokenAuthenticationFilter = new JwtFilter(jwtProvider ,userDetailsService);
-        restTokenAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        return restTokenAuthenticationFilter;
-    }
 
 }

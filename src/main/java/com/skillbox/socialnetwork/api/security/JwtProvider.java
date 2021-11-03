@@ -1,7 +1,12 @@
 package com.skillbox.socialnetwork.api.security;
 
-import io.jsonwebtoken.*;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -28,7 +33,7 @@ public class JwtProvider {
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException expEx) {
-            throw new UsernameNotFoundException("Пользователь не найден");
+            return false;
         }
     }
 

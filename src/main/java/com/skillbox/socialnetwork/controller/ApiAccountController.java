@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@io.swagger.v3.oas.annotations.tags.Tag(name = "Контроллер для работы с созданием учётной записи и безопасностью")
+@Tag(name = "Контроллер для работы с созданием учётной записи и безопасностью")
 @RequestMapping("/api/v1/account")
 public class ApiAccountController {
     private final AccountService accountService;

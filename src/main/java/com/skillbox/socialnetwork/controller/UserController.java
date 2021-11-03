@@ -45,24 +45,21 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "Получение текущего пользователя")
-    public ResponseEntity<DataResponse> getMe(Principal principal) {
-        if (principal == null){
-            throw new UsernameNotFoundException("unauthorized");
-        }
+    public ResponseEntity<DataResponse<AuthData>> getMe(Principal principal) {
         return new ResponseEntity<>(userService.getUserMe(principal), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получение пользователя по его id")
-    public ResponseEntity<DataResponse> getUserById(@PathVariable int id, Principal principal) {
+    public ResponseEntity<DataResponse<AuthData>> getUserById(@PathVariable int id, Principal principal) {
         return new ResponseEntity<>(userService.getUser(id, principal), HttpStatus.OK);
     }
 
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Обновить профиль пользователя")
-    public DataResponse updateUser(@RequestBody AuthData person, Principal principal) {
+    public DataResponse<AuthData> updateUser(@RequestBody AuthData person, Principal principal) {
         return userService.updateUser(person, principal);
     }
 
