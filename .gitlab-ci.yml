@@ -7,13 +7,12 @@ build:
     paths:
       - /builds/javapro18/javapro18_team_backend/jars/*.jar
   only:
-    - JP18-38_Authorization
+    - dev
   except:
     - tags
   stage: build
   when: always
   script:
-    - cd social-network
     - mvn clean package -Pserver-build
   cache:
     paths:
