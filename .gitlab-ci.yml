@@ -7,12 +7,13 @@ build:
     paths:
       - /builds/javapro18/javapro18_team_backend/jars/*.jar
   only:
-    - dev
+    - JP18-38_Authorization
   except:
     - tags
   stage: build
   when: always
   script:
+    - cd social-network
     - mvn clean package -Pserver-build
   cache:
     paths:
@@ -33,7 +34,7 @@ deploy:
   script:
     - ssh $DEV_USER@$DEV_HOST docker-compose stop zerone_back_container
     - ssh $DEV_USER@$DEV_HOST docker-compose rm -f zerone_back_container
-    - ssh $DEV_USER@$DEV_HOST cp jars/social-network-0.0.1-SNAPSHOT.jar jars/social-network-0.0.1-SNAPSHOT.jar.bac
-    - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - ssh $DEV_USER@$DEV_HOST cp 18Team/jars/social-network-0.0.1-SNAPSHOT.jar 18Team/jars/social-network-0.0.1-SNAPSHOT.jar.bac
+    - scp 18Team/jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
     - scp application.yml.example $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
     - ssh $DEV_USER@$DEV_HOST docker-compose up -d
