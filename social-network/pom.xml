@@ -166,7 +166,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <outputDirectory>./jars</outputDirectory>
+                    <outputDirectory>../jars</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
