@@ -122,13 +122,13 @@ public class CommentService {
         commentData.setCommentText(postComment.getCommentText());
         commentData.setBlocked(postComment.isBlocked());
         if(postComment.getPerson().isDeleted()){
-            commentData.setAuthorId(setDeletedAuthData(postComment.getPerson()).getId());
+            commentData.setAuthor(setDeletedAuthData(postComment.getPerson()));
         }
         else if(postComment.getPerson().getId().equals(person.getId()) || !friendshipService.isBlockedBy(postComment.getPerson().getId(), person.getId())) {
-            commentData.setAuthorId(setAuthData(postComment.getPerson()).getId());
+            commentData.setAuthor(setAuthData(postComment.getPerson()));
         }
         else{
-            commentData.setAuthorId(setBlockerAuthData(postComment.getPerson()).getId());
+            commentData.setAuthor(setBlockerAuthData(postComment.getPerson()));
         }
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
