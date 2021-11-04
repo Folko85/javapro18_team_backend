@@ -7,7 +7,7 @@ build:
     paths:
       - /builds/javapro18/javapro18_team_backend/jars/*.jar
   only:
-    - dev
+    - JP18-38_Authorization
   except:
     - tags
   stage: build
