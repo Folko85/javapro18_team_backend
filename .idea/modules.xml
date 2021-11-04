@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/project18PRO.iml" filepath="$PROJECT_DIR$/project18PRO.iml" />
+      <module fileurl="file://$PROJECT_DIR$/social-network/social-network.iml" filepath="$PROJECT_DIR$/social-network/social-network.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zero-cloud-config/zero-cloud-config.iml" filepath="$PROJECT_DIR$/zero-cloud-config/zero-cloud-config.iml" />
+    </modules>
+  </component>
+</project>

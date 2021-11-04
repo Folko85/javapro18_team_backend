@@ -1,0 +1,40 @@
+image: kroncosta/qmis_1101:228
+stages:
+  - build
+  - deploy
+build:
+  artifacts:
+    paths:
+      - /builds/javapro18/javapro18_team_backend/jars/*.jar
+  only:
+    - dev
+  except:
+    - tags
+  stage: build
+  when: always
+  script:
+    - cd social-network
+    - mvn clean package -Pserver-build
+  cache:
+    paths:
+      - ./.m2
+deploy:
+  stage: deploy
+  only:
+    - dev
+  except:
+    - tags
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $DEV_USER@$DEV_HOST docker-compose stop zerone_back_container
+    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f zerone_back_container
+    - ssh $DEV_USER@$DEV_HOST cp 18Team/jars/social-network-0.0.1-SNAPSHOT.jar 18Team/jars/social-network-0.0.1-SNAPSHOT.jar.bac
+    - scp 18Team/jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - scp application.yml.example $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - ssh $DEV_USER@$DEV_HOST docker-compose up -d
