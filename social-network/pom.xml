@@ -21,7 +21,7 @@
         <maven.compiler.target>16</maven.compiler.target>
         <maven.compiler.source>16</maven.compiler.source>
     </properties>
-    <dependencies>
+        <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -133,6 +133,12 @@
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>3.0.4</version>
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -143,16 +149,15 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
             <version>2.5.0</version>
         </dependency>
-
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>1.7.3</version>
         </dependency>
         <dependency>
-            <groupId>com.skillbox</groupId>
-            <artifactId>social-network</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-client</artifactId>
+            <version>3.0.5</version>
         </dependency>
     </dependencies>
 
