@@ -19,6 +19,14 @@ services:
       NGINX_PORT: 80
     ports:
       - "80:80"
+  cloud-config:
+    image: openjdk:16-alpine
+    volumes:
+      - ./jars:/app
+    working_dir: /app
+    command: java -jar zero-cloud-config-0.0.1-SNAPSHOT.jar
+    ports:
+      - "8888:8888"
   zerone_back_container:
     image: openjdk:16-alpine
     volumes:
@@ -31,10 +39,7 @@ services:
         published: 1111
         protocol: tcp
         mode: host
-    depends_on:
-      - mysql_db_container
-    links:
-      - mysql_db_container
+
   grafana:
     image: grafana/grafana
     ports:
