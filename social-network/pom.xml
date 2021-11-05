@@ -79,6 +79,11 @@
             <version>0.9.1</version>
         </dependency>
         <dependency>
+            <groupId>com.corundumstudio.socketio</groupId>
+            <artifactId>netty-socketio</artifactId>
+            <version>1.7.19</version>
+        </dependency>
+        <dependency>
             <groupId>com.vk.api</groupId>
             <artifactId>sdk</artifactId>
             <version>1.0.11</version>
@@ -143,6 +148,11 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>1.7.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.skillbox</groupId>
+            <artifactId>social-network</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
