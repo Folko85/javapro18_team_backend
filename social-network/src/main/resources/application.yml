@@ -1,4 +1,4 @@
-spring.cloud.config.url: http://www.zeronenetwork.design:8888
+spring.cloud.config.url: http://localhost:8888
 spring.application.name: serv
 
 #server:
