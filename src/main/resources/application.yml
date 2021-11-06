@@ -49,6 +49,17 @@ jasypt:
   encryptor:
     bean: encryptorBean
 
+cloud:
+  aws:
+    sns:
+      enabled: false
+    s3:
+      region: ru-central1
+      endpoint: https://message-queue.api.cloud.yandex.net/
+    credentials:
+      access-key: bjwgIspnfqIQsSEvsivr
+      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+
 cors:
   - http://localhost:8086/
   - http://127.0.0.1:8086/
