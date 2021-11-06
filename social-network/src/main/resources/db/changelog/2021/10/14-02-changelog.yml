@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021101402
+      author: m.gutorov
+      changes:
+        - dropAllForeignKeyConstraints:
+            baseTableName: post2tag
+        - addForeignKeyConstraint:
+            baseColumnNames: post_id
+            baseTableName: post2tag
+            referencedColumnNames: id
+            constraintName: id_in_post_key
+            referencedTableName: post
+        - addForeignKeyConstraint:
+            baseColumnNames: tag_id
+            baseTableName: post2tag
+            referencedColumnNames: id
+            constraintName: id_in_tag_key
+            referencedTableName: tag
