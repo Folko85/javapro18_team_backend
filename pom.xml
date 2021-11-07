@@ -27,6 +27,7 @@
     <modules>
         <module>social-network</module>
         <module>zero-cloud-config</module>
+        <module>microservice</module>
     </modules>
     <dependencies>
         <dependency>
