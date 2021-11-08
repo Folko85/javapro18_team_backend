@@ -25,6 +25,7 @@ public class SimpleListener {
 
     @SqsListener("queueFromJavaCode")
     public void getMessage(SendMessageDto dto) {
+        log.info("получено сообщение '{}' в support", dto.getMessage());
         Client c = new Client();
         c.setFirstName(dto.getClient().getFirstName());
         c.setLastName(dto.getClient().getLastName());

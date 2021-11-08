@@ -8,7 +8,7 @@ spring:
     username: user
     password: password
   liquibase:
-    change-log: /db/changelog/db.changelog-master.xml
+    change-log: /db/changelog/changelog-master.xml
     enabled: true
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
