@@ -38,4 +38,5 @@ deploy:
     - ssh $DEV_USER@$DEV_HOST cp jars/social-network-0.0.1-SNAPSHOT.jar jars/social-network-0.0.1-SNAPSHOT.jar.bac
     - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
     - scp jars/zero-cloud-config-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - scp docker-compose.yml $DEV_USER@$DEV_HOST:$DEV_APP_PATH
     - ssh $DEV_USER@$DEV_HOST docker-compose up -d
