@@ -1,0 +1,2 @@
+drop table clients;
+GO

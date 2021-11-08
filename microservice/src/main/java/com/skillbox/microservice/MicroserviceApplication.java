@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork;
+package com.skillbox.microservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
-public class NetworkApplication {
+public class MicroserviceApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(NetworkApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(MicroserviceApplication.class, args);
 
+	}
 }
