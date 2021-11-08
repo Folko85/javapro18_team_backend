@@ -1,6 +1,5 @@
-spring.cloud.config.url: https://www.zeronenetwork.design:8888
-spring.application.name: micro
-
+#spring.cloud.config.uri: https://www.zeronenetwork.design:8888
+#spring.application.name: micro
 #server:
 #  port: 5000
 #
