@@ -50,7 +50,7 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - ./scripts/grafana:/var/lib/grafana
     environment:
@@ -64,7 +64,7 @@ services:
     image: prom/prometheus
     user: root
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./scripts/config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./scripts/prometheus:/prometheus
