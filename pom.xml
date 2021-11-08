@@ -101,7 +101,7 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <configuration>
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
-                    <changeLogFile>src/main/resources/db/changelog/changelog-master.yaml</changeLogFile>
+                    <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
                     <diffChangeLogFile>src/main/resources/db/changelog/changelog.yaml</diffChangeLogFile>
                     <logging>info</logging>
                 </configuration>
