@@ -2,12 +2,7 @@ version: '3.7'
 services:
   mysql_db_container:
     image: mysql:latest
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: on-failure
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -19,6 +14,7 @@ services:
 
   mysql_microservice:
     image: mysql:latest
+    restart: on-failure
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
