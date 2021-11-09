@@ -3,7 +3,8 @@ spring:
     name: serv
   cloud:
     config:
-      uri: cloud-config:8888
+      uri: http://www.zeronenetwork.design:8888
+#      uri: cloud-config:8888
 
 #server:
 #  port: 8086
