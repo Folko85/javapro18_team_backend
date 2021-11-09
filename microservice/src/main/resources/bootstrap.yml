@@ -5,6 +5,7 @@ spring:
     config:
       uri: http://www.zeronenetwork.design/8888
 
+#      uri: http://localhost:8888
 
 #server:
 #  port: 8086
