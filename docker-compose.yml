@@ -2,6 +2,7 @@ version: '3.7'
 services:
   mysql_db_container:
     image: mysql:latest
+    restart: on-failure
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -13,6 +14,7 @@ services:
 
   mysql_microservice:
     image: mysql:latest
+    restart: on-failure
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -20,7 +22,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "6603:3307"
+      - "3308:3306"
 
   vue_js_container:
     image: nginx:latest
@@ -55,7 +57,7 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - ./scripts/grafana:/var/lib/grafana
     environment:
@@ -69,7 +71,7 @@ services:
     image: prom/prometheus
     user: root
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./scripts/config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./scripts/prometheus:/prometheus

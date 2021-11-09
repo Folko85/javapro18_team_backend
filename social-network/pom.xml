@@ -217,7 +217,7 @@
                 <configuration>
                     <apiDocsUrl>http://localhost:8086/v3/api-docs</apiDocsUrl>
                     <outputFileName>openapi.yaml</outputFileName>
-                    <outputDir>${project.basedir}</outputDir>
+                    <outputDir>${session.executionRootDirectory}</outputDir>
                 </configuration>
             </plugin>
             <plugin>
@@ -225,7 +225,7 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <configuration>
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
-                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.yaml</changeLogFile>
+                    <changeLogFile>src/main/resources/db/changelog/changelog-master.yaml</changeLogFile>
                     <diffChangeLogFile>src/main/resources/db/changelog/changelog.yaml</diffChangeLogFile>
                     <logging>info</logging>
                 </configuration>

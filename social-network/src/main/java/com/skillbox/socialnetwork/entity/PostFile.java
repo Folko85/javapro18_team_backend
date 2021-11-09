@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "post_file")
+@Accessors(chain = true)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,15 +22,14 @@ public class PostFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column
+    private Integer userId;
 
     @Column
-    private String name;
+    private Integer postId;
 
     @Column
-    private String path;
+    private String url;
 
     @Override
     public boolean equals(Object o) {

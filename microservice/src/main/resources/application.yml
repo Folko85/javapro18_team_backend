@@ -1,28 +1,31 @@
-server:
-  port: 5000
+spring.cloud.config.url: https://www.zeronenetwork.design:8888
+spring.application.name: micro
 
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/technical_support?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
-    username: user
-    password: password
-  liquibase:
-    change-log: /db/changelog/db.changelog-master.xml
-    enabled: true
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    show-sql: true
-    hibernate:
-      ddl-auto: validate
-
-cloud:
-  aws:
-    sns:
-      enabled: false
-    s3:
-      region: ru-central1
-      endpoint: https://message-queue.api.cloud.yandex.net/
-    credentials:
-      access-key: bjwgIspnfqIQsSEvsivr
-      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+#server:
+#  port: 5000
+#
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/technical_support?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
+#    username: user
+#    password: password
+#  liquibase:
+#    change-log: /db/changelog/changelog-master.xml
+#    enabled: true
+#  jpa:
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: validate
+#
+#cloud:
+#  aws:
+#    sns:
+#      enabled: false
+#    s3:
+#      region: ru-central1
+#      endpoint: https://message-queue.api.cloud.yandex.net/
+#    credentials:
+#      access-key: bjwgIspnfqIQsSEvsivr
+#      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b

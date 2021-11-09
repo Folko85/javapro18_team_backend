@@ -8,7 +8,7 @@
     <preConditions>
         <dbms type="mysql"/>
     </preConditions>
-    
+
     <changeSet id="0" author="Artem">
         <tagDatabase tag="db_init"/>
     </changeSet>
