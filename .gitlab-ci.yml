@@ -1,4 +1,6 @@
 image: kroncosta/qmis_1101:228
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
 stages:
   - build
   - deploy
