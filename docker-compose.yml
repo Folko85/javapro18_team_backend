@@ -120,5 +120,6 @@ services:
       monitoring:
         aliases:
           - loki
+
 networks:
   monitoring:
