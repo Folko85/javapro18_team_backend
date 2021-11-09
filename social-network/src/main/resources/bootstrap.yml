@@ -1,5 +1,12 @@
-spring.cloud.config.url: http://www.zeronenetwork.design:8888
-spring.application.name: serv
+spring:
+  application:
+    name: serv
+  cloud:
+    config:
+      uri: http://www.zeronenetwork.design/8888
+
+
+
 
 #server:
 #  port: 8086
