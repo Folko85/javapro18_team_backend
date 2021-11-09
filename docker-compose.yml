@@ -11,7 +11,10 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3307:3306"
-
+    networks:
+      monitoring:
+        aliases:
+          - mysql
   mysql_microservice:
     image: mysql:latest
     restart: on-failure
@@ -23,7 +26,6 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3308:3306"
-
   vue_js_container:
     restart: on-failure
     image: nginx:latest
