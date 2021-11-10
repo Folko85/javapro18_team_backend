@@ -96,7 +96,9 @@ public class StorageService {
     public AccountResponse deleteImage(int id, Principal principal) throws IOException {
         PostFile file = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла"));
         Cloudinary cloudinary = getInstance();
-        cloudinary.uploader().destroy(file.getUrl(), ObjectUtils.emptyMap());
+        int from = file.getUrl().lastIndexOf("/") + 1;
+        int to = file.getUrl().lastIndexOf(".");
+        cloudinary.uploader().destroy(file.getUrl().substring(from, to), ObjectUtils.emptyMap());
         fileRepository.delete(file);
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
