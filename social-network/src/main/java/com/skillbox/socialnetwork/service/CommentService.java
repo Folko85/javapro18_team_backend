@@ -82,8 +82,10 @@ public class CommentService {
         postComment.setTime(LocalDateTime.now());
         postComment.setPerson(person);
         postComment = commentRepository.save(postComment);
-        int id = postComment.getId();
-        commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> file.setPostId(id)));
+        if (commentRequest.getImages() != null) {
+            int id = postComment.getId();
+            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> file.setPostId(id)));
+        }
         return getCommentResponse(postComment, person);
     }
 
@@ -95,8 +97,10 @@ public class CommentService {
         PostComment postComment = findPostComment(commentId);
         postComment.setCommentText(commentRequest.getCommentText());
         commentRepository.save(postComment);
-        int id = postComment.getId();
-        commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> file.setPostId(id)));
+        if (commentRequest.getImages() != null) {
+            int id = postComment.getId();
+            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> file.setPostId(id)));
+        }
         return getCommentResponse(postComment, person);
     }
 
