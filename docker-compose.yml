@@ -65,6 +65,8 @@ services:
     depends_on:
       - cloud-config
       - mysql_db_container
+    environment:
+      - SPRING_PROFILE
   grafana:
     restart: on-failure
     image: grafana/grafana
