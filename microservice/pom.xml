@@ -14,9 +14,9 @@
     <name>microservice</name>
     <description>Demo project for Spring Boot</description>
     <properties>
-        <java.version>17</java.version>
-<!--        <maven.compiler.source>17</maven.compiler.source>-->
-<!--        <maven.compiler.target>17</maven.compiler.target>-->
+        <java.version>16</java.version>
+        <!--        <maven.compiler.source>17</maven.compiler.source>-->
+        <!--        <maven.compiler.target>17</maven.compiler.target>-->
         <spring-cloud.version>2020.0.4</spring-cloud.version>
     </properties>
     <dependencies>
@@ -80,12 +80,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
             <version>3.0.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-client</artifactId>
-            <version>3.0.5</version>
         </dependency>
 
     </dependencies>
