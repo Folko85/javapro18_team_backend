@@ -4,13 +4,16 @@ import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
+import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostComment;
+import com.skillbox.socialnetwork.entity.PostFile;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.CommentRepository;
+import com.skillbox.socialnetwork.repository.FileRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.AuthService.setBlockerAuthData;
@@ -38,20 +42,22 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
     private final FriendshipService friendshipService;
+    private final FileRepository fileRepository;
 
-    public CommentService(PersonRepository personRepository,
-                          PostRepository postRepository,
-                          CommentRepository commentRepository, LikeRepository likeRepository, FriendshipService friendshipService) {
+    public CommentService(PersonRepository personRepository, PostRepository postRepository,
+                          CommentRepository commentRepository, LikeRepository likeRepository,
+                          FriendshipService friendshipService, FileRepository fileRepository) {
         this.personRepository = personRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
         this.friendshipService = friendshipService;
+        this.fileRepository = fileRepository;
     }
 
     public ListResponse<CommentData> getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
         Person person = findPerson(principal.getName());
-        Post post = findPost(id);
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         return getPage4PostComments(offset, itemPerPage, post, person);
     }
 
@@ -64,7 +70,7 @@ public class CommentService {
 
     public DataResponse<CommentData> postComment(int itemId, CommentRequest commentRequest, Principal principal) throws PostNotFoundException, CommentNotFoundException {
         Person person = findPerson(principal.getName());
-        Post post = findPost(itemId);
+        Post post = postRepository.findById(itemId).orElseThrow(PostNotFoundException::new);
         PostComment postComment = new PostComment();
         if (commentRequest.getParentId() != null) {
             PostComment parentPostComment = commentRepository
@@ -76,17 +82,21 @@ public class CommentService {
         postComment.setTime(LocalDateTime.now());
         postComment.setPerson(person);
         postComment = commentRepository.save(postComment);
+        int id = postComment.getId();
+        commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> file.setPostId(id)));
         return getCommentResponse(postComment, person);
     }
 
     public DataResponse<CommentData> putComment(int itemId, int commentId, CommentRequest commentRequest, Principal principal) throws CommentNotFoundException, PostNotFoundException {
         Person person = findPerson(principal.getName());
-        findPost(itemId);
+        postRepository.findById(itemId).orElseThrow(PostNotFoundException::new);
         if (commentRequest.getParentId() != null)
             findPostComment(commentRequest.getParentId());
         PostComment postComment = findPostComment(commentId);
         postComment.setCommentText(commentRequest.getCommentText());
         commentRepository.save(postComment);
+        int id = postComment.getId();
+        commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> file.setPostId(id)));
         return getCommentResponse(postComment, person);
     }
 
@@ -121,19 +131,17 @@ public class CommentService {
         CommentData commentData = new CommentData();
         commentData.setCommentText(postComment.getCommentText());
         commentData.setBlocked(postComment.isBlocked());
-        if(postComment.getPerson().isDeleted()){
+        if (postComment.getPerson().isDeleted()) {
             commentData.setAuthor(setDeletedAuthData(postComment.getPerson()));
-        }
-        else if(postComment.getPerson().getId().equals(person.getId()) || !friendshipService.isBlockedBy(postComment.getPerson().getId(), person.getId())) {
+        } else if (postComment.getPerson().getId().equals(person.getId()) || !friendshipService.isBlockedBy(postComment.getPerson().getId(), person.getId())) {
             commentData.setAuthor(setAuthData(postComment.getPerson()));
-        }
-        else{
+        } else {
             commentData.setAuthor(setBlockerAuthData(postComment.getPerson()));
         }
         commentData.setId(postComment.getId());
         commentData.setTime(postComment.getTime().toInstant(UTC));
         commentData.setDeleted(postComment.isDeleted());
-        Set<Like> likes = likeRepository.findLikesByItemAndType(postComment.getId(),"Comment");
+        Set<Like> likes = likeRepository.findLikesByItemAndType(postComment.getId(), "Comment");
         commentData.setLikes(likes.size());
         commentData.setMyLike(likes.stream()
                 .anyMatch(commentLike -> commentLike.getPerson().equals(person)));
@@ -141,6 +149,12 @@ public class CommentService {
             commentData.setParentId(postComment.getParent().getId());
         commentData.setPostId(postComment.getPost().getId());
         commentData.setSubComments(new ArrayList<>());
+        List<ImageDto> images = fileRepository.findAll().stream()
+                .filter(f -> f.getPostId() != null)
+                .filter(file -> file.getPostId().equals(postComment.getId()))
+                .map(file -> new ImageDto().setId(String.valueOf(file.getId())).setUrl(file.getUrl()))
+                .collect(Collectors.toList());
+        commentData.setImages(images);
         return commentData;
     }
 
@@ -157,11 +171,6 @@ public class CommentService {
     private Person findPerson(String eMail) {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
-    }
-
-    private Post findPost(int itemId) throws PostNotFoundException {
-        return postRepository.findById(itemId)
-                .orElseThrow(PostNotFoundException::new);
     }
 
     private PostComment findPostComment(int itemId) throws CommentNotFoundException {
