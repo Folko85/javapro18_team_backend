@@ -9,7 +9,6 @@ spring:
     allow-bean-definition-overriding: true
 #server:
 #  port: 5000
-#
 #spring:
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -27,11 +26,17 @@ spring:
 #
 #cloud:
 #  aws:
+#    credential:
+#      access-key: bjwgIspnfqIQsSEvsivr
+#      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+#    #      access-key: ENC(WvQhgzlsvWesWQN+H4w3fR/z5LOd3SFV3apRHtlbzn4=)
+#    #      secret-key: ENC(YQrbpm85EfrmZhURq/SlSknbvvpTHFIgtqZq3rvoNbJaV8A8M2ZVWtbFHAgBuVWp6U70/5apokw=)
 #    sns:
 #      enabled: false
 #    s3:
 #      region: ru-central1
 #      endpoint: https://message-queue.api.cloud.yandex.net/
-#    credentials:
-#      access-key: bjwgIspnfqIQsSEvsivr
-#      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+#    sqs:
+#      region: ru-central1
+#      endpoint: https://message-queue.api.cloud.yandex.net/
+
