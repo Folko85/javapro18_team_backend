@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: ${SPRING_PROFILE:default}
   application:
     name: serv
   cloud:
