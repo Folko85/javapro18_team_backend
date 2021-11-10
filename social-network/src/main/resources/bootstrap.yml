@@ -1,11 +1,17 @@
-
 spring:
+  profiles:
+    active: ${SPRING_PROFILE:default}
   application:
     name: serv
   cloud:
     config:
-      uri: http://www.zeronenetwork.design:8888
-#      uri: cloud-config:8888
+      uri: http://cloud-config:8888
+      retry:
+        max-attempts: 10
+        initial-interval: 10000
+        max-interval: 5000
+#      uri: http://localhost:8888
+
 #server:
 #  port: 8086
 #spring:
@@ -13,9 +19,9 @@ spring:
 #    name: application
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
-#    username: user
-#    password: password
+#    url: jdbc:mysql://localhost:3307/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
+#    username: ENC(PWu0QZMimWB0juSsNBfwTQ==)
+#    password: ENC(62tVsgv8KdaO7f+lI79ZF6h99njiI82z)
 #  liquibase:
 #    change-log: /db/changelog/changelog.yml
 #  jpa:
@@ -41,6 +47,18 @@ spring:
 #    distribution:
 #      percentiles-histogram:
 #        "[http.server.requests]": true
+#
+#cloud:
+#  aws:
+#    sns:
+#      enabled: false
+#    s3:
+#      region: ru-central1
+#      endpoint: https://message-queue.api.cloud.yandex.net/
+#    credentials:
+#      access-key: ENC(WvQhgzlsvWesWQN+H4w3fR/z5LOd3SFV3apRHtlbzn4=)
+#      secret-key: ENC(YQrbpm85EfrmZhURq/SlSknbvvpTHFIgtqZq3rvoNbJaV8A8M2ZVWtbFHAgBuVWp6U70/5apokw=)
+#
 #
 #external:
 #  vk:
