@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
-import com.skillbox.socialnetwork.entity.enums.Contact;
 import com.skillbox.socialnetwork.entity.enums.EntityId;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -23,8 +23,8 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JoinColumn(name = "type_id")
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", columnDefinition = "enum('POST','POST_COMMENT','COMMENT_COMMENT','FRIEND_REQUEST','MESSAGE')")
     private NotificationType type;
 
     @Column(name = "send_time")
@@ -38,9 +38,8 @@ public class Notification {
     @Column(name = "entity_id", columnDefinition = "enum('COMMENT','FRIEND','POST','MESSAGE')")
     private EntityId entityId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "contact", columnDefinition = "enum('EMAIL','PHONE')")
-    private Contact contact;
+    @Column(name = "read_status")
+    private boolean readStatus;
 
     @Override
     public boolean equals(Object o) {

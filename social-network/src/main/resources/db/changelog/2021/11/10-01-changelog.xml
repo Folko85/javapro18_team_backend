@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1636549799802-16" author="Nikita">
+        <addColumn tableName="notification">
+            <column name="read_status" type="BOOLEAN"/>
+            <column name="type" type="enum('POST','POST_COMMENT','COMMENT_COMMENT','FRIEND_REQUEST','MESSAGE')"/>
+        </addColumn>
+
+        <dropForeignKeyConstraint baseTableName="notification" constraintName="FK_NOTIFICATION_ON_TYPE"/>
+
+        <dropTable cascadeConstraints="true" tableName="notification_type"/>
+
+        <dropColumn columnName="contact" tableName="notification"/>
+
+        <dropColumn columnName="type_id" tableName="notification"/>
+
+        <dropColumn columnName="entity_id" tableName="notification"/>
+    </changeSet>
+
+</databaseChangeLog>
