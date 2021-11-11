@@ -95,38 +95,42 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT p " +
             "FROM Person p " +
-            "WHERE p.birthday BETWEEN ?2 AND ?3 " +
-            "AND p.eMail NOT LIKE %?1% " +
+            "WHERE p.birthday BETWEEN :date1 AND :date2 " +
+            "AND p.eMail NOT LIKE :email " +
             "AND p.isBlocked = false " +
-            "AND p.isDeleted = false")
-    Page<Person> findPersonByBirthday(String email, LocalDate date1, LocalDate date2, Pageable pageable);
+            "AND p.isDeleted = false " +
+            "AND p.id NOT IN (:blockers) ")
+    Page<Person> findPersonByBirthday(String email, LocalDate date1, LocalDate date2, Pageable pageable, List<Integer> blockers);
 
     @Query("SELECT p " +
             "FROM Person p " +
-            "WHERE p.birthday BETWEEN ?2 AND ?3 " +
-            "AND p.city LIKE ?4% " +
-            "AND p.eMail NOT LIKE ?1 " +
+            "WHERE p.birthday BETWEEN :date1 AND :date2  " +
+            "AND p.city LIKE :city " +
+            "AND p.eMail NOT LIKE :email " +
             "AND p.isBlocked = false " +
-            "AND p.isDeleted = false")
-    Page<Person> findPersonByBirthdayAndCity(String email, LocalDate date1, LocalDate date2, String city, Pageable pageable);
+            "AND p.isDeleted = false " +
+            "AND p.id NOT IN (:blockers) ")
+    Page<Person> findPersonByBirthdayAndCity(String email, LocalDate date1, LocalDate date2, String city, Pageable pageable, List<Integer> blockers);
 
     @Query("SELECT p " +
             "FROM Person p " +
-            "WHERE p.city = ?1 " +
-            "AND p.eMail NOT LIKE ?2 " +
+            "WHERE p.city = :city " +
+            "AND p.eMail NOT LIKE :email " +
             "AND p.isBlocked = false " +
-            "AND p.isDeleted = false")
-    Page<Person> findPersonByCity(String city, String email, Pageable pageable);
+            "AND p.isDeleted = false " +
+            "AND p.id NOT IN (:blockers) ")
+    Page<Person> findPersonByCity(String city, String email, Pageable pageable, List<Integer> blockers);
 
     @Query("SELECT p FROM Person p " +
             "WHERE p.isBlocked = false")
     Page<Person> findAllPerson(Pageable pageable);
 
     @Query("SELECT p FROM Person p " +
-            "WHERE p.eMail NOT LIKE ?1 " +
+            "WHERE p.eMail NOT LIKE :email " +
             "AND p.isBlocked = false " +
-            "AND p.isDeleted = false")
-    Page<Person> find10Person(String email, Pageable pageable);
+            "AND p.isDeleted = false " +
+            "AND p.id NOT IN (:blockers) ")
+    Page<Person> find10Person(String email, Pageable pageable, List<Integer> blockers);
 
     @Query("SELECT p " +
             "FROM Person p " +

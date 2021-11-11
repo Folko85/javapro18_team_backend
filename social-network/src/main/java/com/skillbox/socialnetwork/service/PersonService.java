@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.sun.xml.bind.v2.TODO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -61,6 +62,11 @@ public class PersonService {
         return personRepository.findById(id);
     }
 
+    /**
+     * TODO
+     * провести редактирование после добавление метода findByOptionalParametrs
+     */
+
     @Transactional(readOnly = true)
     public ListResponse<FriendsDto> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
                                      int cityId, int offset, int itemPerPage, Principal principal) {
@@ -96,8 +102,8 @@ public class PersonService {
          * 3. по имени и дате рождения (фамилия не указана)
          * 4. по имени и фамилии (дата рождения не указана)
          * 5. по имени, фамилии и дате рождения
-         */
-        /**
+         
+
         if (firstName.isEmpty() && lastName.isEmpty() && ageFrom >= 1 && ageTo >= 1) {
             log.debug("поиск пользователя по дате рождения");
             personPage = personRepository
