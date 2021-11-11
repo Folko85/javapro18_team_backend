@@ -42,11 +42,6 @@ public class SocketEventHandler {
         }
     }
 
-    /**
-     * 添加disconnect事件，客户端断开连接时调用，刷新客户端信息
-     *
-     * @param client 客户端对象
-     */
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
         if (client != null) {

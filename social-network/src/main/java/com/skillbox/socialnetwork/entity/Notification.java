@@ -1,6 +1,5 @@
 package com.skillbox.socialnetwork.entity;
 
-import com.skillbox.socialnetwork.entity.enums.EntityId;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -35,8 +34,8 @@ public class Notification {
     private Person person;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "entity_id", columnDefinition = "enum('COMMENT','FRIEND','POST','MESSAGE')")
-    private EntityId entityId;
+    @Column(name = "entity_id")
+    private Integer entityId;
 
     @Column(name = "read_status")
     private boolean readStatus;

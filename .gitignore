@@ -35,3 +35,5 @@ build/
 /scripts/prometheus/
 /jars/
 /scripts/grafana/
+/social-network/logs/
+/logs/

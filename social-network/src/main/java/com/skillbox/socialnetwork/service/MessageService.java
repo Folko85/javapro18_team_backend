@@ -4,20 +4,16 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.skillbox.socialnetwork.api.request.MessageRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.dialogdto.DialogData;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
-import com.skillbox.socialnetwork.entity.Dialog;
 import com.skillbox.socialnetwork.entity.Message;
+import com.skillbox.socialnetwork.entity.Notification;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Person2Dialog;
-import com.skillbox.socialnetwork.repository.MessageRepository;
-import com.skillbox.socialnetwork.repository.Person2DialogRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.repository.SessionTemplate;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
+import com.skillbox.socialnetwork.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -36,17 +32,20 @@ public class MessageService {
     private final Person2DialogRepository person2DialogRepository;
     private final SessionTemplate sessionTemplate;
     private final SocketIOServer server;
+    private final NotificationRepository notificationRepository;
 
     public MessageService(PersonRepository personRepository,
                           MessageRepository messageRepository,
                           Person2DialogRepository person2DialogRepository,
                           SessionTemplate sessionTemplate,
-                          SocketIOServer server) {
+                          SocketIOServer server,
+                          NotificationRepository notificationRepository) {
         this.personRepository = personRepository;
         this.messageRepository = messageRepository;
         this.person2DialogRepository = person2DialogRepository;
         this.sessionTemplate = sessionTemplate;
         this.server = server;
+        this.notificationRepository = notificationRepository;
     }
 
     public ListResponse<MessageData> getMessages(int id, String query, int offset, int itemPerPage, Principal principal) {
@@ -77,6 +76,14 @@ public class MessageService {
                 .filter(person1 -> !person1.getId().equals(person.getId())).findFirst().get().getId())
                 .ifPresent(uuid -> server.getClient(uuid).sendEvent("message", dataResponse));
 
+
+        Notification notification = new Notification();
+        notification.setPerson(person);
+        notification.setType(NotificationType.MESSAGE);
+        notification.setReadStatus(false);
+        notification.setSendTime(LocalDateTime.now());
+        notification.setEntityId(message.getId());
+        notificationRepository.save(notification);
         return dataResponse;
     }
 
