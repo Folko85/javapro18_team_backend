@@ -56,4 +56,23 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "AND fs.code = ?3 AND p.isBlocked = false")
     Page<Person> findPersonByStatusCode(String name, int idFriend, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
 
+
+    @Query(nativeQuery = true, value =
+        "SELECT perId FROM ( " +
+                "SELECT f.src_person_id as perId from friendship f \n" +
+                "LEFT JOIN friendship_status fs ON fs.id = f.status_id \n" +
+                "WHERE \n" +
+                "( f.src_person_id = ?1 AND fs.code = 'WASBLOCKEDBY' ) \n" +
+                "OR ( f.dst_person_id = ?1 AND fs.code = 'BLOCKED' ) \n" +
+                "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' " +
+                "UNION " +
+                "SELECT f.dst_person_id as perId from friendship f \n" +
+                "LEFT JOIN friendship_status fs ON fs.id = f.status_id \n" +
+                "WHERE \n" +
+                "( f.src_person_id = ?1 AND fs.code = 'WASBLOCKEDBY' ) \n" +
+                "OR ( f.dst_person_id = ?1 AND fs.code = 'BLOCKED' ) \n" +
+                "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' "+
+                " ) as per where per.perId != ?1 " )
+    List<Integer> findBlockersIds(int id);
+
 }
