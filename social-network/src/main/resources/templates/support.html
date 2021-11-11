@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Support form</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div class="background">
+    <div class="container">
+        <div class="screen">
+            <div class="screen-header">
+                <div class="screen-header-left">
+                    <div class="screen-header-button close"></div>
+                    <div class="screen-header-button maximize"></div>
+                    <div class="screen-header-button minimize"></div>
+                </div>
+                <div class="screen-header-right">
+                    <div class="screen-header-ellipsis"></div>
+                    <div class="screen-header-ellipsis"></div>
+                    <div class="screen-header-ellipsis"></div>
+                </div>
+            </div>
+            <div class="screen-body">
+                <div class="screen-body-item left">
+                    <div class="app-title">
+                        <span>Support</span>
+                        <span>form</span>
+                    </div>
+                </div>
+                <div class="screen-body-item">
+                    <div class="app-form">
+                        <form method="post" th:action="@{/}" th:object="${requestObject}">
+                            <div class="app-form-group">
+                                <input class="app-form-control" placeholder="NAME" th:field="*{name}">
+                            </div>
+                            <div class="app-form-group">
+                                <input class="app-form-control" placeholder="EMAIL" th:field="*{email}">
+                            </div>
+                            <div class="app-form-group message">
+                                <input class="app-form-control" placeholder="MESSAGE" th:field="*{message}">
+                            </div>
+                            <div class="app-form-group buttons">
+                                <button class="app-form-button" type="reset">CANCEL</button>
+                                <button class="app-form-button" type="submit">SEND</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
