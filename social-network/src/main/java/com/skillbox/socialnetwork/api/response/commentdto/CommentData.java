@@ -3,6 +3,7 @@ package com.skillbox.socialnetwork.api.response.commentdto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
+import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import lombok.Data;
 
 import java.time.Instant;
@@ -28,4 +29,6 @@ public class CommentData implements Dto {
     private int likes;
     @JsonProperty("my_like")
     private boolean myLike;
+    @JsonProperty("images")
+    private List<ImageDto> images;
 }
