@@ -418,4 +418,8 @@ public class FriendshipService {
         return personRepository.find10Person(email, pageable);
     }
 
+    List<Integer> getBlockersId(int id){
+        List<Integer> blockers = friendshipRepository.findBlockersIds(id);
+        return blockers.isEmpty()? Collections.singletonList(-1) : blockers;
+    }
 }
