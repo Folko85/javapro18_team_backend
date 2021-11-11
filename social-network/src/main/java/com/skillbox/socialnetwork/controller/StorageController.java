@@ -36,7 +36,7 @@ public class StorageController {
 
     @DeleteMapping("/api/v1/storage/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation (summary = "Загрузка изображения")
+    @Operation (summary = "Удаление изображения")
     public AccountResponse deleteImage(@PathVariable int id, Principal principal) throws IOException {
         return storageService.deleteImage(id, principal);
     }

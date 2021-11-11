@@ -25,7 +25,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Slf4j
@@ -65,18 +64,19 @@ public class StorageService {
 
         ImageDto imageDTO = new ImageDto();
         if (type.equals("IMAGE")) {
-            imageDTO.setId(String.valueOf(ThreadLocalRandom.current().nextInt(100))).setUrl(
-                    cloudinary.url()
-                            .transformation(new Transformation()
-                                    .crop("fill")
-                                    .width(300)
-                                    .height(300))
-                            .generate(response.get("public_id").toString())
-            );
+            String url = cloudinary.url()
+                    .transformation(new Transformation()
+                            .crop("fill")
+                            .width(300)
+                            .height(300))
+                    .generate(response.get("public_id").toString());
+            PostFile postFile = fileRepository.save(new PostFile().setUrl(url).setUserId(current.getId()));
+            imageDTO.setId(String.valueOf(postFile.getId())).setUrl(url);
+
 
         } else {
             String url = response.get("url").toString();
-            PostFile postFile = fileRepository.save(new PostFile().setUrl(url));
+            PostFile postFile = fileRepository.save(new PostFile().setUrl(url).setUserId(current.getId()));
             imageDTO.setId(String.valueOf(postFile.getId())).setUrl(url);
         }
 
@@ -96,7 +96,9 @@ public class StorageService {
     public AccountResponse deleteImage(int id, Principal principal) throws IOException {
         PostFile file = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла"));
         Cloudinary cloudinary = getInstance();
-        cloudinary.uploader().destroy(file.getUrl(), ObjectUtils.emptyMap());
+        int from = file.getUrl().lastIndexOf("/") + 1;
+        int to = file.getUrl().lastIndexOf(".");
+        cloudinary.uploader().destroy(file.getUrl().substring(from, to), ObjectUtils.emptyMap());
         fileRepository.delete(file);
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setTimestamp(ZonedDateTime.now().toInstant());

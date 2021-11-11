@@ -11,7 +11,6 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3307:3306"
-
   mysql_microservice:
     image: mysql:latest
     restart: on-failure
@@ -23,8 +22,8 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3308:3306"
-
   vue_js_container:
+    restart: on-failure
     image: nginx:latest
     volumes:
       - ./web/:/usr/share/nginx/html
@@ -34,6 +33,7 @@ services:
     ports:
       - "80:80"
   cloud-config:
+    restart: on-failure
     image: openjdk:16-alpine
     volumes:
       - ./jars:/app
@@ -41,20 +41,38 @@ services:
     command: java -jar zero-cloud-config-0.0.1-SNAPSHOT.jar
     ports:
       - "8888:8888"
-  zerone_back_container:
+  microservice_back_container:
+    restart: on-failure
     image: openjdk:16-alpine
     volumes:
       - ./jars:/app
     working_dir: /app
-    command: java -jar social-network-0.0.1-SNAPSHOT.jar  --spring.datasource.url=jdbc:mysql://mysql_db_container:3306/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC&autoReconnect=true&maxReconnects=10
+    command: java -jar social-network-0.0.1-SNAPSHOT.jar  --spring.datasource.url=jdbc:mysql://mysql_microservice:3306/technical_support?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC&autoReconnect=true&maxReconnects=10
+    ports:
+      - "8090:8090"
+    depends_on:
+      - cloud-config
+      - mysql_microservice
+  zerone_back_container:
+    restart: on-failure
+    image: openjdk:16-alpine
+    volumes:
+      - ./jars:/app
+    working_dir: /app
+    command: java -jar social-network-0.0.1-SNAPSHOT.jar  #--spring.datasource.url=jdbc:mysql://mysql_db_container:3306/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC&autoReconnect=true&maxReconnects=10
     ports:
       - "8086:8086"
       - target: 1111
         published: 1111
         protocol: tcp
         mode: host
-
+    depends_on:
+      - cloud-config
+      - mysql_db_container
+    environment:
+      - SPRING_PROFILE
   grafana:
+    restart: on-failure
     image: grafana/grafana
     ports:
       - "3000:3000"
@@ -68,6 +86,7 @@ services:
         aliases:
           - grafana
   prometheus:
+    restart: on-failure
     image: prom/prometheus
     user: root
     ports:
@@ -80,6 +99,7 @@ services:
         aliases:
           - prometheus
   promtail:
+    restart: on-failure
     image: grafana/promtail:1.4.1
     expose:
       - 9080
@@ -95,6 +115,7 @@ services:
         aliases:
           - promtail
   loki:
+    restart: on-failure
     image: grafana/loki:2.3.0
     ports:
       - "3100:3100"

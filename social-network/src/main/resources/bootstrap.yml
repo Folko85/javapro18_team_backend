@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILE:default}
+  application:
+    name: serv
+  cloud:
+    config:
+      uri: http://cloud-config:8888
+      retry:
+        max-attempts: 10
+        initial-interval: 10000
+        max-interval: 5000
+#      uri: http://localhost:8888
