@@ -54,11 +54,18 @@ public class PostService {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         List<Integer> blockers = friendshipService.getBlockersId(person.getId());
+        Instant dateT;
+        if(dateTo==-1){
+            dateT = Instant.now();
+        }
+        else{
+            dateT= Instant.ofEpochMilli(dateTo);
+        }
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
                 text,
                 author,
                 Instant.ofEpochMilli(dateFrom),
-                Instant.ofEpochMilli(dateTo),
+                dateT,
                 pageable,
                 blockers
                 );
