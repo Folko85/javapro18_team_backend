@@ -3,14 +3,12 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,9 +28,11 @@ import static java.time.ZoneOffset.UTC;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final FriendshipRepository friendshipRepository;
 
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, FriendshipRepository friendshipRepository) {
         this.personRepository = personRepository;
+        this.friendshipRepository = friendshipRepository;
     }
 
     public FriendsDto friendsToPojo(Person source) {
@@ -68,8 +69,26 @@ public class PersonService {
         String emailPerson = principal.getName();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> personPage;
+        Person person = personRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
+        List<Integer> blockers =friendshipRepository.findBlockersIds(person.getId());
+        blockers.add(person.getId());
         LocalDate from = LocalDate.now().minusYears(ageTo);
         LocalDate to = LocalDate.now().minusYears(ageFrom);
+        if(ageFrom == ageTo && ageFrom == -1){
+            from=null;
+            to=null;
+        }
+        else if (ageFrom==-1){
+            to = LocalDate.now();
+        }
+        else if(ageTo ==  -1){
+            from = LocalDate.parse("1900-01-01");
+        }
+        personPage = personRepository.findByOptionalParametrs(firstName,
+                lastName, from, to, "", "", pageable, blockers);
+
+
 
         /**
          * 1. по дате рождения (имя и фамилия не указаны)
@@ -78,7 +97,7 @@ public class PersonService {
          * 4. по имени и фамилии (дата рождения не указана)
          * 5. по имени, фамилии и дате рождения
          */
-
+        /**
         if (firstName.isEmpty() && lastName.isEmpty() && ageFrom >= 1 && ageTo >= 1) {
             log.debug("поиск пользователя по дате рождения");
             personPage = personRepository
@@ -107,6 +126,7 @@ public class PersonService {
             log.debug("поиск пользователя без параметров");
             personPage = personRepository.findAllPerson(pageable);
         }
+        **/
 
         return getPersonResponse(offset, itemPerPage, personPage);
 

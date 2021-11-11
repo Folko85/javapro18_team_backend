@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -126,4 +127,19 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "AND p.isBlocked = false " +
             "AND p.isDeleted = false")
     Page<Person> find10Person(String email, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Person p " +
+            "WHERE ( p.firstName LIKE :firstName||'%'  AND :firstName != ''   OR :firstName = '' )  " +
+            "AND ( p.lastName LIKE :lastName||'%' AND :lastName != ''  OR :lastName = '' )  " +
+            "AND (  p.birthday >= :ageFrom AND p.birthday <= :ageTo OR :ageFrom is NULL AND :ageTo is NULL) " +
+            "AND ( p.city LIKE :city||'%' AND :city!='' OR :city='' ) "+
+            "AND ( p.country LIKE :country||'%' AND :country!='' OR :country='' ) "+
+            "AND p.isBlocked = false " +
+            "AND p.isDeleted = false "+
+            "AND p.id NOT IN (:blockers) ")
+    Page<Person> findByOptionalParametrs(
+            @NotNull String firstName, @NotNull String lastName, LocalDate ageFrom,
+            LocalDate ageTo, @NotNull String city, @NotNull String country, Pageable pageable, List<Integer> blockers);
+
 }
