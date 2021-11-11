@@ -1,15 +1,84 @@
 spring:
   application:
     name: micro
+
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3308/technical_support?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
+    username: user
+    password: password
+  liquibase:
+    change-log: /db/changelog/changelog-master.xml
+    enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+
   cloud:
     config:
-      uri: http://cloud-config:8888
+      #    uri: http://cloud-config:8888
       retry:
         max-attempts: 10
         initial-interval: 10000
         max-interval: 5000
+      uri: http://localhost:8888
 
+
+
+#      aws:
+#        credential:
+#          access-key: bjwgIspnfqIQsSEvsivr
+#          secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+#        sns:
+#          enabled: false
+#        s3:
+#          region: ru-central1
+#          endpoint: https://message-queue.api.cloud.yandex.net/
+#        sqs:
+#          region: ru-central1
+#          endpoint: https://message-queue.api.cloud.yandex.net/
+
+
+
+
+#    aws:
+#      credential:
+#        access-key: bjwgIspnfqIQsSEvsivr
+#        secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+#        sns:
+#          enabled: false
+#        s3:
+#          region: ru-central1
+#          endpoint: https://message-queue.api.cloud.yandex.net/
+#        sqs:
+#          region: ru-central1
+#          endpoint: https://message-queue.api.cloud.yandex.net/
+
+
+#spring:
+#  application:
+#    name: micro
+#  cloud:
+#    config:
+#      #      uri: http://cloud-config:8888
+#      retry:
+#        max-attempts: 10
+#        initial-interval: 10000
+#        max-interval: 5000
+#
 #      uri: http://localhost:8888
+
+
+
+
+
+
+
 #server:
 #  port: 8086
 #spring:
@@ -56,6 +125,7 @@ spring:
 #    credentials:
 #      access-key: ENC(WvQhgzlsvWesWQN+H4w3fR/z5LOd3SFV3apRHtlbzn4=)
 #      secret-key: ENC(YQrbpm85EfrmZhURq/SlSknbvvpTHFIgtqZq3rvoNbJaV8A8M2ZVWtbFHAgBuVWp6U70/5apokw=)
+#
 #
 #
 #external:
