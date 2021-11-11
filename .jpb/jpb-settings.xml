@@ -27,5 +27,6 @@
     <exclude-change idName="friendship#src_person_id" tagName="addNotNullConstraint" />
     <exclude-change idName="notification#type" tagName="addColumn" />
     <exclude-change idName="person#role" tagName="dropColumn" />
+    <exclude-change idName="notification#type" tagName="dropColumn" />
   </component>
 </project>

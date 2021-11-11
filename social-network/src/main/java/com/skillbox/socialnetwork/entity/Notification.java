@@ -33,7 +33,6 @@ public class Notification {
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "entity_id")
     private Integer entityId;
 
