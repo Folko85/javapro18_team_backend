@@ -53,11 +53,22 @@ public class PostService {
     public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDate(text,
-                Instant.ofEpochMilli(dateFrom)
-                , Instant.ofEpochMilli(dateTo),
+        List<Integer> blockers = friendshipService.getBlockersId(person.getId());
+        Instant dateT;
+        if(dateTo==-1){
+            dateT = Instant.now();
+        }
+        else{
+            dateT= Instant.ofEpochMilli(dateTo);
+        }
+        Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
+                text,
                 author,
-                pageable);
+                Instant.ofEpochMilli(dateFrom),
+                dateT,
+                pageable,
+                blockers
+                );
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
@@ -112,7 +123,8 @@ public class PostService {
     public ListResponse<PostData> getFeeds(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> pageablePostList = postRepository.findPostsByTextContaining(text, pageable);
+        List<Integer> blockers = friendshipService.getBlockersId(person.getId());
+        Page<Post> pageablePostList = postRepository.findPostsByTextContainingExcludingBlockers(text, pageable, blockers);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 

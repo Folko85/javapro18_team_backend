@@ -41,4 +41,5 @@ public class MessageController {
                                                     Principal principal) {
         return new ResponseEntity<>(messageService.postMessage(id, messageRequest, principal), HttpStatus.OK);
     }
+
 }

@@ -11,6 +11,7 @@ import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
@@ -41,13 +42,16 @@ public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final PersonService personService;
     private final FriendshipStatusRepository friendshipStatusRepository;
+    private final NotificationService notificationService;
 
     public FriendshipService(PersonRepository personRepository, FriendshipRepository friendshipRepository,
-                             PersonService personService, FriendshipStatusRepository friendshipStatusRepository) {
+                             PersonService personService, FriendshipStatusRepository friendshipStatusRepository,
+                             NotificationService notificationService) {
         this.personRepository = personRepository;
         this.friendshipRepository = friendshipRepository;
         this.personService = personService;
         this.friendshipStatusRepository = friendshipStatusRepository;
+        this.notificationService = notificationService;
     }
 
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
@@ -165,6 +169,7 @@ public class FriendshipService {
             newFriendship.setDstPerson(dstPerson);
 
             friendshipRepository.save(newFriendship);
+            notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
         }
         return addFriendResponse;
     }
@@ -178,6 +183,11 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
+    /**
+     * TODO
+     * провести редактирование после добавление метода findByOptionalParametrs
+     */
+
     public ListResponse<AuthData> recommendedUsers(int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
@@ -186,7 +196,8 @@ public class FriendshipService {
         LocalDate birthdayPerson = null;
         LocalDate startDate = null;
         LocalDate stopDate = null;
-
+        List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
+        blockers.add(person.getId());
         if (person.getBirthday() != null) {
             birthdayPerson = person.getBirthday();
             startDate = birthdayPerson.minusYears(2);
@@ -202,35 +213,35 @@ public class FriendshipService {
             log.debug("дата рождения указана, города не указан");
             //подбираем пользователей, возрост которых отличается на +-2 года
             personList = personRepository
-                    .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable);
+                    .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable, blockers);
 
             //дата рождения указана и город указан
         } else if (birthdayPerson != null && city != null) {
             log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
-                    .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable);
+                    .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable, blockers);
 
             //город указан
         } else if (city != null) {
             log.debug("город указан");
-            personList = personRepository.findPersonByCity(city, person.getEMail(), pageable);
+            personList = personRepository.findPersonByCity(city, person.getEMail(), pageable, blockers);
 
         } else {
             log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
             pageable = PageRequest.of(0, 10);
             //выбираем 10 рандомных пользователей
-            personList = get10Users(person.getEMail(), pageable);
+            personList = get10Users(person.getEMail(), pageable, blockers);
         }
 
         if (personList.isEmpty()) {
             pageable = PageRequest.of(0, 10);
-            personList = get10Users(person.getEMail(), pageable);
+            personList = get10Users(person.getEMail(), pageable, blockers);
         }
 
         if (personList.getTotalElements() < 10) {
             Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
-            Page<Person> personList2 = get10Users(person.getEMail(), pageable2);
+            Page<Person> personList2 = get10Users(person.getEMail(), pageable2, blockers);
 
             List<Person> persons = personList.stream().collect(Collectors.toList());
             List<Person> persons2 = personList2.stream().collect(Collectors.toList());
@@ -414,8 +425,12 @@ public class FriendshipService {
         return false;
     }
 
-    Page<Person> get10Users(String email, Pageable pageable) {
-        return personRepository.find10Person(email, pageable);
+    Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
+        return personRepository.find10Person(email, pageable, blockers);
     }
 
+    List<Integer> getBlockersId(int id) {
+        List<Integer> blockers = friendshipRepository.findBlockersIds(id);
+        return blockers.isEmpty() ? Collections.singletonList(-1) : blockers;
+    }
 }

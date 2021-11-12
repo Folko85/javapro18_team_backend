@@ -23,7 +23,7 @@ public class SimpleListener {
         this.clientRepository = clientRepository;
     }
 
-    @SqsListener("queueFromJavaCode")
+    @SqsListener("${message.queue.incoming}")
     public void getMessage(SendMessageDto dto) {
         log.info("получено сообщение '{}' в support", dto.getMessage());
         Client c = new Client();

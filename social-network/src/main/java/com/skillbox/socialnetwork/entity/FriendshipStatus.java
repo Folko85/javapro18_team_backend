@@ -24,7 +24,7 @@ public class FriendshipStatus {
     private LocalDateTime time;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "code", columnDefinition = "enum('REQUEST', 'FRIEND', 'BLOCKED', 'DECLINED', 'SUBSCRIBED')")
+    @Column(name = "code", columnDefinition = "enum('REQUEST', 'FRIEND', 'BLOCKED', 'DECLINED', 'SUBSCRIBED', 'WASBLOCKEDBY', 'DEADLOCK')")
     private FriendshipStatusCode code;
 
     @Override

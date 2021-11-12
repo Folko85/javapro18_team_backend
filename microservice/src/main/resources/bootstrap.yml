@@ -1,114 +1,17 @@
 spring:
   application:
     name: micro
-
-#  main:
-#    allow-bean-definition-overriding: true
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3308/technical_support?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
-#    username: user
-#    password: password
-#  liquibase:
-#    change-log: /db/changelog/changelog-master.xml
-#    enabled: true
-#  jpa:
-#    database-platform: org.hibernate.dialect.MySQL8Dialect
-#    show-sql: true
-#    hibernate:
-#      ddl-auto: validate
-
-
+  profiles:
+    active: ${SPRING_PROFILE:default}
   cloud:
     config:
-      uri: http://cloud-config:8888
+      uri: ${profile.config.url.${spring.profiles.active}}
       retry:
         max-attempts: 10
         initial-interval: 10000
         max-interval: 5000
-#      uri: http://localhost:8888
-
-
-
-
-
-
-
-#server:
-#  port: 8086
-#spring:
-#  application:
-#    name: application
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/network_db?allowPublicKeyRetrieval=true&useSSL=false&&serverTimezone=UTC
-#    username: user
-#    password: password
-#  liquibase:
-#    change-log: /db/changelog/changelog.yml
-#  jpa:
-#    show-sql: false
-#    hibernate:
-#      dialect: org.hibernate.dialect.MySQL8Dialect
-#      ddl-auto: validate
-#
-#registration:
-#  confirm:
-#    need: false
-#    url: "http://localhost:8086/api/v1/account/registration_complete"
-#
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: health,prometheus
-#  metrics:
-#    export:
-#      prometheus:
-#        enabled: true
-#    distribution:
-#      percentiles-histogram:
-#        "[http.server.requests]": true
-#
-#cloud:
-#  aws:
-#    sns:
-#      enabled: false
-#    s3:
-#      region: ru-central1
-#      endpoint: https://message-queue.api.cloud.yandex.net/
-#    credentials:
-#      access-key: ENC(WvQhgzlsvWesWQN+H4w3fR/z5LOd3SFV3apRHtlbzn4=)
-#      secret-key: ENC(YQrbpm85EfrmZhURq/SlSknbvvpTHFIgtqZq3rvoNbJaV8A8M2ZVWtbFHAgBuVWp6U70/5apokw=)
-#
-#
-#
-#external:
-#  vk:
-#    id: ENC(m7rHhgvZf1a3XykimmtX9A==)
-#    token: ENC(0FWZ/Ebbh5M0GV/ZD8TcXU1ISRbcusF9MrjiZsUnR4Vf4Hv8l7sp32S4w/KWqNsnLI7ppZCPy3ZztKJxXLGkhpBEkJXeEZpE6NFIDCts6BY=)
-#  cloudinary:
-#    cloud: ENC(Vfhff27NWtbJpMagmXDrAPdoUn5Wl0BP)
-#    key: ENC(Dw9PMgrkxd0Q7YTIBowaLFI/ixt2nvHf)
-#    secret: ENC(hQVnqsRAm3jW1tjWc3zDAOu19ppToSJ7czBD5CHa0E6coGq36y7wVA==)
-#  mail:
-#    key: ENC(K7d4bRWHYCdbITscwoIqPIi9SZx6rbteqan1VTjzniHFyBzcsTb5rogbtnljp3hh)
-#    secret: ENC(GXKUX11aEp43FY4B8CpX79OmUI9ryLyY6yHSLBz33RSWAFf47jYk+c1SlLYUuKdG)
-#    from: ENC(H4dZAhFspV/470tWbOY7Jk6mllp/EYJYns4oVTKaDqHkMqYtrtBK8Q==)
-#
-#jasypt:
-#  encryptor:
-#    bean: encryptorBean
-#
-#cors:
-#  - http://localhost:8081/
-#  - http://127.0.0.1:8081/
-#  - http://localhost/
-#  - http://127.0.0.1/
-#  - http://195.234.208.58/
-#  - http://localhost:80/
-#  - http://127.0.0.1:80/
-#  - http://195.234.208.58:80/
-#  - http://www.zeronenetwork.design/
-#  - http://10.186.0.2:8086/
-#  - http://10.186.0.2/%22
+profile:
+  config:
+    url:
+      default: http://localhost:8888
+      prod: http://cloud-config:8888
