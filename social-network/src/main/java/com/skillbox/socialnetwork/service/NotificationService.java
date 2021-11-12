@@ -81,11 +81,11 @@ public class NotificationService {
                         .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
                 notificationData.setEntityId(notificationData.getEntityAuthor().getId());
             }
-//            case FRIEND_REQUEST -> {
-//                notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
-//                        .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
-//                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
-//            }
+            case FRIEND_REQUEST -> {
+                notificationData.setEntityAuthor(friendshipRepository.findByPersonId(notification.getEntityId())
+                        .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
+                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+            }
             case MESSAGE -> {
                 notificationData.setEntityAuthor(messageRepository.findById(notification.getEntityId())
                         .map(message -> setAuthData(message.getAuthor())).orElse(null));
