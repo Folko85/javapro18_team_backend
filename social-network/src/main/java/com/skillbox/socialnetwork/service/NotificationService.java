@@ -48,6 +48,20 @@ public class NotificationService {
         return getNotificationResponse(offset, itemPerPage, notificationPage);
     }
 
+    public ListResponse<NotificationData> putNotification(int offset, int itemPerPage, Principal principal, int id, boolean all) {
+        Person person = findPerson(principal.getName());
+        if (all) {
+            List<Notification> notifications = notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId());
+            notifications.forEach(notification -> notification.setReadStatus(true));
+            notificationRepository.saveAll(notifications);
+        } else {
+            notificationRepository.findById(id).ifPresent(notificationRepository::save);
+        }
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Notification> notificationPage = notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId(), pageable);
+        return getNotificationResponse(offset, itemPerPage, notificationPage);
+    }
+
     private ListResponse<NotificationData> getNotificationResponse(int offset, int itemPerPage, Page<Notification> notificationPage) {
         ListResponse<NotificationData> postResponse = new ListResponse<>();
         postResponse.setPerPage(itemPerPage);
