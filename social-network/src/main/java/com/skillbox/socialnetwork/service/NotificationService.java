@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -55,7 +56,13 @@ public class NotificationService {
             notifications.forEach(notification -> notification.setReadStatus(true));
             notificationRepository.saveAll(notifications);
         } else {
-            notificationRepository.findById(id).ifPresent(notificationRepository::save);
+            Optional<Notification> notificationOptional = notificationRepository.findById(id);
+            if(notificationOptional.isPresent())
+            {
+               Notification notification = notificationOptional.get();
+               notification.setReadStatus(true);
+               notificationRepository.save(notification);
+            }
         }
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Notification> notificationPage = notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId(), pageable);
