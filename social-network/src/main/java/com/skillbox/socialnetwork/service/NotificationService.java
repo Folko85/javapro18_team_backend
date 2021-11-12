@@ -82,7 +82,7 @@ public class NotificationService {
                 notificationData.setEntityId(notificationData.getEntityAuthor().getId());
             }
             case FRIEND_REQUEST -> {
-                notificationData.setEntityAuthor(friendshipRepository.findByPersonId(notification.getEntityId())
+                notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
                         .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
                 notificationData.setEntityId(notificationData.getEntityAuthor().getId());
             }
