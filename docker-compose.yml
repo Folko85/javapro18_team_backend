@@ -50,6 +50,8 @@ services:
     command: java -jar microservice-0.0.1-SNAPSHOT.jar
     ports:
       - "8090:8090"
+    environment:
+      - SPRING_PROFILE
     depends_on:
       - cloud-config
       - mysql_microservice
