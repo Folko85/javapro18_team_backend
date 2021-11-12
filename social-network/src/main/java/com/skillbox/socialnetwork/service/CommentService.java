@@ -9,14 +9,10 @@ import com.skillbox.socialnetwork.entity.Like;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.PostComment;
-import com.skillbox.socialnetwork.entity.PostFile;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
-import com.skillbox.socialnetwork.repository.CommentRepository;
-import com.skillbox.socialnetwork.repository.FileRepository;
-import com.skillbox.socialnetwork.repository.LikeRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
+import com.skillbox.socialnetwork.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,9 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
-import static com.skillbox.socialnetwork.service.AuthService.setBlockerAuthData;
-import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
+import static com.skillbox.socialnetwork.service.AuthService.*;
 import static java.time.ZoneOffset.UTC;
 
 @Service
@@ -43,16 +37,19 @@ public class CommentService {
     private final LikeRepository likeRepository;
     private final FriendshipService friendshipService;
     private final FileRepository fileRepository;
+    private final NotificationService notificationService;
 
     public CommentService(PersonRepository personRepository, PostRepository postRepository,
                           CommentRepository commentRepository, LikeRepository likeRepository,
-                          FriendshipService friendshipService, FileRepository fileRepository) {
+                          FriendshipService friendshipService, FileRepository fileRepository,
+                          NotificationService notificationService) {
         this.personRepository = personRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
         this.friendshipService = friendshipService;
         this.fileRepository = fileRepository;
+        this.notificationService = notificationService;
     }
 
     public ListResponse<CommentData> getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
@@ -86,6 +83,10 @@ public class CommentService {
             int id = postComment.getId();
             commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setPostId(id))));
         }
+        notificationService.createNotification(
+                postComment.getParent() != null ? postComment.getParent().getPerson() : postComment.getPost().getPerson(),
+                postComment.getId(),
+                postComment.getParent() != null ? NotificationType.COMMENT_COMMENT : NotificationType.POST_COMMENT);
         return getCommentResponse(postComment, person);
     }
 

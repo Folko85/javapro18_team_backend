@@ -6,10 +6,8 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
 import com.skillbox.socialnetwork.entity.Message;
-import com.skillbox.socialnetwork.entity.Notification;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Person2Dialog;
-import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -73,17 +71,10 @@ public class MessageService {
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
         sessionTemplate.findByUserId(message.getDialog().getPersons().stream()
-                .filter(person1 -> !person1.getId().equals(person.getId())).findFirst().get().getId())
+                        .filter(person1 -> !person1.getId().equals(person.getId())).findFirst().get().getId())
                 .ifPresent(uuid -> server.getClient(uuid).sendEvent("message", dataResponse));
 
-
-        Notification notification = new Notification();
-        notification.setPerson(person);
-        notification.setType(NotificationType.MESSAGE);
-        notification.setReadStatus(false);
-        notification.setSendTime(LocalDateTime.now());
-        notification.setEntityId(message.getId());
-        notificationRepository.save(notification);
+      //  createNotification(message., message.getId());
         return dataResponse;
     }
 
@@ -122,4 +113,5 @@ public class MessageService {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
+
 }

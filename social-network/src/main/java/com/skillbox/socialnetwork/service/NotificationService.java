@@ -4,8 +4,8 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationData;
 import com.skillbox.socialnetwork.entity.Notification;
 import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.repository.NotificationRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
+import com.skillbox.socialnetwork.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,13 +18,25 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
+
 @Service
 public class NotificationService {
+    private final CommentRepository commentRepository;
+    private final FriendshipRepository friendshipRepository;
+    private final MessageRepository messageRepository;
     private final PersonRepository personRepository;
     private final NotificationRepository notificationRepository;
 
-    public NotificationService(PersonRepository personRepository, NotificationRepository notificationRepository) {
+    public NotificationService(CommentRepository commentRepository,
+                               FriendshipRepository friendshipRepository,
+                               MessageRepository messageRepository,
+                               PersonRepository personRepository,
+                               NotificationRepository notificationRepository) {
+        this.commentRepository = commentRepository;
+        this.friendshipRepository = friendshipRepository;
+        this.messageRepository = messageRepository;
         this.personRepository = personRepository;
         this.notificationRepository = notificationRepository;
     }
@@ -50,6 +62,7 @@ public class NotificationService {
         List<NotificationData> notificationDataList = new ArrayList<>();
         notifications.forEach(notification -> {
             NotificationData notificationData = getNotificationData(notification);
+
             notificationDataList.add(notificationData);
         });
         return notificationDataList;
@@ -62,12 +75,32 @@ public class NotificationService {
         notificationData.setSentTime(Instant.now());
         notificationData.setInfo("poka tak");
         notificationData.setSentTime(notification.getSendTime().toInstant(UTC));
-        notificationData.setTypeId(1);
+        notificationData.setEventType(notification.getType());
+        if (notification.getType().equals(NotificationType.COMMENT_COMMENT) || notification.getType().equals(NotificationType.POST_COMMENT)) {
+
+            notificationData.setEntityAuthor(commentRepository.findById(notification.getId())
+                    .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
+        } else {
+            if (notification.getType().equals(NotificationType.FRIEND_REQUEST)) {
+
+                notificationData.setEntityAuthor(friendshipRepository.findById(notification.getId())
+                        .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
+            }
+        }
         return notificationData;
     }
+
 
     private Person findPerson(String eMail) {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
+    }
+    public void createNotification(Person person, int entityId, NotificationType notificationType) {
+        Notification notification = new Notification();
+        notification.setPerson(person);
+        notification.setType(notificationType);
+        notification.setSendTime(LocalDateTime.now());
+        notification.setEntityId(entityId);
+        notificationRepository.save(notification);
     }
 }

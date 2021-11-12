@@ -11,6 +11,7 @@ import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
@@ -41,13 +42,16 @@ public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final PersonService personService;
     private final FriendshipStatusRepository friendshipStatusRepository;
+    private final NotificationService notificationService;
 
     public FriendshipService(PersonRepository personRepository, FriendshipRepository friendshipRepository,
-                             PersonService personService, FriendshipStatusRepository friendshipStatusRepository) {
+                             PersonService personService, FriendshipStatusRepository friendshipStatusRepository,
+                             NotificationService notificationService) {
         this.personRepository = personRepository;
         this.friendshipRepository = friendshipRepository;
         this.personService = personService;
         this.friendshipStatusRepository = friendshipStatusRepository;
+        this.notificationService = notificationService;
     }
 
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
@@ -165,6 +169,7 @@ public class FriendshipService {
             newFriendship.setDstPerson(dstPerson);
 
             friendshipRepository.save(newFriendship);
+            notificationService.createNotification(newFriendship.getDstPerson(),newFriendship.getId(), NotificationType.FRIEND_REQUEST);
         }
         return addFriendResponse;
     }
