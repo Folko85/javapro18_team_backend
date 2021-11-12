@@ -8,6 +8,7 @@ import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
 import com.skillbox.socialnetwork.entity.Message;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Person2Dialog;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,20 +31,20 @@ public class MessageService {
     private final Person2DialogRepository person2DialogRepository;
     private final SessionTemplate sessionTemplate;
     private final SocketIOServer server;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     public MessageService(PersonRepository personRepository,
                           MessageRepository messageRepository,
                           Person2DialogRepository person2DialogRepository,
                           SessionTemplate sessionTemplate,
                           SocketIOServer server,
-                          NotificationRepository notificationRepository) {
+                          NotificationService notificationService) {
         this.personRepository = personRepository;
         this.messageRepository = messageRepository;
         this.person2DialogRepository = person2DialogRepository;
         this.sessionTemplate = sessionTemplate;
         this.server = server;
-        this.notificationRepository = notificationRepository;
+        this.notificationService = notificationService;
     }
 
     public ListResponse<MessageData> getMessages(int id, String query, int offset, int itemPerPage, Principal principal) {
@@ -74,7 +75,12 @@ public class MessageService {
                         .filter(person1 -> !person1.getId().equals(person.getId())).findFirst().get().getId())
                 .ifPresent(uuid -> server.getClient(uuid).sendEvent("message", dataResponse));
 
-      //  createNotification(message., message.getId());
+        Message finalMessage = message;
+        message.getDialog().getPersons().forEach(dialogPerson -> {
+            if (dialogPerson != person)
+               notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
+        });
+
         return dataResponse;
     }
 

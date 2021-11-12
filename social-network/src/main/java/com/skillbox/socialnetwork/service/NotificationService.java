@@ -62,8 +62,8 @@ public class NotificationService {
         List<NotificationData> notificationDataList = new ArrayList<>();
         notifications.forEach(notification -> {
             NotificationData notificationData = getNotificationData(notification);
-
-            notificationDataList.add(notificationData);
+            if (notificationData.getEntityAuthor() != null)
+                notificationDataList.add(notificationData);
         });
         return notificationDataList;
     }
@@ -71,20 +71,25 @@ public class NotificationService {
     private NotificationData getNotificationData(Notification notification) {
         NotificationData notificationData = new NotificationData();
         notificationData.setId(notification.getId());
-        notificationData.setEntityId(notification.getEntityId());
         notificationData.setSentTime(Instant.now());
         notificationData.setInfo("poka tak");
         notificationData.setSentTime(notification.getSendTime().toInstant(UTC));
         notificationData.setEventType(notification.getType());
-        if (notification.getType().equals(NotificationType.COMMENT_COMMENT) || notification.getType().equals(NotificationType.POST_COMMENT)) {
-
-            notificationData.setEntityAuthor(commentRepository.findById(notification.getEntityId())
-                    .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
-        } else {
-            if (notification.getType().equals(NotificationType.FRIEND_REQUEST)) {
-
+        switch (notification.getType()) {
+            case COMMENT_COMMENT, POST_COMMENT -> {
+                notificationData.setEntityAuthor(commentRepository.findById(notification.getEntityId())
+                        .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
+                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+            }
+            case FRIEND_REQUEST -> {
                 notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
                         .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
+                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+            }
+            case MESSAGE -> {
+                notificationData.setEntityAuthor(messageRepository.findById(notification.getEntityId())
+                        .map(message -> setAuthData(message.getAuthor())).orElse(null));
+                notificationData.setEntityId(notification.getEntityId());
             }
         }
         return notificationData;
@@ -95,6 +100,7 @@ public class NotificationService {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
+
     public void createNotification(Person person, int entityId, NotificationType notificationType) {
         Notification notification = new Notification();
         notification.setPerson(person);
