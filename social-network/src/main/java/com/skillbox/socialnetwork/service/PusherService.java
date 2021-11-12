@@ -3,9 +3,9 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.request.technicalSupportDto.MessageOfTechnicalSupportClient;
 import com.skillbox.socialnetwork.api.request.technicalSupportDto.SendMessageDto;
 import com.skillbox.socialnetwork.api.request.technicalSupportDto.TechnicalSupportClientDto;
-import com.skillbox.socialnetwork.repository.PersonRepository;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,12 +14,13 @@ import java.time.LocalDateTime;
 @Service
 public class PusherService {
     private final QueueMessagingTemplate template;
-    private final PersonRepository personRepository;
     private MessageOfTechnicalSupportClient messageOfTechnicalSupportClient;
 
-    public PusherService(QueueMessagingTemplate template, PersonRepository personRepository) {
+    @Value("${message.queue.outgoing}")
+    private String queueName;
+
+    public PusherService(QueueMessagingTemplate template) {
         this.template = template;
-        this.personRepository = personRepository;
     }
 
     public void setParam(MessageOfTechnicalSupportClient messageOfTechnicalSupportClient) {
@@ -41,7 +42,7 @@ public class PusherService {
         sendMessageDto.setClient(client);
         sendMessageDto.setMessage(message);
 
-        template.convertAndSend("queueFromJavaCode", sendMessageDto);
+        template.convertAndSend(queueName, sendMessageDto);
         log.info("Send new m: {}", sendMessageDto);
     }
 
