@@ -25,7 +25,7 @@ public class Client {
     private String lastName;
 
     @Column(name = "e_mail", nullable = false,unique = true)
-    private String eMail;
+    private String email;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
     private List<Message> messages;

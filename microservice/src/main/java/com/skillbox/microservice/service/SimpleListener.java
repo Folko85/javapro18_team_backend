@@ -1,6 +1,6 @@
 package com.skillbox.microservice.service;
 
-import com.skillbox.microservice.dto.SendMessageDto;
+import com.skillbox.microservice.dto.MessageDto;
 import com.skillbox.microservice.entity.Message;
 import com.skillbox.microservice.entity.Client;
 import com.skillbox.microservice.repository.ClientRepository;
@@ -14,35 +14,16 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class SimpleListener {
+    private final MessageService messageService;
 
-    private final MessageRepository messageRepository;
-    private final ClientRepository clientRepository;
-
-    public SimpleListener(MessageRepository messageRepository, ClientRepository clientRepository) {
-        this.messageRepository = messageRepository;
-        this.clientRepository = clientRepository;
+    public SimpleListener(MessageService messageService) {
+        this.messageService = messageService;
     }
 
     @SqsListener("${message.queue.incoming}")
-    public void getMessage(SendMessageDto dto) {
+    public void getMessage(MessageDto dto) {
         log.info("получено сообщение '{}' в support", dto.getMessage());
-        Client c = new Client();
-        c.setFirstName(dto.getClient().getFirstName());
-        c.setLastName(dto.getClient().getLastName());
-        c.setEMail(dto.getClient().getEMail());
-
-        Optional<Client> clientOptional = clientRepository.findByEMail(dto.getClient().getEMail());
-
-        Client client;
-
-        client = clientOptional.orElseGet(() -> clientRepository.save(c));
-
-        Message messageOfSupport = new Message();
-        messageOfSupport.setDateOfApplication(dto.getDateOfApplication());
-        messageOfSupport.setClient(client);
-        messageOfSupport.setMessage(dto.getMessage());
-        messageRepository.save(messageOfSupport);
-
+            messageService.saveMessage(dto);
         log.info("Received new message: {}", dto);
 
     }
