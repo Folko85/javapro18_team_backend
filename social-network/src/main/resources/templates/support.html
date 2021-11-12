@@ -32,13 +32,16 @@
                     <div class="app-form">
                         <form method="post" th:action="@{/}" th:object="${requestObject}">
                             <div class="app-form-group">
-                                <input class="app-form-control" placeholder="NAME" th:field="*{name}">
+                                <input class="app-form-control" placeholder="First name" th:field="*{firstName}">
                             </div>
                             <div class="app-form-group">
-                                <input class="app-form-control" placeholder="EMAIL" th:field="*{email}">
+                                <input class="app-form-control" placeholder="Last name" th:field="*{lastName}">
+                            </div>
+                            <div class="app-form-group">
+                                <input class="app-form-control" placeholder="email" th:field="*{email}">
                             </div>
                             <div class="app-form-group message">
-                                <input class="app-form-control" placeholder="MESSAGE" th:field="*{message}">
+                                <input class="app-form-control" placeholder="message" th:field="*{message}">
                             </div>
                             <div class="app-form-group buttons">
                                 <button class="app-form-button" type="reset">CANCEL</button>

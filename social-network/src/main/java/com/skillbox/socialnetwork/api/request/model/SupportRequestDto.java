@@ -6,5 +6,6 @@ import lombok.Data;
 public class SupportRequestDto {
     private String email;
     private String message;
-    private String name;
+    private String firstName;
+    private String lastName;
 }
