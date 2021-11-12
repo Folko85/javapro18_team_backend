@@ -78,12 +78,12 @@ public class NotificationService {
         notificationData.setEventType(notification.getType());
         if (notification.getType().equals(NotificationType.COMMENT_COMMENT) || notification.getType().equals(NotificationType.POST_COMMENT)) {
 
-            notificationData.setEntityAuthor(commentRepository.findById(notification.getId())
+            notificationData.setEntityAuthor(commentRepository.findById(notification.getEntityId())
                     .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
         } else {
             if (notification.getType().equals(NotificationType.FRIEND_REQUEST)) {
 
-                notificationData.setEntityAuthor(friendshipRepository.findById(notification.getId())
+                notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
                         .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
             }
         }
