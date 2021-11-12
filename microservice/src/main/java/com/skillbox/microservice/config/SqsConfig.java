@@ -13,30 +13,33 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class SqsConfig {
+    private final int QUEUE_CREATE_DELAY = 10;
 
-//    @Value("${cloud.aws.credentials.access-key}")
-//    private String accessKey;
-//    @Value("${cloud.aws.credentials.secret-key}")
-//    private String secret;
-//    @Value("${cloud.aws.s3.endpoint}")
-//    private String endpoint;
-//    @Value("${cloud.aws.s3.region}")
-//    private String region;
+    @Value("${cloud.aws.credentials.access-key}")
+    private String accessKey;
+    @Value("${cloud.aws.credentials.secret-key}")
+    private String secret;
+    @Value("${cloud.aws.sqs.endpoint}")
+    private String endpoint;
+    @Value("${cloud.yandex.region}")
+    private String region;
+    @Value("${message.queue.incoming}")
+    private String queueName;
 
     @Bean
     @Primary
-    public AmazonSQSAsync amazonSQSAsync() {
+    public AmazonSQSAsync amazonSQSAsync() throws ExecutionException, InterruptedException, TimeoutException {
         AmazonSQSAsync amazonSQSAsync = AmazonSQSAsyncClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("bjwgIspnfqIQsSEvsivr", "ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b")))
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://message-queue.api.cloud.yandex.net/", "ru-central1"))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secret)))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, region))
                 .build();
-        amazonSQSAsync.createQueueAsync("queueFromJavaCode");
+        amazonSQSAsync.createQueueAsync(queueName).get(QUEUE_CREATE_DELAY, TimeUnit.SECONDS);
         return amazonSQSAsync;
     }
 
     @Bean
     @Primary
-    public QueueMessagingTemplate queueMessagingTemplate() {
+    public QueueMessagingTemplate queueMessagingTemplate() throws ExecutionException, InterruptedException, TimeoutException {
         return new QueueMessagingTemplate(amazonSQSAsync());
     }
 }
