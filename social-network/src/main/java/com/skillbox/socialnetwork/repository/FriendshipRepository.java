@@ -20,11 +20,10 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "OR f.dstPerson.firstName = ?1")
     List<Friendship> findBySrcPersonFirstNameOrDstPersonFirstName(String firstName, Pageable pageable);
 
-    @Override
     @Query("SELECT f FROM Friendship f " +
             "WHERE f.srcPerson.id = ?1 " +
             "OR f.dstPerson.id = ?1")
-    Optional<Friendship> findById(Integer id);
+    Optional<Friendship> findByPersonId(Integer id);
 
     @Query("SELECT p2 FROM Person p " +
             "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +

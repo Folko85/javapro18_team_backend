@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -48,6 +49,26 @@ public class NotificationService {
         return getNotificationResponse(offset, itemPerPage, notificationPage);
     }
 
+    public ListResponse<NotificationData> putNotification(int offset, int itemPerPage, Principal principal, int id, boolean all) {
+        Person person = findPerson(principal.getName());
+        if (all) {
+            List<Notification> notifications = notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId());
+            notifications.forEach(notification -> notification.setReadStatus(true));
+            notificationRepository.saveAll(notifications);
+        } else {
+            Optional<Notification> notificationOptional = notificationRepository.findById(id);
+            if(notificationOptional.isPresent())
+            {
+               Notification notification = notificationOptional.get();
+               notification.setReadStatus(true);
+               notificationRepository.save(notification);
+            }
+        }
+        Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
+        Page<Notification> notificationPage = notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId(), pageable);
+        return getNotificationResponse(offset, itemPerPage, notificationPage);
+    }
+
     private ListResponse<NotificationData> getNotificationResponse(int offset, int itemPerPage, Page<Notification> notificationPage) {
         ListResponse<NotificationData> postResponse = new ListResponse<>();
         postResponse.setPerPage(itemPerPage);
@@ -62,8 +83,8 @@ public class NotificationService {
         List<NotificationData> notificationDataList = new ArrayList<>();
         notifications.forEach(notification -> {
             NotificationData notificationData = getNotificationData(notification);
-
-            notificationDataList.add(notificationData);
+            if (notificationData.getEntityAuthor() != null)
+                notificationDataList.add(notificationData);
         });
         return notificationDataList;
     }
@@ -71,20 +92,25 @@ public class NotificationService {
     private NotificationData getNotificationData(Notification notification) {
         NotificationData notificationData = new NotificationData();
         notificationData.setId(notification.getId());
-        notificationData.setEntityId(notification.getEntityId());
         notificationData.setSentTime(Instant.now());
         notificationData.setInfo("poka tak");
         notificationData.setSentTime(notification.getSendTime().toInstant(UTC));
         notificationData.setEventType(notification.getType());
-        if (notification.getType().equals(NotificationType.COMMENT_COMMENT) || notification.getType().equals(NotificationType.POST_COMMENT)) {
-
-            notificationData.setEntityAuthor(commentRepository.findById(notification.getEntityId())
-                    .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
-        } else {
-            if (notification.getType().equals(NotificationType.FRIEND_REQUEST)) {
-
+        switch (notification.getType()) {
+            case COMMENT_COMMENT, POST_COMMENT -> {
+                notificationData.setEntityAuthor(commentRepository.findById(notification.getEntityId())
+                        .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
+                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+            }
+            case FRIEND_REQUEST -> {
                 notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
                         .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
+                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+            }
+            case MESSAGE -> {
+                notificationData.setEntityAuthor(messageRepository.findById(notification.getEntityId())
+                        .map(message -> setAuthData(message.getAuthor())).orElse(null));
+                notificationData.setEntityId(notification.getEntityId());
             }
         }
         return notificationData;
@@ -95,6 +121,7 @@ public class NotificationService {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
+
     public void createNotification(Person person, int entityId, NotificationType notificationType) {
         Notification notification = new Notification();
         notification.setPerson(person);

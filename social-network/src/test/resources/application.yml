@@ -26,14 +26,21 @@ registration:
 
 cloud:
   aws:
-    sns:
-      enabled: false
-    s3:
-      region: ru-central1
-      endpoint: https://message-queue.api.cloud.yandex.net/
     credentials:
-      access-key: ENC(WvQhgzlsvWesWQN+H4w3fR/z5LOd3SFV3apRHtlbzn4=)
-      secret-key: ENC(YQrbpm85EfrmZhURq/SlSknbvvpTHFIgtqZq3rvoNbJaV8A8M2ZVWtbFHAgBuVWp6U70/5apokw=)
+      access-key: bjwgIspnfqIQsSEvsivr
+      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+    sns:
+      enabled: false #Amazon SNS disabling
+    s3:
+      region: ${cloud.yandex.region} #This need for run application
+    sqs:
+      endpoint: https://message-queue.api.cloud.yandex.net/ #endpoint from yandex cloud documentation
+  yandex:
+    region: ru-central1 #region from yandex.cloud documentation
+message:
+  queue:
+    outgoing: support_message_queue
+
 
 external:
   vk:

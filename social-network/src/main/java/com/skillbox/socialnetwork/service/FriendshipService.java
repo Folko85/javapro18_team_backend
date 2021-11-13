@@ -169,7 +169,7 @@ public class FriendshipService {
             newFriendship.setDstPerson(dstPerson);
 
             friendshipRepository.save(newFriendship);
-            notificationService.createNotification(newFriendship.getDstPerson(),newFriendship.getId(), NotificationType.FRIEND_REQUEST);
+            notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
         }
         return addFriendResponse;
     }
@@ -429,8 +429,8 @@ public class FriendshipService {
         return personRepository.find10Person(email, pageable, blockers);
     }
 
-    List<Integer> getBlockersId(int id){
+    List<Integer> getBlockersId(int id) {
         List<Integer> blockers = friendshipRepository.findBlockersIds(id);
-        return blockers.isEmpty()? Collections.singletonList(-1) : blockers;
+        return blockers.isEmpty() ? Collections.singletonList(-1) : blockers;
     }
 }

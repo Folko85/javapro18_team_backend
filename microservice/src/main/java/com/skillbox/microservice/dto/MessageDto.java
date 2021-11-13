@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SendMessageDto implements Dto {
+public class MessageDto implements Dto {
 
     @JsonProperty("date_of_application")
     @JsonSerialize(using = LocalDateTimeSerializer.class)

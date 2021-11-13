@@ -1,2 +1,0 @@
-drop table clients;
-GO

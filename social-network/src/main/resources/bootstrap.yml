@@ -5,9 +5,13 @@ spring:
     name: serv
   cloud:
     config:
-      uri: http://cloud-config:8888
+      uri: ${profile.config.url.${spring.profiles.active}}
       retry:
         max-attempts: 10
         initial-interval: 10000
         max-interval: 5000
-#      uri: http://localhost:8888
+profile:
+  config:
+    url:
+      default: http://localhost:8888
+      prod: http://cloud-config:8888

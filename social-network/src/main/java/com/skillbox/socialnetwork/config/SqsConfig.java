@@ -12,33 +12,40 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 @EnableScheduling
 @Configuration
 public class SqsConfig {
+    private final int QUEUE_CREATE_DELAY = 10;
 
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
     @Value("${cloud.aws.credentials.secret-key}")
     private String secret;
-    @Value("${cloud.aws.s3.endpoint}")
+    @Value("${cloud.aws.sqs.endpoint}")
     private String endpoint;
-    @Value("${cloud.aws.s3.region}")
+    @Value("${cloud.yandex.region}")
     private String region;
+    @Value("${message.queue.outgoing}")
+    private String queueName;
 
     @Bean
     @Primary
-    public AmazonSQSAsync amazonSQSAsync() {
+    public AmazonSQSAsync amazonSQSAsync() throws ExecutionException, InterruptedException, TimeoutException {
         AmazonSQSAsync amazonSQSAsync = AmazonSQSAsyncClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secret)))
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, region))
                 .build();
-        amazonSQSAsync.createQueueAsync("queueFromJavaCode");
+        amazonSQSAsync.createQueueAsync(queueName).get(QUEUE_CREATE_DELAY, TimeUnit.SECONDS);
         return amazonSQSAsync;
     }
 
     @Bean
     @Primary
-    public QueueMessagingTemplate queueMessagingTemplate() {
+    public QueueMessagingTemplate queueMessagingTemplate() throws ExecutionException, InterruptedException, TimeoutException {
         return new QueueMessagingTemplate(amazonSQSAsync());
     }
 }
