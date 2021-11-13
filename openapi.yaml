@@ -1,1 +1,1404 @@
-{ "openapi": "3.0.1","info": { "title": "OpenAPI definition","version": "v0" },"servers": [ { "url": "http://localhost:8086","description": "Generated server url" } ],"tags": [ { "name": "Техническая поддержка","description": "Обращение в техническую поддержку" },{ "name": "Профиль","description": "Работа с профилем и с публичной информацией пользователя" },{ "name": "Друзья","description": "Работа с друзьями" } ],"paths": { "/api/v1/users/me": { "get": { "tags": [ "Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки" ],"summary": "Получение текущего пользователя","operationId": "getMe","responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseAuthData" } } } } } },"put": { "tags": [ "Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки" ],"summary": "Обновить профиль пользователя","operationId": "updateUser","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthData" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseAuthData" } } } } } },"delete": { "tags": [ "Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки" ],"summary": "Удалить профиль пользователя","operationId": "deleteUser","responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/users/block/{id}": { "put": { "tags": [ "Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки" ],"summary": "Заблокировать пользователя","operationId": "blockUser","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } },"delete": { "tags": [ "Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки" ],"summary": "Разблокировать пользователя","operationId": "unBlockUser","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/post/{id}": { "get": { "tags": [ "Контроллер для работы с постами" ],"summary": "Получить пост","operationId": "getPostById","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponsePostData" } } } } } },"put": { "tags": [ "Контроллер для работы с постами" ],"operationId": "putPostById","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "publish_date","in": "query","required": false,"schema": { "type": "integer","format": "int64","default": 0 } } ],"requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TitlePostTextRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponsePostData" } } } } } },"delete": { "tags": [ "Контроллер для работы с постами" ],"operationId": "deletePostById","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponsePostData" } } } } } } },"/api/v1/post/{id}/recover": { "put": { "tags": [ "Контроллер для работы с постами" ],"operationId": "putPostRecover","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "object" } } } } } } },"/api/v1/post/{id}/comments/{comment_id}": { "put": { "tags": [ "Контроллер для работы с коментариями" ],"summary": "Редактировать коментарий","operationId": "putComment","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "comment_id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommentRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseCommentData" } } } } } },"delete": { "tags": [ "Контроллер для работы с коментариями" ],"summary": "Удалить коментарий","operationId": "deleteComment","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "comment_id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseCommentData" } } } } } } },"/api/v1/post/{id}/comments/{comment_id}/recover": { "put": { "tags": [ "Контроллер для работы с коментариями" ],"summary": "Восстановить коментарий","operationId": "recoveryComment","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "comment_id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseCommentData" } } } } } } },"/api/v1/likes": { "get": { "tags": [ "Контроллер для работы с лайками" ],"summary": "Получить лайки","operationId": "getLikes","parameters": [ { "name": "item_id","in": "query","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "type","in": "query","required": true,"schema": { "type": "string" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseLikeData" } } } } } },"put": { "tags": [ "Контроллер для работы с лайками" ],"summary": "Поставить лайк","operationId": "putLikes","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LikeRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseLikeData" } } } } } },"delete": { "tags": [ "Контроллер для работы с лайками" ],"summary": "Удалить лайк","operationId": "deleteLikes","parameters": [ { "name": "item_id","in": "query","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "type","in": "query","required": true,"schema": { "type": "string" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseLikeData" } } } } } } },"/api/v1/account/recovery": { "put": { "tags": [ "Контроллер для работы с созданием учётной записи и безопасностью" ],"summary": "Восстановление пароля","operationId": "recoverySend","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RecoveryRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "string" } } } } } } },"/api/v1/account/password/set": { "put": { "tags": [ "Контроллер для работы с созданием учётной записи и безопасностью" ],"summary": "Смена пароля","operationId": "passwdChange","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PasswdChangeRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/account/notifications": { "put": { "tags": [ "Контроллер для работы с созданием учётной записи и безопасностью" ],"operationId": "notifications","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NotificationsRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/account/email": { "put": { "tags": [ "Контроллер для работы с созданием учётной записи и безопасностью" ],"summary": "Смена email","operationId": "eMailChange","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EMailChangeRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/users/{id}/wall": { "get": { "tags": [ "Контроллер для работы с постами" ],"summary": "Получить посты на стене","operationId": "getUserWall_1","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 10 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponsePostData" } } } } } },"post": { "tags": [ "Контроллер для работы с постами" ],"summary": "Создать пост на стене","operationId": "getUserWall","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "publish_date","in": "query","required": false,"schema": { "type": "integer","format": "int64","default": 0 } } ],"requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PostRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponsePostData" } } } } } } },"/api/v1/tags/": { "get": { "tags": [ "Контроллер для работы с тегами" ],"summary": "Получить теги","operationId": "getTags","parameters": [ { "name": "tag","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 10 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseTagDto" } } } } } },"post": { "tags": [ "Контроллер для работы с тегами" ],"summary": "Добавить тег","operationId": "postTag","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TagDto" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseTagDto" } } } } } },"delete": { "tags": [ "Контроллер для работы с тегами" ],"summary": "Удалить тег","operationId": "deleteTag","parameters": [ { "name": "id","in": "query","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/support": { "post": { "tags": [ "Техническая поддержка" ],"summary": "Отправка сообщения в техническую поддержку","operationId": "sendMessage","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageOfTechnicalSupportClient" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "object" } } } } } } },"/api/v1/storage": { "post": { "tags": [ "Контроллер для загрузки файлов" ],"summary": "Загрузка изображения","operationId": "uploadImage","parameters": [ { "name": "type","in": "query","required": true,"schema": { "type": "string" } } ],"requestBody": { "content": { "application/json": { "schema": { "required": [ "file" ],"type": "object","properties": { "file": { "type": "string","format": "binary" } } } } } },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseImageDto" } } } } } } },"/api/v1/post/{id}/comments": { "get": { "tags": [ "Контроллер для работы с коментариями" ],"summary": "Получить коментарии","operationId": "getFeeds","parameters": [ { "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 5 } },{ "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseCommentData" } } } } } },"post": { "tags": [ "Контроллер для работы с коментариями" ],"summary": "Написать коментарий","operationId": "postComment","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommentRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseCommentData" } } } } } } },"/api/v1/is/friends": { "post": { "tags": [ "Друзья" ],"summary": "Являются ли пользователи друзьями","description": "Получить информацию является ли пользователь другом указанных пользователей","operationId": "isFriends","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/IsFriends" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ResponseFriendsList" } } } } } } },"/api/v1/friends/{id}": { "post": { "tags": [ "Друзья" ],"summary": "Добавление в друзья","description": "Принть/добавить пользователя в друзья","operationId": "addingToFriends","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "object" } } } } } },"delete": { "tags": [ "Друзья" ],"summary": "Удаление пользователя","description": "Удаление пользователя из друзей","operationId": "stopBeingFriends","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "object" } } } } } } },"/api/v1/dialogs": { "get": { "tags": [ "dialog-controller" ],"operationId": "getDialogs","parameters": [ { "name": "name","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 1000 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseDialogData" } } } } } },"post": { "tags": [ "dialog-controller" ],"operationId": "postDialog","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DialogRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseDialogData" } } } } } } },"/api/v1/dialogs/{id}/messages": { "get": { "tags": [ "message-controller" ],"operationId": "getMessages","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } },{ "name": "query","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 1000 } },{ "name": "fromMessageId","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseMessageData" } } } } } },"post": { "tags": [ "message-controller" ],"operationId": "postMessages","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseMessageData" } } } } } } },"/api/v1/auth/login": { "post": { "tags": [ "Контроллер для авторизации" ],"summary": "login","operationId": "login","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseAuthData" } } } } } } },"/api/v1/account/register": { "post": { "tags": [ "Контроллер для работы с созданием учётной записи и безопасностью" ],"summary": "Регистрация","operationId": "register","requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } } },"required": true },"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/users/{id}": { "get": { "tags": [ "Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки" ],"summary": "Получение пользователя по его id","operationId": "getUserById","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponseAuthData" } } } } } } },"/api/v1/users/search": { "get": { "tags": [ "Профиль" ],"summary": "Поиск пользователя","operationId": "search","parameters": [ { "name": "first_name","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "last_name","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "age_from","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": -1 } },{ "name": "age_to","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": -1 } },{ "name": "country_id","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 1 } },{ "name": "city_id","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 1 } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 20 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseFriendsDto" } } } } } } },"/api/v1/post": { "get": { "tags": [ "Контроллер для работы с постами" ],"summary": "Получить посты в поиске","operationId": "getPosts","parameters": [ { "name": "text","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "date_from","in": "query","required": false,"schema": { "type": "integer","format": "int64","default": 0 } },{ "name": "date_to","in": "query","required": false,"schema": { "type": "integer","format": "int64","default": 1701214256861 } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 20 } },{ "name": "author","in": "query","required": false,"schema": { "type": "string","default": "" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponsePostData" } } } } } } },"/api/v1/platform/languages": { "get": { "tags": [ "Контроллер для получения списка стран и подгрузки городов для страны" ],"operationId": "getLanguages","responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseLanguage" } } } } } } },"/api/v1/platform/countries": { "get": { "tags": [ "Контроллер для получения списка стран и подгрузки городов для страны" ],"summary": "Получение списка стран","operationId": "getCountries","responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "array","items": { "$ref": "#/components/schemas/Country" } } } } } } } },"/api/v1/platform/cities": { "get": { "tags": [ "Контроллер для получения списка стран и подгрузки городов для страны" ],"summary": "Запрос списка городов в количестве itemPerPage содержащих city","operationId": "getCities","parameters": [ { "name": "countryId","in": "query","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "array","items": { "$ref": "#/components/schemas/CityDto" } } } } } } } },"/api/v1/friends": { "get": { "tags": [ "Друзья" ],"summary": "Список друзей","description": "Получить список друзей","operationId": "findFriend","parameters": [ { "name": "name","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 20 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "object" } } } } } } },"/api/v1/friends/request": { "get": { "tags": [ "Друзья" ],"summary": "Список заявок","description": "Получить список заявок","operationId": "listApplications","parameters": [ { "name": "name","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 20 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseAuthData" } } } } } } },"/api/v1/friends/recommendations": { "get": { "tags": [ "Друзья" ],"summary": "Рекомендации","description": "Получить список рекомендаций","operationId": "getRecommendedUsers","parameters": [ { "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 20 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponseAuthData" } } } } } } },"/api/v1/feeds": { "get": { "tags": [ "Контроллер для работы с постами" ],"summary": "Получить посты новостях","operationId": "getFeeds_1","parameters": [ { "name": "text","in": "query","required": false,"schema": { "type": "string","default": "" } },{ "name": "offset","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 0 } },{ "name": "itemPerPage","in": "query","required": false,"schema": { "type": "integer","format": "int32","default": 20 } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListResponsePostData" } } } } } } },"/api/v1/dialogs/unreaded": { "get": { "tags": [ "dialog-controller" ],"operationId": "getUnreaded","responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/auth/logout": { "get": { "tags": [ "Контроллер для авторизации" ],"summary": "logout","operationId": "logout","responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } },"/api/v1/account/registration_complete": { "get": { "tags": [ "Контроллер для работы с созданием учётной записи и безопасностью" ],"summary": "Подтверждение регистрации","operationId": "registrationComplete","parameters": [ { "name": "key","in": "query","required": true,"schema": { "type": "string" } },{ "name": "eMail","in": "query","required": true,"schema": { "type": "string" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "string" } } } } } } },"/api/v1/account/recovery_complete": { "get": { "tags": [ "Контроллер для работы с созданием учётной записи и безопасностью" ],"summary": "Подтверждение восстановления пароля","operationId": "recoveryComplete","parameters": [ { "name": "key","in": "query","required": true,"schema": { "type": "string" } },{ "name": "eMail","in": "query","required": true,"schema": { "type": "string" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "type": "string" } } } } } } },"/api/v1/storage/{id}": { "delete": { "tags": [ "Контроллер для загрузки файлов" ],"summary": "Загрузка изображения","operationId": "deleteImage","parameters": [ { "name": "id","in": "path","required": true,"schema": { "type": "integer","format": "int32" } } ],"responses": { "200": { "description": "OK","content": { "*/*": { "schema": { "$ref": "#/components/schemas/AccountResponse" } } } } } } } },"components": { "schemas": { "AuthData": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"phone": { "type": "string" },"photo": { "type": "string" },"about": { "type": "string" },"city": { "type": "string" },"country": { "type": "string" },"token": { "type": "string" },"deleted": { "type": "boolean" },"first_name": { "type": "string" },"last_name": { "type": "string" },"reg_date": { "type": "string","format": "date-time" },"birth_date": { "type": "string","format": "date-time" },"email": { "type": "string" },"messages_permission": { "type": "string","enum": [ "ALL","FRIENDS" ] },"last_online_time": { "type": "string","format": "date-time" },"is_blocked": { "type": "boolean" } } },"DataResponseAuthData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/AuthData" } } },"AccountResponse": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "type": "object","additionalProperties": { "type": "string" } } } },"TitlePostTextRequest": { "type": "object","properties": { "title": { "type": "string" },"post_text": { "type": "string" } } },"DataResponsePostData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/PostData" } } },"Dto": { "type": "object" },"ListResponse": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/Dto" } } } },"PostData": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"time": { "type": "string","format": "date-time" },"author": { "$ref": "#/components/schemas/AuthData" },"title": { "type": "string" },"likes": { "type": "integer","format": "int32" },"comments": { "$ref": "#/components/schemas/ListResponse" },"tags": { "type": "array","items": { "type": "string" } },"type": { "type": "string" },"post_text": { "type": "string" },"is_blocked": { "type": "boolean" },"my_like": { "type": "boolean" } } },"CommentRequest": { "type": "object","properties": { "parent_id": { "type": "integer","format": "int32" },"comment_text": { "type": "string" } } },"CommentData": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"time": { "type": "string","format": "date-time" },"author": { "$ref": "#/components/schemas/AuthData" },"likes": { "type": "integer","format": "int32" },"parent_id": { "type": "integer","format": "int32" },"comment_text": { "type": "string" },"post_id": { "type": "integer","format": "int32" },"is_blocked": { "type": "boolean" },"is_deleted": { "type": "boolean" },"sub_comments": { "type": "array","items": { "$ref": "#/components/schemas/CommentData" } },"my_like": { "type": "boolean" } } },"DataResponseCommentData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/CommentData" } } },"LikeRequest": { "type": "object","properties": { "type": { "type": "string" },"item_id": { "type": "integer","format": "int32" } } },"DataResponseLikeData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/LikeData" } } },"LikeData": { "type": "object","properties": { "likes": { "type": "string" },"users": { "type": "array","items": { "type": "integer","format": "int32" } } } },"RecoveryRequest": { "type": "object","properties": { "email": { "type": "string" } } },"PasswdChangeRequest": { "type": "object","properties": { "token": { "type": "string" },"password": { "type": "string" } } },"NotificationsRequest": { "type": "object","properties": { "enable": { "type": "boolean" },"notification_type": { "type": "string" } } },"EMailChangeRequest": { "type": "object","properties": { "email": { "type": "string" } } },"PostRequest": { "type": "object","properties": { "title": { "type": "string" },"post_text": { "type": "string" } } },"TagDto": { "type": "object","properties": { "id": { "type": "integer","description": "Идентификатор тэга","format": "int32" },"tag": { "type": "string","description": "Собственно тэг" } },"description": "Список городов" },"DataResponseTagDto": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/TagDto" } } },"MessageOfTechnicalSupportClient": { "type": "object","properties": { "message": { "type": "string" },"first_name": { "type": "string" },"last_name": { "type": "string" },"e_mail": { "type": "string" } } },"DataResponseImageDto": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/ImageDto" } } },"ImageDto": { "type": "object","properties": { "id": { "type": "string","description": "Идентификатор изображения" },"url": { "type": "string","description": "Имя файла" } } },"IsFriends": { "type": "object","properties": { "user_ids": { "type": "array","items": { "type": "integer","format": "int32" } } } },"ResponseFriendsList": { "type": "object","properties": { "data": { "type": "array","items": { "$ref": "#/components/schemas/StatusFriend" } } } },"StatusFriend": { "type": "object","properties": { "user_id": { "type": "integer","format": "int32" },"status": { "type": "string","enum": [ "REQUEST","FRIEND","BLOCKED","DECLINED","SUBSCRIBED","WASBLOCKEDBY","DEADLOCK" ] } } },"DialogRequest": { "type": "object","properties": { "users_ids": { "type": "array","items": { "type": "integer","format": "int32" } } } },"DataResponseDialogData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/DialogData" } } },"DialogData": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"unread_count": { "type": "integer","format": "int64" },"last_message": { "$ref": "#/components/schemas/MessageData" },"recipient_id": { "$ref": "#/components/schemas/AuthData" } } },"MessageData": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"time": { "type": "string","format": "date-time" },"sendByMe": { "type": "boolean" },"author_id": { "type": "integer","format": "int32" },"message_text": { "type": "string" },"read_status": { "type": "string" } } },"MessageRequest": { "type": "object","properties": { "message_text": { "type": "string" } } },"DataResponseMessageData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"data": { "$ref": "#/components/schemas/MessageData" } } },"LoginRequest": { "type": "object","properties": { "password": { "type": "string" },"email": { "type": "string" } } },"RegisterRequest": { "type": "object","properties": { "firstName": { "type": "string" },"lastName": { "type": "string" },"code": { "type": "string" },"email": { "type": "string" },"passwd1": { "type": "string" },"passwd2": { "type": "string" } } },"ListResponsePostData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/PostData" } } } },"FriendsDto": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"email": { "type": "string" },"phone": { "type": "string" },"photo": { "type": "string" },"about": { "type": "string" },"city": { "type": "string" },"country": { "type": "string" },"first_name": { "type": "string" },"last_name": { "type": "string" },"reg_date": { "type": "string","format": "date-time" },"birth_date": { "type": "string","format": "date" },"messages_permission": { "type": "string","enum": [ "ALL","FRIENDS" ] },"last_online_time": { "type": "string","format": "date-time" },"is_blocked": { "type": "boolean" } } },"ListResponseFriendsDto": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/FriendsDto" } } } },"ListResponseTagDto": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/TagDto" } } } },"ListResponseCommentData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/CommentData" } } } },"Language": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"title": { "type": "string" } } },"ListResponseLanguage": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/Language" } } } },"Country": { "type": "object","properties": { "id": { "type": "integer","format": "int32" },"title": { "type": "string" } } },"CityDto": { "type": "object","properties": { "id": { "type": "integer","description": "Идентификатор города","format": "int32" },"title": { "type": "string","description": "Название города города" } },"description": "Список городов" },"ListResponseAuthData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/AuthData" } } } },"ListResponseDialogData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/DialogData" } } } },"ListResponseMessageData": { "type": "object","properties": { "error": { "type": "string" },"timestamp": { "type": "string","format": "date-time" },"total": { "type": "integer","format": "int32" },"offset": { "type": "integer","format": "int32" },"perPage": { "type": "integer","format": "int32" },"data": { "type": "array","items": { "$ref": "#/components/schemas/MessageData" } } } } } } }
+components:
+  schemas:
+    CommentRequest:
+      type: object
+      properties:
+        comment_text: {type: string}
+        images:
+          type: array
+          items: {$ref: '#/components/schemas/ImageDto'}
+        parent_id: {format: int32, type: integer}
+    StatusFriend:
+      type: object
+      properties:
+        user_id: {format: int32, type: integer}
+        status:
+          type: string
+          enum: [REQUEST, FRIEND, BLOCKED, DECLINED, SUBSCRIBED, WASBLOCKEDBY, DEADLOCK]
+    FriendsDto:
+      type: object
+      properties:
+        country: {type: string}
+        city: {type: string}
+        birth_date: {format: date, type: string}
+        about: {type: string}
+        photo: {type: string}
+        last_name: {type: string}
+        reg_date: {format: date-time, type: string}
+        is_blocked: {type: boolean}
+        messages_permission:
+          type: string
+          enum: [ALL, FRIENDS]
+        last_online_time: {format: date-time, type: string}
+        phone: {type: string}
+        id: {format: int32, type: integer}
+        first_name: {type: string}
+        email: {type: string}
+    DataResponseAuthData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/AuthData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    TitlePostTextRequest:
+      type: object
+      properties:
+        title: {type: string}
+        post_text: {type: string}
+    MessageRequest:
+      type: object
+      properties:
+        message_text: {type: string}
+    ListResponse:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/Dto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    LikeData:
+      type: object
+      properties:
+        users:
+          type: array
+          items: {format: int32, type: integer}
+        likes: {type: string}
+    DialogData:
+      type: object
+      properties:
+        unread_count: {format: int64, type: integer}
+        last_message: {$ref: '#/components/schemas/MessageData'}
+        id: {format: int32, type: integer}
+        recipient_id: {$ref: '#/components/schemas/AuthData'}
+    ListResponseCommentData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/CommentData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseAuthData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/AuthData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DialogRequest:
+      type: object
+      properties:
+        users_ids:
+          type: array
+          items: {format: int32, type: integer}
+    DataResponseCommentData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/CommentData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    NotificationsRequest:
+      type: object
+      properties:
+        notification_type: {type: string}
+        enable: {type: boolean}
+    NotificationData:
+      type: object
+      properties:
+        sent_time: {format: date-time, type: string}
+        event_type:
+          type: string
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+        entity_author: {$ref: '#/components/schemas/AuthData'}
+        id: {format: int32, type: integer}
+        entity_id: {format: int32, type: integer}
+        info: {type: string}
+    MessageOfTechnicalSupportClient:
+      type: object
+      properties:
+        e_mail: {type: string}
+        last_name: {type: string}
+        message: {type: string}
+        first_name: {type: string}
+    AuthData:
+      type: object
+      properties:
+        country: {type: string}
+        city: {type: string}
+        birth_date: {format: date-time, type: string}
+        about: {type: string}
+        photo: {type: string}
+        last_name: {type: string}
+        token: {type: string}
+        reg_date: {format: date-time, type: string}
+        is_blocked: {type: boolean}
+        deleted: {type: boolean}
+        messages_permission:
+          type: string
+          enum: [ALL, FRIENDS]
+        last_online_time: {format: date-time, type: string}
+        phone: {type: string}
+        id: {format: int32, type: integer}
+        first_name: {type: string}
+        email: {type: string}
+    LikeRequest:
+      type: object
+      properties:
+        item_id: {format: int32, type: integer}
+        type: {type: string}
+    ListResponseMessageData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/MessageData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    PasswdChangeRequest:
+      type: object
+      properties:
+        password: {type: string}
+        token: {type: string}
+    PostRequest:
+      type: object
+      properties:
+        title: {type: string}
+        post_text: {type: string}
+    DataResponseLikeData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/LikeData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseLanguage:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/Language'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ImageDto:
+      type: object
+      properties:
+        id: {description: Идентификатор изображения, type: string}
+        url: {description: Имя файла, type: string}
+    Country:
+      type: object
+      properties:
+        id: {format: int32, type: integer}
+        title: {type: string}
+    AccountResponse:
+      type: object
+      properties:
+        data:
+          additionalProperties: {type: string}
+          type: object
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    Dto: {type: object}
+    ListResponsePostData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/PostData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DataResponseDialogData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseDialogData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DataResponsePostData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/PostData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    CommentData:
+      type: object
+      properties:
+        comment_text: {type: string}
+        is_blocked: {type: boolean}
+        images:
+          type: array
+          items: {$ref: '#/components/schemas/ImageDto'}
+        is_deleted: {type: boolean}
+        post_id: {format: int32, type: integer}
+        my_like: {type: boolean}
+        author: {$ref: '#/components/schemas/AuthData'}
+        parent_id: {format: int32, type: integer}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        sub_comments:
+          type: array
+          items: {$ref: '#/components/schemas/CommentData'}
+        likes: {format: int32, type: integer}
+    LoginRequest:
+      type: object
+      properties:
+        password: {type: string}
+        email: {type: string}
+    ListResponseFriendsDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/FriendsDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    EMailChangeRequest:
+      type: object
+      properties:
+        email: {type: string}
+    DataResponseMessageData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/MessageData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    RecoveryRequest:
+      type: object
+      properties:
+        email: {type: string}
+    Language:
+      type: object
+      properties:
+        id: {format: int32, type: integer}
+        title: {type: string}
+    TagDto:
+      description: Список городов
+      type: object
+      properties:
+        id: {format: int32, description: Идентификатор тэга, type: integer}
+        tag: {description: Собственно тэг, type: string}
+    CityDto:
+      description: Список городов
+      type: object
+      properties:
+        id: {format: int32, description: Идентификатор города, type: integer}
+        title: {description: Название города города, type: string}
+    ResponseFriendsList:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/StatusFriend'}
+    RegisterRequest:
+      type: object
+      properties:
+        firstName: {type: string}
+        lastName: {type: string}
+        code: {type: string}
+        passwd1: {type: string}
+        email: {type: string}
+        passwd2: {type: string}
+    MessageData:
+      type: object
+      properties:
+        message_text: {type: string}
+        sendByMe: {type: boolean}
+        read_status: {type: string}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        author_id: {format: int32, type: integer}
+    DataResponseImageDto:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/ImageDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseNotificationData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/NotificationData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    IsFriends:
+      type: object
+      properties:
+        user_ids:
+          type: array
+          items: {format: int32, type: integer}
+    PostData:
+      type: object
+      properties:
+        is_blocked: {type: boolean}
+        comments: {$ref: '#/components/schemas/ListResponse'}
+        my_like: {type: boolean}
+        author: {$ref: '#/components/schemas/AuthData'}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        title: {type: string}
+        type: {type: string}
+        post_text: {type: string}
+        likes: {format: int32, type: integer}
+        tags:
+          type: array
+          items: {type: string}
+    DataResponseTagDto:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/TagDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseTagDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/TagDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+servers:
+- {description: Generated server url, url: 'http://localhost'}
+openapi: 3.0.1
+paths:
+  /api/v1/account/registration_complete:
+    get:
+      summary: Подтверждение регистрации
+      operationId: registrationComplete
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: string}
+      parameters:
+      - schema: {type: string}
+        in: query
+        name: key
+        required: true
+      - schema: {type: string}
+        in: query
+        name: eMail
+        required: true
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/users/{id}/wall:
+    post:
+      summary: Создать пост на стене
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PostRequest'}
+        required: true
+      operationId: getUserWall
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: 0, format: int64, type: integer}
+        in: query
+        name: publish_date
+        required: false
+      tags: [Контроллер для работы с постами]
+    get:
+      summary: Получить посты на стене
+      operationId: getUserWall_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/friends:
+    get:
+      summary: Список друзей
+      description: Получить список друзей
+      operationId: findFriend
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: object}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: name
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Друзья]
+  /api/v1/support:
+    post:
+      summary: Отправка сообщения в техническую поддержку
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/MessageOfTechnicalSupportClient'}
+        required: true
+      operationId: sendMessage
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: object}
+      tags: [Техническая поддержка]
+  /api/v1/friends/request:
+    get:
+      summary: Список заявок
+      description: Получить список заявок
+      operationId: listApplications
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: name
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Друзья]
+  /api/v1/auth/login:
+    post:
+      summary: login
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LoginRequest'}
+        required: true
+      operationId: login
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      tags: [Контроллер для авторизации]
+  /api/v1/storage/{id}:
+    delete:
+      summary: Удаление изображения
+      operationId: deleteImage
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для загрузки файлов]
+  /api/v1/account/recovery:
+    put:
+      summary: Восстановление пароля
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecoveryRequest'}
+        required: true
+      operationId: recoverySend
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: string}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/users/me:
+    get:
+      summary: Получение текущего пользователя
+      operationId: getMe
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+    delete:
+      summary: Удалить профиль пользователя
+      operationId: deleteUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+    put:
+      summary: Обновить профиль пользователя
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AuthData'}
+        required: true
+      operationId: updateUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+  /api/v1/platform/cities:
+    get:
+      summary: Запрос списка городов в количестве itemPerPage содержащих city
+      operationId: getCities
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/CityDto'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: countryId
+        required: true
+      tags: [Контроллер для получения списка стран и подгрузки городов для страны]
+  /api/v1/storage:
+    post:
+      summary: Загрузка изображения
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: {format: binary, type: string}
+      operationId: uploadImage
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseImageDto'}
+      parameters:
+      - schema: {type: string}
+        in: query
+        name: type
+        required: true
+      tags: [Контроллер для загрузки файлов]
+  /api/v1/platform/languages:
+    get:
+      operationId: getLanguages
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseLanguage'}
+      tags: [Контроллер для получения списка стран и подгрузки городов для страны]
+  /api/v1/platform/countries:
+    get:
+      summary: Получение списка стран
+      operationId: getCountries
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Country'}
+      tags: [Контроллер для получения списка стран и подгрузки городов для страны]
+  /api/v1/users/{id}:
+    get:
+      summary: Получение пользователя по его id
+      operationId: getUserById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+  /api/v1/account/recovery_complete:
+    get:
+      summary: Подтверждение восстановления пароля
+      operationId: recoveryComplete
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: string}
+      parameters:
+      - schema: {type: string}
+        in: query
+        name: key
+        required: true
+      - schema: {type: string}
+        in: query
+        name: eMail
+        required: true
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/notifications:
+    get:
+      operationId: notifications_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseNotificationData'}
+      parameters:
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для получения уведомлений]
+  /api/v1/friends/{id}:
+    post:
+      summary: Добавление в друзья
+      description: Принть/добавить пользователя в друзья
+      operationId: addingToFriends
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: object}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Друзья]
+    delete:
+      summary: Удаление пользователя
+      description: Удаление пользователя из друзей
+      operationId: stopBeingFriends
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: object}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Друзья]
+  /api/v1/post/{id}/comments/{comment_id}:
+    delete:
+      summary: Удалить коментарий
+      operationId: deleteComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {format: int32, type: integer}
+        in: path
+        name: comment_id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+    put:
+      summary: Редактировать коментарий
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CommentRequest'}
+        required: true
+      operationId: putComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {format: int32, type: integer}
+        in: path
+        name: comment_id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+  /api/v1/tags/:
+    post:
+      summary: Добавить тег
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TagDto'}
+        required: true
+      operationId: postTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseTagDto'}
+      tags: [Контроллер для работы с тегами]
+    get:
+      summary: Получить теги
+      operationId: getTags
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseTagDto'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: tag
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с тегами]
+    delete:
+      summary: Удалить тег
+      operationId: deleteTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: id
+        required: true
+      tags: [Контроллер для работы с тегами]
+  /api/v1/account/register:
+    post:
+      summary: Регистрация
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RegisterRequest'}
+        required: true
+      operationId: register
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/post/{id}/recover:
+    put:
+      operationId: putPostRecover
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: object}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с постами]
+  /api/v1/likes:
+    get:
+      summary: Получить лайки
+      operationId: getLikes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseLikeData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: item_id
+        required: true
+      - schema: {type: string}
+        in: query
+        name: type
+        required: true
+      tags: [Контроллер для работы с лайками]
+    delete:
+      summary: Удалить лайк
+      operationId: deleteLikes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseLikeData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: item_id
+        required: true
+      - schema: {type: string}
+        in: query
+        name: type
+        required: true
+      tags: [Контроллер для работы с лайками]
+    put:
+      summary: Поставить лайк
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LikeRequest'}
+        required: true
+      operationId: putLikes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseLikeData'}
+      tags: [Контроллер для работы с лайками]
+  /api/v1/account/notifications:
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NotificationsRequest'}
+        required: true
+      operationId: notifications
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/post/{id}/comments:
+    post:
+      summary: Написать коментарий
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CommentRequest'}
+        required: true
+      operationId: postComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+    get:
+      summary: Получить коментарии
+      operationId: getFeeds
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseCommentData'}
+      parameters:
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 5, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+  /api/v1/post:
+    get:
+      summary: Получить посты в поиске
+      operationId: getPosts
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePostData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: text
+        required: false
+      - schema: {default: 0, format: int64, type: integer}
+        in: query
+        name: date_from
+        required: false
+      - schema: {default: -1, format: int64, type: integer}
+        in: query
+        name: date_to
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: author
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/friends/recommendations:
+    get:
+      summary: Рекомендации
+      description: Получить список рекомендаций
+      operationId: getRecommendedUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
+      parameters:
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Друзья]
+  /api/v1/users/search:
+    get:
+      summary: Поиск пользователя
+      operationId: search
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseFriendsDto'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: first_name
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: last_name
+        required: false
+      - schema: {default: -1, format: int32, type: integer}
+        in: query
+        name: age_from
+        required: false
+      - schema: {default: -1, format: int32, type: integer}
+        in: query
+        name: age_to
+        required: false
+      - schema: {default: 1, format: int32, type: integer}
+        in: query
+        name: country_id
+        required: false
+      - schema: {default: 1, format: int32, type: integer}
+        in: query
+        name: city_id
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Профиль]
+  /api/v1/dialogs/unreaded:
+    get:
+      operationId: getUnreaded
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [dialog-controller]
+  /api/v1/account/password/set:
+    put:
+      summary: Смена пароля
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PasswdChangeRequest'}
+        required: true
+      operationId: passwdChange
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/dialogs:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DialogRequest'}
+        required: true
+      operationId: postDialog
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseDialogData'}
+      tags: [dialog-controller]
+    get:
+      operationId: getDialogs
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseDialogData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: name
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 1000, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [dialog-controller]
+  /api/v1/account/email:
+    put:
+      summary: Смена email
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EMailChangeRequest'}
+        required: true
+      operationId: eMailChange
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/post/{id}:
+    get:
+      summary: Получить пост
+      operationId: getPostById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с постами]
+    delete:
+      operationId: deletePostById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с постами]
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TitlePostTextRequest'}
+        required: true
+      operationId: putPostById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: 0, format: int64, type: integer}
+        in: query
+        name: publish_date
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/users/block/{id}:
+    delete:
+      summary: Разблокировать пользователя
+      operationId: unBlockUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+    put:
+      summary: Заблокировать пользователя
+      operationId: blockUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+  /api/v1/auth/logout:
+    get:
+      summary: logout
+      operationId: logout
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для авторизации]
+  /api/v1/post/{id}/comments/{comment_id}/recover:
+    put:
+      summary: Восстановить коментарий
+      operationId: recoveryComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {format: int32, type: integer}
+        in: path
+        name: comment_id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+  /api/v1/feeds:
+    get:
+      summary: Получить посты новостях
+      operationId: getFeeds_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePostData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: text
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/dialogs/{id}/messages:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/MessageRequest'}
+        required: true
+      operationId: postMessages
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseMessageData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [message-controller]
+    get:
+      operationId: getMessages
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseMessageData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: '', type: string}
+        in: query
+        name: query
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 1000, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: fromMessageId
+        required: false
+      tags: [message-controller]
+  /api/v1/is/friends:
+    post:
+      summary: Являются ли пользователи друзьями
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/IsFriends'}
+        required: true
+      description: Получить информацию является ли пользователь другом указанных пользователей
+      operationId: isFriends
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ResponseFriendsList'}
+      tags: [Друзья]
+info: {title: OpenAPI definition, version: v0}
+tags:
+- {name: Техническая поддержка, description: Обращение в техническую поддержку}
+- {name: Профиль, description: Работа с профилем и с публичной информацией пользователя}
+- {name: Друзья, description: Работа с друзьями}

@@ -23,10 +23,8 @@ public class SwaggerGenerator extends AbstractTest {
                 .andDo((result) -> {
                     JSONObject jsonObject = new JSONObject(result.getResponse().getContentAsString(StandardCharsets.UTF_8));
                     String forWrite = yaml.dump(yaml.load(jsonObject.toString(4)));
-                    Files.writeString(new File("./123.yaml").toPath(), forWrite, StandardCharsets.UTF_8);
+                    Files.writeString(new File("../openapi.yaml").toPath(), forWrite, StandardCharsets.UTF_8);
                 });
     }
-
-    // а здесь мы будем переводить наш json s yml
 
 }
