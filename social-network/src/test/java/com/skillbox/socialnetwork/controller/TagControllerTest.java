@@ -9,6 +9,7 @@ import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,6 +43,7 @@ class TagControllerTest extends AbstractTest {
 
     }
     @Test
+    @DisplayName("Получение всех тегов")
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testGetTags() throws Exception {
         tagRepository.save(new Tag().setTag("porno"));
@@ -56,6 +58,7 @@ class TagControllerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("Добавление тега")
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testPostTags() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
@@ -70,6 +73,7 @@ class TagControllerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("Удаление тега")
     @WithMockUser(username = "test@test.ru", authorities = "user:administrate")
     void testDeleteTags() throws Exception {
         tagRepository.save(new Tag().setTag("java"));

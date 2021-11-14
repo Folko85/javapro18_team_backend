@@ -26,5 +26,7 @@ public class MessageData implements Dto {
     @JsonProperty("read_status")
     private String readStatus;
     private boolean isSendByMe;
+    @JsonProperty("dialog_id")
+    private int dialogId;
 
 }

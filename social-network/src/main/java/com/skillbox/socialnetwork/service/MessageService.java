@@ -111,7 +111,8 @@ public class MessageService {
                 .setId(message.getId())
                 .setTime(message.getTime().toInstant(UTC))
                 .setReadStatus(message.getTime().isAfter(person2Dialog.getLastCheckTime()) ? "SENT" : "READ")
-                .setSendByMe(person2Dialog.getPerson().equals(message.getAuthor()));
+                .setSendByMe(person2Dialog.getPerson().equals(message.getAuthor()))
+                .setDialogId(person2Dialog.getDialog().getId());
         return messageData;
     }
 
