@@ -38,22 +38,15 @@ public class SocketEventHandler {
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
-        //            String token = client.getHandshakeData().getSingleUrlParam("token");
-        //            UUID sessionId = client.getSessionId();
-        //            accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
-        //                    .ifPresent(person -> template.save(person.getId(), sessionId));
-        //            log.info("User connect on socket {} count {}",jwtProvider.getLoginFromToken(token), (long) server.getAllClients().size());
-
+        log.info("User connect on socket count {}", (long) server.getAllClients().size());
     }
 
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
         if (client != null) {
-            String token = client.getHandshakeData().getSingleUrlParam("token");
-            accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
-                    .ifPresent(person -> template.deleteByUserId(person.getId()));
+          template.findByUserUUID(client.getSessionId());
             client.disconnect();
-            log.info("User disconnect on socket {} count {}",jwtProvider.getLoginFromToken(token), (long) server.getAllClients().size());
+            log.info("User disconnect on socket count {}", (long) server.getAllClients().size());
         }
     }
 
@@ -64,7 +57,7 @@ public class SocketEventHandler {
                     UUID sessionId = client.getSessionId();
                     accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
                             .ifPresent(person -> template.save(person.getId(), sessionId));
-                    log.info("User authorize on socket {} count {}",jwtProvider.getLoginFromToken(token), (long) server.getAllClients().size());
+                    log.info("User authorize on socket {} count {}",jwtProvider.getLoginFromToken(token), template.findAll().size());
     }
 
 
