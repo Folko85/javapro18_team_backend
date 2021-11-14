@@ -52,6 +52,7 @@ public class SocketEventHandler {
             accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
                     .ifPresent(person -> template.deleteByUserId(person.getId()));
             client.disconnect();
+            log.info("User disconnect on socket {} count {}",jwtProvider.getLoginFromToken(token), (long) server.getAllClients().size());
         }
     }
 
