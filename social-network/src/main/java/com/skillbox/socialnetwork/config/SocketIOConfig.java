@@ -38,16 +38,15 @@ public class SocketIOConfig {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(HOST);
         config.setPort(PORT);
-
-        config.setAuthorizationListener(data -> {
-            // http://localhost:1111?token=xxxxxxx
-            String token = data.getSingleUrlParam("token");
-            if (token != null && jwtProvider.validateToken(token)) {
-                log.info("User connect on socket {} count {}", jwtProvider.getLoginFromToken(token), (long) server.getAllClients().size());
-                return personRepository.findByEMail(jwtProvider.getLoginFromToken(token)).isPresent();
-            }
-            return false;
-        });
+//        config.setAuthorizationListener(data -> {
+//            // http://localhost:1111?token=xxxxxxx
+//            String token = data.getSingleUrlParam("token");
+//            if (token != null && jwtProvider.validateToken(token)) {
+//                log.info("User connect on socket {} count {}", jwtProvider.getLoginFromToken(token), (long) server.getAllClients().size());
+//                return personRepository.findByEMail(jwtProvider.getLoginFromToken(token)).isPresent();
+//            }
+//            return false;
+//        });
 
         server = new SocketIOServer(config);
         server.start();
