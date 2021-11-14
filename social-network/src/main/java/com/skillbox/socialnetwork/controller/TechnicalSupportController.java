@@ -23,17 +23,17 @@ public class TechnicalSupportController {
         this.pusherService = pusherService;
     }
 
-    @RequestMapping("/api/v1/support")
-    public String create(@RequestParam(name = "first_name") String fName,
-                         @RequestParam(name = "last_name") String lName,
-                         @RequestParam(name = "e_mail") String email,
-                         @RequestParam(name = "message") String text) {
-        log.info("a message has been received in support");
-
-        pusherService.setParam(fName, lName, email, text);
-        pusherService.createAndSendMessage();
-        return "sending";
-    }
+//    @RequestMapping("/api/v1/support")
+//    public String create(@RequestParam(name = "first_name") String fName,
+//                         @RequestParam(name = "last_name") String lName,
+//                         @RequestParam(name = "e_mail") String email,
+//                         @RequestParam(name = "message") String text) {
+//        log.info("a message has been received in support");
+//
+//        pusherService.setParam(fName, lName, email, text);
+//        pusherService.createAndSendMessage();
+//        return "sending";
+//    }
 //    @RequestMapping("/api/v1/support")
 //    public String index(Model model) {
 //        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
