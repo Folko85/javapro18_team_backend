@@ -1,24 +1,78 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Техническая поддержка</title>
+    <title>Support form</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
+<!--<div class="background">-->
+<!--    <div class="container">-->
+<!--        <div class="screen">-->
+<!--            <div class="screen-header">-->
+<!--                <div class="screen-header-left">-->
+<!--                    <div class="screen-header-button close"></div>-->
+<!--                    <div class="screen-header-button maximize"></div>-->
+<!--                    <div class="screen-header-button minimize"></div>-->
+<!--                </div>-->
+<!--                <div class="screen-header-right">-->
+<!--                    <div class="screen-header-ellipsis"></div>-->
+<!--                    <div class="screen-header-ellipsis"></div>-->
+<!--                    <div class="screen-header-ellipsis"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="screen-body">-->
+<!--                <div class="screen-body-item left">-->
+<!--                    <div class="app-title">-->
+<!--                        <span>Support</span>-->
+<!--                        <span>form</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="screen-body-item">-->
+<!--                    <div class="app-form">-->
+<!--/*@thymesVar id="requestObject" type="com.skillbox.socialnetwork.api.request.technicalSupportDto.MessageOfTechnicalSupportClient"*/-->
+<!--/*@thymesVar id="firstName" type="java.lang.String"*/-->
+<!--/*@thymesVar id="lastName" type="java.lang.String"*/-->
+<!--/*@thymesVar id="eMail" type="java.lang.String"*/-->
+<!--/*@thymesVar id="message" type="java.lang.String"*/-->
+<!--                        <form action="#" th:action="@{/api/v1/support}" th:object="${requestObject}" method="post">-->
+<!--                            <div class="app-form-group">-->
+<!--                                <input type="text" class="app-form-control" placeholder="First name" th:field="*{firstName}" />-->
+<!--                            </div>-->
+<!--                            <div class="app-form-group">-->
+<!--                                <input type="text" class="app-form-control" placeholder="Last name" th:field="*{lastName}" />-->
+<!--                            </div>-->
+<!--                            <div class="app-form-group">-->
+<!--                                <input class="app-form-control" placeholder="email" th:field="*{EMail}" />-->
+<!--                            </div>-->
+<!--                            <div class="app-form-group message">-->
+<!--                                <input type="text" class="app-form-control" placeholder="message" th:field="*{message}" />-->
+<!--                            </div>-->
+<!--                            <div class="app-form-group buttons">-->
+<!--                                <button class="app-form-button" type="reset">CANCEL</button>-->
+<!--                                <button class="app-form-button" type="submit">SEND</button>-->
+<!--                            </div>-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
 <div id="message-form">
-    <form method="post" action="/support">
+    <form>
         <h2>Обращение в техническую поддержку</h2>
-        <label for="name">Имя</label>
-        <input class="in" name="first_name" type="text" id="name">
-        <label for="surname">Фамилия</label>
-        <input class="in" name="last_name" type="text" id="surname">
-        <label for="email">E-Mail</label>
-        <input class="in" name="e_mail" type="text" id="email">
-        <label for="message">Сообщение</label>
-        <input class="in" name="e_mail" type="text" id="message">
+        <label>Имя</label>
+        <input type="text", name="Имя" value="">
+        <label>Фамилия</label>
+        <input type="text", name="Фамилия" value="">
+        <label>E-Mail</label>
+        <input type="text", name="E-Mail" value="">
+        <label>Сообщение</label>
+        <input type="text", name="Сообщение" value="">
         <hr>
-        <input type="submit" value="Отправить">
+        <button id="save-message">Отправить</button>
     </form>
 </div>
 
