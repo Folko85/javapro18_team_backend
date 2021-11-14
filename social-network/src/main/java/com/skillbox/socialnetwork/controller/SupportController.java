@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+
 @Slf4j
 @Controller
 public class SupportController {
@@ -22,9 +24,9 @@ public class SupportController {
         this.pusherService = pusherService;
     }
 
+
     @RequestMapping("/support")
-    public String index(Model model) {
-//        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
+    public String support(Model model) {
         return "support";
     }
 
@@ -49,7 +51,7 @@ public class SupportController {
 //        return ResponseEntity.status(HttpStatus.OK).body(null);
 //    }
 
-    //    GetMapping("/support")
+//        @GetMapping("/support")
 //    public String index(Model model) {
 //        model.addAttribute("requestObject", new SupportRequestDto());
 //        return "support";
