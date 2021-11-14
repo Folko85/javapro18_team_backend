@@ -22,9 +22,9 @@ public class SupportController {
         this.pusherService = pusherService;
     }
 
-    @GetMapping("/support")
+    @RequestMapping("/support")
     public String index(Model model) {
-        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
+//        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
         return "support";
     }
 
