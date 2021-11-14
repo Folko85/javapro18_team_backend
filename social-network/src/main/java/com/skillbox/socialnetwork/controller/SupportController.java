@@ -25,22 +25,25 @@ public class SupportController {
     }
 
 
-    @RequestMapping("/support")
-    public String support(Model model) {
+    @GetMapping("/support")
+    public String index(Model model) {
+//        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
         return "support";
     }
 
-    @RequestMapping("/api/v1/support")
-    public String create(@RequestParam(name = "first_name") String fName,
-                         @RequestParam(name = "last_name") String lName,
-                         @RequestParam(name = "e_mail") String email,
-                         @RequestParam(name = "message") String text) {
-        log.info("a message has been received in support");
 
+    @PostMapping("/support")
+    public String sendSupportRequest(@RequestParam(name = "first_name") String fName,
+                                                @RequestParam(name = "last_name") String lName,
+                                                @RequestParam(name = "e_mail") String email,
+                                                @RequestParam(name = "message") String text) {
+        log.info("New request");
         pusherService.setParam(fName, lName, email, text);
         pusherService.createAndSendMessage();
+
         return "sending";
     }
+
 
 //    @PostMapping("/support")
 //    public ResponseEntity<?> sendSupportRequest(MessageOfTechnicalSupportClient message) {
