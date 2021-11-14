@@ -53,7 +53,7 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("unauthorized");
         badRequestResponse.setErrorDescription("Пользователь не существует");
-        log.error(Arrays.toString(exc.getStackTrace()));
+        log.warn(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(BadCredentialsException.class)
@@ -61,7 +61,7 @@ public class DefaultAdvice {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("access_denied");
         badRequestResponse.setErrorDescription("Доступ запрещён");
-        log.error(Arrays.toString(exc.getStackTrace()));
+        log.warn(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.FORBIDDEN);
     }
 
