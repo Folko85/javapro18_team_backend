@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 //@RestController
@@ -27,10 +24,21 @@ public class TechnicalSupportController {
     }
 
     @RequestMapping("/api/v1/support")
-    public String index(Model model) {
-        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
-        return "support";
+    public String create(@RequestParam(name = "first_name") String fName,
+                         @RequestParam(name = "last_name") String lName,
+                         @RequestParam(name = "e_mail") String email,
+                         @RequestParam(name = "message") String text) {
+        log.info("a message has been received in support");
+
+        pusherService.setParam(fName, lName, email, text);
+        pusherService.createAndSendMessage();
+        return "sending";
     }
+//    @RequestMapping("/api/v1/support")
+//    public String index(Model model) {
+//        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
+//        return "support";
+//    }
 
 //    @Operation(summary = "Отправка сообщения в техническую поддержку")
 //    @PostMapping("/api/v1/support")
