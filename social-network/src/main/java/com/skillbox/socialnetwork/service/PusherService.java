@@ -27,15 +27,8 @@ public class PusherService {
         this.template = template;
     }
 
-//    public void setParam(MessageOfTechnicalSupportClient messageOfTechnicalSupportClient) {
-//        this.messageOfTechnicalSupportClient = messageOfTechnicalSupportClient;
-//    }
-
-    public void setParam(String fName, String lName, String email, String text) {
-        this.fName = fName;
-        this.lName = lName;
-        this.email = email;
-        this.text = text;
+    public void setParam(MessageOfTechnicalSupportClient messageOfTechnicalSupportClient) {
+        this.messageOfTechnicalSupportClient = messageOfTechnicalSupportClient;
     }
 
     public void createAndSendMessage() {
@@ -43,17 +36,11 @@ public class PusherService {
 
         TechnicalSupportClientDto client = new TechnicalSupportClientDto();
 
-        client.setFirstName(fName);
-        client.setLastName(lName);
-        client.setEMail(email);
+        client.setFirstName(messageOfTechnicalSupportClient.getFirstName());
+        client.setLastName(messageOfTechnicalSupportClient.getLastName());
+        client.setEMail(messageOfTechnicalSupportClient.getEMail());
 
-        String message = text;
-
-//        client.setFirstName(messageOfTechnicalSupportClient.getFirstName());
-//        client.setLastName(messageOfTechnicalSupportClient.getLastName());
-//        client.setEMail(messageOfTechnicalSupportClient.getEMail());
-//
-//        String message = messageOfTechnicalSupportClient.getMessage();
+        String message = messageOfTechnicalSupportClient.getMessage();
 
         SendMessageDto sendMessageDto = new SendMessageDto();
         sendMessageDto.setDateOfApplication(dateOfApplication);
