@@ -9,10 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.ArrayList;
 
 @Slf4j
 @Controller
@@ -24,34 +20,23 @@ public class SupportController {
         this.pusherService = pusherService;
     }
 
-
-    @RequestMapping("/support")
-    public String support(Model model) {
+    @GetMapping("/support")
+    public String index(Model model) {
+        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
         return "support";
     }
 
-    @RequestMapping("/api/v1/support")
-    public String create(@RequestParam(name = "first_name") String fName,
-                         @RequestParam(name = "last_name") String lName,
-                         @RequestParam(name = "e_mail") String email,
-                         @RequestParam(name = "message") String text) {
-        log.info("a message has been received in support");
 
-        pusherService.setParam(fName, lName, email, text);
+    @PostMapping("/support")
+    public ResponseEntity<?> sendSupportRequest(MessageOfTechnicalSupportClient message) {
+        log.info("New request {}", message);
+        pusherService.setParam(message);
         pusherService.createAndSendMessage();
-        return "sending";
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-//    @PostMapping("/support")
-//    public ResponseEntity<?> sendSupportRequest(MessageOfTechnicalSupportClient message) {
-//        log.info("New request {}", message);
-//        pusherService.setParam(message);
-//        pusherService.createAndSendMessage();
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(null);
-//    }
-
-//        @GetMapping("/support")
+    //    GetMapping("/support")
 //    public String index(Model model) {
 //        model.addAttribute("requestObject", new SupportRequestDto());
 //        return "support";
