@@ -31,6 +31,7 @@ services:
     image: nginx:latest
     volumes:
       - ./web/:/usr/share/nginx/html
+      - ./conf.d:/etc/nginx/conf.d
     environment:
       NGINX_HOST: localhost
       NGINX_PORT: 80
