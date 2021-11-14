@@ -39,10 +39,11 @@ public class SocketIOConfig {
         config.setPort(PORT);
 
         config.setAuthorizationListener(data -> {
-            // http://localhost:8081?token=xxxxxxx
+            // http://localhost:1111?token=xxxxxxx
             String token = data.getSingleUrlParam("token");
-
+            if (token != null && jwtProvider.validateToken(token))
             return personRepository.findByEMail(jwtProvider.getLoginFromToken(token)).isPresent();
+            return false;
         });
 
         server = new SocketIOServer(config);
