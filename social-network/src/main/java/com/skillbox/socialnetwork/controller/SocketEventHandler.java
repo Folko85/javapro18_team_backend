@@ -44,23 +44,27 @@ public class SocketEventHandler {
 
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
+        if(client!=null){
         Optional<Integer> id = template.findByUserUUID(client.getSessionId());
         if (id.isPresent()) {
             template.deleteByUserId(id.get());
             client.disconnect();
             log.info("User disconnect on socket count {}", (long) server.getAllClients().size());
         }
+        }
     }
 
 
     @OnEvent(value = "auth")
     public void onAuthEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
+        if(client!=null){
         String token = data.getToken();
         UUID sessionId = client.getSessionId();
         if (token != null) {
             accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
                     .ifPresent(person -> template.save(person.getId(), sessionId));
             log.info("User authorize on socket {} count {}", jwtProvider.getLoginFromToken(token), template.findAll().size());
+        }
         }
     }
 
