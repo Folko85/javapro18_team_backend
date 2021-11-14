@@ -14,6 +14,7 @@ import com.skillbox.socialnetwork.repository.SessionTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -43,21 +44,28 @@ public class SocketEventHandler {
 
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
-        if (client != null) {
-          template.findByUserUUID(client.getSessionId());
+        if(client!=null){
+        Optional<Integer> id = template.findByUserUUID(client.getSessionId());
+        if (id.isPresent()) {
+            template.deleteByUserId(id.get());
             client.disconnect();
             log.info("User disconnect on socket count {}", (long) server.getAllClients().size());
+        }
         }
     }
 
 
     @OnEvent(value = "auth")
     public void onAuthEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
-                    String token = data.getToken();
-                    UUID sessionId = client.getSessionId();
-                    accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
-                            .ifPresent(person -> template.save(person.getId(), sessionId));
-                    log.info("User authorize on socket {} count {}",jwtProvider.getLoginFromToken(token), template.findAll().size());
+        if(client!=null){
+        String token = data.getToken();
+        UUID sessionId = client.getSessionId();
+        if (token != null) {
+            accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
+                    .ifPresent(person -> template.save(person.getId(), sessionId));
+            log.info("User authorize on socket {} count {}", jwtProvider.getLoginFromToken(token), template.findAll().size());
+        }
+        }
     }
 
 
