@@ -51,14 +51,14 @@ public class TechnicalSupportController {
 //    }
 
 
-    @Operation(summary = "Отправка сообщения в техническую поддержку")
-    @PostMapping("/api/v1/support")
-    public ResponseEntity<HttpStatus> sendMessage(@ModelAttribute MessageOfTechnicalSupportClient requestObject, Model model) {
-        log.info("a message has been received in support");
-
-        model.addAttribute(requestObject);
+//    @Operation(summary = "Отправка сообщения в техническую поддержку")
+//    @PostMapping("/api/v1/support")
+//    public ResponseEntity<HttpStatus> sendMessage(@ModelAttribute MessageOfTechnicalSupportClient requestObject, Model model) {
+//        log.info("a message has been received in support");
+//
+//        model.addAttribute(requestObject);
 //        pusherService.setParam(requestObject);
 //        pusherService.createAndSendMessage();
-        return ResponseEntity.status(HttpStatus.OK).body(null);
-    }
+//        return ResponseEntity.status(HttpStatus.OK).body(null);
+//    }
 }
