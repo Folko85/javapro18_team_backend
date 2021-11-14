@@ -233,3 +233,7 @@ body, button, input {
         padding: 0;
     }
 }
+
+.in {
+    border-radius: 10px;
+}

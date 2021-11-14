@@ -29,7 +29,6 @@ public class TechnicalSupportController {
     @RequestMapping("/api/v1/support")
     public String index(Model model) {
         model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
-
         return "support";
     }
 
