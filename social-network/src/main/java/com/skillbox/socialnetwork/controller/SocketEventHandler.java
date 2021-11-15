@@ -38,7 +38,7 @@ public class SocketEventHandler {
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
-        log.info("User connect on socket count {}", (long) server.getAllClients().size());
+        log.info("User connect on socket user {} count {}", client.getSessionId(), (long) server.getAllClients().size());
     }
 
     @OnDisconnect
@@ -60,16 +60,18 @@ public class SocketEventHandler {
             authService.socketAuth(data, client.getSessionId());
         }
     }
+
     @OnEvent(value = "start-typing")
     public void onStartTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
         if (client != null) {
             dialogService.startTyping(data);
         }
     }
+
     @OnEvent(value = "stop-typing")
     public void onStopTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
         if (client != null) {
-            if(template.findByUserUUID(client.getSessionId()).isPresent())
+            if (template.findByUserUUID(client.getSessionId()).isPresent())
                 dialogService.stopTyping(data);
         }
     }
