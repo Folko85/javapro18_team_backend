@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.platformdto.CityDto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.Language;
+import com.skillbox.socialnetwork.api.response.platformdto.PlaceDto;
 import com.vk.api.sdk.client.Lang;
 import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
@@ -10,11 +10,9 @@ import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
-import com.vk.api.sdk.objects.base.Country;
 import com.vk.api.sdk.objects.database.responses.GetCitiesResponse;
 import com.vk.api.sdk.objects.database.responses.GetCountriesResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -34,26 +32,37 @@ public class PlatformService {
     private String token;
 
 
-    public List<Country> getCountries() throws Exception {
+    public ListResponse<PlaceDto> getCountries(String country, int offset, int itemPerPage) throws Exception {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
-        GetCountriesResponse response = vk.database().getCountries(actor).needAll(true).count(250).lang(Lang.RU).execute();
-        return response.getItems();
-
+        GetCountriesResponse response = vk.database().getCountries(actor).needAll(true)
+                .code(country).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
+        List<PlaceDto> countries = response.getItems().stream()
+                .map(c -> new PlaceDto().setId(c.getId()).setTitle(c.getTitle())).collect(Collectors.toList());
+        ListResponse<PlaceDto> result = new ListResponse<>();
+        result.setTotal(response.getCount());
+        result.setTimestamp(Instant.now());
+        result.setPerPage(itemPerPage);
+        result.setData(countries);
+        return result;
     }
 
-    public List<CityDto> getCities(int countryId) throws ClientException, ApiException {
+    public ListResponse<PlaceDto> getCities(int countryId, String city, int offset, int itemPerPage) throws ClientException, ApiException {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
 
-        GetCitiesResponse response = vk.database().getCities(actor, countryId).lang(Lang.RU).execute();
-        return response.getItems().stream().map(x -> {
-            CityDto result = new CityDto();
-            BeanUtils.copyProperties(x, result);
-            return result;
-        }).collect(Collectors.toList());
+        GetCitiesResponse response = vk.database().getCities(actor, countryId).needAll(true)
+                .q(city).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
+        List<PlaceDto> cities = response.getItems().stream()
+                .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).collect(Collectors.toList());
+        ListResponse<PlaceDto> result = new ListResponse<>();
+        result.setTotal(response.getCount());
+        result.setTimestamp(Instant.now());
+        result.setPerPage(itemPerPage);
+        result.setData(cities);
+        return result;
     }
 
     public ListResponse<Language> getLanguages() {
@@ -65,7 +74,7 @@ public class PlatformService {
         Language language = new Language();
         language.setId(1);
         language.setTitle("Русский");
-        List<Language> languages= new ArrayList<>();
+        List<Language> languages = new ArrayList<>();
         languages.add(language);
         listResponse.setData(languages);
         return listResponse;

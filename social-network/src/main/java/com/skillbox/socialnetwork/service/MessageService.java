@@ -1,6 +1,5 @@
 package com.skillbox.socialnetwork.service;
 
-import com.corundumstudio.socketio.SocketIOServer;
 import com.skillbox.socialnetwork.api.request.MessageRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
@@ -9,7 +8,9 @@ import com.skillbox.socialnetwork.entity.Message;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Person2Dialog;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
-import com.skillbox.socialnetwork.repository.*;
+import com.skillbox.socialnetwork.repository.MessageRepository;
+import com.skillbox.socialnetwork.repository.Person2DialogRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,21 +30,15 @@ public class MessageService {
     private final PersonRepository personRepository;
     private final MessageRepository messageRepository;
     private final Person2DialogRepository person2DialogRepository;
-    private final SessionTemplate sessionTemplate;
-    private final SocketIOServer server;
     private final NotificationService notificationService;
 
     public MessageService(PersonRepository personRepository,
                           MessageRepository messageRepository,
                           Person2DialogRepository person2DialogRepository,
-                          SessionTemplate sessionTemplate,
-                          SocketIOServer server,
                           NotificationService notificationService) {
         this.personRepository = personRepository;
         this.messageRepository = messageRepository;
         this.person2DialogRepository = person2DialogRepository;
-        this.sessionTemplate = sessionTemplate;
-        this.server = server;
         this.notificationService = notificationService;
     }
 
@@ -71,14 +66,13 @@ public class MessageService {
         message.setText(messageRequest.getMessageText());
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
-        sessionTemplate.findByUserId(message.getDialog().getPersons().stream()
-                        .filter(person1 -> !person1.getId().equals(person.getId())).findFirst().get().getId())
-                .ifPresent(uuid -> server.getClient(uuid).sendEvent("message", dataResponse));
+
 
         Message finalMessage = message;
         message.getDialog().getPersons().forEach(dialogPerson -> {
             if (dialogPerson != person)
-               notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
+                notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
+            notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
         });
 
         return dataResponse;

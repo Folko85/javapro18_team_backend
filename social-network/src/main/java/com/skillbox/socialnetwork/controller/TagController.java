@@ -24,8 +24,8 @@ public class TagController {
     @Operation (summary = "Получить теги")
     @PreAuthorize("hasAuthority('user:write')")
     public ListResponse<TagDto> getTags(@RequestParam(required = false, defaultValue = "") String tag,
-                                @RequestParam(required = false, defaultValue = "0") Integer offset,
-                                @RequestParam(required = false, defaultValue = "10") Integer itemPerPage){
+                                @RequestParam(required = false, defaultValue = "0") int offset,
+                                @RequestParam(required = false, defaultValue = "10") int itemPerPage){
         return tagService.getTags(tag, offset, itemPerPage);
     }
 

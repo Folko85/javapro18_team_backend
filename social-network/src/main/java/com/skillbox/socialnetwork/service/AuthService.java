@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
+import com.skillbox.socialnetwork.api.request.socketio.AuthRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
@@ -8,6 +9,7 @@ import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.repository.SessionTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static com.skillbox.socialnetwork.service.AccountService.getAccountResponse;
 import static com.skillbox.socialnetwork.service.UserService.deletedImage;
@@ -27,13 +30,14 @@ public class AuthService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final SessionTemplate sessionTemplate;
 
-    public AuthService(PersonRepository accountRepository,
-                       PasswordEncoder passwordEncoder,
-                       JwtProvider jwtProvider) {
+    public AuthService(PersonRepository accountRepository, PasswordEncoder passwordEncoder,
+                       JwtProvider jwtProvider, SessionTemplate sessionTemplate) {
         this.personRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.sessionTemplate = sessionTemplate;
     }
 
 
@@ -106,5 +110,13 @@ public class AuthService {
         authData.setPhoto(deletedImage);
         return authData;
     }
-
+    public void socketAuth(AuthRequest data, UUID sessionId)
+    {
+        String token = data.getToken();
+        if (token != null) {
+            personRepository.findByEMail(jwtProvider.getLoginFromToken(token))
+                    .ifPresent(person -> sessionTemplate.save(person.getId(), sessionId));
+            log.info("User authorize on socket {} count {}", jwtProvider.getLoginFromToken(token), sessionTemplate.findAll().size());
+        }
+    }
 }

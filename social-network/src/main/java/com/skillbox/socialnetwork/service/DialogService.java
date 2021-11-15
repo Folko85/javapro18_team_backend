@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.DialogRequest;
+import com.skillbox.socialnetwork.api.request.socketio.TypingData;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
@@ -34,12 +35,17 @@ public class DialogService {
     private final Person2DialogRepository person2DialogRepository;
     private final DialogRepository dialogRepository;
     private final MessageService messageService;
+    private final NotificationService notificationService;
 
-    public DialogService(PersonRepository personRepository, Person2DialogRepository person2DialogRepository, DialogRepository dialogRepository, MessageService messageService) {
+    public DialogService(PersonRepository personRepository, Person2DialogRepository person2DialogRepository,
+                         DialogRepository dialogRepository, MessageService messageService,
+                         NotificationService notificationService) {
         this.personRepository = personRepository;
         this.person2DialogRepository = person2DialogRepository;
         this.dialogRepository = dialogRepository;
         this.messageService = messageService;
+
+        this.notificationService = notificationService;
     }
 
 
@@ -137,4 +143,22 @@ public class DialogService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
+    public void startTyping(TypingData typingData) {
+        Optional<Dialog> dialog = dialogRepository.findById(typingData.getDialog());
+        Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
+        if (dialog.isPresent() && personOptional.isPresent()) {
+            dialog.get().getPersons().forEach(person -> notificationService.sendEvent("start-typing", typingData, person.getId()));
+        }
+    }
+
+    public void stopTyping(TypingData typingData) {
+        Optional<Dialog> dialog = dialogRepository.findById(typingData.getDialog());
+        Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
+        if (dialog.isPresent() && personOptional.isPresent()) {
+            dialog.get().getPersons().forEach(person -> {
+                if (person.getId() != typingData.getAuthor())
+                    notificationService.sendEvent("stop-typing", typingData, person.getId());
+            });
+        }
+    }
 }

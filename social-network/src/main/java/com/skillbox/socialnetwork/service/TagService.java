@@ -33,7 +33,7 @@ public class TagService {
         this.postRepository = postRepository;
     }
 
-    public ListResponse<TagDto> getTags(String tag, Integer offset, Integer itemPerPage) {
+    public ListResponse<TagDto> getTags(String tag, int offset, int itemPerPage) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Tag> pagebleTagList = tagRepository.findTagsByTextContaining(tag, pageable);
         List<TagDto> result = pagebleTagList.stream().map(x -> new TagDto().setId(x.getId()).setTag(x.getTag())).collect(Collectors.toList());
