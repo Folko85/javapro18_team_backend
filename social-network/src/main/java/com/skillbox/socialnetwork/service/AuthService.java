@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.skillbox.socialnetwork.service.AccountService.getAccountResponse;
@@ -31,13 +32,16 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final SessionTemplate sessionTemplate;
+    private final NotificationService notificationService;
 
     public AuthService(PersonRepository accountRepository, PasswordEncoder passwordEncoder,
-                       JwtProvider jwtProvider, SessionTemplate sessionTemplate) {
+                       JwtProvider jwtProvider, SessionTemplate sessionTemplate,
+                       NotificationService notificationService) {
         this.personRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
         this.sessionTemplate = sessionTemplate;
+        this.notificationService = notificationService;
     }
 
 
@@ -110,13 +114,16 @@ public class AuthService {
         authData.setPhoto(deletedImage);
         return authData;
     }
-    public void socketAuth(AuthRequest data, UUID sessionId)
-    {
+
+    public void socketAuth(AuthRequest data, UUID sessionId) {
         String token = data.getToken();
         if (token != null) {
-            personRepository.findByEMail(jwtProvider.getLoginFromToken(token))
-                    .ifPresent(person -> sessionTemplate.save(person.getId(), sessionId));
-            log.info("User authorize on socket {} count {}", jwtProvider.getLoginFromToken(token), sessionTemplate.findAll().size());
+            Optional<Person> person = personRepository.findByEMail(jwtProvider.getLoginFromToken(token));
+            if (person.isPresent()) {
+                sessionTemplate.save(person.get().getId(), sessionId);
+                notificationService.sendEvent("auth-response", "ok", person.get().getId());
+                log.info("User authorize on socket {} count {}", jwtProvider.getLoginFromToken(token), sessionTemplate.findAll().size());
+            }
         }
     }
 }
