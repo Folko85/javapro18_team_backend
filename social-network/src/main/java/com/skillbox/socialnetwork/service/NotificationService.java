@@ -143,5 +143,7 @@ public class NotificationService {
     public void sendEvent(String eventName, Dto data, int personId) {
         sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
     }
-
+    public void sendEvent(String eventName, String data, int personId) {
+        sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+    }
 }
