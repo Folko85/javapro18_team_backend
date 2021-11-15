@@ -47,7 +47,7 @@ public class MessageService {
         Person2Dialog person2Dialog = person2DialogRepository.findPerson2DialogByDialogIdAndPersonId(id, person.getId())
                 .orElseThrow(() -> new UsernameNotFoundException(""));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Message> messagePage = messageRepository.findMessagesByDialogIdAndTimeAfterOrderByTime(id, person2Dialog.getAddTime(), pageable);
+        Page<Message> messagePage = messageRepository.findMessagesByDialogIdAndTimeAfterOrderByTimeDesc(id, person2Dialog.getAddTime(), pageable);
         person2Dialog.setLastCheckTime(LocalDateTime.now());
         person2DialogRepository.save(person2Dialog);
         return getDialogResponse(offset, itemPerPage, messagePage, person2Dialog);
