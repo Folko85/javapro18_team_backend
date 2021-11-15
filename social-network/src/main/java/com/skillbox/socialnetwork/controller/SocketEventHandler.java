@@ -38,6 +38,7 @@ public class SocketEventHandler {
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
+
         log.info("User connect on socket user {} count {}", client.getSessionId(), (long) server.getAllClients().size());
     }
 
@@ -52,7 +53,17 @@ public class SocketEventHandler {
             }
         }
     }
-
+    @OnEvent(value = "newListener")
+    public void onNewListenerEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
+        log.info("User listen on socket");
+        if (client != null) {
+            if(template.findByUserUUID(client.getSessionId()).isPresent())
+            {
+                client.sendEvent("auth-response","ok");
+            }
+           else client.sendEvent("auth-response","not");
+        }
+    }
 
     @OnEvent(value = "auth")
     public void onAuthEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
@@ -75,4 +86,5 @@ public class SocketEventHandler {
                 dialogService.stopTyping(data);
         }
     }
+
 }
