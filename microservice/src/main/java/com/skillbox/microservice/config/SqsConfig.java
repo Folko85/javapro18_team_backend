@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 @Configuration
 public class SqsConfig {
-    private final int QUEUE_CREATE_DELAY = 1;
+    private final int QUEUE_CREATE_DELAY = 10;
 
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
