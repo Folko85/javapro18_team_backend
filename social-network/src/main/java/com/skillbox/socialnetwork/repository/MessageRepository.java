@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDateTime;
 
 public interface MessageRepository extends JpaRepository<Message, Integer> {
-    Page<Message> findMessagesByDialogIdAndTimeAfter(int dialog, LocalDateTime time, Pageable pageable);
+    Page<Message> findMessagesByDialogIdAndTimeAfterOrderByTime(int dialog, LocalDateTime time, Pageable pageable);
 }
