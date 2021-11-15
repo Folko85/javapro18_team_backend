@@ -54,7 +54,7 @@ public class SocketEventHandler {
         }
     }
     @OnEvent(value = "newListener")
-    public void onNewListenerEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
+    public void onNewListenerEvent(SocketIOClient client) {
         log.info("User listen on socket");
         if (client != null) {
             if(template.findByUserUUID(client.getSessionId()).isPresent())
