@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.config;
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -15,12 +14,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 // JSON при этом находится на http://localhost:8086/v3/api-docs
 // позже выгружу это же в yaml в корень
 @Configuration
-@SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT",
-        scheme = "bearer"
-)
 public class SpringFoxConfig {
     @Bean
     public Docket api() {
