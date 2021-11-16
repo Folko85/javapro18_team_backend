@@ -78,7 +78,7 @@ public class MessageService {
             if (dialogPerson != person) {
                 notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
                 notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
-                notificationService.sendEvent("unread-response", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString(), dialogPerson.getId());
+                notificationService.sendEvent("unread-response", person2DialogRepository.findUnrededMessageCount(dialogPerson.getId()).orElse(0).toString(), dialogPerson.getId());
             }
         });
 
