@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.dialogdto.DialogData;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
+import com.skillbox.socialnetwork.api.response.socketio.TypingResponse;
 import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.repository.DialogRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
@@ -148,8 +149,13 @@ public class DialogService {
         Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
         if (dialog.isPresent() && personOptional.isPresent()) {
             dialog.get().getPersons().forEach(person -> {
-                if (person.getId() != typingData.getAuthor())
-                    notificationService.sendEvent("start-typing-response", typingData, person.getId());
+                if (person.getId() != typingData.getAuthor()) {
+                    TypingResponse typingResponse = new TypingResponse();
+                    typingResponse.setDialog(typingData.getDialog());
+                    typingResponse.setAuthorId(typingData.getAuthor());
+                    typingResponse.setAuthor(person.getFirstName());
+                    notificationService.sendEvent("start-typing-response", typingResponse, person.getId());
+                }
             });
         }
     }
