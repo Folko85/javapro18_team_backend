@@ -147,7 +147,10 @@ public class DialogService {
         Optional<Dialog> dialog = dialogRepository.findById(typingData.getDialog());
         Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
         if (dialog.isPresent() && personOptional.isPresent()) {
-            dialog.get().getPersons().forEach(person -> notificationService.sendEvent("start-typing-response", typingData, person.getId()));
+            dialog.get().getPersons().forEach(person -> {
+                if (person.getId() != typingData.getAuthor())
+                    notificationService.sendEvent("start-typing-response", typingData, person.getId());
+            });
         }
     }
 

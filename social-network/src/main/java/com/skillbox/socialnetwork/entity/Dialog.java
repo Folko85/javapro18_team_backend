@@ -22,7 +22,7 @@ public class Dialog {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dialog")
     private Set<Message> messages;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "person2dialog",
             joinColumns = {@JoinColumn(name = "dialog_id")},
             inverseJoinColumns = {@JoinColumn(name = "person_id")})
