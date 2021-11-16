@@ -2,13 +2,15 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.DialogRequest;
 import com.skillbox.socialnetwork.api.request.socketio.TypingData;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.dialogdto.DialogData;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
 import com.skillbox.socialnetwork.api.response.socketio.TypingResponse;
-import com.skillbox.socialnetwork.entity.*;
+import com.skillbox.socialnetwork.entity.Dialog;
+import com.skillbox.socialnetwork.entity.Message;
+import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.entity.Person2Dialog;
 import com.skillbox.socialnetwork.repository.DialogRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -23,8 +25,10 @@ import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -92,16 +96,6 @@ public class DialogService {
         dialogData.setRecipientId(setAuthData(personDst));
         dataResponse.setData(dialogData);
         return dataResponse;
-    }
-
-    public AccountResponse getUnreaded(Principal principal) {
-        Person person = findPerson(principal.getName());
-        AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(Instant.now());
-        Map<String, String> mapData = new HashMap<>();
-        mapData.put("count", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString());
-        accountResponse.setData(mapData);
-        return accountResponse;
     }
 
     private ListResponse<DialogData> getDialogResponse(int offset, int itemPerPage, Page<Person2Dialog> person2DialogPage) {

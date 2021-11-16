@@ -21,12 +21,13 @@ public interface Person2DialogRepository extends JpaRepository<Person2Dialog, In
     Page<Person2Dialog> findDialogByAuthorAndTitle(String name, int personId, Pageable pageable);
 
     Optional<Person2Dialog> findPerson2DialogByDialogIdAndPersonId(int dialogId, int personId);
+
     @Query("SELECT COUNT(m) " +
             "FROM Person2Dialog p2d " +
             "LEFT JOIN Dialog d ON p2d.dialog.id = d.id " +
             "LEFT JOIN Person p ON p.id = p2d.person.id " +
             "LEFT JOIN Message m ON m.dialog.id = d.id " +
-            "WHERE p.id = ?1  AND m.time > p2d.lastCheckTime " +
+            "WHERE p.id = ?1  AND m.time > p2d.lastCheckTime AND m.author.id <> ?1 " +
             "GROUP BY p.id ")
     Optional<Integer> findUnrededMessageCount(int personId);
 }

@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.MessageRequest;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
@@ -21,7 +22,9 @@ import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -48,9 +51,11 @@ public class MessageService {
                 .orElseThrow(() -> new UsernameNotFoundException(""));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Message> messagePage = messageRepository.findMessagesByDialogIdAndTimeAfterOrderByTimeDesc(id, person2Dialog.getAddTime(), pageable);
+        ListResponse<MessageData> messageDataListResponse = getDialogResponse(offset, itemPerPage, messagePage, person2Dialog);
         person2Dialog.setLastCheckTime(LocalDateTime.now());
         person2DialogRepository.save(person2Dialog);
-        return getDialogResponse(offset, itemPerPage, messagePage, person2Dialog);
+        notificationService.sendEvent("unread-response", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString(), person.getId());
+        return messageDataListResponse;
     }
 
     public DataResponse<MessageData> postMessage(int id, MessageRequest messageRequest, Principal principal) {
@@ -70,9 +75,11 @@ public class MessageService {
 
         Message finalMessage = message;
         message.getDialog().getPersons().forEach(dialogPerson -> {
-            if (dialogPerson != person)
+            if (dialogPerson != person) {
                 notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
-            notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
+                notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
+                notificationService.sendEvent("unread-response", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString(), person.getId());
+            }
         });
 
         return dataResponse;
@@ -115,4 +122,13 @@ public class MessageService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
+    public AccountResponse getUnreaded(Principal principal) {
+        Person person = findPerson(principal.getName());
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setTimestamp(Instant.now());
+        Map<String, String> mapData = new HashMap<>();
+        mapData.put("count", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString());
+        accountResponse.setData(mapData);
+        return accountResponse;
+    }
 }
