@@ -147,7 +147,7 @@ public class DialogService {
                     TypingResponse typingResponse = new TypingResponse();
                     typingResponse.setDialog(typingData.getDialog());
                     typingResponse.setAuthorId(typingData.getAuthor());
-                    typingResponse.setAuthor(person.getFirstName());
+                    typingResponse.setAuthor(personOptional.get().getFirstName());
                     notificationService.sendEvent("start-typing-response", typingResponse, person.getId());
                 }
             });
