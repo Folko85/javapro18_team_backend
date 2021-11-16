@@ -8,65 +8,83 @@ import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 import com.skillbox.socialnetwork.api.request.socketio.AuthRequest;
-import com.skillbox.socialnetwork.api.security.JwtProvider;
-import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.api.request.socketio.TypingData;
 import com.skillbox.socialnetwork.repository.SessionTemplate;
+import com.skillbox.socialnetwork.service.AuthService;
+import com.skillbox.socialnetwork.service.DialogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Component
 public class SocketEventHandler {
     private final SocketIOServer server;
     private final SessionTemplate template;
-    private final PersonRepository accountRepository;
-    private final JwtProvider jwtProvider;
+    private final AuthService authService;
+    private final DialogService dialogService;
 
     public SocketEventHandler(SocketIOServer server,
                               SessionTemplate template,
-                              PersonRepository accountRepository,
-                              JwtProvider jwtProvider) {
+                              AuthService authService,
+                              DialogService dialogService) {
         this.server = server;
         this.template = template;
-        this.accountRepository = accountRepository;
-        this.jwtProvider = jwtProvider;
-
+        this.authService = authService;
+        this.dialogService = dialogService;
     }
 
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
-        log.info("User connect on socket count {}", (long) server.getAllClients().size());
+
+        log.info("User connect on socket user {} count {}", client.getSessionId(), (long) server.getAllClients().size());
     }
 
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
-        if(client!=null){
-        Optional<Integer> id = template.findByUserUUID(client.getSessionId());
-        if (id.isPresent()) {
-            template.deleteByUserId(id.get());
-            client.disconnect();
-            log.info("User disconnect on socket count {}", (long) server.getAllClients().size());
-        }
+        if (client != null) {
+            Optional<Integer> id = template.findByUserUUID(client.getSessionId());
+            if (id.isPresent()) {
+                template.deleteByUserId(id.get());
+                client.disconnect();
+                log.info("User disconnect on socket count {}", (long) server.getAllClients().size());
+            }
         }
     }
-
+    @OnEvent(value = "newListener")
+    public void onNewListenerEvent(SocketIOClient client) {
+        log.info("User listen on socket");
+        if (client != null) {
+            if(template.findByUserUUID(client.getSessionId()).isPresent())
+            {
+                client.sendEvent("auth-response","ok");
+            }
+           else client.sendEvent("auth-response","not");
+        }
+    }
 
     @OnEvent(value = "auth")
     public void onAuthEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
-        if(client!=null){
-        String token = data.getToken();
-        UUID sessionId = client.getSessionId();
-        if (token != null) {
-            accountRepository.findByEMail(jwtProvider.getLoginFromToken(token))
-                    .ifPresent(person -> template.save(person.getId(), sessionId));
-            log.info("User authorize on socket {} count {}", jwtProvider.getLoginFromToken(token), template.findAll().size());
-        }
+        if (client != null) {
+            authService.socketAuth(data, client.getSessionId());
         }
     }
 
+    @OnEvent(value = "start-typing")
+    public void onStartTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
+        if (client != null) {
+            dialogService.startTyping(data);
+        }
+    }
+
+    @OnEvent(value = "stop-typing")
+    public void onStopTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
+        if (client != null) {
+            if (template.findByUserUUID(client.getSessionId()).isPresent())
+                dialogService.stopTyping(data);
+        }
+    }
 
 }

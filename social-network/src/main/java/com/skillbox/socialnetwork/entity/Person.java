@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.entity.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,6 +18,7 @@ import java.util.Set;
 @Table(name = "person")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Person implements UserDetails {
 
     @Id

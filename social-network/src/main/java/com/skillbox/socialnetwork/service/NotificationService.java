@@ -1,5 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
+import com.corundumstudio.socketio.SocketIOServer;
+import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationData;
 import com.skillbox.socialnetwork.entity.Notification;
@@ -29,17 +32,21 @@ public class NotificationService {
     private final MessageRepository messageRepository;
     private final PersonRepository personRepository;
     private final NotificationRepository notificationRepository;
+    private final SocketIOServer server;
+    private final SessionTemplate sessionTemplate;
 
-    public NotificationService(CommentRepository commentRepository,
-                               FriendshipRepository friendshipRepository,
-                               MessageRepository messageRepository,
-                               PersonRepository personRepository,
-                               NotificationRepository notificationRepository) {
+
+    public NotificationService(CommentRepository commentRepository, FriendshipRepository friendshipRepository,
+                               MessageRepository messageRepository, PersonRepository personRepository,
+                               NotificationRepository notificationRepository, SocketIOServer server,
+                               SessionTemplate sessionTemplate) {
         this.commentRepository = commentRepository;
         this.friendshipRepository = friendshipRepository;
         this.messageRepository = messageRepository;
         this.personRepository = personRepository;
         this.notificationRepository = notificationRepository;
+        this.server = server;
+        this.sessionTemplate = sessionTemplate;
     }
 
     public ListResponse<NotificationData> getNotification(int offset, int itemPerPage, Principal principal) {
@@ -57,11 +64,10 @@ public class NotificationService {
             notificationRepository.saveAll(notifications);
         } else {
             Optional<Notification> notificationOptional = notificationRepository.findById(id);
-            if(notificationOptional.isPresent())
-            {
-               Notification notification = notificationOptional.get();
-               notification.setReadStatus(true);
-               notificationRepository.save(notification);
+            if (notificationOptional.isPresent()) {
+                Notification notification = notificationOptional.get();
+                notification.setReadStatus(true);
+                notificationRepository.save(notification);
             }
         }
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
@@ -129,5 +135,15 @@ public class NotificationService {
         notification.setSendTime(LocalDateTime.now());
         notification.setEntityId(entityId);
         notificationRepository.save(notification);
+    }
+
+    public void sendEvent(String eventName, DataResponse<?> data, int personId) {
+        sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+    }
+    public void sendEvent(String eventName, Dto data, int personId) {
+        sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+    }
+    public void sendEvent(String eventName, String data, int personId) {
+        sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
     }
 }

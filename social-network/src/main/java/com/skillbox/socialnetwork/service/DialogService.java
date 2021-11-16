@@ -1,12 +1,16 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.DialogRequest;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.request.socketio.TypingData;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.dialogdto.DialogData;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
-import com.skillbox.socialnetwork.entity.*;
+import com.skillbox.socialnetwork.api.response.socketio.TypingResponse;
+import com.skillbox.socialnetwork.entity.Dialog;
+import com.skillbox.socialnetwork.entity.Message;
+import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.entity.Person2Dialog;
 import com.skillbox.socialnetwork.repository.DialogRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -21,8 +25,10 @@ import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -34,12 +40,17 @@ public class DialogService {
     private final Person2DialogRepository person2DialogRepository;
     private final DialogRepository dialogRepository;
     private final MessageService messageService;
+    private final NotificationService notificationService;
 
-    public DialogService(PersonRepository personRepository, Person2DialogRepository person2DialogRepository, DialogRepository dialogRepository, MessageService messageService) {
+    public DialogService(PersonRepository personRepository, Person2DialogRepository person2DialogRepository,
+                         DialogRepository dialogRepository, MessageService messageService,
+                         NotificationService notificationService) {
         this.personRepository = personRepository;
         this.person2DialogRepository = person2DialogRepository;
         this.dialogRepository = dialogRepository;
         this.messageService = messageService;
+
+        this.notificationService = notificationService;
     }
 
 
@@ -87,16 +98,6 @@ public class DialogService {
         return dataResponse;
     }
 
-    public AccountResponse getUnreaded(Principal principal) {
-        Person person = findPerson(principal.getName());
-        AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(Instant.now());
-        Map<String, String> mapData = new HashMap<>();
-        mapData.put("count", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString());
-        accountResponse.setData(mapData);
-        return accountResponse;
-    }
-
     private ListResponse<DialogData> getDialogResponse(int offset, int itemPerPage, Page<Person2Dialog> person2DialogPage) {
         ListResponse<DialogData> dialogResponse = new ListResponse<>();
         dialogResponse.setPerPage(itemPerPage);
@@ -137,4 +138,30 @@ public class DialogService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
+    public void startTyping(TypingData typingData) {
+        Optional<Dialog> dialog = dialogRepository.findById(typingData.getDialog());
+        Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
+        if (dialog.isPresent() && personOptional.isPresent()) {
+            dialog.get().getPersons().forEach(person -> {
+                if (person.getId() != typingData.getAuthor()) {
+                    TypingResponse typingResponse = new TypingResponse();
+                    typingResponse.setDialog(typingData.getDialog());
+                    typingResponse.setAuthorId(typingData.getAuthor());
+                    typingResponse.setAuthor(personOptional.get().getFirstName());
+                    notificationService.sendEvent("start-typing-response", typingResponse, person.getId());
+                }
+            });
+        }
+    }
+
+    public void stopTyping(TypingData typingData) {
+        Optional<Dialog> dialog = dialogRepository.findById(typingData.getDialog());
+        Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
+        if (dialog.isPresent() && personOptional.isPresent()) {
+            dialog.get().getPersons().forEach(person -> {
+                if (person.getId() != typingData.getAuthor())
+                    notificationService.sendEvent("stop-typing-response", typingData, person.getId());
+            });
+        }
+    }
 }

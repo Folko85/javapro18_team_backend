@@ -1,6 +1,5 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.request.technicalSupportDto.MessageOfTechnicalSupportClient;
 import com.skillbox.socialnetwork.api.request.technicalSupportDto.SendMessageDto;
 import com.skillbox.socialnetwork.api.request.technicalSupportDto.TechnicalSupportClientDto;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Service
 public class PusherService {
     private final QueueMessagingTemplate template;
-    private MessageOfTechnicalSupportClient messageOfTechnicalSupportClient;
+//    private MessageOfTechnicalSupportClient messageOfTechnicalSupportClient;
 
     @Value("${message.queue.outgoing}")
     private String queueName;
@@ -27,20 +26,32 @@ public class PusherService {
         this.template = template;
     }
 
-    public void setParam(MessageOfTechnicalSupportClient messageOfTechnicalSupportClient) {
-        this.messageOfTechnicalSupportClient = messageOfTechnicalSupportClient;
+    public void setParam(String fName, String lName, String email, String text) {
+        this.fName = fName;
+        this.lName = lName;
+        this.email = email;
+        this.text = text;
     }
+
+//    public void setParam(MessageOfTechnicalSupportClient messageOfTechnicalSupportClient) {
+//        this.messageOfTechnicalSupportClient = messageOfTechnicalSupportClient;
+//    }
 
     public void createAndSendMessage() {
         LocalDateTime dateOfApplication = LocalDateTime.now();
 
         TechnicalSupportClientDto client = new TechnicalSupportClientDto();
+        client.setFirstName(fName);
+        client.setLastName(lName);
+        client.setEMail(email);
 
-        client.setFirstName(messageOfTechnicalSupportClient.getFirstName());
-        client.setLastName(messageOfTechnicalSupportClient.getLastName());
-        client.setEMail(messageOfTechnicalSupportClient.getEMail());
+        String message = text;
 
-        String message = messageOfTechnicalSupportClient.getMessage();
+//        client.setFirstName(messageOfTechnicalSupportClient.getFirstName());
+//        client.setLastName(messageOfTechnicalSupportClient.getLastName());
+//        client.setEMail(messageOfTechnicalSupportClient.getEMail());
+//
+//        String message = messageOfTechnicalSupportClient.getMessage();
 
         SendMessageDto sendMessageDto = new SendMessageDto();
         sendMessageDto.setDateOfApplication(dateOfApplication);

@@ -36,7 +36,7 @@ public class PlatformController {
     @Operation(summary = "Получение списка стран")
     public ListResponse<PlaceDto> getCountries(@RequestParam(required = false, defaultValue = "") String country,
                                                @RequestParam(required = false, defaultValue = "0") int offset,
-                                               @RequestParam(required = false, defaultValue = "10") int itemPerPage) throws Exception {
+                                               @RequestParam(required = false, defaultValue = "250") int itemPerPage) throws Exception {
         return platformService.getCountries(country, offset, itemPerPage);
     }
 
