@@ -1,21 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.BadRequestResponse;
-import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockedPersonException;
-import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockerPersonException;
-import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
-import com.skillbox.socialnetwork.exception.BlockingDeletedAccountException;
-import com.skillbox.socialnetwork.exception.CommentNotFoundException;
-import com.skillbox.socialnetwork.exception.DeletedAccountException;
-import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
-import com.skillbox.socialnetwork.exception.LikeNotFoundException;
-import com.skillbox.socialnetwork.exception.PostCreationExecption;
-import com.skillbox.socialnetwork.exception.PostNotFoundException;
-import com.skillbox.socialnetwork.exception.UnBlockingDeletedAccountException;
-import com.skillbox.socialnetwork.exception.UnBlockingException;
-import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
-import com.skillbox.socialnetwork.exception.UserExistException;
-import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.*;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import lombok.extern.slf4j.Slf4j;
@@ -185,6 +171,14 @@ public class DefaultAdvice {
     public ResponseEntity<BadRequestResponse> handleDeletedAccountException(Exception exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Страница удалена");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AddingYourselfToFriends.class)
+    public ResponseEntity<BadRequestResponse> handleAddingYourselfToFriendsException(Exception exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Нельзя добавить себя в друзья");
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
