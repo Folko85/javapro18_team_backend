@@ -9,8 +9,8 @@ import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockedPersonExc
 import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockerPersonException;
 import com.skillbox.socialnetwork.exception.DeletedAccountException;
 import com.skillbox.socialnetwork.service.FriendshipService;
-import com.skillbox.socialnetwork.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,86 +23,68 @@ import java.security.Principal;
 @Tag(name = "Друзья", description = "Работа с друзьями")
 public class FriendshipController {
 
-    private final PersonService personService;
     private final FriendshipService friendshipService;
 
-    public FriendshipController(PersonService personService, FriendshipService friendshipService) {
-        this.personService = personService;
+    public FriendshipController( FriendshipService friendshipService) {
         this.friendshipService = friendshipService;
     }
 
     @Operation(summary = "Список друзей",
-            description = "Получить список друзей")
+            description = "Получить список друзей", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
+    public ResponseEntity<ListResponse<AuthData>> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
                                         @RequestParam(name = "offset", defaultValue = "0") int offset,
                                         @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                         Principal principal) {
-
-        ListResponse<AuthData> listResponse = friendshipService.getFriends(name, offset, itemPerPage, principal);
-        return new ResponseEntity<>(listResponse, HttpStatus.OK);
+        return new ResponseEntity<>(friendshipService.getFriends(name, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
     @Operation(summary = "Удаление пользователя",
-            description = "Удаление пользователя из друзей")
+            description = "Удаление пользователя из друзей", security = @SecurityRequirement(name = "jwt"))
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> stopBeingFriends(@PathVariable int id, Principal principal) {
-
-        FriendsResponse200 response200 = friendshipService.stopBeingFriendsById(id, principal);
-        return new ResponseEntity<>(response200, HttpStatus.OK);
+    public ResponseEntity<FriendsResponse200> stopBeingFriends(@PathVariable int id, Principal principal) {
+        return new ResponseEntity<>(friendshipService.stopBeingFriendsById(id, principal), HttpStatus.OK);
 
     }
 
     @Operation(summary = "Добавление в друзья",
-            description = "Принть/добавить пользователя в друзья")
+            description = "Принть/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<?> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubcribingOnBlockerPersonException, DeletedAccountException, AddingOrSubcribingOnBlockedPersonException {
+    public ResponseEntity<FriendsResponse200> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubcribingOnBlockerPersonException, DeletedAccountException, AddingOrSubcribingOnBlockedPersonException {
+        return new ResponseEntity<>(friendshipService.addNewFriend(id, principal), HttpStatus.OK);
 
-        FriendsResponse200 response200 = friendshipService.addNewFriend(id, principal);
-
-        if (response200 != null) {
-            return new ResponseEntity<>(response200, HttpStatus.OK);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
     }
 
     @Operation(summary = "Список заявок",
-            description = "Получить список заявок")
+            description = "Получить список заявок", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/request")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<AuthData>> listApplications(@RequestParam(name = "name", defaultValue = "") String name,
-                                              @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                              @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                              Principal principal) {
-
-        ListResponse<AuthData> listOfApplications = friendshipService.getListOfApplications(name, offset, itemPerPage, principal);
-        return new ResponseEntity<>(listOfApplications, HttpStatus.OK);
+                                                                   @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                                   @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                                   Principal principal) {
+        return new ResponseEntity<>(friendshipService.getListOfApplications(name, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
     @Operation(summary = "Рекомендации",
-            description = "Получить список рекомендаций")
+            description = "Получить список рекомендаций", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/recommendations")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<AuthData>> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                 @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                 Principal principal) {
-
-        ListResponse<AuthData> listResponse = friendshipService.recommendedUsers(offset, itemPerPage, principal);
-        return new ResponseEntity<>(listResponse, HttpStatus.OK);
+                                                                      @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                                      Principal principal) {
+        return new ResponseEntity<>(friendshipService.recommendedUsers(offset, itemPerPage, principal), HttpStatus.OK);
     }
 
     @Operation(summary = "Являются ли пользователи друзьями",
-            description = "Получить информацию является ли пользователь другом указанных пользователей")
+            description = "Получить информацию является ли пользователь другом указанных пользователей", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/is/friends")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ResponseFriendsList> isFriends(@RequestBody IsFriends isFriends, Principal principal) {
-
-        ResponseFriendsList personsFriends = friendshipService.isPersonsFriends(isFriends, principal);
-        return new ResponseEntity<>(personsFriends, HttpStatus.OK);
+        return new ResponseEntity<>(friendshipService.isPersonsFriends(isFriends, principal), HttpStatus.OK);
     }
 
 }

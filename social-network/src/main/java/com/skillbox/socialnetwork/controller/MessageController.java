@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.MessageRequest;
+import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
@@ -41,5 +42,9 @@ public class MessageController {
                                                     Principal principal) {
         return new ResponseEntity<>(messageService.postMessage(id, messageRequest, principal), HttpStatus.OK);
     }
-
+    @GetMapping("/dialogs/unreaded")
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<AccountResponse> getUnreaded(Principal principal) {
+        return new ResponseEntity<>(messageService.getUnreaded(principal), HttpStatus.OK);
+    }
 }

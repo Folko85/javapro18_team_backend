@@ -12,12 +12,12 @@ import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,42 +44,42 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @Operation(summary = "Получение текущего пользователя")
+    @Operation(summary = "Получение текущего пользователя", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<AuthData>> getMe(Principal principal) {
         return new ResponseEntity<>(userService.getUserMe(principal), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Получение пользователя по его id")
+    @Operation(summary = "Получение пользователя по его id", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<AuthData>> getUserById(@PathVariable int id, Principal principal) {
         return new ResponseEntity<>(userService.getUser(id, principal), HttpStatus.OK);
     }
 
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Обновить профиль пользователя")
+    @Operation(summary = "Обновить профиль пользователя", security = @SecurityRequirement(name = "jwt"))
     public DataResponse<AuthData> updateUser(@RequestBody AuthData person, Principal principal) {
         return userService.updateUser(person, principal);
     }
 
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Удалить профиль пользователя")
+    @Operation(summary = "Удалить профиль пользователя", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<AccountResponse> deleteUser(Principal principal) {
         return new ResponseEntity<>(userService.deleteUser(principal), HttpStatus.OK);
     }
 
     @PutMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Заблокировать пользователя")
+    @Operation(summary = "Заблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<AccountResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         return new ResponseEntity<>(friendshipService.blockUser(principal, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Разблокировать пользователя")
+    @Operation(summary = "Разблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<AccountResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         return new ResponseEntity<>(friendshipService.unBlockUser(principal, id), HttpStatus.OK);
     }

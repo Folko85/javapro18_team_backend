@@ -37,11 +37,12 @@ public class PlatformService {
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
         GetCountriesResponse response = vk.database().getCountries(actor).needAll(true)
-                .code(country).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
+                .offset(offset).count(itemPerPage).lang(Lang.RU).execute();
         List<PlaceDto> countries = response.getItems().stream()
-                .map(c -> new PlaceDto().setId(c.getId()).setTitle(c.getTitle())).collect(Collectors.toList());
+                .map(c -> new PlaceDto().setId(c.getId()).setTitle(c.getTitle()))
+                .filter(c -> c.getTitle().toLowerCase().startsWith(country.toLowerCase())).filter(x -> x.getId() != 0).collect(Collectors.toList());
         ListResponse<PlaceDto> result = new ListResponse<>();
-        result.setTotal(response.getCount());
+        result.setTotal(countries.size());
         result.setTimestamp(Instant.now());
         result.setPerPage(itemPerPage);
         result.setData(countries);
@@ -56,7 +57,7 @@ public class PlatformService {
         GetCitiesResponse response = vk.database().getCities(actor, countryId).needAll(true)
                 .q(city).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
         List<PlaceDto> cities = response.getItems().stream()
-                .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).collect(Collectors.toList());
+                .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).filter(x -> x.getId() != 0).collect(Collectors.toList());
         ListResponse<PlaceDto> result = new ListResponse<>();
         result.setTotal(response.getCount());
         result.setTimestamp(Instant.now());

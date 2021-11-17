@@ -122,7 +122,7 @@ public class AuthService {
             if (person.isPresent()) {
                 sessionTemplate.save(person.get().getId(), sessionId);
                 notificationService.sendEvent("auth-response", "ok", person.get().getId());
-                log.info("User authorize on socket {} count {}", jwtProvider.getLoginFromToken(token), sessionTemplate.findAll().size());
+                log.info("User authorize on socket {} count {}", person.get().getEMail(), sessionTemplate.findAll().size());
             }
         }
     }

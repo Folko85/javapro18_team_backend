@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.exception.LikeNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class LikeController {
     }
 
     @PutMapping("/likes")
-    @Operation(summary = "Поставить лайк")
+    @Operation(summary = "Поставить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> putLikes(@RequestBody LikeRequest likeRequest,
                                                            Principal principal) throws LikeNotFoundException, PostNotFoundException {
@@ -35,7 +36,7 @@ public class LikeController {
     }
 
     @DeleteMapping("/likes")
-    @Operation(summary = "Удалить лайк")
+    @Operation(summary = "Удалить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> deleteLikes(@RequestParam(name = "item_id") int itemId,
                                                     @RequestParam(name = "type") String type,
@@ -44,7 +45,7 @@ public class LikeController {
     }
 
     @GetMapping("/likes")
-    @Operation(summary = "Получить лайки")
+    @Operation(summary = "Получить лайки", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> getLikes(@RequestParam(name = "item_id") int itemId,
                                                  @RequestParam(name = "type") String type) throws PostNotFoundException {

@@ -10,6 +10,7 @@ import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class PostController {
     }
 
     @GetMapping("/post")
-    @Operation(summary = "Получить посты в поиске")
+    @Operation(summary = "Получить посты в поиске", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<PostData>> getPosts(@RequestParam(name = "text", defaultValue = "") String text,
                                                            @RequestParam(name = "date_from", defaultValue = "0") long dateFrom,
@@ -44,7 +45,7 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    @Operation(summary = "Получить пост")
+    @Operation(summary = "Получить пост", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<PostData>> getPostById(@PathVariable int id, Principal principal) throws PostNotFoundException {
         return new ResponseEntity<>(postService.getPostById(id, principal), HttpStatus.OK);
@@ -76,7 +77,7 @@ public class PostController {
 
 
     @GetMapping("/feeds")
-    @Operation(summary = "Получить посты новостях")
+    @Operation(summary = "Получить посты новостях", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<PostData>> getFeeds(@RequestParam(name = "text", defaultValue = "") String text,
                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
@@ -86,7 +87,7 @@ public class PostController {
     }
 
     @GetMapping("/users/{id}/wall")
-    @Operation(summary = "Получить посты на стене")
+    @Operation(summary = "Получить посты на стене", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<PostData>> getUserWall(@PathVariable int id,
                                                     @RequestParam(name = "offset", defaultValue = "0") int offset,
@@ -97,7 +98,7 @@ public class PostController {
 
     @PostMapping("/users/{id}/wall")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Создать пост на стене")
+    @Operation(summary = "Создать пост на стене", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<PostData>> getUserWall(@PathVariable int id,
                                                     @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
                                                     @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {

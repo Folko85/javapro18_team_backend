@@ -28,8 +28,6 @@ public class SocketIOConfig {
 
         server = new SocketIOServer(config);
         server.start();
-
-
         return server;
     }
 

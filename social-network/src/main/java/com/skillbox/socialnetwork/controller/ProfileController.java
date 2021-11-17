@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ProfileController {
         this.personService = personService;
     }
 
-    @Operation(summary = "Поиск пользователя")
+    @Operation(summary = "Поиск пользователя", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/users/search")
     @PreAuthorize("hasAuthority('user:write')")
     public @ResponseBody

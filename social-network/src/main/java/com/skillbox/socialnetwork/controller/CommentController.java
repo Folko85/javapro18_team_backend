@@ -8,6 +8,7 @@ import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class CommentController {
     }
 
     @PostMapping("/post/{id}/comments")
-    @Operation(summary = "Написать коментарий")
+    @Operation(summary = "Написать коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<CommentData>> postComment(@PathVariable int id,
                                                                  @RequestBody CommentRequest commentRequest,
@@ -38,7 +39,7 @@ public class CommentController {
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}")
-    @Operation(summary = "Редактировать коментарий")
+    @Operation(summary = "Редактировать коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<CommentData>> putComment(@PathVariable int id,
                                                    @PathVariable(name = "comment_id") int commentId,
@@ -48,7 +49,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/post/{id}/comments/{comment_id}")
-    @Operation(summary = "Удалить коментарий")
+    @Operation(summary = "Удалить коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<CommentData>> deleteComment(@PathVariable int id,
                                                       @PathVariable(name = "comment_id") int commentId,
@@ -57,7 +58,7 @@ public class CommentController {
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}/recover")
-    @Operation(summary = "Восстановить коментарий")
+    @Operation(summary = "Восстановить коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<CommentData>> recoveryComment(@PathVariable int id,
                                                         @PathVariable(name = "comment_id") int commentId,
@@ -66,7 +67,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{id}/comments")
-    @Operation(summary = "Получить коментарии")
+    @Operation(summary = "Получить коментарии", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<CommentData>> getFeeds(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                                  @RequestParam(name = "itemPerPage", defaultValue = "5") int itemPerPage,

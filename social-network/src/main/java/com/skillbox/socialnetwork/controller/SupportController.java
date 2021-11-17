@@ -33,19 +33,4 @@ public class SupportController {
         return "support";
     }
 
-//    @GetMapping("/support")
-//    public String index(Model model) {
-//        model.addAttribute("requestObject", new MessageOfTechnicalSupportClient());
-//        return "support";
-//    }
-//
-//
-//    @PostMapping("/support")
-//    public ResponseEntity<?> sendSupportRequest(MessageOfTechnicalSupportClient message) {
-//        log.info("New request {}", message);
-//        pusherService.setParam(message);
-//        pusherService.createAndSendMessage();
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(null);
-//    }
 }

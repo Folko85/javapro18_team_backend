@@ -128,13 +128,13 @@ public class NotificationService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
-    public void createNotification(Person person, int entityId, NotificationType notificationType) {
+    public Notification createNotification(Person person, int entityId, NotificationType notificationType) {
         Notification notification = new Notification();
         notification.setPerson(person);
         notification.setType(notificationType);
         notification.setSendTime(LocalDateTime.now());
         notification.setEntityId(entityId);
-        notificationRepository.save(notification);
+        return notificationRepository.save(notification);
     }
 
     public void sendEvent(String eventName, DataResponse<?> data, int personId) {

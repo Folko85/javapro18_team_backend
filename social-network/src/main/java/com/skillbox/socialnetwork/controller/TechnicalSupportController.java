@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,17 +31,6 @@ public class TechnicalSupportController {
 
         return "support";
     }
-
-//    @Operation(summary = "Отправка сообщения в техническую поддержку")
-//    @PostMapping("/api/v1/support")
-//    public ResponseEntity<?> sendMessage(@RequestBody MessageOfTechnicalSupportClient message) {
-//        log.info("a message has been received in support");
-//        pusherService.setParam(message);
-//        pusherService.createAndSendMessage();
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(null);
-//    }
-
 
     @Operation(summary = "Отправка сообщения в техническую поддержку")
     @PostMapping("/api/v1/support")
