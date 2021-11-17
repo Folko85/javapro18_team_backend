@@ -126,7 +126,7 @@ public class FriendshipService {
         return response;
     }
 
-    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException {
+    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
         log.debug("метод добавления в друзья");
 
         FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
@@ -137,6 +137,11 @@ public class FriendshipService {
         int srcPersonId = srcPerson.getId();
 
         Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
+
+        if (srcPerson.getId() == id) {
+            throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
+        }
+
         if (dstPerson.isDeleted()) {
             throw new DeletedAccountException("This Account was deleted");
         }
@@ -216,7 +221,7 @@ public class FriendshipService {
                     .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable, blockers);
 
             //дата рождения указана и город указан
-        } else if (birthdayPerson != null && city != null) {
+        } else if (birthdayPerson != null) {
             log.debug("дата рождения указана");
             //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
             personList = personRepository
