@@ -8,6 +8,7 @@ import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 import com.skillbox.socialnetwork.api.request.socketio.AuthRequest;
+import com.skillbox.socialnetwork.api.request.socketio.ReadMessagesData;
 import com.skillbox.socialnetwork.api.request.socketio.TypingData;
 import com.skillbox.socialnetwork.repository.SessionTemplate;
 import com.skillbox.socialnetwork.service.AuthService;
@@ -53,15 +54,14 @@ public class SocketEventHandler {
             }
         }
     }
+
     @OnEvent(value = "newListener")
     public void onNewListenerEvent(SocketIOClient client) {
         log.info("User listen on socket");
         if (client != null) {
-            if(template.findByUserUUID(client.getSessionId()).isPresent())
-            {
-                client.sendEvent("auth-response","ok");
-            }
-           else client.sendEvent("auth-response","not");
+            if (template.findByUserUUID(client.getSessionId()).isPresent()) {
+                client.sendEvent("auth-response", "ok");
+            } else client.sendEvent("auth-response", "not");
         }
     }
 
@@ -82,9 +82,15 @@ public class SocketEventHandler {
     @OnEvent(value = "stop-typing")
     public void onStopTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
         if (client != null) {
-            if (template.findByUserUUID(client.getSessionId()).isPresent())
-                dialogService.stopTyping(data);
+            template.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.stopTyping(data, id));
+
         }
     }
 
+    @OnEvent(value = "read-messages")
+    public void onReadMessagesEvent(SocketIOClient client, AckRequest request, ReadMessagesData data) {
+        if (client != null) {
+            template.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.readMessage(data, id));
+        }
+    }
 }

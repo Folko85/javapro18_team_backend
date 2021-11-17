@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.DialogRequest;
+import com.skillbox.socialnetwork.api.request.socketio.ReadMessagesData;
 import com.skillbox.socialnetwork.api.request.socketio.TypingData;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
@@ -49,7 +50,6 @@ public class DialogService {
         this.person2DialogRepository = person2DialogRepository;
         this.dialogRepository = dialogRepository;
         this.messageService = messageService;
-
         this.notificationService = notificationService;
     }
 
@@ -154,7 +154,7 @@ public class DialogService {
         }
     }
 
-    public void stopTyping(TypingData typingData) {
+    public void stopTyping(TypingData typingData, int personId) {
         Optional<Dialog> dialog = dialogRepository.findById(typingData.getDialog());
         Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
         if (dialog.isPresent() && personOptional.isPresent()) {
@@ -162,6 +162,15 @@ public class DialogService {
                 if (person.getId() != typingData.getAuthor())
                     notificationService.sendEvent("stop-typing-response", typingData, person.getId());
             });
+        }
+    }
+
+    public void readMessage(ReadMessagesData readMessagesData, int personId) {
+        Optional<Dialog> dialog = dialogRepository.findById(readMessagesData.getDialog());
+        Optional<Person> personOptional = personRepository.findById(personId);
+        if (dialog.isPresent() && personOptional.isPresent()) {
+            person2DialogRepository.findPerson2DialogByDialogIdAndPersonId(dialog.get().getId(), personOptional.get().getId())
+                    .ifPresent(person2Dialog -> person2DialogRepository.save(person2Dialog.setLastCheckTime(LocalDateTime.now())));
         }
     }
 }
