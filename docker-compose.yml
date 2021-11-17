@@ -60,6 +60,11 @@ services:
     depends_on:
       - cloud-config
       - mysql_microservice
+  redis:
+    container_name: "redis_container"
+    image: "redis:alpine"
+    ports:
+      - "5000:6379"
   zerone_back_container:
     restart: on-failure
     image: openjdk:16-alpine

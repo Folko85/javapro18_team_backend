@@ -60,6 +60,17 @@ components:
           items: {$ref: '#/components/schemas/Dto'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
+    ListResponsePlaceDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/PlaceDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
     LikeData:
       type: object
       properties:
@@ -131,6 +142,12 @@ components:
         last_name: {type: string}
         message: {type: string}
         first_name: {type: string}
+    FriendsResponse200:
+      type: object
+      properties:
+        error: {type: string}
+        message: {type: string}
+        timestamp: {format: date-time, type: string}
     AuthData:
       type: object
       properties:
@@ -200,11 +217,6 @@ components:
       properties:
         id: {description: Идентификатор изображения, type: string}
         url: {description: Имя файла, type: string}
-    Country:
-      type: object
-      properties:
-        id: {format: int32, type: integer}
-        title: {type: string}
     AccountResponse:
       type: object
       properties:
@@ -308,12 +320,12 @@ components:
       properties:
         id: {format: int32, description: Идентификатор тэга, type: integer}
         tag: {description: Собственно тэг, type: string}
-    CityDto:
+    PlaceDto:
       description: Список городов
       type: object
       properties:
-        id: {format: int32, description: Идентификатор города, type: integer}
-        title: {description: Название города города, type: string}
+        id: {format: int32, description: Идентификатор города/страны, type: integer}
+        title: {description: Название города/страны, type: string}
     ResponseFriendsList:
       type: object
       properties:
@@ -335,6 +347,7 @@ components:
         message_text: {type: string}
         sendByMe: {type: boolean}
         read_status: {type: string}
+        dialog_id: {format: int32, type: integer}
         id: {format: int32, type: integer}
         time: {format: date-time, type: string}
         author_id: {format: int32, type: integer}
@@ -394,6 +407,8 @@ components:
           items: {$ref: '#/components/schemas/TagDto'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
+  securitySchemes:
+    jwt: {scheme: bearer, in: header, name: Authorization, type: http}
 servers:
 - {description: Generated server url, url: 'http://localhost'}
 openapi: 3.0.1
@@ -421,6 +436,8 @@ paths:
   /api/v1/users/{id}/wall:
     post:
       summary: Создать пост на стене
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -445,6 +462,8 @@ paths:
       tags: [Контроллер для работы с постами]
     get:
       summary: Получить посты на стене
+      security:
+      - jwt: []
       operationId: getUserWall_1
       responses:
         '200':
@@ -469,6 +488,8 @@ paths:
   /api/v1/friends:
     get:
       summary: Список друзей
+      security:
+      - jwt: []
       description: Получить список друзей
       operationId: findFriend
       responses:
@@ -476,7 +497,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {type: object}
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
       parameters:
       - schema: {default: '', type: string}
         in: query
@@ -531,6 +552,8 @@ paths:
   /api/v1/friends/request:
     get:
       summary: Список заявок
+      security:
+      - jwt: []
       description: Получить список заявок
       operationId: listApplications
       responses:
@@ -572,6 +595,8 @@ paths:
   /api/v1/storage/{id}:
     delete:
       summary: Удаление изображения
+      security:
+      - jwt: []
       operationId: deleteImage
       responses:
         '200':
@@ -604,6 +629,8 @@ paths:
   /api/v1/users/me:
     get:
       summary: Получение текущего пользователя
+      security:
+      - jwt: []
       operationId: getMe
       responses:
         '200':
@@ -614,6 +641,8 @@ paths:
       tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
     delete:
       summary: Удалить профиль пользователя
+      security:
+      - jwt: []
       operationId: deleteUser
       responses:
         '200':
@@ -624,6 +653,8 @@ paths:
       tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
     put:
       summary: Обновить профиль пользователя
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -640,24 +671,38 @@ paths:
   /api/v1/platform/cities:
     get:
       summary: Запрос списка городов в количестве itemPerPage содержащих city
+      security:
+      - jwt: []
       operationId: getCities
       responses:
         '200':
           description: OK
           content:
             '*/*':
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/CityDto'}
+              schema: {$ref: '#/components/schemas/ListResponsePlaceDto'}
       parameters:
       - schema: {format: int32, type: integer}
         in: query
         name: countryId
         required: true
+      - schema: {default: '', type: string}
+        in: query
+        name: city
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
       tags: [Контроллер для получения списка стран и подгрузки городов для страны]
   /api/v1/storage:
     post:
       summary: Загрузка изображения
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -692,19 +737,34 @@ paths:
   /api/v1/platform/countries:
     get:
       summary: Получение списка стран
+      security:
+      - jwt: []
       operationId: getCountries
       responses:
         '200':
           description: OK
           content:
             '*/*':
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/Country'}
+              schema: {$ref: '#/components/schemas/ListResponsePlaceDto'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: country
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 250, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
       tags: [Контроллер для получения списка стран и подгрузки городов для страны]
   /api/v1/users/{id}:
     get:
       summary: Получение пользователя по его id
+      security:
+      - jwt: []
       operationId: getUserById
       responses:
         '200':
@@ -786,6 +846,8 @@ paths:
   /api/v1/friends/{id}:
     post:
       summary: Добавление в друзья
+      security:
+      - jwt: []
       description: Принть/добавить пользователя в друзья
       operationId: addingToFriends
       responses:
@@ -793,7 +855,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {type: object}
+              schema: {$ref: '#/components/schemas/FriendsResponse200'}
       parameters:
       - schema: {format: int32, type: integer}
         in: path
@@ -802,6 +864,8 @@ paths:
       tags: [Друзья]
     delete:
       summary: Удаление пользователя
+      security:
+      - jwt: []
       description: Удаление пользователя из друзей
       operationId: stopBeingFriends
       responses:
@@ -809,7 +873,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {type: object}
+              schema: {$ref: '#/components/schemas/FriendsResponse200'}
       parameters:
       - schema: {format: int32, type: integer}
         in: path
@@ -819,6 +883,8 @@ paths:
   /api/v1/post/{id}/comments/{comment_id}:
     delete:
       summary: Удалить коментарий
+      security:
+      - jwt: []
       operationId: deleteComment
       responses:
         '200':
@@ -838,6 +904,8 @@ paths:
       tags: [Контроллер для работы с коментариями]
     put:
       summary: Редактировать коментарий
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -863,6 +931,8 @@ paths:
   /api/v1/tags/:
     post:
       summary: Добавить тег
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -878,6 +948,8 @@ paths:
       tags: [Контроллер для работы с тегами]
     get:
       summary: Получить теги
+      security:
+      - jwt: []
       operationId: getTags
       responses:
         '200':
@@ -901,6 +973,8 @@ paths:
       tags: [Контроллер для работы с тегами]
     delete:
       summary: Удалить тег
+      security:
+      - jwt: []
       operationId: deleteTag
       responses:
         '200':
@@ -948,6 +1022,8 @@ paths:
   /api/v1/likes:
     get:
       summary: Получить лайки
+      security:
+      - jwt: []
       operationId: getLikes
       responses:
         '200':
@@ -967,6 +1043,8 @@ paths:
       tags: [Контроллер для работы с лайками]
     delete:
       summary: Удалить лайк
+      security:
+      - jwt: []
       operationId: deleteLikes
       responses:
         '200':
@@ -986,6 +1064,8 @@ paths:
       tags: [Контроллер для работы с лайками]
     put:
       summary: Поставить лайк
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1001,6 +1081,9 @@ paths:
       tags: [Контроллер для работы с лайками]
   /api/v1/account/notifications:
     put:
+      summary: Уведомления
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1017,6 +1100,8 @@ paths:
   /api/v1/post/{id}/comments:
     post:
       summary: Написать коментарий
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1037,6 +1122,8 @@ paths:
       tags: [Контроллер для работы с коментариями]
     get:
       summary: Получить коментарии
+      security:
+      - jwt: []
       operationId: getFeeds
       responses:
         '200':
@@ -1061,6 +1148,8 @@ paths:
   /api/v1/post:
     get:
       summary: Получить посты в поиске
+      security:
+      - jwt: []
       operationId: getPosts
       responses:
         '200':
@@ -1097,6 +1186,8 @@ paths:
   /api/v1/friends/recommendations:
     get:
       summary: Рекомендации
+      security:
+      - jwt: []
       description: Получить список рекомендаций
       operationId: getRecommendedUsers
       responses:
@@ -1118,6 +1209,8 @@ paths:
   /api/v1/users/search:
     get:
       summary: Поиск пользователя
+      security:
+      - jwt: []
       operationId: search
       responses:
         '200':
@@ -1168,10 +1261,12 @@ paths:
           content:
             '*/*':
               schema: {$ref: '#/components/schemas/AccountResponse'}
-      tags: [dialog-controller]
+      tags: [message-controller]
   /api/v1/account/password/set:
     put:
       summary: Смена пароля
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1225,6 +1320,8 @@ paths:
   /api/v1/account/email:
     put:
       summary: Смена email
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1241,6 +1338,8 @@ paths:
   /api/v1/post/{id}:
     get:
       summary: Получить пост
+      security:
+      - jwt: []
       operationId: getPostById
       responses:
         '200':
@@ -1294,6 +1393,8 @@ paths:
   /api/v1/users/block/{id}:
     delete:
       summary: Разблокировать пользователя
+      security:
+      - jwt: []
       operationId: unBlockUser
       responses:
         '200':
@@ -1309,6 +1410,8 @@ paths:
       tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
     put:
       summary: Заблокировать пользователя
+      security:
+      - jwt: []
       operationId: blockUser
       responses:
         '200':
@@ -1336,6 +1439,8 @@ paths:
   /api/v1/post/{id}/comments/{comment_id}/recover:
     put:
       summary: Восстановить коментарий
+      security:
+      - jwt: []
       operationId: recoveryComment
       responses:
         '200':
@@ -1356,6 +1461,8 @@ paths:
   /api/v1/feeds:
     get:
       summary: Получить посты новостях
+      security:
+      - jwt: []
       operationId: getFeeds_1
       responses:
         '200':
@@ -1430,6 +1537,8 @@ paths:
   /api/v1/is/friends:
     post:
       summary: Являются ли пользователи друзьями
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1444,7 +1553,7 @@ paths:
             '*/*':
               schema: {$ref: '#/components/schemas/ResponseFriendsList'}
       tags: [Друзья]
-info: {title: OpenAPI definition, version: v0}
+info: {title: Zerone Social Network API, version: v1}
 tags:
 - {name: Техническая поддержка, description: Обращение в техническую поддержку}
 - {name: Профиль, description: Работа с профилем и с публичной информацией пользователя}
