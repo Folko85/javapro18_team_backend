@@ -193,8 +193,7 @@ public class CommentService {
         if (postComment.getParent() != null) {
             person = personRepository.findById(getIdFromPostText(postComment.getCommentText())).orElse(postComment.getParent().getPerson());
             notificationType = NotificationType.COMMENT_COMMENT;
-        }
-        else person = postComment.getPost().getPerson();
+        } else person = postComment.getPost().getPerson();
         CommentNotificationData commentNotificationData = new CommentNotificationData();
         commentNotificationData.setEntityId(postComment.getId())
                 .setEntityAuthor(setAuthData(postComment.getPerson()))
@@ -202,6 +201,7 @@ public class CommentService {
                 .setId(notificationService.createNotification(person, postComment.getId(), notificationType).getId())
                 .setSentTime(postComment.getTime().toInstant(UTC))
                 .setEventType(notificationType);
+        notificationService.sendEvent("comment-notification-response", commentNotificationData, person.getId());
     }
 
     private int getIdFromPostText(String postText) {
