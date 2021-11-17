@@ -171,6 +171,10 @@ public class DialogService {
         if (dialog.isPresent() && personOptional.isPresent()) {
             person2DialogRepository.findPerson2DialogByDialogIdAndPersonId(dialog.get().getId(), personOptional.get().getId())
                     .ifPresent(person2Dialog -> person2DialogRepository.save(person2Dialog.setLastCheckTime(LocalDateTime.now())));
+            notificationService.sendEvent("unread-response", person2DialogRepository
+                    .findUnrededMessageCount(personOptional.get().getId())
+                    .orElse(0).toString(), personOptional.get().getId());
+
         }
     }
 }
