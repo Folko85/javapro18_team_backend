@@ -9,6 +9,7 @@ import com.skillbox.socialnetwork.entity.Notification;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
 @Service
+@Slf4j
 public class NotificationService {
     private final CommentRepository commentRepository;
     private final FriendshipRepository friendshipRepository;
@@ -139,11 +141,16 @@ public class NotificationService {
 
     public void sendEvent(String eventName, DataResponse<?> data, int personId) {
         sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        log.info("send event {} to {}", eventName, personId);
     }
+
     public void sendEvent(String eventName, Dto data, int personId) {
         sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        log.info("send event {} to {}", eventName, personId);
     }
+
     public void sendEvent(String eventName, String data, int personId) {
         sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        log.info("send event {} to {}", eventName, personId);
     }
 }
