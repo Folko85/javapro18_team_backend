@@ -66,8 +66,8 @@ public class PersonService {
      */
 
     @Transactional(readOnly = true)
-    public ListResponse<FriendsDto> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, int countryId,
-                                     int cityId, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<FriendsDto> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, String country,
+                                     String city, int offset, int itemPerPage, Principal principal) {
 
         log.debug("поиск пользователя");
         String emailPerson = principal.getName();
@@ -90,7 +90,7 @@ public class PersonService {
             from = LocalDate.parse("1900-01-01");
         }
         personPage = personRepository.findByOptionalParametrs(firstName,
-                lastName, from, to, "", "", pageable, blockers);
+                lastName, from, to, city, country, pageable, blockers);
 
         return getPersonResponse(offset, itemPerPage, personPage);
 
