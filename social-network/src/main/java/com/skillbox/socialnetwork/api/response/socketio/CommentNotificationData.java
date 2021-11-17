@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.skillbox.socialnetwork.api.response.Dto;
-import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -26,7 +25,7 @@ public class CommentNotificationData implements Dto {
     @JsonProperty("entity_id")
     private Integer entityId;
     @JsonProperty("entity_author")
-    private AuthData entityAuthor;
+    private AuthorData entityAuthor;
     @JsonProperty("post_id")
     private int PostId;
 }

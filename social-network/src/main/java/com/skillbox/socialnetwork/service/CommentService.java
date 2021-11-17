@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
+import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
 import com.skillbox.socialnetwork.api.response.socketio.CommentNotificationData;
 import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
@@ -196,7 +197,10 @@ public class CommentService {
         } else person = postComment.getPost().getPerson();
         CommentNotificationData commentNotificationData = new CommentNotificationData();
         commentNotificationData.setEntityId(postComment.getId())
-                .setEntityAuthor(setAuthData(postComment.getPerson()))
+                .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
+                        .setLastName(postComment.getPerson().getLastName())
+                        .setId(postComment.getPerson().getId())
+                        .setPhoto(postComment.getPerson().getPhoto()))
                 .setPostId(postComment.getPost().getId())
                 .setId(notificationService.createNotification(person, postComment.getId(), notificationType).getId())
                 .setSentTime(postComment.getTime().toInstant(UTC))
