@@ -5,7 +5,6 @@ import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.sun.xml.bind.v2.TODO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -93,46 +91,6 @@ public class PersonService {
         }
         personPage = personRepository.findByOptionalParametrs(firstName,
                 lastName, from, to, "", "", pageable, blockers);
-
-
-
-        /**
-         * 1. по дате рождения (имя и фамилия не указаны)
-         * 2. по имени (фамилия и дата рождения не указаны)
-         * 3. по имени и дате рождения (фамилия не указана)
-         * 4. по имени и фамилии (дата рождения не указана)
-         * 5. по имени, фамилии и дате рождения
-         
-
-        if (firstName.isEmpty() && lastName.isEmpty() && ageFrom >= 1 && ageTo >= 1) {
-            log.debug("поиск пользователя по дате рождения");
-            personPage = personRepository
-                    .findPersonByBirthday(emailPerson, from, to, pageable);
-
-        } else if (!firstName.isEmpty() && lastName.isEmpty() && ageFrom < 1 && ageTo < 1) {
-            log.debug("поиск пользователя по имени");
-            personPage = personRepository
-                    .findPersonByFirstName(emailPerson, firstName, pageable);
-
-        } else if (!firstName.isEmpty() && lastName.isEmpty() && ageFrom >= 1 && ageTo >= 1) {
-            log.debug("поиск пользователя по имени и дате рождения");
-            personPage = personRepository
-                    .findPersonByFirstNameAndBirthday(emailPerson, firstName, from, to, pageable);
-
-        } else if (!firstName.isEmpty() && !lastName.isEmpty() && ageFrom < 1 && ageTo < 1) {
-            log.debug("поиск пользователя по имени и фамилии");
-            personPage = personRepository
-                    .findPersonByFirstNameAndLastName(emailPerson, firstName, lastName, pageable);
-
-        } else if (!firstName.isEmpty() && !lastName.isEmpty() && ageFrom >= 1 && ageTo >= 1) {
-            log.debug("поиск пользователя по имени, фамилии и дате рождения");
-            personPage = personRepository
-                    .findPersonByFirstNameAndLastNameAndBirthday(emailPerson, firstName, lastName, from, to, pageable);
-        } else {
-            log.debug("поиск пользователя без параметров");
-            personPage = personRepository.findAllPerson(pageable);
-        }
-        **/
 
         return getPersonResponse(offset, itemPerPage, personPage);
 

@@ -59,8 +59,6 @@ public class FriendshipService {
         Person person = findPerson(principal.getName());
         int idPerson = person.getId();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-//        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
-//        return getPersonResponse(offset, itemPerPage, pageablePersonList);
         List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
         Page<Person> byPersonIdList = null;
 

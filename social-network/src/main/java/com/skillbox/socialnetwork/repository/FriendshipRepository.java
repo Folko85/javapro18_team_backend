@@ -16,24 +16,6 @@ import java.util.Optional;
 public interface FriendshipRepository extends PagingAndSortingRepository<Friendship, Integer> {
 
     @Query("SELECT f FROM Friendship f " +
-            "WHERE f.srcPerson.firstName = ?1 " +
-            "OR f.dstPerson.firstName = ?1")
-    List<Friendship> findBySrcPersonFirstNameOrDstPersonFirstName(String firstName, Pageable pageable);
-
-    @Query("SELECT f FROM Friendship f " +
-            "WHERE f.srcPerson.id = ?1 " +
-            "OR f.dstPerson.id = ?1")
-    Optional<Friendship> findByPersonId(Integer id);
-
-    @Query("SELECT p2 FROM Person p " +
-            "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
-            "LEFT JOIN Person p2 ON p2.id = f.dstPerson.id " +
-            "WHERE p.isBlocked = false " +
-            "AND p.id = ?2 " +
-            "AND p2.firstName LIKE  %?1% ")
-    Page<Person> findPersonByFriendship(String name, int personId, Pageable pageable);
-
-    @Query("SELECT f FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
             "WHERE f.srcPerson.id = ?1 AND f.dstPerson.id = ?2 " +
             "OR f.srcPerson.id = ?2 AND f.dstPerson.id = ?1 ")
