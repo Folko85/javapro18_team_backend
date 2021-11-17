@@ -13,6 +13,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,15 +63,16 @@ public class PersonService {
         return personRepository.findById(id);
     }
 
-    /**
-     * TODO
-     * провести редактирование после добавление метода findByOptionalParametrs
-     */
-
     @Transactional(readOnly = true)
     public ListResponse<FriendsDto> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, String country,
-                                     String city, int offset, int itemPerPage, Principal principal) {
-
+                                     String encoded_city, int offset, int itemPerPage, Principal principal) {
+        String city;
+        try {
+            city = URLDecoder.decode(encoded_city, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            city = "";
+            log.error("Error with decoding city from URL format {}", encoded_city);
+        }
         log.debug("поиск пользователя");
         String emailPerson = principal.getName();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
