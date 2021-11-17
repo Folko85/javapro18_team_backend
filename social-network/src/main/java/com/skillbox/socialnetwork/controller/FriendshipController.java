@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockedPersonException;
 import com.skillbox.socialnetwork.exception.AddingOrSubcribingOnBlockerPersonException;
+import com.skillbox.socialnetwork.exception.AddingYourselfToFriends;
 import com.skillbox.socialnetwork.exception.DeletedAccountException;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,7 +54,7 @@ public class FriendshipController {
             description = "Принть/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<FriendsResponse200> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubcribingOnBlockerPersonException, DeletedAccountException, AddingOrSubcribingOnBlockedPersonException {
+    public ResponseEntity<FriendsResponse200> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubcribingOnBlockerPersonException, DeletedAccountException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
         return new ResponseEntity<>(friendshipService.addNewFriend(id, principal), HttpStatus.OK);
 
     }
