@@ -49,8 +49,8 @@ public class PersonService {
         result.setPhone(source.getPhone());
         result.setPhoto(source.getPhoto());
         result.setAbout(source.getAbout());
-        result.setCity("Город");
-        result.setCountry("Страна");
+        result.setCity(source.getCity());
+        result.setCountry(source.getCountry());
         result.setMessagesPermission(source.getMessagesPermission());
         result.setLastOnlineTime(source.getLastOnlineTime());
         result.setBlocked(source.isBlocked());
