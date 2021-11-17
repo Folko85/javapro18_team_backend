@@ -5,10 +5,8 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
-import com.skillbox.socialnetwork.entity.Like;
-import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.entity.PostComment;
+import com.skillbox.socialnetwork.api.response.socketio.CommentNotificationData;
+import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
@@ -22,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -83,10 +82,8 @@ public class CommentService {
             int id = postComment.getId();
             commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setPostId(id))));
         }
-        notificationService.createNotification(
-                postComment.getParent() != null ? postComment.getParent().getPerson() : postComment.getPost().getPerson(),
-                postComment.getId(),
-                postComment.getParent() != null ? NotificationType.COMMENT_COMMENT : NotificationType.POST_COMMENT);
+
+        sendNotification(postComment);
         return getCommentResponse(postComment, person);
     }
 
@@ -188,5 +185,26 @@ public class CommentService {
         commentResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         commentResponse.setData(getCommentData(postComment, person));
         return commentResponse;
+    }
+
+    private void sendNotification(PostComment postComment) {
+        Person person;
+        NotificationType notificationType = NotificationType.POST_COMMENT;
+        if (postComment.getParent() != null) {
+            person = personRepository.findById(getIdFromPostText(postComment.getCommentText())).orElse(postComment.getParent().getPerson());
+            notificationType = NotificationType.COMMENT_COMMENT;
+        }
+        else person = postComment.getPost().getPerson();
+        CommentNotificationData commentNotificationData = new CommentNotificationData();
+        commentNotificationData.setEntityId(postComment.getId())
+                .setEntityAuthor(setAuthData(postComment.getPerson()))
+                .setPostId(postComment.getPost().getId())
+                .setId(notificationService.createNotification(person, postComment.getId(), notificationType).getId())
+                .setSentTime(postComment.getTime().toInstant(UTC))
+                .setEventType(notificationType);
+    }
+
+    private int getIdFromPostText(String postText) {
+        return Integer.parseInt(Arrays.stream(postText.split(",")).filter(text -> text.contains("id:")).findFirst().orElse("0").substring(3));
     }
 }
