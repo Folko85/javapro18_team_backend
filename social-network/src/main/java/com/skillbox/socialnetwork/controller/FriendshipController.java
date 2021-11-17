@@ -11,6 +11,7 @@ import com.skillbox.socialnetwork.exception.DeletedAccountException;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class FriendshipController {
     }
 
     @Operation(summary = "Список друзей",
-            description = "Получить список друзей")
+            description = "Получить список друзей", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
@@ -45,7 +46,7 @@ public class FriendshipController {
     }
 
     @Operation(summary = "Удаление пользователя",
-            description = "Удаление пользователя из друзей")
+            description = "Удаление пользователя из друзей", security = @SecurityRequirement(name = "jwt"))
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> stopBeingFriends(@PathVariable int id, Principal principal) {
@@ -56,7 +57,7 @@ public class FriendshipController {
     }
 
     @Operation(summary = "Добавление в друзья",
-            description = "Принть/добавить пользователя в друзья")
+            description = "Принть/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<?> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubcribingOnBlockerPersonException, DeletedAccountException, AddingOrSubcribingOnBlockedPersonException {
@@ -71,7 +72,7 @@ public class FriendshipController {
     }
 
     @Operation(summary = "Список заявок",
-            description = "Получить список заявок")
+            description = "Получить список заявок", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/request")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<AuthData>> listApplications(@RequestParam(name = "name", defaultValue = "") String name,
@@ -84,7 +85,7 @@ public class FriendshipController {
     }
 
     @Operation(summary = "Рекомендации",
-            description = "Получить список рекомендаций")
+            description = "Получить список рекомендаций", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/recommendations")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<AuthData>> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
@@ -96,7 +97,7 @@ public class FriendshipController {
     }
 
     @Operation(summary = "Являются ли пользователи друзьями",
-            description = "Получить информацию является ли пользователь другом указанных пользователей")
+            description = "Получить информацию является ли пользователь другом указанных пользователей", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/is/friends")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ResponseFriendsList> isFriends(@RequestBody IsFriends isFriends, Principal principal) {
