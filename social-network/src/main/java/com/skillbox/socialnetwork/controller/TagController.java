@@ -6,6 +6,7 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class TagController {
     }
 
     @GetMapping
-    @Operation (summary = "Получить теги")
+    @Operation (summary = "Получить теги", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ListResponse<TagDto> getTags(@RequestParam(required = false, defaultValue = "") String tag,
                                 @RequestParam(required = false, defaultValue = "0") int offset,
@@ -30,14 +31,14 @@ public class TagController {
     }
 
     @PostMapping
-    @Operation (summary = "Добавить тег")
+    @Operation (summary = "Добавить тег", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public DataResponse<TagDto> postTag(@RequestBody TagDto tag){
         return tagService.postTag(tag);
     }
 
     @DeleteMapping
-    @Operation (summary = "Удалить тег")
+    @Operation (summary = "Удалить тег", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:administrate')")
     public AccountResponse deleteTag(@RequestParam Integer id){
         return tagService.deleteTag(id);

@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -55,20 +56,21 @@ public class ApiAccountController {
     }
 
     @PutMapping("/email")
-    @Operation(summary = "Смена email")
+    @Operation(summary = "Смена email", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> eMailChange(@RequestBody EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
         return new ResponseEntity<>(accountService.changeEMail(eMailChangeRequest, principal), HttpStatus.OK);
     }
 
     @PutMapping("/password/set")
-    @Operation(summary = "Смена пароля")
+    @Operation(summary = "Смена пароля", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> passwdChange(@RequestBody PasswdChangeRequest passwdChangeRequest) {
         return new ResponseEntity<>(accountService.changePasswd(passwdChangeRequest), HttpStatus.OK);
     }
 
     @PutMapping("/notifications")
+    @Operation(summary = "Уведомления", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> notifications(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
         return new ResponseEntity<>(accountService.setNotifications(notificationsRequest, principal), HttpStatus.OK);
