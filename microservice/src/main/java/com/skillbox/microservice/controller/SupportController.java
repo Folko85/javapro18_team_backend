@@ -21,6 +21,7 @@ public class SupportController {
     public String index(Model model) {
         Iterable<Message> messageIterable = messageRepository.findAll();
         ArrayList<Message> messageList = new ArrayList<>();
+
         for (Message message : messageIterable) {
             messageList.add(message);
         }
