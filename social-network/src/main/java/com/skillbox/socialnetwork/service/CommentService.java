@@ -205,6 +205,6 @@ public class CommentService {
     }
 
     private int getIdFromPostText(String postText) {
-        return Integer.parseInt(Arrays.stream(postText.split(",")).filter(text -> text.contains("id:")).findFirst().orElse("0").substring(3));
+        return Integer.parseInt(Arrays.stream(postText.split(",")).filter(text -> text.contains("id:")).findFirst().orElse("0000").substring(3));
     }
 }
