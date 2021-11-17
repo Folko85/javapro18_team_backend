@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.api.security;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,7 +47,7 @@ public class JwtFilter extends GenericFilterBean {
     private String getTokenFromRequest(HttpServletRequest request) {
         String token = request.getHeader(AUTHORIZATION_KEY);
         if (hasText(token)) {
-            return token;
+            return StringUtils.removeStart(token, "Bearer").trim();
         }
         return null;
     }
