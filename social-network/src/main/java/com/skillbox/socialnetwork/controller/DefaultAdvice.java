@@ -2,8 +2,6 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.BadRequestResponse;
 import com.skillbox.socialnetwork.exception.*;
-import com.vk.api.sdk.exceptions.ApiException;
-import com.vk.api.sdk.exceptions.ClientException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
@@ -85,13 +83,6 @@ public class DefaultAdvice {
         badRequestResponse.setError("invalid_request");
         badRequestResponse.setErrorDescription(exc.getMessage() +". It's have size " + exc.getActualSize() +
                 " but expected less than " + exc.getPermittedSize());
-        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
-    }
-    @ExceptionHandler({ClientException.class, ApiException.class})
-    public ResponseEntity<BadRequestResponse> handleFileSizeException(Exception exc) {
-        BadRequestResponse badRequestResponse = new BadRequestResponse();
-        badRequestResponse.setError("api error");
-        badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 
