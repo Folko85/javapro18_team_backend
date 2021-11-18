@@ -155,9 +155,15 @@ public class FriendshipService {
             throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
         }
 
+        /**
+         * Src добавляет Dst
+         * Если статуса нет, то создается с татус с кодом REQUEST
+         * Если статус есть и он REQUEST, то меняем его на FRIEND
+         */
+
         if (friendshipOptional.isPresent() &&
                 friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.REQUEST) &&
-                friendshipOptional.get().getSrcPerson().getId() != id) {
+                friendshipOptional.get().getSrcPerson().getId() == id) {
 
             FriendshipStatus friendshipStatusById = friendshipStatusRepository
                     .findById(friendshipOptional.get().getId())
