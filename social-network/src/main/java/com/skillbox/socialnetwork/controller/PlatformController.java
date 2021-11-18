@@ -34,18 +34,17 @@ public class PlatformController {
     @Operation(summary = "Получение списка стран", security = @SecurityRequirement(name = "jwt"))
     public ListResponse<PlaceDto> getCountries(@RequestParam(required = false, defaultValue = "") String country,
                                                @RequestParam(required = false, defaultValue = "0") int offset,
-                                               @RequestParam(required = false, defaultValue = "250") int itemPerPage) throws Exception {
+                                               @RequestParam(required = false, defaultValue = "250") int itemPerPage) {
         return platformService.getCountries(country, offset, itemPerPage);
     }
 
     @GetMapping("/platform/cities")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Запрос списка городов в количестве itemPerPage содержащих city" , security = @SecurityRequirement(name = "jwt"))
+    @Operation(summary = "Запрос списка городов в количестве itemPerPage содержащих city", security = @SecurityRequirement(name = "jwt"))
     public ListResponse<PlaceDto> getCities(@RequestParam int countryId,
-                                    @RequestParam(required = false, defaultValue = "") String city,
-                                    @RequestParam(required = false, defaultValue = "0") int offset,
-                                    @RequestParam(required = false, defaultValue = "10") int itemPerPage
-    ) throws ClientException, ApiException {
+                                            @RequestParam(required = false, defaultValue = "") String city,
+                                            @RequestParam(required = false, defaultValue = "0") int offset,
+                                            @RequestParam(required = false, defaultValue = "10") int itemPerPage) {
         return platformService.getCities(countryId, city, offset, itemPerPage);
     }
 
