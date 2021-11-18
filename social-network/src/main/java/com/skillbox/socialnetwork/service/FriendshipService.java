@@ -16,6 +16,7 @@ import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import io.jsonwebtoken.lang.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,7 +30,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
@@ -59,8 +59,6 @@ public class FriendshipService {
         Person person = findPerson(principal.getName());
         int idPerson = person.getId();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-//        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
-//        return getPersonResponse(offset, itemPerPage, pageablePersonList);
         List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
         Page<Person> byPersonIdList = null;
 
@@ -190,11 +188,6 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
-    /**
-     * TODO
-     * провести редактирование после добавление метода findByOptionalParametrs
-     */
-
     public ListResponse<AuthData> recommendedUsers(int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения рекомендованных друзей");
         Person person = findPerson(principal.getName());
@@ -206,57 +199,15 @@ public class FriendshipService {
         List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
         blockers.add(person.getId());
         if (person.getBirthday() != null) {
+            //подбираем пользователей, возрост которых отличается на +-2 года
             birthdayPerson = person.getBirthday();
             startDate = birthdayPerson.minusYears(2);
             stopDate = birthdayPerson.plusYears(2);
         }
-
-        String city = person.getCity();
-
-        Page<Person> personList;
-
-        //дата рождения указана, города не указан
-        if (birthdayPerson != null && city == null) {
-            log.debug("дата рождения указана, города не указан");
-            //подбираем пользователей, возрост которых отличается на +-2 года
-            personList = personRepository
-                    .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable, blockers);
-
-            //дата рождения указана и город указан
-        } else if (birthdayPerson != null) {
-            log.debug("дата рождения указана");
-            //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
-            personList = personRepository
-                    .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable, blockers);
-
-            //город указан
-        } else if (city != null) {
-            log.debug("город указан");
-            personList = personRepository.findPersonByCity(city, person.getEMail(), pageable, blockers);
-
-        } else {
-            log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
-            pageable = PageRequest.of(0, 10);
-            //выбираем 10 рандомных пользователей
-            personList = get10Users(person.getEMail(), pageable, blockers);
-        }
-
-        if (personList.isEmpty()) {
-            pageable = PageRequest.of(0, 10);
-            personList = get10Users(person.getEMail(), pageable, blockers);
-        }
-
-        if (personList.getTotalElements() < 10) {
-            Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
-            Page<Person> personList2 = get10Users(person.getEMail(), pageable2, blockers);
-
-            List<Person> persons = personList.stream().collect(Collectors.toList());
-            List<Person> persons2 = personList2.stream().collect(Collectors.toList());
-
-            persons.addAll(persons2);
-
-            personList = new PageImpl<>(persons, pageable, persons.size());
-        }
+        // Получаем для подбора по городу
+        String city = Strings.hasText(person.getCity())? person.getCity() : "" ;
+        Page<Person> personList = personRepository.findByOptionalParametrs(
+                "", "", startDate, stopDate, city,"", pageable, blockers);
 
         return getPersonResponse(offset, itemPerPage, personList);
 
@@ -430,10 +381,6 @@ public class FriendshipService {
                     || optional.get().getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK);
         }
         return false;
-    }
-
-    Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
-        return personRepository.find10Person(email, pageable, blockers);
     }
 
     List<Integer> getBlockersId(int id) {
