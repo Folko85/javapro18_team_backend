@@ -7,23 +7,22 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 
-
 @Configuration
 public class RedisConfig {
 
-    @Value("${spring.redis.host}")
-    private String redisConfigHost;
-    @Value("${spring.redis.port}")
-    private int redisConfigPort;
-    @Value("${spring.redis.password}")
-    private String redisConfigPassword;
+//    @Value("${spring.redis.host}")
+    private final String HOST = "localhost";
+//    @Value("${spring.redis.port}")
+    private final int PORT = 5000;
+//    @Value("${spring.redis.password}")
+    private final String PASSWORD = "r-edis1_pass4!";
 
     @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
+    public JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory jedisConFactory = new JedisConnectionFactory();
-        jedisConFactory.setHostName(redisConfigHost);
-        jedisConFactory.setPort(redisConfigPort);
-        jedisConFactory.setPassword(redisConfigPassword);
+        jedisConFactory.setHostName(HOST);
+        jedisConFactory.setPort(PORT);
+        jedisConFactory.setPassword(PASSWORD);
         return jedisConFactory;
     }
 
