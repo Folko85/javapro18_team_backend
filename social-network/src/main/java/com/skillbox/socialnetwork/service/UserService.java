@@ -39,14 +39,14 @@ public class UserService {
         }
         AuthData userRest = new AuthData();
         convertUserToUserRest(getPersonByEmail(principal), userRest);
-        log.info("User with email " + userRest.getEMail() + " was received");
+        log.info("User with email {} was received",userRest.getEMail());
         return userRest;
     }
 
     public Person getPersonByEmail(Principal principal) {
         return personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
-                    log.error("Get User By Email Failed in UserService Class, email: " + principal.getName());
+                    log.error("Get User By Email Failed in UserService Class, email: {}", principal.getName());
                     return new UsernameNotFoundException("Email was not found");
                 });
     }
@@ -54,14 +54,14 @@ public class UserService {
     public AuthData getUserById(Integer id) {
         AuthData userRest = new AuthData();
         convertUserToUserRest(getPersonById(id), userRest);
-        log.info("User with id " + userRest.getId() + " was received");
+        log.info("User with id {} was received",userRest.getId());
         return userRest;
     }
 
     public Person getPersonById(Integer id) {
         return personRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Get User By Id Failed in UserService Class, id: " + id);
+                    log.error("Get User By Id Failed in UserService Class, id: {}",id);
                     return new UsernameNotFoundException("Id was not found " + id);
                 });
     }
@@ -84,7 +84,7 @@ public class UserService {
 
     public DataResponse<AuthData> getUser(int id, Principal principal) {
         AuthData current = getUserByEmail(principal);
-        log.info("Attempt to get user by Id, requester id: " + current.getId() + " target id: " + id);
+        log.info("Attempt to get user by Id, requester id: {}, target id: {}",current.getId(), id);
         AuthData requested = getUserById(id);
         if (friendshipService.isBlockedBy(requested.getId(), current.getId()) && !requested.isDeleted()) {
             AuthData response = new AuthData();
@@ -92,10 +92,10 @@ public class UserService {
             response.setFirstName(requested.getFirstName());
             response.setLastName(requested.getLastName());
             response.setAbout("Отдыхай в чс, пыль");
-            log.warn("Requester id: " + current.getId() + "was blocked by " + id);
+            log.warn("Requester id: {} was blocked by {}",current.getId(),id);
             return createResponse(response, "BLOCKED");
         } else {
-            log.info("Attempt to get user by id" + id + "is successful");
+            log.info("Attempt to get user by id {} is successful", id);
             return createResponse(requested);
         }
 
@@ -104,10 +104,10 @@ public class UserService {
     public DataResponse<AuthData> updateUser(AuthData updates, Principal principal) {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
-                    log.error("Update User Failed. Email was not found, email: " + principal.getName());
+                    log.error("Update User Failed. Email was not found, email: {}",  principal.getName());
                     return new UsernameNotFoundException("Update User Failed");
                 });
-        log.info("Attempt to update user, id: " + person.getId());
+        log.info("Attempt to update user, id: {}", person.getId());
         String updatedName = updates.getFirstName().isEmpty() ? person.getFirstName() : updates.getFirstName();
         person.setFirstName(updatedName);
         String updatedLastName = updates.getLastName().isEmpty() ? person.getLastName() : updates.getLastName();
@@ -125,7 +125,7 @@ public class UserService {
         DataResponse<AuthData> response = new DataResponse<>();
         response.setTimestamp(Instant.now());
         response.setData(updated);
-        log.info("User " + person.getId() + " was updated");
+        log.info("User {} was updated", person.getId());
         return response;
     }
 
@@ -175,7 +175,7 @@ public class UserService {
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
         if (person.isDeleted()) {
-            log.info("Getting a deleted account id: " + person.getId());
+            log.info("Getting a deleted account id: {} ",person.getId());
             userRest.setId(person.getId());
             userRest.setFirstName(person.getFirstName());
             userRest.setLastName(person.getLastName());
