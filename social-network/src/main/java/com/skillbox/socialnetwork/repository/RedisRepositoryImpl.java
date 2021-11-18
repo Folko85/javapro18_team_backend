@@ -11,8 +11,8 @@ import java.util.Map;
 @Component
 public class RedisRepositoryImpl implements RedisRepository {
     private static final String KEY = "MESSAGES";
-    private RedisTemplate<String, Object> redisTemplate;
-    private HashOperations hashOperations;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private HashOperations<String, Object, Object> hashOperations;
 
     public RedisRepositoryImpl(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
