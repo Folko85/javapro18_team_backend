@@ -176,6 +176,7 @@ public class FriendshipService {
             friendshipRepository.save(newFriendship);
             notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
         } else {
+            addFriendResponse = getFriendResponse200("Unsuccessfully", "Нou cannot add yourself as a friend");
             throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
         }
         return addFriendResponse;
