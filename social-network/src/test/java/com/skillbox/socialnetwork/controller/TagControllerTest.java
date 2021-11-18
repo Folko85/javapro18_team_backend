@@ -74,7 +74,7 @@ class TagControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Удаление тега")
-    @WithMockUser(username = "test@test.ru", authorities = "user:administrate")
+    @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testDeleteTags() throws Exception {
         tagRepository.save(new Tag().setTag("java"));
         String id = tagRepository.findByTag("java").get().getId().toString();
