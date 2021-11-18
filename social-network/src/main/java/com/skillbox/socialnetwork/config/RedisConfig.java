@@ -1,5 +1,6 @@
 package com.skillbox.socialnetwork.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -10,14 +11,19 @@ import org.springframework.data.redis.serializer.GenericToStringSerializer;
 @Configuration
 public class RedisConfig {
 
-    private final String redis_config_host = "localhost";
-    private final int redis_config_port = 5000;
+    @Value("${spring.redis.host}")
+    private String redisConfigHost;
+    @Value("${spring.redis.port}")
+    private int redisConfigPort;
+    @Value("${spring.redis.password}")
+    private String redisConfigPassword;
 
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory jedisConFactory = new JedisConnectionFactory();
-        jedisConFactory.setHostName(redis_config_host);
-        jedisConFactory.setPort(redis_config_port);
+        jedisConFactory.setHostName(redisConfigHost);
+        jedisConFactory.setPort(redisConfigPort);
+        jedisConFactory.setPassword(redisConfigPassword);
         return jedisConFactory;
     }
 
