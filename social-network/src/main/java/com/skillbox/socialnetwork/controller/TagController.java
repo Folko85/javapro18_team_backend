@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "Контроллер для работы с тегами")
-@RequestMapping("/api/v1/tags/")
+@RequestMapping("/api/v1/tags")
 public class TagController {
 
     private final TagService tagService;
