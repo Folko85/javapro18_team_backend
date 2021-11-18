@@ -146,6 +146,8 @@ public class FriendshipService {
             throw new DeletedAccountException("This Account was deleted");
         }
         Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
+
+
         if (isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)) {
             throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
         }
@@ -153,7 +155,10 @@ public class FriendshipService {
             throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
         }
 
-        if (friendshipOptional.isPresent() && friendshipOptional.get().getSrcPerson().getId() != id) {
+        if (friendshipOptional.isPresent() &&
+                friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.REQUEST) &&
+                friendshipOptional.get().getSrcPerson().getId() != id) {
+
             FriendshipStatus friendshipStatusById = friendshipStatusRepository
                     .findById(friendshipOptional.get().getId())
                     .orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
@@ -161,7 +166,7 @@ public class FriendshipService {
             friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
 
             friendshipStatusRepository.save(friendshipStatusById);
-        } else if(friendshipOptional.isEmpty()){
+        } else if (friendshipOptional.isEmpty()) {
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
             friendshipStatus.setCode(FriendshipStatusCode.REQUEST);
