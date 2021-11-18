@@ -187,7 +187,7 @@ public class FriendshipService {
             friendshipRepository.save(newFriendship);
             notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
         } else {
-            throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
+            throw new AddingYourselfToFriends("жди подтверждения");
         }
         return addFriendResponse;
     }
