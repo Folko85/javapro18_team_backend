@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,15 +33,21 @@ public class PlatformService {
     private String token;
 
 
-    public ListResponse<PlaceDto> getCountries(String country, int offset, int itemPerPage) throws Exception {
+    public ListResponse<PlaceDto> getCountries(String country, int offset, int itemPerPage) {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
-        GetCountriesResponse response = vk.database().getCountries(actor).needAll(true)
-                .offset(offset).count(itemPerPage).lang(Lang.RU).execute();
-        List<PlaceDto> countries = response.getItems().stream()
-                .map(c -> new PlaceDto().setId(c.getId()).setTitle(c.getTitle()))
-                .filter(c -> c.getTitle().toLowerCase().startsWith(country.toLowerCase())).filter(x -> x.getId() != 0).collect(Collectors.toList());
+        GetCountriesResponse response;
+        List<PlaceDto> countries = new ArrayList<>();
+        try {
+            response = vk.database().getCountries(actor).needAll(true)
+                    .offset(offset).count(itemPerPage).lang(Lang.RU).execute();
+            countries = response.getItems().stream()
+                    .map(c -> new PlaceDto().setId(c.getId()).setTitle(c.getTitle()))
+                    .filter(c -> c.getTitle().toLowerCase().startsWith(country.toLowerCase())).filter(x -> x.getId() != 0).collect(Collectors.toList());
+        } catch (ApiException | ClientException e) {
+            log.warn(Arrays.toString(e.getStackTrace()));
+        }
         ListResponse<PlaceDto> result = new ListResponse<>();
         result.setTotal(countries.size());
         result.setTimestamp(Instant.now());
@@ -49,17 +56,22 @@ public class PlatformService {
         return result;
     }
 
-    public ListResponse<PlaceDto> getCities(int countryId, String city, int offset, int itemPerPage) throws ClientException, ApiException {
+    public ListResponse<PlaceDto> getCities(int countryId, String city, int offset, int itemPerPage) {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
         UserActor actor = new UserActor(Integer.valueOf(id), token);
-
-        GetCitiesResponse response = vk.database().getCities(actor, countryId).needAll(true)
-                .q(city).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
-        List<PlaceDto> cities = response.getItems().stream()
-                .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).filter(x -> x.getId() != 0).collect(Collectors.toList());
+        GetCitiesResponse response = null;
+        List<PlaceDto> cities = new ArrayList<>();
         ListResponse<PlaceDto> result = new ListResponse<>();
-        result.setTotal(response.getCount());
+        try {
+            response = vk.database().getCities(actor, countryId).needAll(true)
+                    .q(city).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
+            cities = response.getItems().stream()
+                    .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).filter(x -> x.getId() != 0).collect(Collectors.toList());
+        } catch (ApiException | ClientException e) {
+            log.warn(Arrays.toString(e.getStackTrace()));
+        }
+        result.setTotal((response != null) ? response.getCount() : 0);
         result.setTimestamp(Instant.now());
         result.setPerPage(itemPerPage);
         result.setData(cities);

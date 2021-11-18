@@ -2,32 +2,32 @@ version: '3.7'
 services:
   mysql_db_container:
     image: mysql:latest
-    restart: on-failure
+    restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: w6%@AJ9n%cl5
       MYSQL_DATABASE: network_db
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: xoQu1@}j9P{p
     ports:
       - "3307:3306"
     cap_add:
       - SYS_NICE
   mysql_microservice:
     image: mysql:latest
-    restart: on-failure
+    restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: aj@Z|0qLY#lZ
       MYSQL_DATABASE: technical_support
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: ~yzLEM9hFKxX
     ports:
       - "3308:3306"
     cap_add:
       - SYS_NICE
   vue_js_container:
-    restart: on-failure
+    restart: always
     image: nginx:latest
     volumes:
       - ./web/:/usr/share/nginx/html
@@ -38,7 +38,7 @@ services:
     ports:
       - "80:80"
   cloud-config:
-    restart: on-failure
+    restart: always
     image: openjdk:16-alpine
     volumes:
       - ./jars:/app
@@ -47,7 +47,7 @@ services:
     ports:
       - "8888:8888"
   microservice_back_container:
-    restart: on-failure
+    restart: always
     image: openjdk:16-alpine
     volumes:
       - ./jars:/app
@@ -61,12 +61,13 @@ services:
       - cloud-config
       - mysql_microservice
   redis:
+    restart: always
     container_name: "redis_container"
     image: "redis:alpine"
     ports:
       - "5000:6379"
   zerone_back_container:
-    restart: on-failure
+    restart: always
     image: openjdk:16-alpine
     volumes:
       - ./jars:/app
@@ -84,21 +85,21 @@ services:
     environment:
       - SPRING_PROFILE
   grafana:
-    restart: on-failure
+    restart: always
     image: grafana/grafana
     ports:
       - "3000:3000"
     volumes:
       - ./scripts/grafana:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=QMIS
+      - GF_SECURITY_ADMIN_PASSWORD=xUDtHu58mFwABmU
     networks:
       monitoring:
         aliases:
           - grafana
   prometheus:
-    restart: on-failure
+    restart: always
     image: prom/prometheus
     user: root
     ports:
@@ -111,7 +112,7 @@ services:
         aliases:
           - prometheus
   promtail:
-    restart: on-failure
+    restart: always
     image: grafana/promtail:1.4.1
     expose:
       - 9080
@@ -127,7 +128,7 @@ services:
         aliases:
           - promtail
   loki:
-    restart: on-failure
+    restart: always
     image: grafana/loki:2.3.0
     ports:
       - "3100:3100"
