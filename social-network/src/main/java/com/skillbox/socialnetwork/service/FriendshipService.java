@@ -153,7 +153,7 @@ public class FriendshipService {
             throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
         }
 
-        if (friendshipOptional.isPresent()) {
+        if (friendshipOptional.isPresent() && friendshipOptional.get().getSrcPerson().getId() != id) {
             FriendshipStatus friendshipStatusById = friendshipStatusRepository
                     .findById(friendshipOptional.get().getId())
                     .orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
@@ -161,7 +161,7 @@ public class FriendshipService {
             friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
 
             friendshipStatusRepository.save(friendshipStatusById);
-        } else {
+        } else if(friendshipOptional.isEmpty()){
             FriendshipStatus friendshipStatus = new FriendshipStatus();
             friendshipStatus.setTime(LocalDateTime.now());
             friendshipStatus.setCode(FriendshipStatusCode.REQUEST);
@@ -175,6 +175,8 @@ public class FriendshipService {
 
             friendshipRepository.save(newFriendship);
             notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
+        } else {
+            throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
         }
         return addFriendResponse;
     }
