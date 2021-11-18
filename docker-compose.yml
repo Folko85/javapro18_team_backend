@@ -5,10 +5,10 @@ services:
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: w6%@AJ9n%cl5
       MYSQL_DATABASE: network_db
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: xoQu1@}j9P{p
     ports:
       - "3307:3306"
     cap_add:
@@ -18,10 +18,10 @@ services:
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: aj@Z|0qLY#lZ
       MYSQL_DATABASE: technical_support
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: ~yzLEM9hFKxX
     ports:
       - "3308:3306"
     cap_add:
@@ -92,8 +92,8 @@ services:
     volumes:
       - ./scripts/grafana:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=QMIS
+      - GF_SECURITY_ADMIN_PASSWORD=xUDtHu58mFwABmU
     networks:
       monitoring:
         aliases:
