@@ -21,6 +21,7 @@ spring:
   redis:
     host: localhost
     port: 5000
+    password: ENC(X2BUlR94IUPOPa1D7mGtbSnP6cbaWPMT)
 
 registration:
   confirm:
