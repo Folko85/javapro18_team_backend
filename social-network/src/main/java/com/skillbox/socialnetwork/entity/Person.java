@@ -5,6 +5,8 @@ import com.skillbox.socialnetwork.entity.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 
+@SQLDelete(sql = "UPDATE table_product SET is_deleted = true WHERE id=?")
+@Where(clause = "is_deleted=false")
 @Entity
 @Table(name = "person")
 @Getter
@@ -76,6 +80,8 @@ public class Person implements UserDetails {
     private boolean isBlocked;
 
     private boolean isDeleted;
+
+    private LocalDateTime deletedTimestamp;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<Post> post;

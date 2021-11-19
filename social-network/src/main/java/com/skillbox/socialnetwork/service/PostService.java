@@ -97,6 +97,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setDeleted(true);
+        post.setDeletedTimestamp(LocalDateTime.now());
         postRepository.saveAndFlush(post);
         return getPostDataResponse(post, person);
     }

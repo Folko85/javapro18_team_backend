@@ -576,6 +576,21 @@ paths:
         name: itemPerPage
         required: false
       tags: [Друзья]
+  /redis:
+    post:
+      operationId: save
+      responses:
+        '200': {description: OK}
+      parameters:
+      - schema: {type: string}
+        in: query
+        name: id
+        required: true
+      - schema: {type: string}
+        in: query
+        name: message
+        required: true
+      tags: [redis-controller]
   /api/v1/auth/login:
     post:
       summary: login
@@ -928,66 +943,6 @@ paths:
         name: comment_id
         required: true
       tags: [Контроллер для работы с коментариями]
-  /api/v1/tags/:
-    post:
-      summary: Добавить тег
-      security:
-      - jwt: []
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/TagDto'}
-        required: true
-      operationId: postTag
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema: {$ref: '#/components/schemas/DataResponseTagDto'}
-      tags: [Контроллер для работы с тегами]
-    get:
-      summary: Получить теги
-      security:
-      - jwt: []
-      operationId: getTags
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema: {$ref: '#/components/schemas/ListResponseTagDto'}
-      parameters:
-      - schema: {default: '', type: string}
-        in: query
-        name: tag
-        required: false
-      - schema: {default: 0, format: int32, type: integer}
-        in: query
-        name: offset
-        required: false
-      - schema: {default: 10, format: int32, type: integer}
-        in: query
-        name: itemPerPage
-        required: false
-      tags: [Контроллер для работы с тегами]
-    delete:
-      summary: Удалить тег
-      security:
-      - jwt: []
-      operationId: deleteTag
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
-      parameters:
-      - schema: {format: int32, type: integer}
-        in: query
-        name: id
-        required: true
-      tags: [Контроллер для работы с тегами]
   /api/v1/account/register:
     post:
       summary: Регистрация
@@ -1235,13 +1190,13 @@ paths:
         in: query
         name: age_to
         required: false
-      - schema: {default: 1, format: int32, type: integer}
+      - schema: {default: '', type: string}
         in: query
-        name: country_id
+        name: country
         required: false
-      - schema: {default: 1, format: int32, type: integer}
+      - schema: {default: '', type: string}
         in: query
-        name: city_id
+        name: city
         required: false
       - schema: {default: 0, format: int32, type: integer}
         in: query
@@ -1262,6 +1217,66 @@ paths:
             '*/*':
               schema: {$ref: '#/components/schemas/AccountResponse'}
       tags: [message-controller]
+  /api/v1/tags:
+    post:
+      summary: Добавить тег
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TagDto'}
+        required: true
+      operationId: postTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseTagDto'}
+      tags: [Контроллер для работы с тегами]
+    get:
+      summary: Получить теги
+      security:
+      - jwt: []
+      operationId: getTags
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseTagDto'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: tag
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с тегами]
+    delete:
+      summary: Удалить тег
+      security:
+      - jwt: []
+      operationId: deleteTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: id
+        required: true
+      tags: [Контроллер для работы с тегами]
   /api/v1/account/password/set:
     put:
       summary: Смена пароля
@@ -1458,6 +1473,18 @@ paths:
         name: comment_id
         required: true
       tags: [Контроллер для работы с коментариями]
+  /redis/messages:
+    get:
+      operationId: get
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                additionalProperties: {type: string}
+                type: object
+      tags: [redis-controller]
   /api/v1/feeds:
     get:
       summary: Получить посты новостях
