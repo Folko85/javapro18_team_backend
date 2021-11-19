@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.StatusFriend;
+import com.skillbox.socialnetwork.api.response.notificationdto.NotificationData;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
@@ -26,6 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -184,7 +186,10 @@ public class FriendshipService {
             newFriendship.setDstPerson(dstPerson);
 
             friendshipRepository.save(newFriendship);
+            //Notification
             notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
+            sendNotification(newFriendship);
+            //Notification
         } else {
             throw new AddingYourselfToFriends("жди подтверждения");
         }
@@ -217,9 +222,9 @@ public class FriendshipService {
             stopDate = birthdayPerson.plusYears(2);
         }
         // Получаем для подбора по городу
-        String city = Strings.hasText(person.getCity())? person.getCity() : "" ;
+        String city = Strings.hasText(person.getCity()) ? person.getCity() : "";
         Page<Person> personList = personRepository.findByOptionalParametrs(
-                "", "", startDate, stopDate, city,"", pageable, blockers);
+                "", "", startDate, stopDate, city, "", pageable, blockers);
 
         if (personList.isEmpty()) {
             pageable = PageRequest.of(0, 10);
@@ -404,12 +409,9 @@ public class FriendshipService {
     }
 
     private boolean isBlockedBy(int blocker, int blocked, Optional<Friendship> optional) {
-        if (optional.isPresent()) {
-            return (blocker == optional.get().getSrcPerson().getId() && optional.get().getStatus().getCode().equals(FriendshipStatusCode.BLOCKED))
-                    || (blocked == optional.get().getSrcPerson().getId() && optional.get().getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY))
-                    || optional.get().getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK);
-        }
-        return false;
+        return optional.filter(friendship -> (blocker == friendship.getSrcPerson().getId() && friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED))
+                || (blocked == friendship.getSrcPerson().getId() && friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY))
+                || friendship.getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK)).isPresent();
     }
 
     Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
@@ -420,4 +422,17 @@ public class FriendshipService {
         List<Integer> blockers = friendshipRepository.findBlockersIds(id);
         return blockers.isEmpty() ? Collections.singletonList(-1) : blockers;
     }
+
+    private void sendNotification(Friendship friendship) {
+        NotificationData notificationData = new NotificationData();
+        notificationData.setId(friendship.getId());
+        notificationData.setSentTime(Instant.now());
+        notificationData.setEventType(NotificationType.FRIEND_REQUEST);
+        notificationData.setEntityAuthor(setAuthData(friendship.getSrcPerson()));
+        notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+        notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
+
+    }
+
 }
+

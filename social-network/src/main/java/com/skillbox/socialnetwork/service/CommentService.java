@@ -6,8 +6,11 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
-import com.skillbox.socialnetwork.api.response.socketio.CommentNotificationData;
-import com.skillbox.socialnetwork.entity.*;
+import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
+import com.skillbox.socialnetwork.entity.Like;
+import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.entity.Post;
+import com.skillbox.socialnetwork.entity.PostComment;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
@@ -196,7 +199,7 @@ public class CommentService {
             person = personRepository.findById(getIdFromPostText(postComment.getCommentText())).orElse(postComment.getParent().getPerson());
             notificationType = NotificationType.COMMENT_COMMENT;
         } else person = postComment.getPost().getPerson();
-        CommentNotificationData commentNotificationData = new CommentNotificationData();
+        SocketNotificationData commentNotificationData = new SocketNotificationData();
         commentNotificationData.setEntityId(postComment.getId())
                 .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
                         .setLastName(postComment.getPerson().getLastName())
