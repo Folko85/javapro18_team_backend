@@ -32,6 +32,13 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "AND fs.code = ?2 ")
     List<Friendship> findPersonByFriendship(int personId, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
 
+    @Query("SELECT p FROM Person p " +
+            "WHERE p.eMail NOT LIKE :email " +
+            "AND p.isBlocked = false " +
+            "AND p.isDeleted = false " +
+            "AND p.id NOT IN (:blockers) ")
+    Page<Person> find10Person(String email, Pageable pageable, List<Integer> blockers);
+
     @Query("SELECT p " +
             "FROM Person p " +
             "WHERE ( p.firstName LIKE :firstName||'%'  AND :firstName != ''   OR :firstName = '' )  " +

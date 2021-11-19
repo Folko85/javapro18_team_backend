@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
@@ -220,6 +221,23 @@ public class FriendshipService {
         Page<Person> personList = personRepository.findByOptionalParametrs(
                 "", "", startDate, stopDate, city,"", pageable, blockers);
 
+        if (personList.isEmpty()) {
+            pageable = PageRequest.of(0, 10);
+            personList = get10Users(person.getEMail(), pageable, blockers);
+        }
+
+        if (personList.getTotalElements() < 10) {
+            Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
+            Page<Person> personList2 = get10Users(person.getEMail(), pageable2, blockers);
+
+            List<Person> persons = personList.stream().collect(Collectors.toList());
+            List<Person> persons2 = personList2.stream().collect(Collectors.toList());
+
+            persons.addAll(persons2);
+
+            personList = new PageImpl<>(persons, pageable, persons.size());
+        }
+
         return getPersonResponse(offset, itemPerPage, personList);
 
     }
@@ -392,6 +410,10 @@ public class FriendshipService {
                     || optional.get().getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK);
         }
         return false;
+    }
+
+    Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
+        return personRepository.find10Person(email, pageable, blockers);
     }
 
     List<Integer> getBlockersId(int id) {
