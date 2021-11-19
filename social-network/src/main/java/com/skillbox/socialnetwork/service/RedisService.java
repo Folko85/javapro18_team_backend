@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.entity.SaveMessage;
-import com.skillbox.socialnetwork.repository.RedisRepositoryImpl;
+import com.skillbox.socialnetwork.repository.MessagesRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -9,21 +9,21 @@ import java.util.Map;
 
 @Service
 public class RedisService {
-    private final RedisRepositoryImpl redisRepositoryImpl;
+    private final MessagesRepository messagesRepository;
 
-    public RedisService(RedisRepositoryImpl redisRepositoryImpl) {
-        this.redisRepositoryImpl = redisRepositoryImpl;
+    public RedisService(MessagesRepository messagesRepository) {
+        this.messagesRepository = messagesRepository;
     }
 
     public void save(String id, String message) {
         SaveMessage saveMessage = new SaveMessage();
         saveMessage.setId(id);
         saveMessage.setName(message);
-        redisRepositoryImpl.add(saveMessage);
+        messagesRepository.add(saveMessage);
     }
 
     public Map<String, String> getAllMessages() {
-        Map<Object, Object> allMessages = redisRepositoryImpl.findAllMessages();
+        Map<Object, Object> allMessages = messagesRepository.findAllMessages();
 
         Map<String, String> messages = new HashMap<>();
 
