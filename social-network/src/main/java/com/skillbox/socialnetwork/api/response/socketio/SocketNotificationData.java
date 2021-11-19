@@ -14,7 +14,7 @@ import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
-public class CommentNotificationData implements Dto {
+public class SocketNotificationData implements Dto {
     private int id;
     @JsonProperty("event_type")
     private NotificationType eventType;
