@@ -18,6 +18,9 @@ spring:
     hibernate:
       dialect: org.h2.Driver
       ddl-auto: update
+  redis:
+    host: localhost
+    port: 5000
 
 registration:
   confirm:
