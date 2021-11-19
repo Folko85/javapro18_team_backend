@@ -17,7 +17,8 @@ public class NotificationData implements Dto {
     private Instant sentTime;
     @JsonProperty("entity_id")
     private Integer entityId;
-    private String info;
+    @JsonProperty("parent_entity_id")
+    private Integer parentEntityId;
     @JsonProperty("entity_author")
     private AuthData entityAuthor;
 }
