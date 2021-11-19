@@ -61,11 +61,9 @@ public class TagService {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tag is not exist"));
         Set<Post> postsWithTag = postRepository.findPostsByTag(tag.getTag());
-        postsWithTag.forEach(p -> {
-            p.getTags().remove(tag);
-            postRepository.save(p);
-        });
-        tagRepository.deleteById(id);
+        if (postsWithTag.isEmpty()){
+            tagRepository.deleteById(id);
+        }
         AccountResponse response = new AccountResponse();
         response.setTimestamp(Instant.now());
         response.setError("nothing");
