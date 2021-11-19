@@ -36,7 +36,7 @@ public abstract class AbstractTest {
      * Object mapper.
      */
     @Autowired
-    protected ObjectMapper mapper; // это нам пригодится в следующем ДЗ для проверки более сложного API
+    protected ObjectMapper mapper;
 
     /**
      * Create mock mvc.
