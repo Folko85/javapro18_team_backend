@@ -127,7 +127,6 @@ public class FriendshipService {
     public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
         log.debug("метод добавления в друзья");
 
-        FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
 
         Person srcPerson = personRepository
                 .findByEMail(principal.getName())
@@ -163,9 +162,10 @@ public class FriendshipService {
                 friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.REQUEST) &&
                 friendshipOptional.get().getSrcPerson().getId() == id) {
 
-            FriendshipStatus friendshipStatusById = friendshipStatusRepository
-                    .findById(friendshipOptional.get().getId())
-                    .orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
+
+
+            FriendshipStatus friendshipStatusById = friendshipOptional.get().getStatus();
+
             friendshipStatusById.setTime(LocalDateTime.now());
             friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
 
@@ -190,10 +190,10 @@ public class FriendshipService {
         } else {
             throw new AddingYourselfToFriends("жди подтверждения");
         }
-        return addFriendResponse;
+        return getFriendResponse200("Successfully", "Adding to friends");
     }
 
-    public ListResponse<AuthData> getListOfApplications(String name, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<AuthData> getFriendsRequests(String name, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> personByStatusCode = friendshipRepository

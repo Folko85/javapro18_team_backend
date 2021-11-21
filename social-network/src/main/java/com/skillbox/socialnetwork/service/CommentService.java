@@ -198,17 +198,18 @@ public class CommentService {
             person = personRepository.findById(getIdFromPostText(postComment.getCommentText())).orElse(postComment.getParent().getPerson());
             commentNotificationData.setEventType(NotificationType.COMMENT_COMMENT)
                     .setParentId(postComment.getParent().getId());
-        } else {person = postComment.getPost().getPerson();
-        commentNotificationData.setParentId(postComment.getId())
-                .setEventType(NotificationType.POST_COMMENT);
+        } else {
+            person = postComment.getPost().getPerson();
+            commentNotificationData.setParentId(postComment.getId())
+                    .setEventType(NotificationType.POST_COMMENT);
         }
 
-        commentNotificationData.setEntityId(postComment.getId())
+        commentNotificationData.setEntityId(postComment.getPost().getId())
                 .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
                         .setLastName(postComment.getPerson().getLastName())
                         .setId(postComment.getPerson().getId())
                         .setPhoto(postComment.getPerson().getPhoto()))
-                .setPostId(postComment.getPost().getId())
+                .setCurrentEntityId(postComment.getId())
                 .setId(notificationService.createNotification(person, postComment.getId(), commentNotificationData.getEventType()).getId())
                 .setSentTime(postComment.getTime().toInstant(UTC))
                 .setEventType(commentNotificationData.getEventType());
