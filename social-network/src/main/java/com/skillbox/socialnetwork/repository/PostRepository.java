@@ -56,12 +56,14 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id   " +
             "WHERE p.person.id NOT IN (:blockers) " +
-            "AND p.isBlocked = false AND ( p.datetime >= :dateFrom AND p.datetime <= :dateTo ) AND p.datetime <= CURRENT_TIMESTAMP " +
-            "AND ( p.postText LIKE '%'||:text||'%' AND :text != '' OR :text = '' ) " +
-            "AND ( p.person.firstName LIKE :author||'%' AND :author != '' OR :author = '' ) " +
+            "AND p.isBlocked = false " +
+            "AND ( p.datetime >= :dateFrom AND p.datetime <= :dateTo ) AND p.datetime <= CURRENT_TIMESTAMP " +
+            "AND (( p.postText LIKE '%'||:text||'%' OR p.title LIKE '%'||:text||'%') AND :text != '' OR :text = '' ) " +
+            "AND ((p.person.firstName LIKE :author||'%' OR p.person.lastName LIKE :author||'%') AND :author != '' OR :author = '' ) " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
-    Page<Post> findPostsByTextContainingByDateExcludingBlockers(String text, String author, Instant dateFrom, Instant dateTo, Pageable pageable, List<Integer> blockers);
+    Page<Post> findPostsByTextContainingByDateExcludingBlockers(String text, String author, Instant dateFrom, Instant dateTo,
+                                                                Pageable pageable, List<Integer> blockers, List<Integer> tags);
 
     @Query("DELETE " +
             "FROM Post " +

@@ -42,13 +42,14 @@ public class PostController {
     @Operation(summary = "Получить посты в поиске", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<PostData>> getPosts(@RequestParam(name = "text", defaultValue = "") String text,
-                                                           @RequestParam(name = "date_from", defaultValue = "0") long dateFrom,
+                                                           @RequestParam(name = "date_from", defaultValue = "-1") long dateFrom,
                                                            @RequestParam(name = "date_to", defaultValue = "-1") long dateTo,
                                                            @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                            @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                            @RequestParam(name = "author", defaultValue = "") String author,
+                                                           @RequestParam(name = "tag", defaultValue = "") String tag,
                                                            Principal principal) {
-        return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, author, principal), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, author, tag, principal), HttpStatus.OK);
     }
 
     @GetMapping("/post/{id}")
