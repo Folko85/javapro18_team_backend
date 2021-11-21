@@ -24,12 +24,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,7 +64,7 @@ public class PostService {
                 .map(t -> tagRepository.findByTag(t).orElse(null))
                 .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
         Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
-        Instant datetimeFrom = (dateFrom == -1) ? Instant.now().minus(1, ChronoUnit.YEARS) : Instant.ofEpochMilli(dateTo);
+        Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateTo);
 
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
                 text,
