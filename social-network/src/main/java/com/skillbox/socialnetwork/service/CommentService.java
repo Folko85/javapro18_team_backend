@@ -193,21 +193,25 @@ public class CommentService {
 
     private void sendNotification(PostComment postComment) {
         Person person;
-        NotificationType notificationType = NotificationType.POST_COMMENT;
+        SocketNotificationData commentNotificationData = new SocketNotificationData();
         if (postComment.getParent() != null) {
             person = personRepository.findById(getIdFromPostText(postComment.getCommentText())).orElse(postComment.getParent().getPerson());
-            notificationType = NotificationType.COMMENT_COMMENT;
-        } else person = postComment.getPost().getPerson();
-        SocketNotificationData commentNotificationData = new SocketNotificationData();
+            commentNotificationData.setEventType(NotificationType.COMMENT_COMMENT)
+                    .setParentId(postComment.getParent().getId());
+        } else {person = postComment.getPost().getPerson();
+        commentNotificationData.setParentId(postComment.getId())
+                .setEventType(NotificationType.POST_COMMENT);
+        }
+
         commentNotificationData.setEntityId(postComment.getId())
                 .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
                         .setLastName(postComment.getPerson().getLastName())
                         .setId(postComment.getPerson().getId())
                         .setPhoto(postComment.getPerson().getPhoto()))
                 .setPostId(postComment.getPost().getId())
-                .setId(notificationService.createNotification(person, postComment.getId(), notificationType).getId())
+                .setId(notificationService.createNotification(person, postComment.getId(), commentNotificationData.getEventType()).getId())
                 .setSentTime(postComment.getTime().toInstant(UTC))
-                .setEventType(notificationType);
+                .setEventType(commentNotificationData.getEventType());
         notificationService.sendEvent("comment-notification-response", commentNotificationData, person.getId());
     }
 
