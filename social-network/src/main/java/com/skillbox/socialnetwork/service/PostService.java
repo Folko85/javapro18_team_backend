@@ -88,8 +88,11 @@ public class PostService {
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setTitle(requestBody.getTitle());
         post.setPostText(requestBody.getPostText());
-        post.setTags(requestBody.getTags().stream().map(s -> tagRepository.findByTag(s).orElse(null))
-                .filter(Objects::nonNull).collect(Collectors.toSet()));
+        List<String> tags = requestBody.getTags();
+        if (tags != null) {
+            post.setTags(tags.stream().map(s -> tagRepository.findByTag(s).orElse(null))
+                    .filter(Objects::nonNull).collect(Collectors.toSet()));
+        }
         post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate));
         postRepository.saveAndFlush(post);
 
@@ -217,9 +220,12 @@ public class PostService {
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
-        post.setTags(postRequest.getTags().stream()
-                .map(x -> tagRepository.findByTag(x).orElse(null))
-                .filter(Objects::nonNull).collect(Collectors.toSet()));
+        List<String> tags = postRequest.getTags();
+        if (tags != null) {
+            post.setTags(tags.stream()
+                    .map(x -> tagRepository.findByTag(x).orElse(null))
+                    .filter(Objects::nonNull).collect(Collectors.toSet()));
+        }
         if (publishDate == 0) {
             post.setDatetime(Instant.now());
         } else {
