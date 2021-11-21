@@ -17,6 +17,7 @@ import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
+import com.skillbox.socialnetwork.repository.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,13 +43,16 @@ public class PostService {
     private final CommentService commentService;
     private final LikeRepository likeRepository;
     private final FriendshipService friendshipService;
+    private final TagRepository tagRepository;
 
-    public PostService(PostRepository postRepository, PersonRepository personRepository, CommentService commentService, LikeRepository likeRepository, FriendshipService friendshipService) {
+    public PostService(PostRepository postRepository, PersonRepository personRepository, CommentService commentService,
+                       LikeRepository likeRepository, FriendshipService friendshipService, TagRepository tagRepository) {
         this.postRepository = postRepository;
         this.personRepository = personRepository;
         this.commentService = commentService;
         this.likeRepository = likeRepository;
         this.friendshipService = friendshipService;
+        this.tagRepository = tagRepository;
     }
 
     public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
@@ -213,6 +218,9 @@ public class PostService {
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
+        post.setTags(postRequest.getTags().stream()
+                .map(x -> tagRepository.findByTag(x).orElse(null))
+                .filter(Objects::nonNull).collect(Collectors.toSet()));
         if (publishDate == 0) {
             post.setDatetime(Instant.now());
         } else {
