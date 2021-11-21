@@ -94,8 +94,7 @@ public class PostService {
                     .filter(Objects::nonNull).collect(Collectors.toSet()));
         }
         post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate));
-        postRepository.saveAndFlush(post);
-
+        post = postRepository.saveAndFlush(post);
         return getPostDataResponse(post, person);
     }
 
