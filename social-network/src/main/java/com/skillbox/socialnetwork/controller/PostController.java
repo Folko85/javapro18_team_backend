@@ -2,7 +2,6 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
-import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.postdto.PostData;
 import com.skillbox.socialnetwork.exception.PostCreationExecption;
@@ -15,7 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
@@ -53,15 +60,17 @@ public class PostController {
 
     @PutMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Operation(summary = "Изменить пост", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<PostData>> putPostById(@PathVariable int id,
                                          @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
-                                         @RequestBody TitlePostTextRequest requestBody,
+                                         @RequestBody PostRequest requestBody,
                                          Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         return new ResponseEntity<>(postService.putPostById(id, publishDate, requestBody, principal), HttpStatus.OK);
     }
 
     @DeleteMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Operation(summary = "Удалить пост", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<PostData>> deletePostById(@PathVariable int id,
                                             Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         return new ResponseEntity<>(postService.deletePostById(id, principal), HttpStatus.OK);
@@ -70,6 +79,7 @@ public class PostController {
 
     @PutMapping("/post/{id}/recover")
     @PreAuthorize("hasAuthority('user:write')")
+    @Operation(summary = "Восстановить пост", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<?> putPostRecover(@PathVariable int id,
                                             Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         return new ResponseEntity<>(postService.putPostIdRecover(id, principal), HttpStatus.OK);

@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.postdto.IdResponse;
@@ -55,16 +54,15 @@ public class PostService {
         this.tagRepository = tagRepository;
     }
 
-    public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
+    public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, String author, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         List<Integer> blockers = friendshipService.getBlockersId(person.getId());
         Instant dateT;
-        if(dateTo==-1){
+        if (dateTo == -1) {
             dateT = Instant.now();
-        }
-        else{
-            dateT= Instant.ofEpochMilli(dateTo);
+        } else {
+            dateT = Instant.ofEpochMilli(dateTo);
         }
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
                 text,
@@ -73,7 +71,7 @@ public class PostService {
                 dateT,
                 pageable,
                 blockers
-                );
+        );
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
@@ -83,13 +81,15 @@ public class PostService {
     }
 
 
-    public DataResponse<PostData> putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal
+    public DataResponse<PostData> putPostById(int id, long publishDate, PostRequest requestBody, Principal
             principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = findPost(id);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setTitle(requestBody.getTitle());
         post.setPostText(requestBody.getPostText());
+        post.setTags(requestBody.getTags().stream().map(s -> tagRepository.findByTag(s).orElse(null))
+                .filter(Objects::nonNull).collect(Collectors.toSet()));
         post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate));
         postRepository.saveAndFlush(post);
 
