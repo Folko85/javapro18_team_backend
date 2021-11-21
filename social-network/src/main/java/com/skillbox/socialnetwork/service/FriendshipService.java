@@ -100,12 +100,10 @@ public class FriendshipService {
 
     public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
         log.debug("метод удаления из друзей");
-        FriendsResponse200 response;
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
-        int srcId = srcPerson.getId();
 
-        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcId, id);
+        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPerson.getId(), id);
 
         if (optionalFriendship.isPresent()) {
             Friendship friendship = optionalFriendship.get();
@@ -120,11 +118,10 @@ public class FriendshipService {
             friendshipStatusRepository.save(friendshipStatus);
             friendshipRepository.save(friendship);
 
-            response = getFriendResponse200("Successfully", "Stop being friends");
+            return getFriendResponse200("Successfully", "Stop being friends");
         } else {
-            response = getFriendResponse200("Unsuccessfully", "Don't stop being friends");
+            return getFriendResponse200("Unsuccessfully", "Don't stop being friends");
         }
-        return response;
     }
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
