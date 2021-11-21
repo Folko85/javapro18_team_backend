@@ -203,7 +203,6 @@ public class CommentService {
             commentNotificationData.setParentId(postComment.getId())
                     .setEventType(NotificationType.POST_COMMENT);
         }
-
         commentNotificationData.setEntityId(postComment.getPost().getId())
                 .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
                         .setLastName(postComment.getPerson().getLastName())

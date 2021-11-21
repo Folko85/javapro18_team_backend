@@ -99,16 +99,16 @@ public class NotificationService {
 
     private NotificationData getNotificationData(Notification notification) {
         NotificationData notificationData = new NotificationData();
-        notificationData.setId(notification.getId());
-        notificationData.setSentTime(Instant.now());
-        notificationData.setSentTime(notification.getSendTime().toInstant(UTC));
-        notificationData.setEventType(notification.getType());
+        notificationData.setId(notification.getId())
+                .setSentTime(notification.getSendTime().toInstant(UTC))
+                .setEventType(notification.getType());
         switch (notification.getType()) {
             case COMMENT_COMMENT, POST_COMMENT -> {
-                commentRepository.findById(notification.getEntityId()).ifPresent(comment->{
-                    notificationData.setEntityAuthor(setAuthData(comment.getPerson()));
-                    notificationData.setEntityId(comment.getId());
-                    notificationData.setParentEntityId(comment.getPost().getId());
+                commentRepository.findById(notification.getEntityId()).ifPresent(comment -> {
+                    notificationData.setEntityAuthor(setAuthData(comment.getPerson()))
+                            .setEntityId(comment.getPost().getId())
+                            .setParentEntityId(comment.getParent() == null ? comment.getId() : comment.getParent().getId())
+                            .setCurrentEntityId(comment.getId());
                 });
             }
             case FRIEND_REQUEST -> {
@@ -117,7 +117,7 @@ public class NotificationService {
                 notificationData.setEntityId(notificationData.getEntityAuthor().getId());
             }
             case MESSAGE -> {
-                messageRepository.findById(notification.getEntityId()).ifPresent(message->{
+                messageRepository.findById(notification.getEntityId()).ifPresent(message -> {
                     notificationData.setEntityAuthor(setAuthData(message.getAuthor()));
                     notificationData.setEntityId(message.getId());
                     notificationData.setParentEntityId(message.getDialog().getId());
