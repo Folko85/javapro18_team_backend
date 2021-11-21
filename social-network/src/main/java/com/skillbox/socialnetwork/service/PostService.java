@@ -24,9 +24,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -54,21 +59,21 @@ public class PostService {
         this.tagRepository = tagRepository;
     }
 
-    public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, String author, Principal principal) {
+    public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, String author, String tag, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         List<Integer> blockers = friendshipService.getBlockersId(person.getId());
-        Instant dateT;
-        if (dateTo == -1) {
-            dateT = Instant.now();
-        } else {
-            dateT = Instant.ofEpochMilli(dateTo);
-        }
+        List<Integer> tags = Arrays.stream(tag.split("\\|"))
+                .map(t -> tagRepository.findByTag(t).orElse(null))
+                .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
+        Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
+        Instant datetimeFrom = (dateFrom == -1) ? Instant.now().minus(1, ChronoUnit.YEARS) : Instant.ofEpochMilli(dateTo);
+
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
                 text,
                 author,
-                Instant.ofEpochMilli(dateFrom),
-                dateT,
+                datetimeFrom,
+                datetimeTo,
                 pageable,
                 blockers
         );
