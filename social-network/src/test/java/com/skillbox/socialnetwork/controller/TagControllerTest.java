@@ -4,8 +4,10 @@ import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
 import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.repository.PostRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.Instant;
+import java.util.Set;
+
 @SpringBootTest(classes = {NetworkApplication.class})
 class TagControllerTest extends AbstractTest {
 
@@ -26,12 +31,17 @@ class TagControllerTest extends AbstractTest {
     private TagRepository tagRepository;
 
     @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
     private PersonRepository personRepository;
+
+    private Person person;
 
     @BeforeEach
     public void setup() {
         super.setup();
-        Person person = new Person();
+        person = new Person();
         person.setEMail("test@test.ru");
         person.setPassword("password");
         personRepository.save(person);
@@ -43,6 +53,7 @@ class TagControllerTest extends AbstractTest {
         tagRepository.deleteAll();
 
     }
+
     @Test
     @DisplayName("Получение всех тегов")
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
@@ -87,6 +98,29 @@ class TagControllerTest extends AbstractTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("nothing"));
+//                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("Удаление привязанного тега")
+    @WithMockUser(username = "test@test.ru", authorities = "user:write")
+    void testDoNotDeleteTags() throws Exception {
+        tagRepository.save(new Tag().setTag("java"));
+        String id = tagRepository.findByTag("java").get().getId().toString();
+        Post post = new Post();
+        post.setTitle("Title");
+        post.setPerson(person);
+        post.setDatetime(Instant.now());
+        post.setTags(Set.of(tagRepository.findByTag("java").get()));
+        postRepository.save(post);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/api/v1/tags/")
+                        .param("id", id)
+                        .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("tag use in another posts"));
 //                .andDo(MockMvcResultHandlers.print());
     }
 
