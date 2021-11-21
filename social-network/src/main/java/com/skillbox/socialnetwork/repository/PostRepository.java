@@ -63,7 +63,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContainingByDateExcludingBlockers(String text, String author, Instant dateFrom, Instant dateTo,
-                                                                Pageable pageable, List<Integer> blockers, List<Integer> tags);
+                                                                Pageable pageable, List<Integer> blockers);
 
     @Query("DELETE " +
             "FROM Post " +
