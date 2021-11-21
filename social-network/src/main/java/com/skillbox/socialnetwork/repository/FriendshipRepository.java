@@ -28,13 +28,12 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "AND fs.code = ?3 ")
     Optional<FriendshipStatusCode> isMyFriend(int idPerson, int idFriend, FriendshipStatusCode friendshipStatusCode);
 
-    @Query("SELECT p2 FROM Person p " +
-            "LEFT JOIN Friendship f ON f.srcPerson.id = p.id " +
+    @Query("SELECT psrc FROM Person p " +
+            "LEFT JOIN Friendship f ON f.dstPerson.id = p.id " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
-            "LEFT JOIN Person p2 ON p2.id = f.dstPerson.id " +
-            "WHERE (f.srcPerson.firstName = ?1 AND f.dstPerson.id = ?2 " +
-            "or f.srcPerson.id = ?2 AND f.dstPerson.firstName = ?1) " +
-            "AND fs.code = ?3 AND p.isBlocked = false")
+            "LEFT JOIN Person psrc ON f.srcPerson.id = psrc.id " +
+            "WHERE p.firstName LIKE %:name% AND p.id = :idFriend " +
+            "AND fs.code = :friendshipStatusCode AND p.isBlocked = false")
     Page<Person> findPersonByStatusCode(String name, int idFriend, FriendshipStatusCode friendshipStatusCode, Pageable pageable);
 
 

@@ -67,7 +67,7 @@ public class FriendshipController {
                                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                                    @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                                    Principal principal) {
-        return new ResponseEntity<>(friendshipService.getListOfApplications(name, offset, itemPerPage, principal), HttpStatus.OK);
+        return new ResponseEntity<>(friendshipService.getFriendsRequests(name, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
     @Operation(summary = "Рекомендации",
