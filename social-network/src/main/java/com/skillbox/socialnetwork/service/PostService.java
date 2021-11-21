@@ -75,7 +75,8 @@ public class PostService {
                 datetimeFrom,
                 datetimeTo,
                 pageable,
-                blockers
+                blockers,
+                tags
         );
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }

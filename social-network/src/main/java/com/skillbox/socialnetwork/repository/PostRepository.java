@@ -33,12 +33,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findPostsByPersonIdAndCurrentDate(int id, Pageable pageable);
 
 
-    @Query( nativeQuery = true, value =
-            "SELECT * " +
-            "FROM post p " +
-            "JOIN post2tag pt ON pt.post_id = p.id " +
-            "JOIN tag t ON t.id = pt.tag_id " +
-            "WHERE t.tag = ?1")
+    @Query("SELECT p " +
+            "FROM Post p " +
+            "JOIN p.tags t " +
+            "WHERE t.tag = :tag")
     Set<Post> findPostsByTag(String tag);
 
     @Query("SELECT p " +
@@ -52,8 +50,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p " +
             "FROM Post p " +
-            "LEFT JOIN Person per ON per.id = p.person.id   " +
+            "LEFT JOIN Person per ON per.id = p.person.id " +
+            "JOIN p.tags t " +
             "WHERE p.person.id NOT IN (:blockers) " +
+            "AND t.id IN (:tags) " +
             "AND p.isBlocked = false " +
             "AND ( p.datetime >= :dateFrom AND p.datetime <= :dateTo ) AND p.datetime <= CURRENT_TIMESTAMP " +
             "AND (( p.postText LIKE '%'||:text||'%' OR p.title LIKE '%'||:text||'%') AND :text != '' OR :text = '' ) " +
@@ -61,6 +61,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContainingByDateExcludingBlockers(String text, String author, Instant dateFrom, Instant dateTo,
-                                                                Pageable pageable, List<Integer> blockers);
+                                                                Pageable pageable, List<Integer> blockers, List<Integer> tags);
 
 }
