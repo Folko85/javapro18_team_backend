@@ -60,7 +60,7 @@ public class FriendshipController {
             description = "Получить список заявок", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/request")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ListResponse<AuthData>> listApplications(@RequestParam(name = "name", defaultValue = "") String name,
+    public ResponseEntity<ListResponse<AuthData>> getFriendsRequests(@RequestParam(name = "name", defaultValue = "") String name,
                                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
                                                                    @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                                    Principal principal) {

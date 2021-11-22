@@ -59,8 +59,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "AND (( p.postText LIKE '%'||:text||'%' OR p.title LIKE '%'||:text||'%') AND :text != '' OR :text = '' ) " +
             "AND ((p.person.firstName LIKE :author||'%' OR p.person.lastName LIKE :author||'%') AND :author != '' OR :author = '' ) " +
             "GROUP BY p.id " +
+            "HAVING COUNT(t) = :tagsCount " +
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContainingByDateExcludingBlockers(String text, String author, Instant dateFrom, Instant dateTo,
-                                                                Pageable pageable, List<Integer> blockers, List<Integer> tags);
+                                                                Pageable pageable, List<Integer> blockers, List<Integer> tags, long tagsCount);
 
 }
