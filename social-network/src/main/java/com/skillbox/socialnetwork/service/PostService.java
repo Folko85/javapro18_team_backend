@@ -67,7 +67,7 @@ public class PostService {
             tags = tagRepository.findAll().stream().map(Tag::getId).collect(Collectors.toList());
         }
         Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
-        Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateTo);
+        Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateFrom);
 
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
                 text,
