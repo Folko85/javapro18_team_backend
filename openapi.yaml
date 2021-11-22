@@ -40,11 +40,6 @@ components:
         data: {$ref: '#/components/schemas/AuthData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
-    TitlePostTextRequest:
-      type: object
-      properties:
-        title: {type: string}
-        post_text: {type: string}
     MessageRequest:
       type: object
       properties:
@@ -127,9 +122,10 @@ components:
           type: string
           enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
         entity_author: {$ref: '#/components/schemas/AuthData'}
+        current_entity_id: {format: int32, type: integer}
         id: {format: int32, type: integer}
         entity_id: {format: int32, type: integer}
-        info: {type: string}
+        parent_entity_id: {format: int32, type: integer}
     NotificationsRequest:
       type: object
       properties:
@@ -195,6 +191,9 @@ components:
       properties:
         title: {type: string}
         post_text: {type: string}
+        tags:
+          type: array
+          items: {type: string}
     DataResponseLikeData:
       type: object
       properties:
@@ -961,6 +960,9 @@ paths:
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/post/{id}/recover:
     put:
+      summary: Восстановить пост
+      security:
+      - jwt: []
       operationId: putPostRecover
       responses:
         '200':
@@ -1117,7 +1119,7 @@ paths:
         in: query
         name: text
         required: false
-      - schema: {default: 0, format: int64, type: integer}
+      - schema: {default: -1, format: int64, type: integer}
         in: query
         name: date_from
         required: false
@@ -1136,6 +1138,10 @@ paths:
       - schema: {default: '', type: string}
         in: query
         name: author
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: tag
         required: false
       tags: [Контроллер для работы с постами]
   /api/v1/friends/recommendations:
@@ -1209,7 +1215,7 @@ paths:
       tags: [Профиль]
   /api/v1/dialogs/unreaded:
     get:
-      operationId: getUnreaded
+      operationId: getUnread
       responses:
         '200':
           description: OK
@@ -1369,6 +1375,9 @@ paths:
         required: true
       tags: [Контроллер для работы с постами]
     delete:
+      summary: Удалить пост
+      security:
+      - jwt: []
       operationId: deletePostById
       responses:
         '200':
@@ -1383,10 +1392,13 @@ paths:
         required: true
       tags: [Контроллер для работы с постами]
     put:
+      summary: Изменить пост
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/TitlePostTextRequest'}
+            schema: {$ref: '#/components/schemas/PostRequest'}
         required: true
       operationId: putPostById
       responses:

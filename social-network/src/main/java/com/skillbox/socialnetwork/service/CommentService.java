@@ -107,6 +107,7 @@ public class CommentService {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
         postComment.setDeleted(Objects.equals(postComment.getPerson().getId(), person.getId()) || postComment.isDeleted());
+        postComment.setDeletedTimestamp(LocalDateTime.now());
         commentRepository.save(postComment);
         return getCommentResponse(postComment, person);
     }
