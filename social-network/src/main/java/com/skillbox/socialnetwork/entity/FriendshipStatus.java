@@ -3,6 +3,7 @@ package com.skillbox.socialnetwork.entity;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Table(name = "friendship_status")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class FriendshipStatus {
 
     @Id
