@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -47,6 +48,7 @@ public class PostControllerTest extends AbstractTest {
     public void setup() {
         super.setup();
         person = new Person();
+        person.setFirstName("user");
         person.setEMail("test@test.ru");
         person.setPassword("password");
         person.setDateAndTimeOfRegistration(LocalDateTime.now().minusDays(5));
@@ -62,7 +64,31 @@ public class PostControllerTest extends AbstractTest {
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
-    void testGetPosts() throws Exception {
+    void testSearchPosts() throws Exception {
+        Tag tag = tagRepository.save(new Tag().setTag("tag"));
+        tagRepository.save(new Tag().setTag("tag2"));
+
+        Post post = new Post();
+        post.setTitle("Title");
+        post.setPostText("Some Text. hi bro");
+        post.setTags(Set.of(tag));
+        post.setDatetime(Instant.now());
+        post.setPerson(person);
+        postRepository.save(post);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/post")
+                        .principal(() -> "test@test.ru")
+                        .param("author", "user")
+                        .param("tag", "tag|tag2")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1));
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.ru", authorities = "user:write")
+    void testGetFeeds() throws Exception {
         Post post = new Post();
         post.setTitle("Title");
         post.setPostText("Some Text. hi bro");

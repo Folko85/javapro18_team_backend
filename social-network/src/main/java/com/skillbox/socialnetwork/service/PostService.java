@@ -63,6 +63,9 @@ public class PostService {
         List<Integer> tags = Arrays.stream(tag.split("\\|"))
                 .map(t -> tagRepository.findByTag(t).orElse(null))
                 .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
+        if (tags.isEmpty()) {
+            tags = tagRepository.findAll().stream().map(Tag::getId).collect(Collectors.toList());
+        }
         Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
         Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateTo);
 
