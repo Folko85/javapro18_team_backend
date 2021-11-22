@@ -16,6 +16,7 @@ import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,22 +38,13 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FriendshipService {
     private final PersonRepository personRepository;
     private final FriendshipRepository friendshipRepository;
     private final PersonService personService;
     private final FriendshipStatusRepository friendshipStatusRepository;
     private final NotificationService notificationService;
-
-    public FriendshipService(PersonRepository personRepository, FriendshipRepository friendshipRepository,
-                             PersonService personService, FriendshipStatusRepository friendshipStatusRepository,
-                             NotificationService notificationService) {
-        this.personRepository = personRepository;
-        this.friendshipRepository = friendshipRepository;
-        this.personService = personService;
-        this.friendshipStatusRepository = friendshipStatusRepository;
-        this.notificationService = notificationService;
-    }
 
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");

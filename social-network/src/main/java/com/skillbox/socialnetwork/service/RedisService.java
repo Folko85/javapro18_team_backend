@@ -2,18 +2,16 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.entity.SaveMessage;
 import com.skillbox.socialnetwork.repository.RedisRepositoryImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class RedisService {
     private final RedisRepositoryImpl redisRepositoryImpl;
-
-    public RedisService(RedisRepositoryImpl redisRepositoryImpl) {
-        this.redisRepositoryImpl = redisRepositoryImpl;
-    }
 
     public void save(String id, String message) {
         SaveMessage saveMessage = new SaveMessage();
