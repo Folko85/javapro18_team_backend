@@ -61,6 +61,7 @@ public class PostControllerTest extends AbstractTest {
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testSearchPosts() throws Exception {
         Tag tag = tagRepository.save(new Tag().setTag("tag"));
+        tagRepository.save(new Tag().setTag("tag2"));
 
         Post post = new Post();
         post.setTitle("Title");
@@ -73,11 +74,11 @@ public class PostControllerTest extends AbstractTest {
                         .get("/api/v1/post")
                         .principal(() -> "test@test.ru")
                         .param("author", "newUser")
-                        .param("tag", "tag")
+                        .param("tag", "tag|tag2")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(0));
     }
 
     @Test
