@@ -31,7 +31,6 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "AND fs.code = ?3 ")
     Optional<FriendshipStatusCode> isMyFriend(int idPerson, int idFriend, FriendshipStatusCode friendshipStatusCode);
 
-
     @Query(nativeQuery = true, value =
             "SELECT perId FROM ( " +
                     "SELECT f.src_person_id as perId from friendship f \n" +
@@ -49,5 +48,4 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
                     "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' " +
                     " ) as per where per.perId != ?1 ")
     List<Integer> findBlockersIds(int id);
-
 }

@@ -5,19 +5,16 @@ import com.skillbox.microservice.entity.Client;
 import com.skillbox.microservice.entity.Message;
 import com.skillbox.microservice.repository.ClientRepository;
 import com.skillbox.microservice.repository.MessageRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MessageService {
     private final MessageRepository messageRepository;
     private final ClientRepository clientRepository;
-
-    public MessageService(MessageRepository messageRepository, ClientRepository clientRepository) {
-        this.messageRepository = messageRepository;
-        this.clientRepository = clientRepository;
-    }
 
     public void saveMessage(MessageDto dto) {
         Client c = new Client();
