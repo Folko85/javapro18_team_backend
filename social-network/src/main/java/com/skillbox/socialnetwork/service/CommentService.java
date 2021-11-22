@@ -6,8 +6,11 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
-import com.skillbox.socialnetwork.api.response.socketio.CommentNotificationData;
-import com.skillbox.socialnetwork.entity.*;
+import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
+import com.skillbox.socialnetwork.entity.Like;
+import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.entity.Post;
+import com.skillbox.socialnetwork.entity.PostComment;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
@@ -20,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.*;
@@ -103,18 +103,18 @@ public class CommentService {
         return getCommentResponse(postComment, person);
     }
 
-    public DataResponse<CommentData> deleteComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+    public DataResponse<CommentData> deleteComment(int commentId, Principal principal) throws CommentNotFoundException {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
-        postComment.setDeleted(postComment.getPerson().getId() == person.getId() || postComment.isDeleted());
+        postComment.setDeleted(Objects.equals(postComment.getPerson().getId(), person.getId()) || postComment.isDeleted());
         commentRepository.save(postComment);
         return getCommentResponse(postComment, person);
     }
 
-    public DataResponse<CommentData> recoveryComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+    public DataResponse<CommentData> recoveryComment(int commentId, Principal principal) throws CommentNotFoundException {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
-        postComment.setDeleted(postComment.getPerson().getId() != person.getId() && postComment.isDeleted());
+        postComment.setDeleted(!Objects.equals(postComment.getPerson().getId(), person.getId()) && postComment.isDeleted());
         commentRepository.save(postComment);
         return getCommentResponse(postComment, person);
     }
@@ -190,21 +190,25 @@ public class CommentService {
 
     private void sendNotification(PostComment postComment) {
         Person person;
-        NotificationType notificationType = NotificationType.POST_COMMENT;
+        SocketNotificationData commentNotificationData = new SocketNotificationData();
         if (postComment.getParent() != null) {
             person = personRepository.findById(getIdFromPostText(postComment.getCommentText())).orElse(postComment.getParent().getPerson());
-            notificationType = NotificationType.COMMENT_COMMENT;
-        } else person = postComment.getPost().getPerson();
-        CommentNotificationData commentNotificationData = new CommentNotificationData();
-        commentNotificationData.setEntityId(postComment.getId())
+            commentNotificationData.setEventType(NotificationType.COMMENT_COMMENT)
+                    .setParentId(postComment.getParent().getId());
+        } else {
+            person = postComment.getPost().getPerson();
+            commentNotificationData.setParentId(postComment.getId())
+                    .setEventType(NotificationType.POST_COMMENT);
+        }
+        commentNotificationData.setEntityId(postComment.getPost().getId())
                 .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
                         .setLastName(postComment.getPerson().getLastName())
                         .setId(postComment.getPerson().getId())
                         .setPhoto(postComment.getPerson().getPhoto()))
-                .setPostId(postComment.getPost().getId())
-                .setId(notificationService.createNotification(person, postComment.getId(), notificationType).getId())
+                .setCurrentEntityId(postComment.getId())
+                .setId(notificationService.createNotification(person, postComment.getId(), commentNotificationData.getEventType()).getId())
                 .setSentTime(postComment.getTime().toInstant(UTC))
-                .setEventType(notificationType);
+                .setEventType(commentNotificationData.getEventType());
         notificationService.sendEvent("comment-notification-response", commentNotificationData, person.getId());
     }
 

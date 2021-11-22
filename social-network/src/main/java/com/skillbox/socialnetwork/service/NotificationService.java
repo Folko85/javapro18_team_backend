@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,27 +98,20 @@ public class NotificationService {
 
     private NotificationData getNotificationData(Notification notification) {
         NotificationData notificationData = new NotificationData();
-        notificationData.setId(notification.getId());
-        notificationData.setSentTime(Instant.now());
-        notificationData.setInfo("poka tak");
-        notificationData.setSentTime(notification.getSendTime().toInstant(UTC));
-        notificationData.setEventType(notification.getType());
+        notificationData.setId(notification.getId())
+                .setSentTime(notification.getSendTime().toInstant(UTC))
+                .setEventType(notification.getType());
         switch (notification.getType()) {
-            case COMMENT_COMMENT, POST_COMMENT -> {
-                notificationData.setEntityAuthor(commentRepository.findById(notification.getEntityId())
-                        .map(postComment -> setAuthData(postComment.getPerson())).orElse(null));
-                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
-            }
-            case FRIEND_REQUEST -> {
-                notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
-                        .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null));
-                notificationData.setEntityId(notificationData.getEntityAuthor().getId());
-            }
-            case MESSAGE -> {
-                notificationData.setEntityAuthor(messageRepository.findById(notification.getEntityId())
-                        .map(message -> setAuthData(message.getAuthor())).orElse(null));
-                notificationData.setEntityId(notification.getEntityId());
-            }
+            case COMMENT_COMMENT, POST_COMMENT -> commentRepository.findById(notification.getEntityId()).ifPresent(comment -> notificationData.setEntityAuthor(setAuthData(comment.getPerson()))
+                    .setEntityId(comment.getPost().getId())
+                    .setParentEntityId(comment.getParent() == null ? comment.getId() : comment.getParent().getId())
+                    .setCurrentEntityId(comment.getId()));
+            case FRIEND_REQUEST -> notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
+                            .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null))
+                    .setEntityId(notificationData.getEntityAuthor().getId());
+            case MESSAGE -> messageRepository.findById(notification.getEntityId()).ifPresent(message -> notificationData.setEntityAuthor(setAuthData(message.getAuthor()))
+                    .setEntityId(message.getId())
+                    .setParentEntityId(message.getDialog().getId()));
         }
         return notificationData;
     }

@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends.StatusFriend;
+import com.skillbox.socialnetwork.api.response.notificationdto.NotificationData;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
@@ -16,7 +17,7 @@ import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
-import lombok.RequiredArgsConstructor;
+import io.jsonwebtoken.lang.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,6 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -38,7 +40,6 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class FriendshipService {
     private final PersonRepository personRepository;
     private final FriendshipRepository friendshipRepository;
@@ -46,99 +47,53 @@ public class FriendshipService {
     private final FriendshipStatusRepository friendshipStatusRepository;
     private final NotificationService notificationService;
 
+    public FriendshipService(PersonRepository personRepository, FriendshipRepository friendshipRepository,
+                             PersonService personService, FriendshipStatusRepository friendshipStatusRepository,
+                             NotificationService notificationService) {
+        this.personRepository = personRepository;
+        this.friendshipRepository = friendshipRepository;
+        this.personService = personService;
+        this.friendshipStatusRepository = friendshipStatusRepository;
+        this.notificationService = notificationService;
+    }
+
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
-        Person person = findPerson(principal.getName());
-        int idPerson = person.getId();
+        Person person = personService.findPersonByEmail(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-//        Page<Person> pageablePersonList = personRepository.findPersonByFriendship(name, person.getId(), FriendshipStatusCode.FRIEND, pageable);
-//        return getPersonResponse(offset, itemPerPage, pageablePersonList);
-        List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
-        Page<Person> byPersonIdList = null;
-
-        if (!friendshipList.isEmpty()) {
-            List<Integer> id = new ArrayList<>();
-
-            for (Friendship f : friendshipList) {
-                int idSrc = f.getSrcPerson().getId();
-                int idDst = f.getDstPerson().getId();
-
-                if (idSrc == idPerson) {
-                    id.add(idDst);
-                } else {
-                    id.add(idSrc);
-                }
-            }
-            byPersonIdList = personRepository.findByPersonIdList(id, pageable);
-        }
-
-        if (byPersonIdList == null) {
-            byPersonIdList = new PageImpl<>(new ArrayList<>(), pageable, 0);
-        }
-
-        return getPersonResponse(offset, itemPerPage, byPersonIdList);
+        Page<Person> friendsPage = personRepository.findFriends(name, person.getId(), pageable);
+        return getPersonResponse(offset, itemPerPage, friendsPage);
     }
 
-    private Person findPerson(String eMail) {
-        return personRepository.findByEMail(eMail)
-                .orElseThrow(() -> new UsernameNotFoundException(eMail));
-    }
-
-    private Person findPerson(int id) {
-        return personRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("" + id));
-    }
-
-    public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
+    public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) throws FriendshipNotFoundException {
         log.debug("метод удаления из друзей");
-        FriendsResponse200 response;
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
-        int srcId = srcPerson.getId();
+        Person dstPerson = personService.findPersonById(id);
+        Friendship friendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPerson.getId(), dstPerson.getId()).orElseThrow(FriendshipNotFoundException::new);
+        friendship.setSrcPerson(dstPerson)
+                .setDstPerson(srcPerson)
+                .setStatus(friendshipStatusRepository
+                        .save(friendship.getStatus()).setCode(FriendshipStatusCode.SUBSCRIBED));
+        friendshipRepository.save(friendship);
 
-        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcId, id);
-
-        if (optionalFriendship.isPresent()) {
-            Friendship friendship = optionalFriendship.get();
-            int statusId = friendship.getStatus().getId();
-
-            FriendshipStatus friendshipStatus = friendshipStatusRepository
-                    .findById(statusId).orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
-            friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
-
-            friendship.setStatus(friendshipStatus);
-
-            friendshipStatusRepository.save(friendshipStatus);
-            friendshipRepository.save(friendship);
-
-            response = getFriendResponse200("Successfully", "Stop being friends");
-        } else {
-            response = getFriendResponse200("Unsuccessfully", "Don't stop being friends");
-        }
-        return response;
+        return getFriendResponse200("Stop being friends");
     }
 
-    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
+    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
         log.debug("метод добавления в друзья");
 
-        FriendsResponse200 addFriendResponse = getFriendResponse200("Successfully", "Adding to friends");
+        Person srcPerson = personService.findPersonByEmail(principal.getName());
 
-        Person srcPerson = personRepository
-                .findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("person not found"));
-        int srcPersonId = srcPerson.getId();
-
-        Person dstPerson = personService.findPersonById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
         if (srcPerson.getId() == id) {
             throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
         }
-
+        Person dstPerson = personService.findPersonById(id);
         if (dstPerson.isDeleted()) {
             throw new DeletedAccountException("This Account was deleted");
         }
-        Optional<Friendship> friendshipOptional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPersonId, id);
-
+        Optional<Friendship> friendshipOptional = friendshipRepository.findRequestFriendship(srcPerson.getId(), dstPerson.getId());
 
         if (isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)) {
             throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
@@ -147,102 +102,66 @@ public class FriendshipService {
             throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
         }
 
-        /**
-         * Src добавляет Dst
-         * Если статуса нет, то создается с татус с кодом REQUEST
-         * Если статус есть и он REQUEST, то меняем его на FRIEND
+        /*
+          Src добавляет Dst
+          Если статуса нет, то создается с татус с кодом REQUEST
+          Если статус есть и он REQUEST, то меняем его на FRIEND
          */
 
-        if (friendshipOptional.isPresent() &&
-                friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.REQUEST) &&
-                friendshipOptional.get().getSrcPerson().getId() == id) {
+        if (friendshipOptional.isPresent()) {
+            if (friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.FRIEND))
+                throw new FriendshipExistException();
+            if (friendshipOptional.get().getSrcPerson().getId().equals(dstPerson.getId()))
+                friendshipStatusRepository
+                        .save(friendshipOptional.get().getStatus()
+                                .setTime(LocalDateTime.now())
+                                .setCode(FriendshipStatusCode.FRIEND));
+            else throw new AddingYourselfToFriends("жди подтверждения");
 
-            FriendshipStatus friendshipStatusById = friendshipStatusRepository
-                    .findById(friendshipOptional.get().getId())
-                    .orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
-            friendshipStatusById.setTime(LocalDateTime.now());
-            friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
-
-            friendshipStatusRepository.save(friendshipStatusById);
-        } else if (friendshipOptional.isEmpty()) {
-            FriendshipStatus friendshipStatus = new FriendshipStatus();
-            friendshipStatus.setTime(LocalDateTime.now());
-            friendshipStatus.setCode(FriendshipStatusCode.REQUEST);
-
-            FriendshipStatus saveFriendshipStatus = friendshipStatusRepository.save(friendshipStatus);
-
-            Friendship newFriendship = new Friendship();
-            newFriendship.setStatus(saveFriendshipStatus);
-            newFriendship.setSrcPerson(srcPerson);
-            newFriendship.setDstPerson(dstPerson);
-
-            friendshipRepository.save(newFriendship);
-            notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
         } else {
-            throw new AddingYourselfToFriends("жди подтверждения");
+            Friendship newFriendship = new Friendship();
+            newFriendship.setStatus(friendshipStatusRepository.save(new FriendshipStatus()
+                            .setTime(LocalDateTime.now())
+                            .setCode(FriendshipStatusCode.REQUEST)))
+                    .setSrcPerson(srcPerson)
+                    .setDstPerson(dstPerson);
+            friendshipRepository.save(newFriendship);
+            //Notification
+            notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
+            sendNotification(newFriendship);
+            //Notification
         }
-        return addFriendResponse;
+        return getFriendResponse200("Adding to friends");
     }
 
-    public ListResponse<AuthData> getListOfApplications(String name, int offset, int itemPerPage, Principal principal) {
-        Person person = findPerson(principal.getName());
+    public ListResponse<AuthData> getFriendsRequests(String name, int offset, int itemPerPage, Principal principal) {
+        Person person = personService.findPersonByEmail(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> personByStatusCode = friendshipRepository
+        Page<Person> personByStatusCode = personRepository
                 .findPersonByStatusCode(name, person.getId(), FriendshipStatusCode.REQUEST, pageable);
-
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
-    /**
-     * TODO
-     * провести редактирование после добавление метода findByOptionalParametrs
-     */
-
     public ListResponse<AuthData> recommendedUsers(int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения рекомендованных друзей");
-        Person person = findPerson(principal.getName());
+        Person person = personService.findPersonByEmail(principal.getName());
         log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        LocalDate birthdayPerson = null;
+        LocalDate birthdayPerson;
         LocalDate startDate = null;
         LocalDate stopDate = null;
         List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
         blockers.add(person.getId());
         if (person.getBirthday() != null) {
+            //подбираем пользователей, возрост которых отличается на +-2 года
             birthdayPerson = person.getBirthday();
             startDate = birthdayPerson.minusYears(2);
             stopDate = birthdayPerson.plusYears(2);
         }
-
-        String city = person.getCity();
-
-        Page<Person> personList;
-
-        //дата рождения указана, города не указан
-        if (birthdayPerson != null && city == null) {
-            log.debug("дата рождения указана, города не указан");
-            //подбираем пользователей, возрост которых отличается на +-2 года
-            personList = personRepository
-                    .findPersonByBirthday(person.getEMail(), startDate, stopDate, pageable, blockers);
-
-            //дата рождения указана и город указан
-        } else if (birthdayPerson != null) {
-            log.debug("дата рождения указана");
-            //подбираем пользователей, возрост которых отличается на +-2 года и в городе проживания
-            personList = personRepository
-                    .findPersonByBirthdayAndCity(person.getEMail(), startDate, stopDate, city, pageable, blockers);
-
-            //город указан
-        } else if (city != null) {
-            log.debug("город указан");
-            personList = personRepository.findPersonByCity(city, person.getEMail(), pageable, blockers);
-
-        } else {
-            log.debug("ни дата рождения, ни город не указан. выбираем рандомных 10 пользователей");
-            pageable = PageRequest.of(0, 10);
-            //выбираем 10 рандомных пользователей
-            personList = get10Users(person.getEMail(), pageable, blockers);
-        }
+        // Получаем для подбора по городу
+        String city = Strings.hasText(person.getCity()) ? person.getCity() : "";
+        Page<Person> personList = personRepository.findByOptionalParametrs(
+                "", "", startDate, stopDate, city, "", pageable, blockers);
 
         if (personList.isEmpty()) {
             pageable = PageRequest.of(0, 10);
@@ -266,19 +185,16 @@ public class FriendshipService {
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
-        log.debug("метод проверки являются ли переданные друзбя друзьями");
-        int idPerson = personRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
+        log.debug("метод проверки являются ли переданные люди друзьями");
+        Person person = personService.findPersonByEmail(principal.getName());
 
         List<StatusFriend> statusFriendList = new ArrayList<>();
-        FriendshipStatusCode friendshipStatusCode;
 
-        for (int friendId : isFriends.getUserIds()) {
-            friendshipStatusCode = friendshipRepository
-                    .isMyFriend(idPerson, friendId, FriendshipStatusCode.FRIEND).orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        for (int friendId : isFriends.getUserIds())
+            statusFriendList.add(new StatusFriend(friendId, friendshipRepository
+                    .isMyFriend(person.getId(), friendId, FriendshipStatusCode.FRIEND)
+                    .orElseThrow(() -> new UsernameNotFoundException("user not found"))));
 
-            statusFriendList.add(new StatusFriend(friendId, friendshipStatusCode));
-        }
 
         ResponseFriendsList responseFriendsList = new ResponseFriendsList();
         responseFriendsList.setData(statusFriendList);
@@ -297,15 +213,6 @@ public class FriendshipService {
         return postResponse;
     }
 
-    private ListResponse<AuthData> getPersonResponseList(int offset, int itemPerPage, List<Person> personList) {
-        ListResponse<AuthData> postResponse = new ListResponse<>();
-        postResponse.setPerPage(itemPerPage);
-        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
-        postResponse.setOffset(offset);
-        postResponse.setTotal(personList.size());
-        postResponse.setData(getPerson4Response(personList));
-        return postResponse;
-    }
 
     private List<AuthData> getPerson4Response(List<Person> persons) {
         List<AuthData> personDataList = new ArrayList<>();
@@ -321,10 +228,10 @@ public class FriendshipService {
         return personDataList;
     }
 
-    private FriendsResponse200 getFriendResponse200(String error, String message) {
+    private FriendsResponse200 getFriendResponse200(String message) {
         FriendsResponse200 response = new FriendsResponse200();
         response.setTimestamp(LocalDateTime.now());
-        response.setError(error);
+        response.setError("Successfully");
         response.setMessage(message);
         return response;
     }
@@ -335,9 +242,9 @@ public class FriendshipService {
      * Src and Dest blocked Each other (DEADLOCK)
      */
     public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
-        Person current = findPerson(principal.getName());
+        Person current = personService.findPersonByEmail(principal.getName());
         if (current.getId() == id) throw new UserBlocksHimSelfException();
-        Person blocking = findPerson(id);
+        Person blocking = personService.findPersonById(id);
         if (blocking.isDeleted()) throw new BlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
@@ -383,9 +290,9 @@ public class FriendshipService {
     }
 
     public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
-        Person current = findPerson(principal.getName());
+        Person current = personService.findPersonByEmail(principal.getName());
         if (current.getId() == id) throw new UserUnBlocksHimSelfException();
-        Person unblocking = findPerson(id);
+        Person unblocking = personService.findPersonById(id);
         if (unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
         if (!isBlockedBy(current.getId(), id, optional)) {
@@ -399,11 +306,10 @@ public class FriendshipService {
         } else {
             if (current.getId().equals(friendship.getSrcPerson().getId())) {
                 friendship.getStatus().setCode(FriendshipStatusCode.WASBLOCKEDBY);
-                friendshipStatusRepository.save(friendship.getStatus());
             } else {
                 friendship.getStatus().setCode(FriendshipStatusCode.BLOCKED);
-                friendshipStatusRepository.save(friendship.getStatus());
             }
+            friendshipStatusRepository.save(friendship.getStatus());
             friendshipRepository.save(friendship);
 
         }
@@ -427,12 +333,9 @@ public class FriendshipService {
     }
 
     private boolean isBlockedBy(int blocker, int blocked, Optional<Friendship> optional) {
-        if (optional.isPresent()) {
-            return (blocker == optional.get().getSrcPerson().getId() && optional.get().getStatus().getCode().equals(FriendshipStatusCode.BLOCKED))
-                    || (blocked == optional.get().getSrcPerson().getId() && optional.get().getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY))
-                    || optional.get().getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK);
-        }
-        return false;
+        return optional.filter(friendship -> (blocker == friendship.getSrcPerson().getId() && friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED))
+                || (blocked == friendship.getSrcPerson().getId() && friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY))
+                || friendship.getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK)).isPresent();
     }
 
     Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
@@ -443,4 +346,17 @@ public class FriendshipService {
         List<Integer> blockers = friendshipRepository.findBlockersIds(id);
         return blockers.isEmpty() ? Collections.singletonList(-1) : blockers;
     }
+
+    private void sendNotification(Friendship friendship) {
+        NotificationData notificationData = new NotificationData();
+        notificationData.setId(friendship.getId());
+        notificationData.setSentTime(Instant.now());
+        notificationData.setEventType(NotificationType.FRIEND_REQUEST);
+        notificationData.setEntityAuthor(setAuthData(friendship.getSrcPerson()));
+        notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+        notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
+
+    }
+
 }
+

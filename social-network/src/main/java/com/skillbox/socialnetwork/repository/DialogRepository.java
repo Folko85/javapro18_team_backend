@@ -3,9 +3,11 @@ package com.skillbox.socialnetwork.repository;
 import com.skillbox.socialnetwork.entity.Dialog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface DialogRepository extends JpaRepository<Dialog, Integer> {
     @Query("SELECT d " +
             "FROM Dialog d " +

@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.api.request.TitlePostTextRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.postdto.IdResponse;
@@ -17,6 +16,7 @@ import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
+import com.skillbox.socialnetwork.repository.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +26,11 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,34 +44,40 @@ public class PostService {
     private final CommentService commentService;
     private final LikeRepository likeRepository;
     private final FriendshipService friendshipService;
+    private final TagRepository tagRepository;
 
-    public PostService(PostRepository postRepository, PersonRepository personRepository, CommentService commentService, LikeRepository likeRepository, FriendshipService friendshipService) {
+    public PostService(PostRepository postRepository, PersonRepository personRepository, CommentService commentService,
+                       LikeRepository likeRepository, FriendshipService friendshipService, TagRepository tagRepository) {
         this.postRepository = postRepository;
         this.personRepository = personRepository;
         this.commentService = commentService;
         this.likeRepository = likeRepository;
         this.friendshipService = friendshipService;
+        this.tagRepository = tagRepository;
     }
 
-    public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage,String author, Principal principal) {
+    public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, String author, String tag, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         List<Integer> blockers = friendshipService.getBlockersId(person.getId());
-        Instant dateT;
-        if(dateTo==-1){
-            dateT = Instant.now();
+        List<Integer> tags = Arrays.stream(tag.split("\\|")).filter(t -> !Objects.equals(t, ""))
+                .map(t -> tagRepository.findByTag(t).orElse(null))
+                .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
+        if (tags.isEmpty()) {
+            tags = tagRepository.findAll().stream().map(Tag::getId).collect(Collectors.toList());
         }
-        else{
-            dateT= Instant.ofEpochMilli(dateTo);
-        }
+        Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
+        Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateFrom);
+
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
                 text,
                 author,
-                Instant.ofEpochMilli(dateFrom),
-                dateT,
+                datetimeFrom,
+                datetimeTo,
                 pageable,
-                blockers
-                );
+                blockers,
+                tags
+        );
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
@@ -78,16 +87,20 @@ public class PostService {
     }
 
 
-    public DataResponse<PostData> putPostById(int id, long publishDate, TitlePostTextRequest requestBody, Principal
+    public DataResponse<PostData> putPostById(int id, long publishDate, PostRequest requestBody, Principal
             principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = findPost(id);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setTitle(requestBody.getTitle());
         post.setPostText(requestBody.getPostText());
+        List<String> tags = requestBody.getTags();
+        if (tags != null) {
+            post.setTags(tags.stream().map(s -> tagRepository.findByTag(s).orElse(null))
+                    .filter(Objects::nonNull).collect(Collectors.toSet()));
+        }
         post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate));
-        postRepository.saveAndFlush(post);
-
+        post = postRepository.saveAndFlush(post);
         return getPostDataResponse(post, person);
     }
 
@@ -212,6 +225,12 @@ public class PostService {
         Post post = new Post();
         post.setPostText(postRequest.getPostText());
         post.setTitle(postRequest.getTitle());
+        List<String> tags = postRequest.getTags();
+        if (tags != null) {
+            post.setTags(tags.stream()
+                    .map(x -> tagRepository.findByTag(x).orElse(null))
+                    .filter(Objects::nonNull).collect(Collectors.toSet()));
+        }
         if (publishDate == 0) {
             post.setDatetime(Instant.now());
         } else {

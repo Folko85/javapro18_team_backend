@@ -45,7 +45,7 @@ public class MessageService {
         this.notificationService = notificationService;
     }
 
-    public ListResponse<MessageData> getMessages(int id, String query, int offset, int itemPerPage, Principal principal) {
+    public ListResponse<MessageData> getMessages(int id, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Person2Dialog person2Dialog = person2DialogRepository.findPerson2DialogByDialogIdAndPersonId(id, person.getId())
                 .orElseThrow(() -> new UsernameNotFoundException(""));
@@ -54,7 +54,7 @@ public class MessageService {
         ListResponse<MessageData> messageDataListResponse = getDialogResponse(offset, itemPerPage, messagePage, person2Dialog);
         person2Dialog.setLastCheckTime(LocalDateTime.now());
         person2DialogRepository.save(person2Dialog);
-        notificationService.sendEvent("unread-response", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString(), person.getId());
+        notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(person.getId()).orElse(0).toString(), person.getId());
         return messageDataListResponse;
     }
 
@@ -78,7 +78,7 @@ public class MessageService {
             if (dialogPerson != person) {
                 notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
                 notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
-                notificationService.sendEvent("unread-response", person2DialogRepository.findUnrededMessageCount(dialogPerson.getId()).orElse(0).toString(), dialogPerson.getId());
+                notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(dialogPerson.getId()).orElse(0).toString(), dialogPerson.getId());
             }
         });
 
@@ -122,12 +122,12 @@ public class MessageService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
-    public AccountResponse getUnreaded(Principal principal) {
+    public AccountResponse getUnread(Principal principal) {
         Person person = findPerson(principal.getName());
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setTimestamp(Instant.now());
         Map<String, String> mapData = new HashMap<>();
-        mapData.put("count", person2DialogRepository.findUnrededMessageCount(person.getId()).orElse(0).toString());
+        mapData.put("count", person2DialogRepository.findUnreadMessagesCount(person.getId()).orElse(0).toString());
         accountResponse.setData(mapData);
         return accountResponse;
     }

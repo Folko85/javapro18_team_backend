@@ -1,7 +1,6 @@
 package com.skillbox.socialnetwork.service;
 
 import com.mailjet.client.errors.MailjetException;
-import com.mailjet.client.errors.MailjetSocketTimeoutException;
 import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
@@ -48,7 +47,7 @@ public class AccountService {
         this.jwtProvider = jwtProvider;
     }
 
-    public AccountResponse register(RegisterRequest registerRequest) throws UserExistException, MailjetSocketTimeoutException, MailjetException {
+    public AccountResponse register(RegisterRequest registerRequest) throws UserExistException, MailjetException {
         if (personRepository.findByEMail(registerRequest.getEMail()).isPresent())
             throw new UserExistException();
         Person person = new Person();
@@ -73,7 +72,7 @@ public class AccountService {
         return getAccountResponse(UTC);
     }
 
-    public String sendRecoveryMessage(RecoveryRequest recoveryRequest) throws MailjetSocketTimeoutException, MailjetException {
+    public String sendRecoveryMessage(RecoveryRequest recoveryRequest) throws MailjetException {
         Person person = findPerson(recoveryRequest.getEMail());
         String code = UUID.randomUUID().toString().replace("-", "").substring(0, 4);
         person.setConfirmationCode(code);
@@ -83,7 +82,7 @@ public class AccountService {
         return code;
     }
 
-    public String recoveryComplete(String key, String eMail) throws MailjetSocketTimeoutException, MailjetException {
+    public String recoveryComplete(String key, String eMail) throws MailjetException {
         Person person = findPerson(eMail);
         if (person.getConfirmationCode().equals(key)) {
             String passwd = UUID.randomUUID().toString().replace("-", "");

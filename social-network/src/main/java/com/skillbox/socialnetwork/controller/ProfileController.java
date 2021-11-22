@@ -34,14 +34,14 @@ public class ProfileController {
                              @RequestParam(name = "last_name", defaultValue = "") String lastName,
                              @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
                              @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
-                             @RequestParam(name = "country_id", defaultValue = "1") int countryId,
-                             @RequestParam(name = "city_id", defaultValue = "1") int cityId,
+                             @RequestParam(name = "country", defaultValue = "") String country,
+                             @RequestParam(name = "city", defaultValue = "") String city,
                              @RequestParam(name = "offset", defaultValue = "0") int offset,
                              @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                              Principal principal) {
 
         ListResponse<FriendsDto> listResponse = personService.searchPerson(firstName, lastName, ageFrom, ageTo,
-                countryId, cityId, offset, itemPerPage, principal);
+                country, city, offset, itemPerPage, principal);
 
         return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }

@@ -5,7 +5,6 @@ import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
 import com.mailjet.client.errors.MailjetException;
-import com.mailjet.client.errors.MailjetSocketTimeoutException;
 import com.mailjet.client.resource.Emailv31;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -26,11 +25,11 @@ public class MailSender {
     @Value("${external.mail.from}")
     private String from;
 
-    public void send(String emailTo, String message) throws MailjetSocketTimeoutException, MailjetException {
+    public void send(String emailTo, String message) throws MailjetException {
         MailjetClient client;
         MailjetRequest request;
         MailjetResponse response;
-        client = new MailjetClient(key,secret, new ClientOptions("v3.1"));
+        client = new MailjetClient(ClientOptions.builder().apiKey(key).apiSecretKey(secret).build());
         request = new MailjetRequest(Emailv31.resource)
                 .property(Emailv31.MESSAGES, new JSONArray()
                         .put(new JSONObject()

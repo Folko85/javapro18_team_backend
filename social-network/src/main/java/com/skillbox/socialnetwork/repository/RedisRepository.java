@@ -7,6 +7,7 @@ import java.util.Map;
 
 @Repository
 public interface RedisRepository {
+
     Map<Object, Object> findAllMessages();
 
     void add(SaveMessage movie);

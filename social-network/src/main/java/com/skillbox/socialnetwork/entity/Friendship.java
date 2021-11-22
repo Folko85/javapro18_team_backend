@@ -1,48 +1,38 @@
 package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table (name = "friendship")
+@Table(name = "friendship")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Friendship {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JoinColumn (columnDefinition = "status_id")
+    @JoinColumn(columnDefinition = "status_id")
     @OneToOne
     private FriendshipStatus status;
 
     @ManyToOne
-    @JoinColumn (name = "src_person_id", nullable = false)
+    @JoinColumn(name = "src_person_id", nullable = false)
     private Person srcPerson;
 
     @ManyToOne
-    @JoinColumn (name = "dst_person_id", nullable = false)
+    @JoinColumn(name = "dst_person_id", nullable = false)
     private Person dstPerson;
 
     public Person getSrcPerson() {
         return srcPerson;
     }
-
-//    public void setSrcPerson(Person srcPerson) {
-//        setSrcPerson(srcPerson, false);
-//    }
-//
-//    public void setSrcPerson(Person srcPerson, boolean otherSideHasBeenSet) {
-//        this.srcPerson = srcPerson;
-//        if (otherSideHasBeenSet) {
-//            return;
-//        }
-//        srcPerson.addFriend(this, true);
-//    }
 
     @Override
     public boolean equals(Object o) {

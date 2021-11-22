@@ -3,34 +3,40 @@ package com.skillbox.socialnetwork.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
 
-//    @Value("${spring.redis.host}")
-    private final String HOST = "localhost";
-//    @Value("${spring.redis.port}")
-    private final int PORT = 5000;
-//    @Value("${spring.redis.password}")
-    private final String PASSWORD = "r-edis1_pass4!";
+    @Value("${spring.redis.host}")
+    String host;
+    @Value("${spring.redis.port}")
+    Integer port;
+
+    @Bean
+    ChannelTopic topic() {
+        return new ChannelTopic("MESSAGES");
+    }
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
-        JedisConnectionFactory jedisConFactory = new JedisConnectionFactory();
-        jedisConFactory.setHostName(HOST);
-        jedisConFactory.setPort(PORT);
-        jedisConFactory.setPassword(PASSWORD);
-        return jedisConFactory;
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        return new JedisConnectionFactory(configuration);
     }
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
-        template.setValueSerializer(new GenericToStringSerializer<Object>(Object.class));
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
     }
 }
