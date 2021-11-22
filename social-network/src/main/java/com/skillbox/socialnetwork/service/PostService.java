@@ -60,7 +60,7 @@ public class PostService {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         List<Integer> blockers = friendshipService.getBlockersId(person.getId());
-        List<Integer> tags = Arrays.stream(tag.split("\\|"))
+        List<Integer> tags = Arrays.stream(tag.split("\\|")).filter(t -> t != "")
                 .map(t -> tagRepository.findByTag(t).orElse(null))
                 .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
         if (tags.isEmpty()) {

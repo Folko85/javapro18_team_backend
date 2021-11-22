@@ -42,18 +42,12 @@ public class PostControllerTest extends AbstractTest {
     @Autowired
     private PersonRepository personRepository;
 
-    Person person;
+    Person owner;
 
     @BeforeEach
     public void setup() {
         super.setup();
-        person = new Person();
-        person.setFirstName("user");
-        person.setEMail("test@test.ru");
-        person.setPassword("password");
-        person.setDateAndTimeOfRegistration(LocalDateTime.now().minusDays(5));
-        person.setLastOnlineTime(LocalDateTime.now().minusDays(3));
-        personRepository.save(person);
+        owner = getPerson("user", "test@test.ru", "password");
     }
 
     @AfterEach
@@ -73,12 +67,12 @@ public class PostControllerTest extends AbstractTest {
         post.setPostText("Some Text. hi bro");
         post.setTags(Set.of(tag));
         post.setDatetime(Instant.now());
-        post.setPerson(person);
+        post.setPerson(getPerson("newUser", "test2@test.ru", "password"));
         postRepository.save(post);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/post")
                         .principal(() -> "test@test.ru")
-                        .param("author", "user")
+                        .param("author", "newUser")
                         .param("tag", "tag")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -93,7 +87,7 @@ public class PostControllerTest extends AbstractTest {
         post.setTitle("Title");
         post.setPostText("Some Text. hi bro");
         post.setDatetime(Instant.now());
-        post.setPerson(person);
+        post.setPerson(getPerson("newUser", "test2@test.ru", "password"));
         postRepository.save(post);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/feeds")
@@ -136,7 +130,7 @@ public class PostControllerTest extends AbstractTest {
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testGetPostById() throws Exception {
         Post post = new Post();
-        post.setPerson(person);
+        post.setPerson(owner);
         post.setDatetime(LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC));
         postRepository.save(post);
         mockMvc.perform(MockMvcRequestBuilders
@@ -152,7 +146,7 @@ public class PostControllerTest extends AbstractTest {
     void testPutPost() throws Exception {
         String json = "{\"title\": \"1\", \"post_text\": \"1\"}";
         Post post = new Post();
-        post.setPerson(person);
+        post.setPerson(owner);
         postRepository.save(post);
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -169,7 +163,7 @@ public class PostControllerTest extends AbstractTest {
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testDeletePost() throws Exception {
         Post post = new Post();
-        post.setPerson(person);
+        post.setPerson(owner);
         post.setDatetime(LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC));
         postRepository.save(post);
 
@@ -185,7 +179,7 @@ public class PostControllerTest extends AbstractTest {
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testRecoverPost() throws Exception {
         Post post = new Post();
-        post.setPerson(person);
+        post.setPerson(owner);
         post.setDatetime(LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC));
         postRepository.save(post);
 
@@ -202,4 +196,16 @@ public class PostControllerTest extends AbstractTest {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
+
+    private Person getPerson(String firstName, String email, String password) {
+        Person person = new Person();
+        person.setFirstName(firstName);
+        person.setEMail(email);
+        person.setPassword(password);
+        person.setDateAndTimeOfRegistration(LocalDateTime.now().minusDays(5));
+        person.setLastOnlineTime(LocalDateTime.now().minusDays(3));
+        return personRepository.save(person);
+
+    }
+
 }
