@@ -40,6 +40,7 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
+
 public class FriendshipService {
     private final PersonRepository personRepository;
     private final FriendshipRepository friendshipRepository;
