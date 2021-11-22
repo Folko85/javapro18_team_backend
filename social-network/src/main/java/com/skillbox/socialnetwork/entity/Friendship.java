@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Table (name = "friendship")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Friendship {
 
     @Id
