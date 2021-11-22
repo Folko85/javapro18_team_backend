@@ -60,32 +60,9 @@ public class FriendshipService {
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
         Person person = findPerson(principal.getName());
-        int idPerson = person.getId();
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        List<Friendship> friendshipList = personRepository.findPersonByFriendship(idPerson, FriendshipStatusCode.FRIEND, pageable);
-        Page<Person> byPersonIdList = null;
-
-        if (!friendshipList.isEmpty()) {
-            List<Integer> id = new ArrayList<>();
-
-            for (Friendship f : friendshipList) {
-                int idSrc = f.getSrcPerson().getId();
-                int idDst = f.getDstPerson().getId();
-
-                if (idSrc == idPerson) {
-                    id.add(idDst);
-                } else {
-                    id.add(idSrc);
-                }
-            }
-            byPersonIdList = personRepository.findByPersonIdList(id, pageable);
-        }
-
-        if (byPersonIdList == null) {
-            byPersonIdList = new PageImpl<>(new ArrayList<>(), pageable, 0);
-        }
-
-        return getPersonResponse(offset, itemPerPage, byPersonIdList);
+        Page<Person> friendsPage = personRepository.findFriends(name, person.getId(), pageable);
+        return getPersonResponse(offset, itemPerPage, friendsPage);
     }
 
     private Person findPerson(String eMail) {
@@ -152,16 +129,15 @@ public class FriendshipService {
             throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
         }
 
-        /**
-         * Src добавляет Dst
-         * Если статуса нет, то создается с татус с кодом REQUEST
-         * Если статус есть и он REQUEST, то меняем его на FRIEND
+        /*
+          Src добавляет Dst
+          Если статуса нет, то создается с татус с кодом REQUEST
+          Если статус есть и он REQUEST, то меняем его на FRIEND
          */
 
         if (friendshipOptional.isPresent() &&
                 friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.REQUEST) &&
                 friendshipOptional.get().getSrcPerson().getId() == id) {
-
 
 
             FriendshipStatus friendshipStatusById = friendshipOptional.get().getStatus();
@@ -196,7 +172,7 @@ public class FriendshipService {
     public ListResponse<AuthData> getFriendsRequests(String name, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Person> personByStatusCode = friendshipRepository
+        Page<Person> personByStatusCode = personRepository
                 .findPersonByStatusCode(name, person.getId(), FriendshipStatusCode.REQUEST, pageable);
 
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
@@ -207,7 +183,7 @@ public class FriendshipService {
         Person person = findPerson(principal.getName());
         log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        LocalDate birthdayPerson = null;
+        LocalDate birthdayPerson;
         LocalDate startDate = null;
         LocalDate stopDate = null;
         List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
@@ -276,15 +252,6 @@ public class FriendshipService {
         return postResponse;
     }
 
-    private ListResponse<AuthData> getPersonResponseList(int offset, int itemPerPage, List<Person> personList) {
-        ListResponse<AuthData> postResponse = new ListResponse<>();
-        postResponse.setPerPage(itemPerPage);
-        postResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
-        postResponse.setOffset(offset);
-        postResponse.setTotal(personList.size());
-        postResponse.setData(getPerson4Response(personList));
-        return postResponse;
-    }
 
     private List<AuthData> getPerson4Response(List<Person> persons) {
         List<AuthData> personDataList = new ArrayList<>();
@@ -378,11 +345,10 @@ public class FriendshipService {
         } else {
             if (current.getId().equals(friendship.getSrcPerson().getId())) {
                 friendship.getStatus().setCode(FriendshipStatusCode.WASBLOCKEDBY);
-                friendshipStatusRepository.save(friendship.getStatus());
             } else {
                 friendship.getStatus().setCode(FriendshipStatusCode.BLOCKED);
-                friendshipStatusRepository.save(friendship.getStatus());
             }
+            friendshipStatusRepository.save(friendship.getStatus());
             friendshipRepository.save(friendship);
 
         }
