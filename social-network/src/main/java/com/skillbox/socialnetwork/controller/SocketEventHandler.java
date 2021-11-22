@@ -82,7 +82,7 @@ public class SocketEventHandler {
     @OnEvent(value = "stop-typing")
     public void onStopTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
         if (client != null) {
-            template.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.stopTyping(data, id));
+            template.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.stopTyping(data));
 
         }
     }

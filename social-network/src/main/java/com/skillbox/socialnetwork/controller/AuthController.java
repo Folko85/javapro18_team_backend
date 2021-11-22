@@ -35,7 +35,7 @@ public class AuthController {
 
     @GetMapping("/logout")
     @Operation(summary = "logout")
-    public ResponseEntity<AccountResponse> logout() throws Exception {
+    public ResponseEntity<AccountResponse> logout() {
         return new ResponseEntity<>(authService.logout(), HttpStatus.OK);
     }
 }

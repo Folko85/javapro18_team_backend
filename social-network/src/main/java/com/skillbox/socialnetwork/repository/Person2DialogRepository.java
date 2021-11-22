@@ -5,10 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-
+@Repository
 public interface Person2DialogRepository extends JpaRepository<Person2Dialog, Integer> {
 
     @Query("SELECT p2d " +
@@ -29,5 +30,5 @@ public interface Person2DialogRepository extends JpaRepository<Person2Dialog, In
             "LEFT JOIN Message m ON m.dialog.id = d.id " +
             "WHERE p.id = ?1  AND m.time > p2d.lastCheckTime AND m.author.id <> ?1 " +
             "GROUP BY p.id ")
-    Optional<Integer> findUnrededMessageCount(int personId);
+    Optional<Integer> findUnreadMessagesCount(int personId);
 }
