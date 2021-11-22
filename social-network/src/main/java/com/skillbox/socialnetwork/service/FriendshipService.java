@@ -80,24 +80,20 @@ public class FriendshipService {
         return getFriendResponse200("Stop being friends");
     }
 
-    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
+    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
         log.debug("метод добавления в друзья");
-
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
 
 
-        Person dstPerson = personService.findPersonById(id);
-
-        if (srcPerson.getId().equals(dstPerson.getId())) {
+        if (srcPerson.getId() == id) {
             throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
         }
-
+        Person dstPerson = personService.findPersonById(id);
         if (dstPerson.isDeleted()) {
             throw new DeletedAccountException("This Account was deleted");
         }
         Optional<Friendship> friendshipOptional = friendshipRepository.findRequestFriendship(srcPerson.getId(), dstPerson.getId());
-
 
         if (isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)) {
             throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
@@ -112,16 +108,17 @@ public class FriendshipService {
           Если статус есть и он REQUEST, то меняем его на FRIEND
          */
 
-        if (friendshipOptional.isPresent() && friendshipOptional.get().getSrcPerson().getId().equals(dstPerson.getId())) {
+        if (friendshipOptional.isPresent()) {
+            if (friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.FRIEND))
+                throw new FriendshipExistException();
+            if (friendshipOptional.get().getSrcPerson().getId().equals(dstPerson.getId()))
+                friendshipStatusRepository
+                        .save(friendshipOptional.get().getStatus()
+                                .setTime(LocalDateTime.now())
+                                .setCode(FriendshipStatusCode.FRIEND));
+            else throw new AddingYourselfToFriends("жди подтверждения");
 
-            FriendshipStatus friendshipStatusById = friendshipOptional.get().getStatus();
-
-            friendshipStatusById.setTime(LocalDateTime.now());
-            friendshipStatusById.setCode(FriendshipStatusCode.FRIEND);
-
-            friendshipStatusRepository.save(friendshipStatusById);
-        } else if (friendshipOptional.isEmpty()) {
-
+        } else {
             Friendship newFriendship = new Friendship();
             newFriendship.setStatus(friendshipStatusRepository.save(new FriendshipStatus()
                             .setTime(LocalDateTime.now())
@@ -134,8 +131,6 @@ public class FriendshipService {
             notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
             sendNotification(newFriendship);
             //Notification
-        } else {
-            throw new AddingYourselfToFriends("жди подтверждения");
         }
         return getFriendResponse200("Adding to friends");
     }
@@ -192,7 +187,7 @@ public class FriendshipService {
     }
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
-        log.debug("метод проверки являются ли переданные друзбя друзьями");
+        log.debug("метод проверки являются ли переданные люди друзьями");
         int idPerson = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
 

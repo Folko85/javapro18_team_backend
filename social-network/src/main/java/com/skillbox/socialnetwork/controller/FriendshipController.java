@@ -51,7 +51,7 @@ public class FriendshipController {
             description = "Принть/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<FriendsResponse200> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubcribingOnBlockerPersonException, DeletedAccountException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
+    public ResponseEntity<FriendsResponse200> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubcribingOnBlockerPersonException, DeletedAccountException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
         return new ResponseEntity<>(friendshipService.addNewFriend(id, principal), HttpStatus.OK);
 
     }
