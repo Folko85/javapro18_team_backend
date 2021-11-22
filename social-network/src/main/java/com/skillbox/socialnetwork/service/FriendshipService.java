@@ -125,7 +125,6 @@ public class FriendshipService {
                             .setCode(FriendshipStatusCode.REQUEST)))
                     .setSrcPerson(srcPerson)
                     .setDstPerson(dstPerson);
-
             friendshipRepository.save(newFriendship);
             //Notification
             notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
@@ -140,7 +139,6 @@ public class FriendshipService {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> personByStatusCode = personRepository
                 .findPersonByStatusCode(name, person.getId(), FriendshipStatusCode.REQUEST, pageable);
-
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
@@ -188,18 +186,15 @@ public class FriendshipService {
 
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
         log.debug("метод проверки являются ли переданные люди друзьями");
-        int idPerson = personRepository.findByEMail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("person not found")).getId();
+        Person person = personService.findPersonByEmail(principal.getName());
 
         List<StatusFriend> statusFriendList = new ArrayList<>();
-        FriendshipStatusCode friendshipStatusCode;
 
-        for (int friendId : isFriends.getUserIds()) {
-            friendshipStatusCode = friendshipRepository
-                    .isMyFriend(idPerson, friendId, FriendshipStatusCode.FRIEND).orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        for (int friendId : isFriends.getUserIds())
+            statusFriendList.add(new StatusFriend(friendId, friendshipRepository
+                    .isMyFriend(person.getId(), friendId, FriendshipStatusCode.FRIEND)
+                    .orElseThrow(() -> new UsernameNotFoundException("user not found"))));
 
-            statusFriendList.add(new StatusFriend(friendId, friendshipStatusCode));
-        }
 
         ResponseFriendsList responseFriendsList = new ResponseFriendsList();
         responseFriendsList.setData(statusFriendList);
