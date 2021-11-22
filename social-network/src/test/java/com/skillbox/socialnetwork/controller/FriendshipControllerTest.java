@@ -31,7 +31,7 @@ class FriendshipControllerTest extends AbstractTest {
     private PersonRepository personRepository;
 
     @Autowired
-    private FriendshipRepository friendshipRepository;
+        private FriendshipRepository friendshipRepository;
 
     Person petr;
 
@@ -84,7 +84,7 @@ class FriendshipControllerTest extends AbstractTest {
     void stopBeingFriends() throws Exception {
         mockMvc.perform(delete("/api/v1/friends/{id}", petr.getId().toString())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
