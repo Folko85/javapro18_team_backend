@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
+
 @Slf4j
 @Service
 public class PostService {
@@ -68,22 +69,15 @@ public class PostService {
         List<Integer> tags = Arrays.stream(tag.split("\\|")).filter(t -> !Objects.equals(t, ""))
                 .map(t -> tagRepository.findByTag(t).orElse(null))
                 .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
-       int tagCount = tags.size();
+        Page<Post> pageablePostList;
         if (tags.isEmpty()) {
-            tags = tagRepository.findAll().stream().map(Tag::getId).collect(Collectors.toList());
+            pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags(text, author,
+                    datetimeFrom, datetimeTo, pageable, blockers);
+        } else {
+            pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(text, author, datetimeFrom,
+                    datetimeTo, pageable, blockers, tags, tags.size());
         }
 
-
-        Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
-                text,
-                author,
-                datetimeFrom,
-                datetimeTo,
-                pageable,
-                blockers,
-                tags,
-                tagCount
-        );
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
