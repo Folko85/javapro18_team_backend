@@ -173,4 +173,11 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(FriendshipNotFoundException.class)
+    public ResponseEntity<BadRequestResponse> handleFriendshipNotFoundException(FriendshipNotFoundException exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("Friend not found");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
 }
