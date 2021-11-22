@@ -79,7 +79,7 @@ public class PostControllerTest extends AbstractTest {
                         .get("/api/v1/post")
                         .principal(() -> "test@test.ru")
                         .param("author", "user")
-                        .param("tag", "tag")
+                        .param("tag", "tag|tag2")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
