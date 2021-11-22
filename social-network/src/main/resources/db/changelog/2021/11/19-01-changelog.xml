@@ -7,13 +7,13 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <changeSet id="2021111901" author="Konstantin">
         <addColumn tableName="person">
-            <column name="deleted_timestamp" type="datetime" />
+            <column name="deleted_at" type="datetime" />
         </addColumn>
         <addColumn tableName="post">
-            <column name="deleted_timestamp" type="datetime" />
+            <column name="deleted_at" type="datetime" />
         </addColumn>
         <addColumn tableName="post_comment">
-            <column name="deleted_timestamp" type="datetime" />
+            <column name="deleted_at" type="datetime" />
         </addColumn>
     </changeSet>
 

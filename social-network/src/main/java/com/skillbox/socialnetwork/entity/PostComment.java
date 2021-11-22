@@ -11,8 +11,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@SQLDelete(sql = "UPDATE table_product SET is_deleted = true WHERE id=?")
-@Where(clause = "is_deleted=false")
 @Entity
 @Table(name = "post_comment")
 @Getter
