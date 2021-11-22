@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -20,7 +19,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.time.ZoneOffset.UTC;
@@ -58,14 +56,9 @@ public class PersonService {
         return result;
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Person> findPersonById(Integer id) {
-        return personRepository.findById(id);
-    }
 
-    @Transactional(readOnly = true)
     public ListResponse<FriendsDto> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, String country,
-                                     String encoded_city, int offset, int itemPerPage, Principal principal) {
+                                                 String encoded_city, int offset, int itemPerPage, Principal principal) {
         String city;
         try {
             city = URLDecoder.decode(encoded_city, StandardCharsets.UTF_8.toString());
@@ -79,18 +72,16 @@ public class PersonService {
         Page<Person> personPage;
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
-        List<Integer> blockers =friendshipRepository.findBlockersIds(person.getId());
+        List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
         blockers.add(person.getId());
         LocalDate from = LocalDate.now().minusYears(ageTo);
         LocalDate to = LocalDate.now().minusYears(ageFrom);
-        if(ageFrom == ageTo && ageFrom == -1){
-            from=null;
-            to=null;
-        }
-        else if (ageFrom==-1){
+        if (ageFrom == ageTo && ageFrom == -1) {
+            from = null;
+            to = null;
+        } else if (ageFrom == -1) {
             to = LocalDate.now();
-        }
-        else if(ageTo ==  -1){
+        } else if (ageTo == -1) {
             from = LocalDate.parse("1900-01-01");
         }
         personPage = personRepository.findByOptionalParametrs(firstName,
@@ -100,11 +91,16 @@ public class PersonService {
 
     }
 
-    @Transactional(readOnly = true)
     public Person findPersonByEmail(String eMail) {
-        return personRepository
-                .findByEMail(eMail).orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        return personRepository.findByEMail(eMail)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
+
+    public Person findPersonById(Integer id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+    }
+
 
     private ListResponse<FriendsDto> getPersonResponse(int offset, int itemPerPage, Page<Person> pageablePersonList) {
         List<FriendsDto> persons = pageablePersonList.stream().map(this::friendsToPojo).collect(Collectors.toList());

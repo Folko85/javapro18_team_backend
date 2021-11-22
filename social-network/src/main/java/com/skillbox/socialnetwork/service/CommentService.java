@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.*;
@@ -106,19 +103,18 @@ public class CommentService {
         return getCommentResponse(postComment, person);
     }
 
-    public DataResponse<CommentData> deleteComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+    public DataResponse<CommentData> deleteComment(int commentId, Principal principal) throws CommentNotFoundException {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
-        postComment.setDeleted(postComment.getPerson().getId() == person.getId() || postComment.isDeleted());
-        postComment.setDeletedTimestamp(LocalDateTime.now());
+        postComment.setDeleted(Objects.equals(postComment.getPerson().getId(), person.getId()) || postComment.isDeleted());
         commentRepository.save(postComment);
         return getCommentResponse(postComment, person);
     }
 
-    public DataResponse<CommentData> recoveryComment(int itemId, int commentId, Principal principal) throws CommentNotFoundException {
+    public DataResponse<CommentData> recoveryComment(int commentId, Principal principal) throws CommentNotFoundException {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
-        postComment.setDeleted(postComment.getPerson().getId() != person.getId() && postComment.isDeleted());
+        postComment.setDeleted(!Objects.equals(postComment.getPerson().getId(), person.getId()) && postComment.isDeleted());
         commentRepository.save(postComment);
         return getCommentResponse(postComment, person);
     }
