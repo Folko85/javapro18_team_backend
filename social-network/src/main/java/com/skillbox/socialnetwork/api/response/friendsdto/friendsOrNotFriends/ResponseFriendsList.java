@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class ResponseFriendsList implements Dto {
-    List<StatusFriend> data;
+    private List<StatusFriend> data;
 }
