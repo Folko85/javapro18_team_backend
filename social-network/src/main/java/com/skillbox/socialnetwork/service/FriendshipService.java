@@ -75,30 +75,22 @@ public class FriendshipService {
                 .orElseThrow(() -> new UsernameNotFoundException("" + id));
     }
 
-    public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) {
+    public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) throws FriendshipNotFoundException {
         log.debug("метод удаления из друзей");
 
-        Person srcPerson = personService.findPersonByEmail(principal.getName());
+        Person srcPerson = findPerson(principal.getName());
+        Person dstPerson = findPerson(id);
+        Friendship friendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPerson.getId(), dstPerson.getId()).orElseThrow(FriendshipNotFoundException::new);
+        FriendshipStatus friendshipStatus = friendship.getStatus();
+        friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
+        friendship.setSrcPerson(srcPerson);
+        friendship.setDstPerson(dstPerson);
+        friendship.setStatus(friendshipStatus);
 
-        Optional<Friendship> optionalFriendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPerson.getId(), id);
+        friendshipStatusRepository.save(friendshipStatus);
+        friendshipRepository.save(friendship);
 
-        if (optionalFriendship.isPresent()) {
-            Friendship friendship = optionalFriendship.get();
-            int statusId = friendship.getStatus().getId();
-
-            FriendshipStatus friendshipStatus = friendshipStatusRepository
-                    .findById(statusId).orElseThrow(() -> new UsernameNotFoundException("friendship status not found"));
-            friendshipStatus.setCode(FriendshipStatusCode.SUBSCRIBED);
-
-            friendship.setStatus(friendshipStatus);
-
-            friendshipStatusRepository.save(friendshipStatus);
-            friendshipRepository.save(friendship);
-
-            return getFriendResponse200("Successfully", "Stop being friends");
-        } else {
-            return getFriendResponse200("Unsuccessfully", "Don't stop being friends");
-        }
+        return getFriendResponse200("Successfully", "Stop being friends");
     }
 
     public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends {
