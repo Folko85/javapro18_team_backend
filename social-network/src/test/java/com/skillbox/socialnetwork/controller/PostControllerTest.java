@@ -60,13 +60,13 @@ public class PostControllerTest extends AbstractTest {
     public void cleanup() {
         personRepository.deleteAll();
         postRepository.deleteAll();
+        tagRepository.deleteAll();
     }
 
     @Test
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void testSearchPosts() throws Exception {
         Tag tag = tagRepository.save(new Tag().setTag("tag"));
-        tagRepository.save(new Tag().setTag("tag2"));
 
         Post post = new Post();
         post.setTitle("Title");
@@ -79,7 +79,7 @@ public class PostControllerTest extends AbstractTest {
                         .get("/api/v1/post")
                         .principal(() -> "test@test.ru")
                         .param("author", "user")
-                        .param("tag", "tag|tag2")
+                        .param("tag", "tag")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
