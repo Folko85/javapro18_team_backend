@@ -154,7 +154,7 @@ public class DialogService {
         }
     }
 
-    public void stopTyping(TypingData typingData, int personId) {
+    public void stopTyping(TypingData typingData) {
         Optional<Dialog> dialog = dialogRepository.findById(typingData.getDialog());
         Optional<Person> personOptional = personRepository.findById(typingData.getAuthor());
         if (dialog.isPresent() && personOptional.isPresent()) {
@@ -172,7 +172,7 @@ public class DialogService {
             person2DialogRepository.findPerson2DialogByDialogIdAndPersonId(dialog.get().getId(), personOptional.get().getId())
                     .ifPresent(person2Dialog -> person2DialogRepository.save(person2Dialog.setLastCheckTime(LocalDateTime.now())));
             notificationService.sendEvent("unread-response", person2DialogRepository
-                    .findUnrededMessageCount(personOptional.get().getId())
+                    .findUnreadMessagesCount(personOptional.get().getId())
                     .orElse(0).toString(), personOptional.get().getId());
 
         }

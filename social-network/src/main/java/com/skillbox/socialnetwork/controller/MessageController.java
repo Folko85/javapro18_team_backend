@@ -32,7 +32,7 @@ public class MessageController {
                                                                  @RequestParam(name = "itemPerPage", defaultValue = "1000") int itemPerPage,
                                                                  @RequestParam(name = "fromMessageId", defaultValue = "0") int fromMessageId,
                                                                  Principal principal) {
-        return new ResponseEntity<>(messageService.getMessages(id, query, offset, itemPerPage, principal), HttpStatus.OK);
+        return new ResponseEntity<>(messageService.getMessages(id, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
     @PostMapping("/dialogs/{id}/messages")
@@ -44,7 +44,7 @@ public class MessageController {
     }
     @GetMapping("/dialogs/unreaded")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<AccountResponse> getUnreaded(Principal principal) {
-        return new ResponseEntity<>(messageService.getUnreaded(principal), HttpStatus.OK);
+    public ResponseEntity<AccountResponse> getUnread(Principal principal) {
+        return new ResponseEntity<>(messageService.getUnread(principal), HttpStatus.OK);
     }
 }

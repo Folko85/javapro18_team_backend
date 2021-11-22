@@ -54,7 +54,7 @@ public class CommentController {
     public ResponseEntity<DataResponse<CommentData>> deleteComment(@PathVariable int id,
                                                       @PathVariable(name = "comment_id") int commentId,
                                                       Principal principal) throws CommentNotFoundException {
-        return new ResponseEntity<>(commentService.deleteComment(id, commentId, principal), HttpStatus.OK);
+        return new ResponseEntity<>(commentService.deleteComment(commentId, principal), HttpStatus.OK);
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}/recover")
@@ -63,7 +63,7 @@ public class CommentController {
     public ResponseEntity<DataResponse<CommentData>> recoveryComment(@PathVariable int id,
                                                         @PathVariable(name = "comment_id") int commentId,
                                                         Principal principal) throws CommentNotFoundException {
-        return new ResponseEntity<>(commentService.recoveryComment(id, commentId, principal), HttpStatus.OK);
+        return new ResponseEntity<>(commentService.recoveryComment(commentId, principal), HttpStatus.OK);
     }
 
     @GetMapping("/post/{id}/comments")
