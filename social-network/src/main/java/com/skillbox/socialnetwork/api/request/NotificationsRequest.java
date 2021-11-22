@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class NotificationsRequest {
-      @JsonProperty("notification_type")
-     private String notificationType;
-     private boolean enable;
+    @JsonProperty("notification_type")
+    private String notificationType;
+    private boolean enable;
 }
