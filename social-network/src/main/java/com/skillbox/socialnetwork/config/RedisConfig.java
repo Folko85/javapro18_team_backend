@@ -20,7 +20,7 @@ public class RedisConfig {
 
     @Bean
     public ChannelTopic topic() {
-        return new ChannelTopic("MESSAGES");
+        return new ChannelTopic("Session");
     }
 
     @Bean

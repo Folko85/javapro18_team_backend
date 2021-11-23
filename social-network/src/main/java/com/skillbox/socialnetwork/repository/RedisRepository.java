@@ -1,18 +1,18 @@
 package com.skillbox.socialnetwork.repository;
 
-import com.skillbox.socialnetwork.entity.SaveMessage;
-import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import java.util.Map;
-
-@Repository
 public interface RedisRepository {
 
-    Map<Object, Object> findAllMessages();
+    List<UUID> findAll();
 
-    void add(SaveMessage movie);
+    Optional<UUID> findByUserId(Integer userId);
 
-    void delete(String id);
+    void save(Integer userId, UUID sessionId);
 
-    SaveMessage findMessage(String id);
+    void deleteByUserId(Integer userId);
+
+    Optional<Integer> findByUserUUID(UUID userUUID);
 }
