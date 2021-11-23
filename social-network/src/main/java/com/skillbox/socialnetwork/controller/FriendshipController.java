@@ -61,9 +61,9 @@ public class FriendshipController {
     @GetMapping("/api/v1/friends/request")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<AuthData>> getFriendsRequests(@RequestParam(name = "name", defaultValue = "") String name,
-                                                                   @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                                   @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                                   Principal principal) {
+                                                                     @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                                     @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                                     Principal principal) {
         return new ResponseEntity<>(friendshipService.getFriendsRequests(name, offset, itemPerPage, principal), HttpStatus.OK);
     }
 

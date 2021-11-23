@@ -42,9 +42,9 @@ public class CommentController {
     @Operation(summary = "Редактировать коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<CommentData>> putComment(@PathVariable int id,
-                                                   @PathVariable(name = "comment_id") int commentId,
-                                                   @RequestBody CommentRequest commentRequest,
-                                                   Principal principal) throws PostNotFoundException, CommentNotFoundException {
+                                                                @PathVariable(name = "comment_id") int commentId,
+                                                                @RequestBody CommentRequest commentRequest,
+                                                                Principal principal) throws PostNotFoundException, CommentNotFoundException {
         return new ResponseEntity<>(commentService.putComment(id, commentId, commentRequest, principal), HttpStatus.OK);
     }
 
@@ -52,8 +52,8 @@ public class CommentController {
     @Operation(summary = "Удалить коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<CommentData>> deleteComment(@PathVariable int id,
-                                                      @PathVariable(name = "comment_id") int commentId,
-                                                      Principal principal) throws CommentNotFoundException {
+                                                                   @PathVariable(name = "comment_id") int commentId,
+                                                                   Principal principal) throws CommentNotFoundException {
         return new ResponseEntity<>(commentService.deleteComment(commentId, principal), HttpStatus.OK);
     }
 
@@ -61,8 +61,8 @@ public class CommentController {
     @Operation(summary = "Восстановить коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<CommentData>> recoveryComment(@PathVariable int id,
-                                                        @PathVariable(name = "comment_id") int commentId,
-                                                        Principal principal) throws CommentNotFoundException {
+                                                                     @PathVariable(name = "comment_id") int commentId,
+                                                                     Principal principal) throws CommentNotFoundException {
         return new ResponseEntity<>(commentService.recoveryComment(commentId, principal), HttpStatus.OK);
     }
 
@@ -70,9 +70,9 @@ public class CommentController {
     @Operation(summary = "Получить коментарии", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<CommentData>> getFeeds(@RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                 @RequestParam(name = "itemPerPage", defaultValue = "5") int itemPerPage,
-                                                 @PathVariable int id,
-                                                 Principal principal) throws PostNotFoundException {
+                                                              @RequestParam(name = "itemPerPage", defaultValue = "5") int itemPerPage,
+                                                              @PathVariable int id,
+                                                              Principal principal) throws PostNotFoundException {
         return new ResponseEntity<>(commentService.getPostComments(offset, itemPerPage, id, principal), HttpStatus.OK);
     }
 }

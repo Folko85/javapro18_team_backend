@@ -63,9 +63,9 @@ public class PostController {
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Изменить пост", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<PostData>> putPostById(@PathVariable int id,
-                                         @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
-                                         @RequestBody PostRequest requestBody,
-                                         Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+                                                              @RequestParam(name = "publish_date", required = false, defaultValue = "0") long publishDate,
+                                                              @RequestBody PostRequest requestBody,
+                                                              Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         return new ResponseEntity<>(postService.putPostById(id, publishDate, requestBody, principal), HttpStatus.OK);
     }
 
@@ -73,7 +73,7 @@ public class PostController {
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Удалить пост", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<PostData>> deletePostById(@PathVariable int id,
-                                            Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
+                                                                 Principal principal) throws PostNotFoundException, UserAndAuthorEqualsException {
         return new ResponseEntity<>(postService.deletePostById(id, principal), HttpStatus.OK);
     }
 
@@ -91,9 +91,9 @@ public class PostController {
     @Operation(summary = "Получить посты новостях", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<PostData>> getFeeds(@RequestParam(name = "text", defaultValue = "") String text,
-                                                 @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                 @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                 Principal principal) {
+                                                           @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                           @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                           Principal principal) {
         return new ResponseEntity<>(postService.getFeeds(text, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
@@ -101,9 +101,9 @@ public class PostController {
     @Operation(summary = "Получить посты на стене", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<PostData>> getUserWall(@PathVariable int id,
-                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                    @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage,
-                                                    Principal principal) {
+                                                              @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                              @RequestParam(name = "itemPerPage", defaultValue = "10") int itemPerPage,
+                                                              Principal principal) {
         return new ResponseEntity<>(postService.getPersonWall(id, offset, itemPerPage, principal), HttpStatus.OK);
     }
 
@@ -111,8 +111,8 @@ public class PostController {
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Создать пост на стене", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<PostData>> getUserWall(@PathVariable int id,
-                                                    @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
-                                                    @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {
+                                                              @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+                                                              @RequestBody PostRequest postRequest, Principal principal) throws PostCreationExecption {
         return new ResponseEntity<>(postService.createPost(id, publishDate, postRequest, principal), HttpStatus.OK);
     }
 }

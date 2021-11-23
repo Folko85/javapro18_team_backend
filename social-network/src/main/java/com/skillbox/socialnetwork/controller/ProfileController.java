@@ -31,14 +31,14 @@ public class ProfileController {
     @PreAuthorize("hasAuthority('user:write')")
     public @ResponseBody
     ResponseEntity<ListResponse<FriendsDto>> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
-                             @RequestParam(name = "last_name", defaultValue = "") String lastName,
-                             @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
-                             @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
-                             @RequestParam(name = "country", defaultValue = "") String country,
-                             @RequestParam(name = "city", defaultValue = "") String city,
-                             @RequestParam(name = "offset", defaultValue = "0") int offset,
-                             @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                             Principal principal) {
+                                                    @RequestParam(name = "last_name", defaultValue = "") String lastName,
+                                                    @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
+                                                    @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
+                                                    @RequestParam(name = "country", defaultValue = "") String country,
+                                                    @RequestParam(name = "city", defaultValue = "") String city,
+                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                    @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                    Principal principal) {
 
         ListResponse<FriendsDto> listResponse = personService.searchPerson(firstName, lastName, ageFrom, ageTo,
                 country, city, offset, itemPerPage, principal);
