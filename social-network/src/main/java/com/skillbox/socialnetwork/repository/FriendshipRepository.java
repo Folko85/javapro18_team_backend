@@ -14,9 +14,15 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
 
     @Query("SELECT f FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
+            "WHERE f.srcPerson.id = :src AND f.dstPerson.id = :dst " +
+            "OR f.srcPerson.id = :dst AND f.dstPerson.id = :src ")
+    Optional<Friendship> findFriendshipBySrcPersonAndDstPerson(int src, int dst);
+
+    @Query("SELECT f FROM Friendship f " +
+            "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
             "WHERE (f.srcPerson.id = :src AND f.dstPerson.id = :dst " +
             "OR f.srcPerson.id = :dst AND f.dstPerson.id = :src) AND fs.code = 'FRIEND' ")
-    Optional<Friendship> findFriendshipBySrcPersonAndDstPerson(int src, int dst);
+    Optional<Friendship> findFriendBySrcPersonAndDstPerson(int src, int dst);
 
     @Query("SELECT f FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +

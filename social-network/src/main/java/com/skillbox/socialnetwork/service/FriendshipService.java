@@ -71,7 +71,7 @@ public class FriendshipService {
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
         Person dstPerson = personService.findPersonById(id);
-        Friendship friendship = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(srcPerson.getId(), dstPerson.getId()).orElseThrow(FriendshipNotFoundException::new);
+        Friendship friendship = friendshipRepository.findFriendBySrcPersonAndDstPerson(srcPerson.getId(), dstPerson.getId()).orElseThrow(FriendshipNotFoundException::new);
         friendship.setSrcPerson(dstPerson)
                 .setDstPerson(srcPerson)
                 .setStatus(friendshipStatusRepository
