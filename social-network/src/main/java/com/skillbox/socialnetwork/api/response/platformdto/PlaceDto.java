@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
-@Accessors (chain = true)
+@Accessors(chain = true)
 @Schema(description = "Список городов")
 public class PlaceDto implements Dto {
 
-    @Schema (description = "Идентификатор города/страны")
-    int id;
-    @Schema (description = "Название города/страны")
-    String title;
+    @Schema(description = "Идентификатор города/страны")
+    private int id;
+    @Schema(description = "Название города/страны")
+    private String title;
 }

@@ -23,10 +23,10 @@ public class CORSConfig implements WebMvcConfigurer {
 
         List<String> allowedOrigins = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            if (environment.getProperty("cors["+ i +"]") == null){
+            if (environment.getProperty("cors[" + i + "]") == null) {
                 break;
             }
-            allowedOrigins.add(environment.getProperty("cors["+ i +"]"));
+            allowedOrigins.add(environment.getProperty("cors[" + i + "]"));
         }
 
         registry.addMapping("/**")

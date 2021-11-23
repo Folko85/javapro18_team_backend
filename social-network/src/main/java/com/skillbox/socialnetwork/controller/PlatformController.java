@@ -1,11 +1,9 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.platformdto.Language;
+import com.skillbox.socialnetwork.api.response.platformdto.LanguageDto;
 import com.skillbox.socialnetwork.api.response.platformdto.PlaceDto;
 import com.skillbox.socialnetwork.service.PlatformService;
-import com.vk.api.sdk.exceptions.ApiException;
-import com.vk.api.sdk.exceptions.ClientException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,7 +47,7 @@ public class PlatformController {
     }
 
     @GetMapping("/platform/languages")
-    public ListResponse<Language> getLanguages() {
+    public ListResponse<LanguageDto> getLanguages() {
         return platformService.getLanguages();
     }
 }

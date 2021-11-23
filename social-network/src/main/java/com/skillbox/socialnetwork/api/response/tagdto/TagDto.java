@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
-@Accessors ( chain = true)
+@Accessors(chain = true)
 @Schema(description = "Список городов")
 public class TagDto implements Dto {
 
-    @Schema (description = "Идентификатор тэга")
-    int id;
-    @Schema (description = "Собственно тэг")
-    String tag;
+    @Schema(description = "Идентификатор тэга")
+    private int id;
+    @Schema(description = "Собственно тэг")
+    private String tag;
 }

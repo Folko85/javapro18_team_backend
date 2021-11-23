@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SendMessageDto implements Dto {
-        @JsonSerialize(using = LocalDateTimeSerializer.class)
-        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-        @JsonProperty("date_of_application")
-        private LocalDateTime dateOfApplication;
-        private TechnicalSupportClientDto client;
-        private String message;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonProperty("date_of_application")
+    private LocalDateTime dateOfApplication;
+    private TechnicalSupportClientDto client;
+    private String message;
 }

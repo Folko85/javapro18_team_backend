@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.platformdto.Language;
+import com.skillbox.socialnetwork.api.response.platformdto.LanguageDto;
 import com.skillbox.socialnetwork.api.response.platformdto.PlaceDto;
 import com.vk.api.sdk.client.Lang;
 import com.vk.api.sdk.client.TransportClient;
@@ -78,16 +78,16 @@ public class PlatformService {
         return result;
     }
 
-    public ListResponse<Language> getLanguages() {
-        ListResponse<Language> listResponse = new ListResponse<>();
+    public ListResponse<LanguageDto> getLanguages() {
+        ListResponse<LanguageDto> listResponse = new ListResponse<>();
         listResponse.setTimestamp(Instant.now());
         listResponse.setTotal(1);
         listResponse.setOffset(0);
         listResponse.setPerPage(1);
-        Language language = new Language();
+        LanguageDto language = new LanguageDto();
         language.setId(1);
         language.setTitle("Русский");
-        List<Language> languages = new ArrayList<>();
+        List<LanguageDto> languages = new ArrayList<>();
         languages.add(language);
         listResponse.setData(languages);
         return listResponse;
