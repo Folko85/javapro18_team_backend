@@ -73,7 +73,7 @@ public class AuthService {
 
     public AccountResponse logout() {
         SecurityContextHolder.clearContext();
-        return getAccountResponse(UTC);
+        return getAccountResponse();
 
     }
 

@@ -148,14 +148,13 @@ public class FriendshipService {
         Person person = personService.findPersonByEmail(principal.getName());
         log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        LocalDate birthdayPerson;
         LocalDate startDate = null;
         LocalDate stopDate = null;
         List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
         blockers.add(person.getId());
         if (person.getBirthday() != null) {
             //подбираем пользователей, возрост которых отличается на +-2 года
-            birthdayPerson = person.getBirthday();
+            LocalDate birthdayPerson = person.getBirthday();
             startDate = birthdayPerson.minusYears(2);
             stopDate = birthdayPerson.plusYears(2);
         }
