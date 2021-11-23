@@ -74,9 +74,7 @@ public class LikeService {
         DataResponse<LikeData> likeResponse = new DataResponse<>();
         LikeData likeData = new LikeData();
         List<Integer> users = new ArrayList<>();
-        likeRepository.findLikesByItemAndType(itemId, type).forEach(postLike1 -> {
-            users.add(postLike1.getPerson().getId());
-        });
+        likeRepository.findLikesByItemAndType(itemId, type).forEach(postLike1 -> users.add(postLike1.getPerson().getId()));
         likeData.setLikes(String.valueOf(users.size()));
         likeData.setUsers(users);
         likeResponse.setData(likeData);
