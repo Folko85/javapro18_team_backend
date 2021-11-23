@@ -81,7 +81,7 @@ public class FriendshipService {
         return getFriendResponse200("Stop being friends");
     }
 
-    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubcribingOnBlockerPersonException, AddingOrSubcribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
+    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubscribingOnBlockerPersonException, AddingYourselfToFriends, FriendshipExistException, AddingOrSubscribingOnBlockedPersonException {
         log.debug("метод добавления в друзья");
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
@@ -97,10 +97,10 @@ public class FriendshipService {
         Optional<Friendship> friendshipOptional = friendshipRepository.findRequestFriendship(srcPerson.getId(), dstPerson.getId());
 
         if (isBlockedBy(dstPerson.getId(), srcPerson.getId(), friendshipOptional)) {
-            throw new AddingOrSubcribingOnBlockerPersonException("This Person Blocked You");
+            throw new AddingOrSubscribingOnBlockerPersonException("This Person Blocked You");
         }
         if (isBlockedBy(srcPerson.getId(), dstPerson.getId(), friendshipOptional)) {
-            throw new AddingOrSubcribingOnBlockedPersonException("You Blocked this Person");
+            throw new AddingOrSubscribingOnBlockedPersonException("You Blocked this Person");
         }
 
         /*

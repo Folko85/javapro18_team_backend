@@ -149,7 +149,7 @@ public class DefaultAdvice {
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AddingOrSubcribingOnBlockerPersonException.class)
+    @ExceptionHandler(AddingOrSubscribingOnBlockerPersonException.class)
     public ResponseEntity<BadRequestResponse> handleAddingOrSubcribingOnBlockerPersonException(Exception exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Block Exception");
@@ -157,8 +157,8 @@ public class DefaultAdvice {
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AddingOrSubcribingOnBlockedPersonException.class)
-    public ResponseEntity<BadRequestResponse> handleAddingOrSubcribingOnBlockedPersonException(Exception exc) {
+    @ExceptionHandler(AddingOrSubscribingOnBlockedPersonException.class)
+    public ResponseEntity<BadRequestResponse> handleAddingOrSubscribingOnBlockedPersonException(Exception exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Block Exception");
         badRequestResponse.setErrorDescription(exc.getMessage());
