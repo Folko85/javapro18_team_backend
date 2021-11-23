@@ -19,7 +19,7 @@ public class RedisConfig {
     private Integer port;
 
     @Bean
-    private ChannelTopic topic() {
+    public ChannelTopic topic() {
         return new ChannelTopic("MESSAGES");
     }
 
