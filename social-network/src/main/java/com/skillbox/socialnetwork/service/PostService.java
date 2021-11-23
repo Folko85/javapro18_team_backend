@@ -69,7 +69,7 @@ public class PostService {
             pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags(text, author,
                     datetimeFrom, datetimeTo, pageable, blockers);
         } else {
-            List<Integer> tags = Arrays.stream(tag.split("\\|"))
+            List<Integer> tags = Arrays.stream(tag.split("_"))
                     .map(t -> tagRepository.findByTag(t).orElse(null))
                     .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
             pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(text, author, datetimeFrom,
