@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service.sheduler;
 
-import com.skillbox.socialnetwork.repository.CommentRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
+import com.skillbox.socialnetwork.service.CommentService;
+import com.skillbox.socialnetwork.service.PersonService;
+import com.skillbox.socialnetwork.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 @Component
 public class SoftDelete {
 
-     private final PostRepository postRepository;
-     private final PersonRepository personRepository;
-     private final CommentRepository commentRepository;
+     private final PostService postService;
+     private final PersonService personService;
+     private final CommentService commentService;
 
-    public SoftDelete(PostRepository postRepository, PersonRepository personRepository, CommentRepository commentRepository) {
-        this.postRepository = postRepository;
-        this.personRepository = personRepository;
-        this.commentRepository = commentRepository;
+    public SoftDelete(PostService postService, PersonService personService, CommentService commentService) {
+        this.postService = postService;
+        this.personService = personService;
+        this.commentService = commentService;
     }
 
 
@@ -33,9 +33,9 @@ public class SoftDelete {
 
         log.info("Запустили процесс удаления усстаревших данных");
         try {
-            personRepository.deleteAfterSoft(personDelete);
-            postRepository.deleteAfterSoft(postDelete);
-            commentRepository.deleteAfterSoft(commentDelete);
+//            personService.updateAfterSoft(personDelete); //остается видимым но без имени, заполняемых данных и с тене-авой. Так же messagesPermission = NOBODY.
+//            postService.deleteAfterSoft(postDelete);
+//            commentService.deleteAfterSoft(commentDelete);
 
         }catch (Exception e){
             log.error(e.getMessage());

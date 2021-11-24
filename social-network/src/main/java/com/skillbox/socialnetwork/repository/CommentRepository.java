@@ -13,10 +13,4 @@ import java.time.LocalDateTime;
 @Repository
 public interface CommentRepository extends JpaRepository<PostComment, Integer> {
     Page<PostComment> findPostCommentsByPostIdAndParentIsNull(int post, Pageable pageable);
-
-    @Query("DELETE " +
-            "FROM PostComment " +
-            "WHERE isDeleted = true " +
-            "AND delete_at <= :commentDelete")
-    void deleteAfterSoft(@Param("commentDelete") LocalDateTime commentDelete);
 }

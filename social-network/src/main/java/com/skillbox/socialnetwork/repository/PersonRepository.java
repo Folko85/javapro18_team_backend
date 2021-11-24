@@ -60,9 +60,4 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             @NotNull String firstName, @NotNull String lastName, LocalDate ageFrom,
             LocalDate ageTo, @NotNull String city, @NotNull String country, Pageable pageable, List<Integer> blockers);
 
-    @Query("DELETE " +
-    "FROM Person " +
-    "WHERE isDeleted = true " +
-    "AND delete_at <= :personDelete")
-    void deleteAfterSoft(@Param("personDelete") LocalDateTime personDelete);
 }

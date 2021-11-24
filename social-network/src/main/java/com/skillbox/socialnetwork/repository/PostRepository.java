@@ -78,9 +78,4 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContainingByDateExcludingBlockersWithoutTags(String text, String author, Instant dateFrom, Instant dateTo,
                                                                            Pageable pageable, List<Integer> blockers);
-    @Query("DELETE " +
-            "FROM Post " +
-            "WHERE isDeleted = true " +
-            "AND delete_at <= :postDelete")
-    void deleteAfterSoft(@Param("postDelete") LocalDateTime postDelete);
 }
