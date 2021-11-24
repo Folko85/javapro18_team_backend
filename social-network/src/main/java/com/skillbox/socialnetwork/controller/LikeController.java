@@ -4,7 +4,6 @@ import com.skillbox.socialnetwork.api.request.LikeRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.likedto.LikeData;
 import com.skillbox.socialnetwork.exception.LikeNotFoundException;
-import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,7 +30,7 @@ public class LikeController {
     @Operation(summary = "Поставить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> putLikes(@RequestBody LikeRequest likeRequest,
-                                                           Principal principal) throws LikeNotFoundException, PostNotFoundException {
+                                                           Principal principal) throws LikeNotFoundException {
         return new ResponseEntity<>(likeService.putLikes(likeRequest, principal), HttpStatus.OK);
     }
 
@@ -39,8 +38,8 @@ public class LikeController {
     @Operation(summary = "Удалить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> deleteLikes(@RequestParam(name = "item_id") int itemId,
-                                                    @RequestParam(name = "type") String type,
-                                                    Principal principal) throws LikeNotFoundException, PostNotFoundException {
+                                                              @RequestParam(name = "type") String type,
+                                                              Principal principal) throws LikeNotFoundException {
         return new ResponseEntity<>(likeService.deleteLike(itemId, type, principal), HttpStatus.OK);
     }
 
@@ -48,7 +47,7 @@ public class LikeController {
     @Operation(summary = "Получить лайки", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> getLikes(@RequestParam(name = "item_id") int itemId,
-                                                 @RequestParam(name = "type") String type) throws PostNotFoundException {
+                                                           @RequestParam(name = "type") String type) {
         return new ResponseEntity<>(likeService.getLikes(itemId, type), HttpStatus.OK);
     }
 }

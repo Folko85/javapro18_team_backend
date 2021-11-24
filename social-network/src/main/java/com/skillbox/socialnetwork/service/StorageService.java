@@ -93,7 +93,7 @@ public class StorageService {
                 "api_secret", secret)));
     }
 
-    public AccountResponse deleteImage(int id, Principal principal) throws IOException {
+    public AccountResponse deleteImage(int id) throws IOException {
         PostFile file = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла"));
         Cloudinary cloudinary = getInstance();
         int from = file.getUrl().lastIndexOf("/") + 1;

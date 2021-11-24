@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.friendsdto.friendsOrNotFriends;
+package com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends;
 
 import com.skillbox.socialnetwork.api.response.Dto;
 import lombok.Data;
@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class ResponseFriendsList implements Dto {
-    List<StatusFriend> data;
+    private List<StatusFriend> data;
 }

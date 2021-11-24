@@ -8,6 +8,7 @@
         <version>2.5.4</version>
         <relativePath/>
     </parent>
+
     <groupId>com.skillbox</groupId>
     <artifactId>social-network</artifactId>
     <version>0.0.1-SNAPSHOT</version>

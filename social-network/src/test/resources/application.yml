@@ -59,6 +59,11 @@ external:
     secret: ENC(ej/k4xIoS2SQYjlcvgMdMjJ5nYNkYWijRoaBtknf+UWeBB5UETd1yRO0GA9udfEg)
     from: ENC(pJ86R3iKC6yiWVTA3UOSQXiSyFWgWQ2NcwrY6fcCEVo=)
 
+ws:
+  server:
+    host: "0.0.0.0"
+    port: 1111
+
 jasypt:
   encryptor:
     bean: encryptorBean

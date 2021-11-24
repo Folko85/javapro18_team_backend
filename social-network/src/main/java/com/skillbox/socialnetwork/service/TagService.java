@@ -48,7 +48,9 @@ public class TagService {
 
     public DataResponse<TagDto> postTag(TagDto tag) {
         DataResponse<TagDto> response = new DataResponse<>();
-        Tag savedTag = tagRepository.save(tagRepository.findByTag(tag.getTag()).orElse(new Tag().setTag(tag.getTag())));
+
+        Tag savedTag = tagRepository.save(tagRepository.findByTag(tag.getTag().replaceAll(" ", ""))
+                .orElse(new Tag().setTag(tag.getTag().replaceAll(" ", ""))));
         response.setError("all right");
         response.setTimestamp(Instant.now());
         BeanUtils.copyProperties(savedTag, tag);
@@ -61,13 +63,16 @@ public class TagService {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tag is not exist"));
         Set<Post> postsWithTag = postRepository.findPostsByTag(tag.getTag());
-        if (postsWithTag.isEmpty()){
-            tagRepository.deleteById(id);
-        }
         AccountResponse response = new AccountResponse();
-        response.setTimestamp(Instant.now());
-        response.setError("nothing");
+        if (postsWithTag.isEmpty()) {
+            tagRepository.deleteById(id);
+            response.setError("nothing");
+        } else {
+            response.setError("tag use in another posts");
+        }
         response.setData(Map.of("message", "ok"));
+        response.setTimestamp(Instant.now());
+
         return response;
     }
 }

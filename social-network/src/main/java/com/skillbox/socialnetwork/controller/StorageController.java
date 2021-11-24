@@ -28,18 +28,18 @@ public class StorageController {
         this.storageService = storageService;
     }
 
-    @PostMapping ("/api/v1/storage")
+    @PostMapping("/api/v1/storage")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation (summary = "Загрузка изображения", security = @SecurityRequirement(name = "jwt"))
+    @Operation(summary = "Загрузка изображения", security = @SecurityRequirement(name = "jwt"))
     public DataResponse<ImageDto> uploadImage(@RequestParam("file") MultipartFile file, @RequestParam String type, Principal principal) throws IOException {
         return storageService.uploadImage(file, type, principal);
     }
 
     @DeleteMapping("/api/v1/storage/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation (summary = "Удаление изображения", security = @SecurityRequirement(name = "jwt"))
-    public AccountResponse deleteImage(@PathVariable int id, Principal principal) throws IOException {
-        return storageService.deleteImage(id, principal);
+    @Operation(summary = "Удаление изображения", security = @SecurityRequirement(name = "jwt"))
+    public AccountResponse deleteImage(@PathVariable int id) throws IOException {
+        return storageService.deleteImage(id);
     }
 
 }

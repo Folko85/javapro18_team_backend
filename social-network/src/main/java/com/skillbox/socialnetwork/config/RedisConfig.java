@@ -14,12 +14,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     @Value("${spring.redis.host}")
-    String host;
+    private String host;
     @Value("${spring.redis.port}")
-    Integer port;
+    private Integer port;
 
     @Bean
-    ChannelTopic topic() {
+    public ChannelTopic topic() {
         return new ChannelTopic("MESSAGES");
     }
 

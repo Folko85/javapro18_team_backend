@@ -144,26 +144,6 @@ public class UserService {
         return userDeleteResponse;
     }
 
-    public static long convertLocalDate(LocalDate localDate) {
-
-        if (localDate == null) return 0;
-        java.sql.Date date = java.sql.Date.valueOf(localDate);
-        return date.getTime() / 1000;
-
-    }
-
-    public static long convertLocalDateTime(LocalDateTime localDateTime) {
-        if (localDateTime == null)
-            return 0;
-        return localDateTime.toEpochSecond(UTC);
-
-    }
-
-    public static LocalDateTime convertToLocalDateTime(long date) {
-        if (date == 0) return null;
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneOffset.UTC);
-    }
-
     public static void conventionsFromPersonTimesToUserRest(Person person, AuthData userRest) {
         userRest.setBirthDate(person.getBirthday() == null ? null : person.getBirthday().atStartOfDay().toInstant(UTC));
         userRest.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));

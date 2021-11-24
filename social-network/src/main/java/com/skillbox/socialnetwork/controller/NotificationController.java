@@ -36,7 +36,7 @@ public class NotificationController {
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ListResponse<NotificationData>> notifications(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                                                         @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                                        @RequestParam(name = "id",defaultValue = "0") int id,
+                                                                        @RequestParam(name = "id", defaultValue = "0") int id,
                                                                         @RequestParam(name = "all", defaultValue = "false") boolean all,
                                                                         Principal principal) {
         return new ResponseEntity<>(notificationService.putNotification(offset, itemPerPage, principal, id, all), HttpStatus.OK);

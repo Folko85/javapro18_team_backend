@@ -27,7 +27,7 @@ public class PostComment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne()                   // вот так
+    @ManyToOne()
     private PostComment parent;
 
     @ManyToOne

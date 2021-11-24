@@ -10,5 +10,5 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LikeData implements Dto {
     private String likes;
-    List<Integer> users;
+    private List<Integer> users;
 }

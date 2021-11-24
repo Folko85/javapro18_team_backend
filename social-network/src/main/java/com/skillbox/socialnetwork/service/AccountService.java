@@ -1,7 +1,11 @@
 package com.skillbox.socialnetwork.service;
 
 import com.mailjet.client.errors.MailjetException;
-import com.skillbox.socialnetwork.api.request.*;
+import com.skillbox.socialnetwork.api.request.EMailChangeRequest;
+import com.skillbox.socialnetwork.api.request.NotificationsRequest;
+import com.skillbox.socialnetwork.api.request.PasswdChangeRequest;
+import com.skillbox.socialnetwork.api.request.RecoveryRequest;
+import com.skillbox.socialnetwork.api.request.RegisterRequest;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
@@ -19,7 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +31,6 @@ import java.util.UUID;
 
 @Service
 public class AccountService {
-    private final ZoneId UTC = ZoneId.of("UTC");
 
     private final PersonRepository personRepository;
     private final MailSender mailSender;
@@ -57,9 +60,9 @@ public class AccountService {
         person.setConfirmationCode(registerRequest.getCode());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
         person.setPassword(passwordEncoder.encode(registerRequest.getPassword1()));
-        person.setDateAndTimeOfRegistration(LocalDateTime.now(UTC));
+        person.setDateAndTimeOfRegistration(LocalDateTime.now(ZoneOffset.UTC));
         person.setMessagesPermission(MessagesPermission.ALL);
-        person.setLastOnlineTime(ZonedDateTime.now(UTC).toLocalDateTime());
+        person.setLastOnlineTime(ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime());
         String code = UUID.randomUUID().toString().replace("-", "");
         if (needConfirm) {
             mailSender.send(registerRequest.getEMail(), regUrl + "?key=" + code + "&eMail=" + registerRequest.getEMail());
@@ -69,7 +72,7 @@ public class AccountService {
         }
         person.setRole(Role.USER);
         personRepository.save(person);
-        return getAccountResponse(UTC);
+        return getAccountResponse();
     }
 
     public String sendRecoveryMessage(RecoveryRequest recoveryRequest) throws MailjetException {
@@ -112,13 +115,13 @@ public class AccountService {
         person.setEMail(eMailChangeRequest.getEMail());
         SecurityContextHolder.clearContext();
         personRepository.save(person);
-        return getAccountResponse(UTC);
+        return getAccountResponse();
 
     }
 
     public AccountResponse setNotifications(NotificationsRequest notificationsRequest, Principal principal) {
         Person person = findPerson(principal.getName());
-        return getAccountResponse(UTC);
+        return getAccountResponse();
     }
 
     public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {
@@ -126,7 +129,7 @@ public class AccountService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
         person.setPassword(passwordEncoder.encode(passwdChangeRequest.getPassword()));
         personRepository.save(person);
-        return getAccountResponse(UTC);
+        return getAccountResponse();
     }
 
     private Person findPerson(String eMail) {
@@ -134,7 +137,7 @@ public class AccountService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
-    static AccountResponse getAccountResponse(ZoneId utc) {
+    static AccountResponse getAccountResponse() {
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
         Map<String, String> dateMap = new HashMap<>();

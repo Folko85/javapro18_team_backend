@@ -26,7 +26,9 @@ public class SocketNotificationData implements Dto {
     private Integer entityId;
     @JsonProperty("entity_author")
     private AuthorData entityAuthor;
-    @JsonProperty("post_id")
-    private int PostId;
+    @JsonProperty("parent_entity_id")
+    private int parentId;
+    @JsonProperty("current_entity_id")
+    private int currentEntityId;
 }
 

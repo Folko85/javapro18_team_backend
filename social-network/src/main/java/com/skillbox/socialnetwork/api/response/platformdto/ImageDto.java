@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
-@Accessors (chain = true)
+@Accessors(chain = true)
 public class ImageDto implements Dto {
 
-    @Schema (description = "Идентификатор изображения")
+    @Schema(description = "Идентификатор изображения")
     private String id;
-    @Schema (description = "Имя файла")
+    @Schema(description = "Имя файла")
     private String url;
 }
 
