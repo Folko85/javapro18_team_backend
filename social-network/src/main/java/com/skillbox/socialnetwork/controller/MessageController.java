@@ -38,10 +38,11 @@ public class MessageController {
     @PostMapping("/dialogs/{id}/messages")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<MessageData>> postMessages(@PathVariable int id,
-                                                    @RequestBody MessageRequest messageRequest,
-                                                    Principal principal) {
+                                                                  @RequestBody MessageRequest messageRequest,
+                                                                  Principal principal) {
         return new ResponseEntity<>(messageService.postMessage(id, messageRequest, principal), HttpStatus.OK);
     }
+
     @GetMapping("/dialogs/unreaded")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> getUnread(Principal principal) {

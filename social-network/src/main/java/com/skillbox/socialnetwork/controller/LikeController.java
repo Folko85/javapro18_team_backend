@@ -38,8 +38,8 @@ public class LikeController {
     @Operation(summary = "Удалить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> deleteLikes(@RequestParam(name = "item_id") int itemId,
-                                                    @RequestParam(name = "type") String type,
-                                                    Principal principal) throws LikeNotFoundException {
+                                                              @RequestParam(name = "type") String type,
+                                                              Principal principal) throws LikeNotFoundException {
         return new ResponseEntity<>(likeService.deleteLike(itemId, type, principal), HttpStatus.OK);
     }
 
@@ -47,7 +47,7 @@ public class LikeController {
     @Operation(summary = "Получить лайки", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<LikeData>> getLikes(@RequestParam(name = "item_id") int itemId,
-                                                 @RequestParam(name = "type") String type) {
+                                                           @RequestParam(name = "type") String type) {
         return new ResponseEntity<>(likeService.getLikes(itemId, type), HttpStatus.OK);
     }
 }

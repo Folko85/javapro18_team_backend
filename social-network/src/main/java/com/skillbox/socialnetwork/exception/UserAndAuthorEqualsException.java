@@ -1,4 +1,4 @@
 package com.skillbox.socialnetwork.exception;
 
-public class UserAndAuthorEqualsException extends Exception{
+public class UserAndAuthorEqualsException extends Exception {
 }

@@ -7,20 +7,22 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.util.UUID;
 
 @Configuration
 public class RedisConfig {
 
     @Value("${spring.redis.host}")
-    String host;
+    private String host;
     @Value("${spring.redis.port}")
-    Integer port;
+    private Integer port;
 
     @Bean
-    ChannelTopic topic() {
-        return new ChannelTopic("MESSAGES");
+    public ChannelTopic topic() {
+        return new ChannelTopic("Session");
     }
 
     @Bean
@@ -31,12 +33,12 @@ public class RedisConfig {
         return new JedisConnectionFactory(configuration);
     }
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    @Bean(name = "redisTemplate")
+    public RedisTemplate<String, UUID> redisTemplate() {
+        RedisTemplate<String, UUID> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(UUID.class));
         return template;
     }
 }

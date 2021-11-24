@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork;
 
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skillbox.socialnetwork.repository.SessionRepository;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public abstract class AbstractTest {
 
     @MockBean
     private AmazonSQSAsync amazonSQSAsync;
+
+    @MockBean
+    private SessionRepository sessionRepository;
 
     @MockBean
     private QueueMessagingTemplate queueMessagingTemplate;

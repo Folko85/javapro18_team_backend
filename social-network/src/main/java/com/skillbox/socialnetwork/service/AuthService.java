@@ -9,6 +9,7 @@ import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.repository.SessionRepository;
 import com.skillbox.socialnetwork.repository.SessionTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,16 +32,16 @@ public class AuthService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final SessionTemplate sessionTemplate;
+    private final SessionRepository sessionRepository;
     private final NotificationService notificationService;
 
     public AuthService(PersonRepository accountRepository, PasswordEncoder passwordEncoder,
-                       JwtProvider jwtProvider, SessionTemplate sessionTemplate,
+                       JwtProvider jwtProvider, SessionRepository sessionRepository,
                        NotificationService notificationService) {
         this.personRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
-        this.sessionTemplate = sessionTemplate;
+        this.sessionRepository = sessionRepository;
         this.notificationService = notificationService;
     }
 
@@ -73,7 +74,7 @@ public class AuthService {
 
     public AccountResponse logout() {
         SecurityContextHolder.clearContext();
-        return getAccountResponse(UTC);
+        return getAccountResponse();
 
     }
 
@@ -120,9 +121,9 @@ public class AuthService {
         if (token != null) {
             Optional<Person> person = personRepository.findByEMail(jwtProvider.getLoginFromToken(token));
             if (person.isPresent()) {
-                sessionTemplate.save(person.get().getId(), sessionId);
+                sessionRepository.save(person.get().getId(), sessionId);
                 notificationService.sendEvent("auth-response", "ok", person.get().getId());
-                log.info("User authorize on socket {} count {}", person.get().getEMail(), sessionTemplate.findAll().size());
+                log.info("User authorize on socket {} count {}", person.get().getEMail(), sessionRepository.findAll().size());
             }
         }
     }

@@ -14,15 +14,20 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
 
     @Query("SELECT f FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
-            "WHERE (f.srcPerson.id = :src AND f.dstPerson.id = :dst " +
-            "OR f.srcPerson.id = :dst AND f.dstPerson.id = :src) AND fs.code = 'FRIEND' ")
+            "WHERE f.srcPerson.id = :src AND f.dstPerson.id = :dst " +
+            "OR f.srcPerson.id = :dst AND f.dstPerson.id = :src ")
     Optional<Friendship> findFriendshipBySrcPersonAndDstPerson(int src, int dst);
 
     @Query("SELECT f FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
             "WHERE (f.srcPerson.id = :src AND f.dstPerson.id = :dst " +
-            "OR f.srcPerson.id = :dst AND f.dstPerson.id = :src)" +
-            "AND (fs.code = 'SUBSCRIBED' OR fs.code = 'REQUEST') ")
+            "OR f.srcPerson.id = :dst AND f.dstPerson.id = :src) AND fs.code = 'FRIEND' ")
+    Optional<Friendship> findFriendBySrcPersonAndDstPerson(int src, int dst);
+
+    @Query("SELECT f FROM Friendship f " +
+            "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +
+            "WHERE (f.srcPerson.id = :src AND f.dstPerson.id = :dst " +
+            "OR f.srcPerson.id = :dst AND f.dstPerson.id = :src) ")
     Optional<Friendship> findRequestFriendship(int src, int dst);
 
     @Query("SELECT fs.code FROM FriendshipStatus fs " +
@@ -32,23 +37,20 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "AND fs.code = ?3 ")
     Optional<FriendshipStatusCode> isMyFriend(int idPerson, int idFriend, FriendshipStatusCode friendshipStatusCode);
 
-
-    @Query(nativeQuery = true, value =
-            "SELECT perId FROM ( " +
-                    "SELECT f.src_person_id as perId from friendship f \n" +
-                    "LEFT JOIN friendship_status fs ON fs.id = f.status_id \n" +
-                    "WHERE \n" +
-                    "( f.src_person_id = ?1 AND fs.code = 'WASBLOCKEDBY' ) \n" +
-                    "OR ( f.dst_person_id = ?1 AND fs.code = 'BLOCKED' ) \n" +
-                    "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' " +
-                    "UNION " +
-                    "SELECT f.dst_person_id as perId from friendship f \n" +
-                    "LEFT JOIN friendship_status fs ON fs.id = f.status_id \n" +
-                    "WHERE \n" +
-                    "( f.src_person_id = ?1 AND fs.code = 'WASBLOCKEDBY' ) \n" +
-                    "OR ( f.dst_person_id = ?1 AND fs.code = 'BLOCKED' ) \n" +
-                    "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' " +
-                    " ) as per where per.perId != ?1 ")
+    @Query(nativeQuery = true, value = "SELECT perId FROM ( " +
+            "SELECT f.src_person_id as perId from friendship f " +
+            "LEFT JOIN friendship_status fs ON fs.id = f.status_id " +
+            "WHERE " +
+            "( f.src_person_id = ?1 AND fs.code = 'WASBLOCKEDBY' ) " +
+            "OR ( f.dst_person_id = ?1 AND fs.code = 'BLOCKED' ) " +
+            "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' " +
+            "UNION " +
+            "SELECT f.dst_person_id as perId from friendship f " +
+            "LEFT JOIN friendship_status fs ON fs.id = f.status_id " +
+            "WHERE " +
+            "( f.src_person_id = ?1 AND fs.code = 'WASBLOCKEDBY' ) " +
+            "OR ( f.dst_person_id = ?1 AND fs.code = 'BLOCKED' ) " +
+            "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' " +
+            " ) as per where per.perId != ?1 ")
     List<Integer> findBlockersIds(int id);
-
 }

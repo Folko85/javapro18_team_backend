@@ -1,6 +1,5 @@
 package com.skillbox.socialnetwork.repository;
 
-import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import org.springframework.data.domain.Page;

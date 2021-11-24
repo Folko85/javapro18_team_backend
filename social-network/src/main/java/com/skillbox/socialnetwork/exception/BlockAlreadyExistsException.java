@@ -1,4 +1,4 @@
 package com.skillbox.socialnetwork.exception;
 
-public class BlockAlreadyExistsException extends  Exception{
+public class BlockAlreadyExistsException extends Exception {
 }

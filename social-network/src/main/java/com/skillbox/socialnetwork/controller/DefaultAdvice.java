@@ -25,6 +25,7 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription("Пользователь уже существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handlePostNotFoundException(PostNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -32,6 +33,7 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription("Пост не существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleUsernameNotFoundException(UsernameNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -40,6 +42,7 @@ public class DefaultAdvice {
         log.warn(Arrays.toString(exc.getStackTrace()));
         return new ResponseEntity<>(badRequestResponse, HttpStatus.UNAUTHORIZED);
     }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<BadRequestResponse> handleAccessDeniedException(BadCredentialsException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -56,6 +59,7 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription("Like не существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(CommentNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleCommentNotFoundException(CommentNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -63,6 +67,7 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription("Comment не существует");
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleEntityNotFoundException(EntityNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -70,6 +75,7 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(PostCreationExecption.class)
     public ResponseEntity<BadRequestResponse> handlePostCreationException(PostCreationExecption exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -77,11 +83,12 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(FileSizeLimitExceededException.class)
     public ResponseEntity<BadRequestResponse> handleFileSizeException(FileSizeLimitExceededException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("invalid_request");
-        badRequestResponse.setErrorDescription(exc.getMessage() +". It's have size " + exc.getActualSize() +
+        badRequestResponse.setErrorDescription(exc.getMessage() + ". It's have size " + exc.getActualSize() +
                 " but expected less than " + exc.getPermittedSize());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
@@ -142,7 +149,7 @@ public class DefaultAdvice {
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AddingOrSubcribingOnBlockerPersonException.class)
+    @ExceptionHandler(AddingOrSubscribingOnBlockerPersonException.class)
     public ResponseEntity<BadRequestResponse> handleAddingOrSubcribingOnBlockerPersonException(Exception exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Block Exception");
@@ -150,8 +157,8 @@ public class DefaultAdvice {
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AddingOrSubcribingOnBlockedPersonException.class)
-    public ResponseEntity<BadRequestResponse> handleAddingOrSubcribingOnBlockedPersonException(Exception exc) {
+    @ExceptionHandler(AddingOrSubscribingOnBlockedPersonException.class)
+    public ResponseEntity<BadRequestResponse> handleAddingOrSubscribingOnBlockedPersonException(Exception exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Block Exception");
         badRequestResponse.setErrorDescription(exc.getMessage());
@@ -173,10 +180,19 @@ public class DefaultAdvice {
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(FriendshipNotFoundException.class)
     public ResponseEntity<BadRequestResponse> handleFriendshipNotFoundException(FriendshipNotFoundException exc) {
         BadRequestResponse badRequestResponse = new BadRequestResponse();
         badRequestResponse.setError("Friend not found");
+        badRequestResponse.setErrorDescription(exc.getMessage());
+        return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FriendshipExistException.class)
+    public ResponseEntity<BadRequestResponse> handleFriendshipExistException(FriendshipExistException exc) {
+        BadRequestResponse badRequestResponse = new BadRequestResponse();
+        badRequestResponse.setError("You already friends");
         badRequestResponse.setErrorDescription(exc.getMessage());
         return new ResponseEntity<>(badRequestResponse, HttpStatus.BAD_REQUEST);
     }

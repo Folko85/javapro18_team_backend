@@ -9,5 +9,5 @@ import java.util.List;
 public class IsFriends {
 
     @JsonProperty("user_ids")
-    List<Integer> userIds;
+    private List<Integer> userIds;
 }

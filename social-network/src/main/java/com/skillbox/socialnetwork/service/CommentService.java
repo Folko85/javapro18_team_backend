@@ -61,7 +61,7 @@ public class CommentService {
     public ListResponse<CommentData> getPage4PostComments(int offset, int itemPerPage, Post post, Person person) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<PostComment> pageablePostCommentList = commentRepository
-                .findPostCommentsByPostIdAndParentIsNull(post.getId(), pageable);
+                .findPostCommentsByPostIdAndParentIsNullOrderByTime(post.getId(), pageable);
         return getPostResponse(offset, itemPerPage, pageablePostCommentList, person);
     }
 

@@ -17,6 +17,7 @@ import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
+@Slf4j
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -59,25 +61,21 @@ public class PostService {
     public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, String author, String tag, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        List<Integer> blockers = friendshipService.getBlockersId(person.getId());
-        List<Integer> tags = Arrays.stream(tag.split("\\|")).filter(t -> !Objects.equals(t, ""))
-                .map(t -> tagRepository.findByTag(t).orElse(null))
-                .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
-        if (tags.isEmpty()) {
-            tags = tagRepository.findAll().stream().map(Tag::getId).collect(Collectors.toList());
-        }
         Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
         Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateFrom);
+        List<Integer> blockers = friendshipService.getBlockersId(person.getId());
+        Page<Post> pageablePostList;
+        if (tag.equals("")) {
+            pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags(text, author,
+                    datetimeFrom, datetimeTo, pageable, blockers);
+        } else {
+            List<Integer> tags = Arrays.stream(tag.split("_"))
+                    .map(t -> tagRepository.findByTag(t).orElse(null))
+                    .filter(Objects::nonNull).map(Tag::getId).collect(Collectors.toList());
+            pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(text, author, datetimeFrom,
+                    datetimeTo, pageable, blockers, tags, tags.size());
+        }
 
-        Page<Post> pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockers(
-                text,
-                author,
-                datetimeFrom,
-                datetimeTo,
-                pageable,
-                blockers,
-                tags
-        );
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 

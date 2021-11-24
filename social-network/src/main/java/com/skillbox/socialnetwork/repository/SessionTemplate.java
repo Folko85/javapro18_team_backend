@@ -20,9 +20,9 @@ public class SessionTemplate {
         return Optional.ofNullable(template.get(userId));
     }
 
-    public void save(Integer userId, UUID sessionId) {
-        template.put(userId, sessionId);
-    }
+//    public void save(Integer userId, UUID sessionId) {
+//        template.put(userId, sessionId);
+//    }
 
     public void deleteByUserId(Integer userId) {
         template.remove(userId);

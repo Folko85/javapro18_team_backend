@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class LoginRequest {
     @JsonProperty("email")
-   private String eMail;
-   private String password;
+    private String eMail;
+    private String password;
 }

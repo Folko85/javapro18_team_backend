@@ -31,6 +31,7 @@ public class DialogController {
                                                                Principal principal) {
         return new ResponseEntity<>(dialogService.getDialogs(name, offset, itemPerPage, principal), HttpStatus.OK);
     }
+
     @PostMapping("/dialogs")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<DataResponse<DialogData>> postDialog(@RequestBody DialogRequest dialogRequest, Principal principal) {
