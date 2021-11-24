@@ -73,14 +73,12 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
      * * * */
     static void setUpData(@Autowired PersonRepository personRepository ) {
 
-        Arrays.stream(blockersEmails).forEach(x -> {
-            blockersIds.add(personRepository.findByEMail(x).get().getId());
-            System.out.println(x);
-        });
-        Arrays.stream(whitePersons).forEach(x -> {
+        for (String blockersEmail : blockersEmails) {
+            blockersIds.add(personRepository.findByEMail(blockersEmail).get().getId());
+        }
+        for (String x : whitePersons) {
             whitePersonsIds.add(personRepository.findByEMail(x).get().getId());
-            System.out.println(x);
-        });
+        }
 
         target = personRepository.findByEMail(blockedEmail).get();
     }
@@ -128,12 +126,12 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Instant dateFrom = Instant.ofEpochMilli(dateF);
         Instant dateTo = Instant.now();
-        Page<Post> postList =  postRepository.findPostsByTextContainingByDateExcludingBlockers("","", dateFrom, dateTo, pageable, personList);
+        Page<Post> postList =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","", dateFrom, dateTo, pageable, personList);
         Assertions.assertFalse(postList.isEmpty(), "Получили пустой список постов");
         Assertions.assertEquals(postList.get().count(), itemPerPage, "Получили постов меньше, чем дефолтное значение 20");
-        Page<Post> postListM =  postRepository.findPostsByTextContainingByDateExcludingBlockers("","M", dateFrom, dateTo, pageable, personList);
-        Assertions.assertTrue(postListM.isEmpty(), "Получили не пустой список постов с автором M");
-        Page<Post> postListsG =  postRepository.findPostsByTextContainingByDateExcludingBlockers("","G", dateFrom, dateTo, pageable, personList);
+        Page<Post> postListR =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","R", dateFrom, dateTo, pageable, personList);
+        Assertions.assertTrue(postListR.isEmpty(), "Получили не пустой список постов с автором R");
+        Page<Post> postListsG =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","G", dateFrom, dateTo, pageable, personList);
         Assertions.assertEquals(4L, postListsG.get().count(), "Количество постов автора G не равно 4");
 
 
@@ -141,7 +139,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         HashSet<Integer> blockersHashSet = new HashSet<>(blockersIds);
 
         Pageable pageable2 = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> postList2 =  postRepository.findPostsByTextContainingByDateExcludingBlockers("","", dateFrom, dateTo, pageable, blockersIds);
+        Page<Post> postList2 =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","", dateFrom, dateTo, pageable, blockersIds);
         Assertions.assertFalse(postList2.isEmpty(), "Получили пустой список постов для Target");
         AtomicInteger countOfTargetPosts = new AtomicInteger();
         postList2.toList().forEach(post -> {
