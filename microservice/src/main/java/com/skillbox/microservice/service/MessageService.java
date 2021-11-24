@@ -19,21 +19,18 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ClientRepository clientRepository;
 
-    public String messageOutput(Model model) {
+    public ArrayList<Message> messageOutput(Model model) {
         Iterable<Message> messageIterable = messageRepository.findAll();
         ArrayList<Message> messageList = new ArrayList<>();
         for (Message message : messageIterable) {
             messageList.add(message);
         }
-        model.addAttribute("messageList", messageList);
-        model.addAttribute("messagesCount", messageList.size());
-        return "result";
+        return messageList;
     }
 
     public void saveMessage(MessageDto dto) {
-
         Client c = getClientFromMessageDto(dto);
-        Optional<Client> clientOptional = clientRepository.findByEmail(dto.getClient().getEMail());
+        Optional<Client> clientOptional = clientRepository.findByEmail(c.getEmail());
 
         Client client = clientOptional.orElseGet(() -> clientRepository.save(c));
         Message messageOfSupport = getMessageFromMessageDto(dto, client);
