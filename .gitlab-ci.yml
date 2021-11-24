@@ -3,13 +3,13 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
 stages:
   - build
-#  - deploy
+  - deploy
 build:
   artifacts:
     paths:
       - /builds/javapro18/javapro18_team_backend/jars/*.jar
   only:
-    - JP18-94_Tests
+    - dev
   except:
     - tags
   stage: build
@@ -19,31 +19,31 @@ build:
   cache:
     paths:
       - ./.m2
-#deploy:
-#  stage: deploy
-#  only:
-#    - dev
-#  except:
-#    - tags
-#  before_script:
-#    - eval $(ssh-agent -s)
-#    - echo "$SSH_PRIVATE_KEY" | ssh-add -
-#    - mkdir -p ~/.ssh
-#    - chmod 700 ~/.ssh
-#    - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
-#    - chmod 644 ~/.ssh/known_hosts
-#  script:
-#    - ssh $DEV_USER@$DEV_HOST docker-compose stop zerone_back_container
-##    - ssh $DEV_USER@$DEV_HOST docker-compose stop cloud-config
-#    - ssh $DEV_USER@$DEV_HOST docker-compose stop microservice_back_container
-#    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f zerone_back_container
-##    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f cloud-config
-#    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f microservice_back_container
-#    - ssh $DEV_USER@$DEV_HOST cp jars/social-network-0.0.1-SNAPSHOT.jar jars/social-network-0.0.1-SNAPSHOT.jar.bac
-##    - ssh $DEV_USER@$DEV_HOST cp jars/zero-cloud-config-0.0.1-SNAPSHOT.jar jars/zero-cloud-config-0.0.1-SNAPSHOT.jar.bac
-#    - ssh $DEV_USER@$DEV_HOST cp jars/microservice-0.0.1-SNAPSHOT.jar jars/microservice-0.0.1-SNAPSHOT.jar.bac
-#    - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
-##    - scp jars/zero-cloud-config-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
-#    - scp jars/microservice-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
-#    - scp docker-compose.yml $DEV_USER@$DEV_HOST:$DEV_APP_PATH
-#    - ssh $DEV_USER@$DEV_HOST docker-compose up -d
+deploy:
+  stage: deploy
+  only:
+    - dev
+  except:
+    - tags
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $DEV_USER@$DEV_HOST docker-compose stop zerone_back_container
+#    - ssh $DEV_USER@$DEV_HOST docker-compose stop cloud-config
+    - ssh $DEV_USER@$DEV_HOST docker-compose stop microservice_back_container
+    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f zerone_back_container
+#    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f cloud-config
+    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f microservice_back_container
+    - ssh $DEV_USER@$DEV_HOST cp jars/social-network-0.0.1-SNAPSHOT.jar jars/social-network-0.0.1-SNAPSHOT.jar.bac
+#    - ssh $DEV_USER@$DEV_HOST cp jars/zero-cloud-config-0.0.1-SNAPSHOT.jar jars/zero-cloud-config-0.0.1-SNAPSHOT.jar.bac
+    - ssh $DEV_USER@$DEV_HOST cp jars/microservice-0.0.1-SNAPSHOT.jar jars/microservice-0.0.1-SNAPSHOT.jar.bac
+    - scp jars/social-network-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+#    - scp jars/zero-cloud-config-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - scp jars/microservice-0.0.1-SNAPSHOT.jar $DEV_USER@$DEV_HOST:$DEV_APP_PATH/jars
+    - scp docker-compose.yml $DEV_USER@$DEV_HOST:$DEV_APP_PATH
+    - ssh $DEV_USER@$DEV_HOST docker-compose up -d
