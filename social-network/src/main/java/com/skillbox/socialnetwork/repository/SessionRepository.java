@@ -36,24 +36,26 @@ public class SessionRepository implements RedisRepository {
 
     @Override
     public Optional<UUID> findByUserId(Integer userId) {
-        Set<UUID> typedTuple = zSetOperations.range(KEY, userId, userId);
-        return typedTuple.stream().findFirst();
+        return Objects.requireNonNull(zSetOperations.rangeByScore(KEY, userId, userId)).stream().findFirst();
+
     }
 
     @Override
     public void save(Integer userId, UUID sessionId) {
+        deleteByUserId(userId);
         zSetOperations.add(KEY, sessionId, userId);
     }
 
     @Override
     public void deleteByUserId(Integer userId) {
-        findByUserId(userId).ifPresent(uuid -> zSetOperations.remove(KEY, uuid));
-
+        Objects.requireNonNull(zSetOperations.rangeByScore(KEY, userId, userId))
+                .forEach(uuid -> zSetOperations.remove(KEY, uuid));
     }
 
     @Override
     public Optional<Integer> findByUserUUID(UUID userUUID) {
         return Objects.requireNonNull(zSetOperations.rangeWithScores(KEY, 0, 100_000)).stream()
-                .map(ZSetOperations.TypedTuple::getScore).filter(Objects::nonNull).map(Double::intValue).findFirst();
+                .filter(x -> Objects.equals(x.getValue(), userUUID))
+                .map(x -> Objects.requireNonNull(x.getScore()).intValue()).findFirst();
     }
 }
