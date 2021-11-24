@@ -8,7 +8,6 @@ import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
 import com.skillbox.socialnetwork.entity.Message;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Person2Dialog;
-import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.repository.MessageRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -65,18 +64,18 @@ public class MessageService {
         DataResponse<MessageData> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(Instant.now());
         Message message = new Message();
-        message.setAuthor(person);
-        message.setDialog(person2Dialog.getDialog());
-        message.setTime(LocalDateTime.now());
-        message.setText(messageRequest.getMessageText());
+        message.setAuthor(person)
+        .setDialog(person2Dialog.getDialog())
+        .setTime(LocalDateTime.now())
+        .setText(messageRequest.getMessageText());
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
 
 
-        Message finalMessage = message;
+//        Message finalMessage = message;
         message.getDialog().getPersons().forEach(dialogPerson -> {
             if (dialogPerson != person) {
-                notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
+              //  notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
                 notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
                 notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(dialogPerson.getId()).orElse(0).toString(), dialogPerson.getId());
             }
