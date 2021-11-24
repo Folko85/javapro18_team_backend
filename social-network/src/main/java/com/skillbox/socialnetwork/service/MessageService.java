@@ -65,10 +65,10 @@ public class MessageService {
         DataResponse<MessageData> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(Instant.now());
         Message message = new Message();
-        message.setAuthor(person);
-        message.setDialog(person2Dialog.getDialog());
-        message.setTime(LocalDateTime.now());
-        message.setText(messageRequest.getMessageText());
+        message.setAuthor(person)
+        .setDialog(person2Dialog.getDialog())
+        .setTime(LocalDateTime.now())
+        .setText(messageRequest.getMessageText());
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
 

@@ -349,11 +349,11 @@ public class FriendshipService {
 
     private void sendNotification(Friendship friendship) {
         NotificationData notificationData = new NotificationData();
-        notificationData.setId(friendship.getId());
-        notificationData.setSentTime(Instant.now());
-        notificationData.setEventType(NotificationType.FRIEND_REQUEST);
-        notificationData.setEntityAuthor(setAuthData(friendship.getSrcPerson()));
-        notificationData.setEntityId(notificationData.getEntityAuthor().getId());
+        notificationData.setId(friendship.getId())
+        .setSentTime(Instant.now())
+        .setEventType(NotificationType.FRIEND_REQUEST)
+        .setEntityAuthor(setAuthData(friendship.getSrcPerson()))
+        .setEntityId(notificationData.getEntityAuthor().getId());
         notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
 
     }

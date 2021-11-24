@@ -3,6 +3,7 @@ package com.skillbox.socialnetwork.entity;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
+@Accessors(chain = true)
 @Table(name = "message")
 public class Message {
 
