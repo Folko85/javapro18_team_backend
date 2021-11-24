@@ -17,7 +17,7 @@ public class SupportController {
 
     @RequestMapping("/support/messages")
     public String index(Model model) {
-        ArrayList<Message> messageList = messageService.messageOutput(model);
+        ArrayList<Message> messageList = messageService.messageOutput();
         model.addAttribute("messageList", messageList);
         model.addAttribute("messagesCount", messageList.size());
         return "result";
