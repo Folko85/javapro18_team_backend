@@ -4,6 +4,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,6 +24,10 @@ public class SessionRepository implements RedisRepository {
         this.redisTemplate = redisTemplate;
     }
 
+    @PostConstruct
+    private void init() {
+        zSetOperations = redisTemplate.opsForZSet();
+    }
 
     @Override
     public List<UUID> findAll() {

@@ -10,6 +10,8 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.util.UUID;
+
 @Configuration
 public class RedisConfig {
 
@@ -31,9 +33,9 @@ public class RedisConfig {
         return new JedisConnectionFactory(configuration);
     }
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    @Bean (name = "redisTemplate")
+    public RedisTemplate<String, UUID> redisTemplate() {
+        RedisTemplate<String, UUID> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
