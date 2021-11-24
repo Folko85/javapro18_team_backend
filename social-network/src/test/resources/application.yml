@@ -9,7 +9,7 @@ spring:
     username: ENC(PWu0QZMimWB0juSsNBfwTQ==)
     password: ENC(62tVsgv8KdaO7f+lI79ZF6h99njiI82z)
     driverClassName: org.h2.Driver #драйвер для подключения к базе
-    url: jdbc:h2:mem:mydb1 #url для подключения к базе
+    url: jdbc:h2:mem:mydb1;MODE=MYSQL #url для подключения к базе
   liquibase:
     change-log: /db/changelog/changelog.yml
     enabled: false
