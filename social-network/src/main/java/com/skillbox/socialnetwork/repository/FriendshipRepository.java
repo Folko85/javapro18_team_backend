@@ -53,7 +53,7 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
                 "( f.src_person_id = ?1 AND fs.code = 'WASBLOCKEDBY' ) \n" +
                 "OR ( f.dst_person_id = ?1 AND fs.code = 'BLOCKED' ) \n" +
                 "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' "+
-                " ) as per where per.perId != ?1 " )
+                " ) as per where per.perId != ?1 ORDER BY perId ASC" )
     List<Integer> findBlockersIds(int id);
 
 }
