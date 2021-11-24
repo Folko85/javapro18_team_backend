@@ -10,6 +10,7 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import com.skillbox.socialnetwork.api.request.socketio.AuthRequest;
 import com.skillbox.socialnetwork.api.request.socketio.ReadMessagesData;
 import com.skillbox.socialnetwork.api.request.socketio.TypingData;
+import com.skillbox.socialnetwork.repository.SessionRepository;
 import com.skillbox.socialnetwork.repository.SessionTemplate;
 import com.skillbox.socialnetwork.service.AuthService;
 import com.skillbox.socialnetwork.service.DialogService;
@@ -22,16 +23,16 @@ import java.util.Optional;
 @Component
 public class SocketEventHandler {
     private final SocketIOServer server;
-    private final SessionTemplate template;
+    private final SessionRepository sessionRepository;
     private final AuthService authService;
     private final DialogService dialogService;
 
     public SocketEventHandler(SocketIOServer server,
-                              SessionTemplate template,
+                              SessionRepository sessionRepository,
                               AuthService authService,
                               DialogService dialogService) {
         this.server = server;
-        this.template = template;
+        this.sessionRepository = sessionRepository;
         this.authService = authService;
         this.dialogService = dialogService;
     }
@@ -46,9 +47,9 @@ public class SocketEventHandler {
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
         if (client != null) {
-            Optional<Integer> id = template.findByUserUUID(client.getSessionId());
+            Optional<Integer> id = sessionRepository.findByUserUUID(client.getSessionId());
             if (id.isPresent()) {
-                template.deleteByUserId(id.get());
+                sessionRepository.deleteByUserId(id.get());
                 client.disconnect();
                 log.info("User disconnect on socket count {}", (long) server.getAllClients().size());
             }
@@ -59,7 +60,7 @@ public class SocketEventHandler {
     public void onNewListenerEvent(SocketIOClient client) {
         log.info("User listen on socket");
         if (client != null) {
-            if (template.findByUserUUID(client.getSessionId()).isPresent()) {
+            if (sessionRepository.findByUserUUID(client.getSessionId()).isPresent()) {
                 client.sendEvent("auth-response", "ok");
             } else client.sendEvent("auth-response", "not");
         }
@@ -82,7 +83,7 @@ public class SocketEventHandler {
     @OnEvent(value = "stop-typing")
     public void onStopTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
         if (client != null) {
-            template.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.stopTyping(data));
+            sessionRepository.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.stopTyping(data));
 
         }
     }
@@ -90,7 +91,7 @@ public class SocketEventHandler {
     @OnEvent(value = "read-messages")
     public void onReadMessagesEvent(SocketIOClient client, AckRequest request, ReadMessagesData data) {
         if (client != null) {
-            template.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.readMessage(data, id));
+            sessionRepository.findByUserUUID(client.getSessionId()).ifPresent(id -> dialogService.readMessage(data, id));
         }
     }
 }

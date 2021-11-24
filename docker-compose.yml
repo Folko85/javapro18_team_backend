@@ -65,7 +65,8 @@ services:
     container_name: "redis_container"
     image: "redis:alpine"
     ports:
-      - "5000:6379"
+      - "6379:6379"
+    command: [ "redis-server", "--bind", "redis", "--port", "6379" ]
   zerone_back_container:
     restart: always
     image: openjdk:16-alpine

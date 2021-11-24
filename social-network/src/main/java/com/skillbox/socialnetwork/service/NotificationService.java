@@ -34,20 +34,20 @@ public class NotificationService {
     private final PersonRepository personRepository;
     private final NotificationRepository notificationRepository;
     private final SocketIOServer server;
-    private final SessionTemplate sessionTemplate;
+    private final SessionRepository sessionRepository;
 
 
     public NotificationService(CommentRepository commentRepository, FriendshipRepository friendshipRepository,
                                MessageRepository messageRepository, PersonRepository personRepository,
                                NotificationRepository notificationRepository, SocketIOServer server,
-                               SessionTemplate sessionTemplate) {
+                               SessionRepository sessionRepository) {
         this.commentRepository = commentRepository;
         this.friendshipRepository = friendshipRepository;
         this.messageRepository = messageRepository;
         this.personRepository = personRepository;
         this.notificationRepository = notificationRepository;
         this.server = server;
-        this.sessionTemplate = sessionTemplate;
+        this.sessionRepository = sessionRepository;
     }
 
     public ListResponse<NotificationData> getNotification(int offset, int itemPerPage, Principal principal) {
@@ -109,9 +109,9 @@ public class NotificationService {
             case FRIEND_REQUEST -> notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
                             .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null))
                     .setEntityId(notificationData.getEntityAuthor().getId());
-            case MESSAGE -> messageRepository.findById(notification.getEntityId()).ifPresent(message -> notificationData.setEntityAuthor(setAuthData(message.getAuthor()))
-                    .setEntityId(message.getId())
-                    .setParentEntityId(message.getDialog().getId()));
+//            case MESSAGE -> messageRepository.findById(notification.getEntityId()).ifPresent(message -> notificationData.setEntityAuthor(setAuthData(message.getAuthor()))
+//                    .setEntityId(message.getId())
+//                    .setParentEntityId(message.getDialog().getId()));
         }
         return notificationData;
     }
@@ -132,17 +132,17 @@ public class NotificationService {
     }
 
     public void sendEvent(String eventName, DataResponse<?> data, int personId) {
-        sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        sessionRepository.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
         log.info("send event {} to {}", eventName, personId);
     }
 
     public void sendEvent(String eventName, Dto data, int personId) {
-        sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        sessionRepository.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
         log.info("send event {} to {}", eventName, personId);
     }
 
     public void sendEvent(String eventName, String data, int personId) {
-        sessionTemplate.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        sessionRepository.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
         log.info("send event {} to {}", eventName, personId);
     }
 }
