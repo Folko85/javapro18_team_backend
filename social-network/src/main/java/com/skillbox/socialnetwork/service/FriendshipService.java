@@ -150,8 +150,16 @@ public class FriendshipService {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         LocalDate startDate = null;
         LocalDate stopDate = null;
+        /**
+         * TODO
+         * Можно наверное объёдинить запросы из findBlockersIds и findPersonFriendsAndOrSubscribesAndOrRequestsIds в один
+         */
+        //Не хотим в рекомендациях блокирующих
         List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
         blockers.add(person.getId());
+        //Не хотим в рекомендациях друзей, кому отправили запросы в друзья и на кого подписан
+        List<Integer> personSubscribesAndOrRequestsIds = friendshipRepository.findPersonFriendsAndOrSubscribesAndOrRequestsIds(person.getId());
+        blockers.addAll(personSubscribesAndOrRequestsIds);
         if (person.getBirthday() != null) {
             //подбираем пользователей, возрост которых отличается на +-2 года
             LocalDate birthdayPerson = person.getBirthday();
@@ -160,27 +168,19 @@ public class FriendshipService {
         }
         // Получаем для подбора по городу
         String city = Strings.hasText(person.getCity()) ? person.getCity() : "";
-        Page<Person> personList = personRepository.findByOptionalParametrs(
+        Page<Person> personFirstPage = personRepository.findByOptionalParametrs(
                 "", "", startDate, stopDate, city, "", pageable, blockers);
 
-        if (personList.isEmpty()) {
-            pageable = PageRequest.of(0, 10);
-            personList = get10Users(person.getEMail(), pageable, blockers);
+        if ((int) personFirstPage.getTotalElements() < 10) {
+            Pageable additionalPageable = PageRequest.of(0, (int) (10 - personFirstPage.getTotalElements()));
+            personFirstPage.get().forEach(p -> { blockers.add(p.getId());});
+            Page<Person> additionalPersonPage = get10Users(person.getEMail(), additionalPageable, blockers);
+            List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
+            List<Person> personFirstList= personFirstPage.stream().collect(Collectors.toList());
+            personFirstList.addAll(additionalPersonList);
+            personFirstPage = new PageImpl<>(personFirstList, pageable, personFirstList.size());
         }
-
-        if (personList.getTotalElements() < 10) {
-            Pageable pageable2 = PageRequest.of(0, (int) (10 - personList.getTotalElements()));
-            Page<Person> personList2 = get10Users(person.getEMail(), pageable2, blockers);
-
-            List<Person> persons = personList.stream().collect(Collectors.toList());
-            List<Person> persons2 = personList2.stream().collect(Collectors.toList());
-
-            persons.addAll(persons2);
-
-            personList = new PageImpl<>(persons, pageable, persons.size());
-        }
-
-        return getPersonResponse(offset, itemPerPage, personList);
+        return getPersonResponse(offset, itemPerPage, personFirstPage);
 
     }
 
@@ -338,7 +338,7 @@ public class FriendshipService {
                 || friendship.getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK)).isPresent();
     }
 
-    Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
+    public Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
         return personRepository.find10Person(email, pageable, blockers);
     }
 
