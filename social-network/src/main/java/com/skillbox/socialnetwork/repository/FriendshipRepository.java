@@ -53,4 +53,19 @@ public interface FriendshipRepository extends PagingAndSortingRepository<Friends
             "OR ( f.src_person_id = ?1 OR f.src_person_id = ?1 ) AND fs.code = 'DEADLOCK' " +
             " ) as per where per.perId != ?1 ")
     List<Integer> findBlockersIds(int id);
+
+    @Query(nativeQuery = true, value =
+            "SELECT perId FROM " +
+                    "( " +
+                    "SELECT f.dst_person_id as perId from friendship f " +
+                    "LEFT JOIN friendship_status fs ON fs.id = f.status_id " +
+                    "WHERE f.src_person_id = ?1 AND fs.code IN ('REQUEST', 'SUBSCRIBED', 'FRIEND' ) " +
+                    "UNION " +
+                    "SELECT f.src_person_id as perId from friendship f " +
+                    "LEFT JOIN friendship_status fs ON fs.id = f.status_id "+
+                    "WHERE f.dst_person_id =?1 AND fs.code ='FRIEND' "+
+                    " ) as per " +
+                    "WHERE per.perId !=?1 ")
+    List<Integer> findPersonFriendsAndOrSubscribesAndOrRequestsIds(int id);
+
 }
