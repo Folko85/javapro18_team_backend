@@ -40,16 +40,7 @@ components:
         data: {$ref: '#/components/schemas/AuthData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
-    TitlePostTextRequest:
-      type: object
-      properties:
-        title: {type: string}
-        post_text: {type: string}
-    MessageRequest:
-      type: object
-      properties:
-        message_text: {type: string}
-    ListResponse:
+    ListResponsePostData:
       type: object
       properties:
         total: {format: int32, type: integer}
@@ -57,9 +48,62 @@ components:
         offset: {format: int32, type: integer}
         data:
           type: array
-          items: {$ref: '#/components/schemas/Dto'}
+          items: {$ref: '#/components/schemas/PostData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
+    DataResponseDialogData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    MessageRequest:
+      type: object
+      properties:
+        message_text: {type: string}
+    ListResponseDialogData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    SupportRequestDto:
+      type: object
+      properties:
+        e_mail: {type: string}
+        last_name: {type: string}
+        message: {type: string}
+        first_name: {type: string}
+    DataResponsePostData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/PostData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    CommentData:
+      type: object
+      properties:
+        comment_text: {type: string}
+        is_blocked: {type: boolean}
+        images:
+          type: array
+          items: {$ref: '#/components/schemas/ImageDto'}
+        is_deleted: {type: boolean}
+        post_id: {format: int32, type: integer}
+        my_like: {type: boolean}
+        author: {$ref: '#/components/schemas/AuthData'}
+        parent_id: {format: int32, type: integer}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        sub_comments:
+          type: array
+          items: {$ref: '#/components/schemas/CommentData'}
+        likes: {format: int32, type: integer}
     ListResponsePlaceDto:
       type: object
       properties:
@@ -71,6 +115,11 @@ components:
           items: {$ref: '#/components/schemas/PlaceDto'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
+    LoginRequest:
+      type: object
+      properties:
+        password: {type: string}
+        email: {type: string}
     LikeData:
       type: object
       properties:
@@ -78,6 +127,17 @@ components:
           type: array
           items: {format: int32, type: integer}
         likes: {type: string}
+    ListResponseFriendsDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/FriendsDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
     DialogData:
       type: object
       properties:
@@ -96,6 +156,31 @@ components:
           items: {$ref: '#/components/schemas/CommentData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
+    EMailChangeRequest:
+      type: object
+      properties:
+        email: {type: string}
+    DataResponseMessageData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/MessageData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    RecoveryRequest:
+      type: object
+      properties:
+        email: {type: string}
+    LanguageDto:
+      type: object
+      properties:
+        id: {format: int32, type: integer}
+        title: {type: string}
+    TagDto:
+      description: Список городов
+      type: object
+      properties:
+        id: {format: int32, description: Идентификатор тэга, type: integer}
+        tag: {description: Собственно тэг, type: string}
     ListResponseAuthData:
       type: object
       properties:
@@ -105,6 +190,17 @@ components:
         data:
           type: array
           items: {$ref: '#/components/schemas/AuthData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseLanguageDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/LanguageDto'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
     DialogRequest:
@@ -127,21 +223,36 @@ components:
           type: string
           enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
         entity_author: {$ref: '#/components/schemas/AuthData'}
+        current_entity_id: {format: int32, type: integer}
         id: {format: int32, type: integer}
         entity_id: {format: int32, type: integer}
-        info: {type: string}
+        parent_entity_id: {format: int32, type: integer}
     NotificationsRequest:
       type: object
       properties:
         notification_type: {type: string}
         enable: {type: boolean}
-    MessageOfTechnicalSupportClient:
+    PlaceDto:
+      description: Список городов
       type: object
       properties:
-        e_mail: {type: string}
-        last_name: {type: string}
-        message: {type: string}
-        first_name: {type: string}
+        id: {format: int32, description: Идентификатор города/страны, type: integer}
+        title: {description: Название города/страны, type: string}
+    ResponseFriendsList:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/StatusFriend'}
+    RegisterRequest:
+      type: object
+      properties:
+        firstName: {type: string}
+        lastName: {type: string}
+        code: {type: string}
+        passwd1: {type: string}
+        email: {type: string}
+        passwd2: {type: string}
     FriendsResponse200:
       type: object
       properties:
@@ -174,173 +285,6 @@ components:
       properties:
         item_id: {format: int32, type: integer}
         type: {type: string}
-    ListResponseMessageData:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/MessageData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    PasswdChangeRequest:
-      type: object
-      properties:
-        password: {type: string}
-        token: {type: string}
-    PostRequest:
-      type: object
-      properties:
-        title: {type: string}
-        post_text: {type: string}
-    DataResponseLikeData:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/LikeData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    ListResponseLanguage:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/Language'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    ImageDto:
-      type: object
-      properties:
-        id: {description: Идентификатор изображения, type: string}
-        url: {description: Имя файла, type: string}
-    AccountResponse:
-      type: object
-      properties:
-        data:
-          additionalProperties: {type: string}
-          type: object
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    Dto: {type: object}
-    ListResponsePostData:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/PostData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    DataResponseDialogData:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/DialogData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    ListResponseDialogData:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/DialogData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    DataResponsePostData:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/PostData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    CommentData:
-      type: object
-      properties:
-        comment_text: {type: string}
-        is_blocked: {type: boolean}
-        images:
-          type: array
-          items: {$ref: '#/components/schemas/ImageDto'}
-        is_deleted: {type: boolean}
-        post_id: {format: int32, type: integer}
-        my_like: {type: boolean}
-        author: {$ref: '#/components/schemas/AuthData'}
-        parent_id: {format: int32, type: integer}
-        id: {format: int32, type: integer}
-        time: {format: date-time, type: string}
-        sub_comments:
-          type: array
-          items: {$ref: '#/components/schemas/CommentData'}
-        likes: {format: int32, type: integer}
-    LoginRequest:
-      type: object
-      properties:
-        password: {type: string}
-        email: {type: string}
-    ListResponseFriendsDto:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/FriendsDto'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    EMailChangeRequest:
-      type: object
-      properties:
-        email: {type: string}
-    DataResponseMessageData:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/MessageData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    RecoveryRequest:
-      type: object
-      properties:
-        email: {type: string}
-    Language:
-      type: object
-      properties:
-        id: {format: int32, type: integer}
-        title: {type: string}
-    TagDto:
-      description: Список городов
-      type: object
-      properties:
-        id: {format: int32, description: Идентификатор тэга, type: integer}
-        tag: {description: Собственно тэг, type: string}
-    PlaceDto:
-      description: Список городов
-      type: object
-      properties:
-        id: {format: int32, description: Идентификатор города/страны, type: integer}
-        title: {description: Название города/страны, type: string}
-    ResponseFriendsList:
-      type: object
-      properties:
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/StatusFriend'}
-    RegisterRequest:
-      type: object
-      properties:
-        firstName: {type: string}
-        lastName: {type: string}
-        code: {type: string}
-        passwd1: {type: string}
-        email: {type: string}
-        passwd2: {type: string}
     MessageData:
       type: object
       properties:
@@ -357,6 +301,17 @@ components:
         data: {$ref: '#/components/schemas/ImageDto'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
+    ListResponseMessageData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/MessageData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
     ListResponseNotificationData:
       type: object
       properties:
@@ -366,6 +321,25 @@ components:
         data:
           type: array
           items: {$ref: '#/components/schemas/NotificationData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    PasswdChangeRequest:
+      type: object
+      properties:
+        password: {type: string}
+        token: {type: string}
+    PostRequest:
+      type: object
+      properties:
+        title: {type: string}
+        post_text: {type: string}
+        tags:
+          type: array
+          items: {type: string}
+    DataResponseLikeData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/LikeData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
     IsFriends:
@@ -378,7 +352,7 @@ components:
       type: object
       properties:
         is_blocked: {type: boolean}
-        comments: {$ref: '#/components/schemas/ListResponse'}
+        comments: {$ref: '#/components/schemas/ListResponseCommentData'}
         my_like: {type: boolean}
         author: {$ref: '#/components/schemas/AuthData'}
         id: {format: int32, type: integer}
@@ -390,10 +364,23 @@ components:
         tags:
           type: array
           items: {type: string}
+    ImageDto:
+      type: object
+      properties:
+        id: {description: Идентификатор изображения, type: string}
+        url: {description: Имя файла, type: string}
     DataResponseTagDto:
       type: object
       properties:
         data: {$ref: '#/components/schemas/TagDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    AccountResponse:
+      type: object
+      properties:
+        data:
+          additionalProperties: {type: string}
+          type: object
         error: {type: string}
         timestamp: {format: date-time, type: string}
     ListResponseTagDto:
@@ -514,48 +501,26 @@ paths:
       tags: [Друзья]
   /api/v1/support:
     post:
-      summary: Отправка сообщения в техническую поддержку
       requestBody:
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/MessageOfTechnicalSupportClient'}
-      operationId: sendMessage
+            schema: {$ref: '#/components/schemas/SupportRequestDto'}
+        required: true
+      operationId: create
       responses:
         '200':
           description: OK
           content:
             '*/*':
-              schema:
-                type: string
-                enum: [100 CONTINUE, 101 SWITCHING_PROTOCOLS, 102 PROCESSING, 103
-                    CHECKPOINT, 200 OK, 201 CREATED, 202 ACCEPTED, 203 NON_AUTHORITATIVE_INFORMATION,
-                  204 NO_CONTENT, 205 RESET_CONTENT, 206 PARTIAL_CONTENT, 207 MULTI_STATUS,
-                  208 ALREADY_REPORTED, 226 IM_USED, 300 MULTIPLE_CHOICES, 301 MOVED_PERMANENTLY,
-                  302 FOUND, 302 MOVED_TEMPORARILY, 303 SEE_OTHER, 304 NOT_MODIFIED,
-                  305 USE_PROXY, 307 TEMPORARY_REDIRECT, 308 PERMANENT_REDIRECT, 400
-                    BAD_REQUEST, 401 UNAUTHORIZED, 402 PAYMENT_REQUIRED, 403 FORBIDDEN,
-                  404 NOT_FOUND, 405 METHOD_NOT_ALLOWED, 406 NOT_ACCEPTABLE, 407 PROXY_AUTHENTICATION_REQUIRED,
-                  408 REQUEST_TIMEOUT, 409 CONFLICT, 410 GONE, 411 LENGTH_REQUIRED,
-                  412 PRECONDITION_FAILED, 413 PAYLOAD_TOO_LARGE, 413 REQUEST_ENTITY_TOO_LARGE,
-                  414 URI_TOO_LONG, 414 REQUEST_URI_TOO_LONG, 415 UNSUPPORTED_MEDIA_TYPE,
-                  416 REQUESTED_RANGE_NOT_SATISFIABLE, 417 EXPECTATION_FAILED, 418
-                    I_AM_A_TEAPOT, 419 INSUFFICIENT_SPACE_ON_RESOURCE, 420 METHOD_FAILURE,
-                  421 DESTINATION_LOCKED, 422 UNPROCESSABLE_ENTITY, 423 LOCKED, 424
-                    FAILED_DEPENDENCY, 425 TOO_EARLY, 426 UPGRADE_REQUIRED, 428 PRECONDITION_REQUIRED,
-                  429 TOO_MANY_REQUESTS, 431 REQUEST_HEADER_FIELDS_TOO_LARGE, 451
-                    UNAVAILABLE_FOR_LEGAL_REASONS, 500 INTERNAL_SERVER_ERROR, 501
-                    NOT_IMPLEMENTED, 502 BAD_GATEWAY, 503 SERVICE_UNAVAILABLE, 504
-                    GATEWAY_TIMEOUT, 505 HTTP_VERSION_NOT_SUPPORTED, 506 VARIANT_ALSO_NEGOTIATES,
-                  507 INSUFFICIENT_STORAGE, 508 LOOP_DETECTED, 509 BANDWIDTH_LIMIT_EXCEEDED,
-                  510 NOT_EXTENDED, 511 NETWORK_AUTHENTICATION_REQUIRED]
-      tags: [Техническая поддержка]
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Запросы в техническую поддержку]
   /api/v1/friends/request:
     get:
       summary: Список заявок
       security:
       - jwt: []
       description: Получить список заявок
-      operationId: listApplications
+      operationId: getFriendsRequests
       responses:
         '200':
           description: OK
@@ -732,7 +697,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/ListResponseLanguage'}
+              schema: {$ref: '#/components/schemas/ListResponseLanguageDto'}
       tags: [Контроллер для получения списка стран и подгрузки городов для страны]
   /api/v1/platform/countries:
     get:
@@ -928,66 +893,6 @@ paths:
         name: comment_id
         required: true
       tags: [Контроллер для работы с коментариями]
-  /api/v1/tags/:
-    post:
-      summary: Добавить тег
-      security:
-      - jwt: []
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/TagDto'}
-        required: true
-      operationId: postTag
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema: {$ref: '#/components/schemas/DataResponseTagDto'}
-      tags: [Контроллер для работы с тегами]
-    get:
-      summary: Получить теги
-      security:
-      - jwt: []
-      operationId: getTags
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema: {$ref: '#/components/schemas/ListResponseTagDto'}
-      parameters:
-      - schema: {default: '', type: string}
-        in: query
-        name: tag
-        required: false
-      - schema: {default: 0, format: int32, type: integer}
-        in: query
-        name: offset
-        required: false
-      - schema: {default: 10, format: int32, type: integer}
-        in: query
-        name: itemPerPage
-        required: false
-      tags: [Контроллер для работы с тегами]
-    delete:
-      summary: Удалить тег
-      security:
-      - jwt: []
-      operationId: deleteTag
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
-      parameters:
-      - schema: {format: int32, type: integer}
-        in: query
-        name: id
-        required: true
-      tags: [Контроллер для работы с тегами]
   /api/v1/account/register:
     post:
       summary: Регистрация
@@ -1006,6 +911,9 @@ paths:
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/post/{id}/recover:
     put:
+      summary: Восстановить пост
+      security:
+      - jwt: []
       operationId: putPostRecover
       responses:
         '200':
@@ -1162,7 +1070,7 @@ paths:
         in: query
         name: text
         required: false
-      - schema: {default: 0, format: int64, type: integer}
+      - schema: {default: -1, format: int64, type: integer}
         in: query
         name: date_from
         required: false
@@ -1181,6 +1089,10 @@ paths:
       - schema: {default: '', type: string}
         in: query
         name: author
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: tag
         required: false
       tags: [Контроллер для работы с постами]
   /api/v1/friends/recommendations:
@@ -1235,13 +1147,13 @@ paths:
         in: query
         name: age_to
         required: false
-      - schema: {default: 1, format: int32, type: integer}
+      - schema: {default: '', type: string}
         in: query
-        name: country_id
+        name: country
         required: false
-      - schema: {default: 1, format: int32, type: integer}
+      - schema: {default: '', type: string}
         in: query
-        name: city_id
+        name: city
         required: false
       - schema: {default: 0, format: int32, type: integer}
         in: query
@@ -1254,7 +1166,7 @@ paths:
       tags: [Профиль]
   /api/v1/dialogs/unreaded:
     get:
-      operationId: getUnreaded
+      operationId: getUnread
       responses:
         '200':
           description: OK
@@ -1262,6 +1174,66 @@ paths:
             '*/*':
               schema: {$ref: '#/components/schemas/AccountResponse'}
       tags: [message-controller]
+  /api/v1/tags:
+    post:
+      summary: Добавить тег
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TagDto'}
+        required: true
+      operationId: postTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseTagDto'}
+      tags: [Контроллер для работы с тегами]
+    get:
+      summary: Получить теги
+      security:
+      - jwt: []
+      operationId: getTags
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseTagDto'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: tag
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с тегами]
+    delete:
+      summary: Удалить тег
+      security:
+      - jwt: []
+      operationId: deleteTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: id
+        required: true
+      tags: [Контроллер для работы с тегами]
   /api/v1/account/password/set:
     put:
       summary: Смена пароля
@@ -1354,6 +1326,9 @@ paths:
         required: true
       tags: [Контроллер для работы с постами]
     delete:
+      summary: Удалить пост
+      security:
+      - jwt: []
       operationId: deletePostById
       responses:
         '200':
@@ -1368,10 +1343,13 @@ paths:
         required: true
       tags: [Контроллер для работы с постами]
     put:
+      summary: Изменить пост
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/TitlePostTextRequest'}
+            schema: {$ref: '#/components/schemas/PostRequest'}
         required: true
       operationId: putPostById
       responses:
@@ -1555,6 +1533,5 @@ paths:
       tags: [Друзья]
 info: {title: Zerone Social Network API, version: v1}
 tags:
-- {name: Техническая поддержка, description: Обращение в техническую поддержку}
 - {name: Профиль, description: Работа с профилем и с публичной информацией пользователя}
 - {name: Друзья, description: Работа с друзьями}

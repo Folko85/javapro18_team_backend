@@ -19,7 +19,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ClientRepository clientRepository;
 
-    public ArrayList<Message> messageOutput(Model model) {
+    public ArrayList<Message> messageOutput() {
         Iterable<Message> messageIterable = messageRepository.findAll();
         ArrayList<Message> messageList = new ArrayList<>();
         for (Message message : messageIterable) {

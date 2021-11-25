@@ -14,6 +14,7 @@ import com.vk.api.sdk.objects.database.responses.GetCitiesResponse;
 import com.vk.api.sdk.objects.database.responses.GetCountriesResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -33,6 +34,7 @@ public class PlatformService {
     private String token;
 
 
+    @Cacheable ("countries")
     public ListResponse<PlaceDto> getCountries(String country, int offset, int itemPerPage) {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
@@ -48,6 +50,7 @@ public class PlatformService {
         } catch (ApiException | ClientException e) {
             log.warn(Arrays.toString(e.getStackTrace()));
         }
+        log.info("We get that countries with {} only one time at day", country);
         ListResponse<PlaceDto> result = new ListResponse<>();
         result.setTotal(countries.size());
         result.setTimestamp(Instant.now());
@@ -56,6 +59,7 @@ public class PlatformService {
         return result;
     }
 
+    @Cacheable ("cities")
     public ListResponse<PlaceDto> getCities(int countryId, String city, int offset, int itemPerPage) {
         TransportClient transportClient = new HttpTransportClient();
         VkApiClient vk = new VkApiClient(transportClient);
@@ -71,6 +75,7 @@ public class PlatformService {
         } catch (ApiException | ClientException e) {
             log.warn(Arrays.toString(e.getStackTrace()));
         }
+        log.info("We get that cities with {} only one time at day", city);
         result.setTotal((response != null) ? response.getCount() : 0);
         result.setTimestamp(Instant.now());
         result.setPerPage(itemPerPage);
