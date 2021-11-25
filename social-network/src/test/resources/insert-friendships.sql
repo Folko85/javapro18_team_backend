@@ -118,4 +118,36 @@ VALUES(
     (select person.id from person WHERE person.e_mail='kburgan4@comcast.net'),
     (select person.id from person WHERE person.e_mail='cbuncherb@reverbnation.com')
 );
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'SUBSCRIBED');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='jboner0@domainmarket.com'),
+    (select person.id from person WHERE person.e_mail='cbuncherb@reverbnation.com')
+);
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'REQUEST');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='jboner0@domainmarket.com'),
+    (select person.id from person WHERE person.e_mail='sdeavin9@booking.com')
+);
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'SUBSCRIBED');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='jboner0@domainmarket.com'),
+    (select person.id from person WHERE person.e_mail='lhannaf@msn.com')
+);
+
+
 
