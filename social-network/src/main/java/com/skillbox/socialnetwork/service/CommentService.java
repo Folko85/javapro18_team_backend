@@ -218,4 +218,9 @@ public class CommentService {
                 .filter(text -> text.contains("id:")).findFirst().orElse("0000").substring(3));
     }
 
+    public void deleteAfterSoft(PostComment postComment) {
+        postComment.setCommentText("Deleted");
+        postComment.setDeleted(false);
+        commentRepository.save(postComment);
+    }
 }

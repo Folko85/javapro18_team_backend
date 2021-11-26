@@ -1,15 +1,10 @@
 package com.skillbox.socialnetwork.service.sheduler;
 
-import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.entity.PostComment;
-import com.skillbox.socialnetwork.repository.CommentRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
-import com.skillbox.socialnetwork.service.AccountService;
+import com.skillbox.socialnetwork.entity.*;
+import com.skillbox.socialnetwork.repository.*;
 import com.skillbox.socialnetwork.service.CommentService;
-import com.skillbox.socialnetwork.service.PersonService;
 import com.skillbox.socialnetwork.service.PostService;
+import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,20 +17,25 @@ import java.util.List;
 public class SoftDelete {
 
     private final PostService postService;
-    private final AccountService accountService;
+    private final UserService userService;
     private final CommentService commentService;
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final NotificationRepository notificationRepository;
+    private final FileRepository fileRepository;
+
     LocalDateTime now = LocalDateTime.now();
 
-    public SoftDelete(PostService postService, AccountService personService, CommentService commentService, PersonRepository personRepository, PostRepository postRepository, CommentRepository commentRepository) {
+    public SoftDelete(PostService postService, UserService personService, CommentService commentService, PersonRepository personRepository, PostRepository postRepository, CommentRepository commentRepository, NotificationRepository notificationRepository, FileRepository fileRepository) {
         this.postService = postService;
-        this.accountService = personService;
+        this.userService = personService;
         this.commentService = commentService;
         this.personRepository = personRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.notificationRepository = notificationRepository;
+        this.fileRepository = fileRepository;
     }
 
 
@@ -46,7 +46,10 @@ public class SoftDelete {
         try {
             List<Person> persons = personRepository.findSoftDeletedPersonsID(now.minusMonths(3));
             for (Person person : persons){
-                accountService.updateAfterSoftDelete(person);
+                userService.updateAfterSoftDelete(person); //меняем данные
+                List<Notification> notificationList =
+                        notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId());
+                notificationRepository.deleteAll(notificationList); //удаляем уведомления
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -62,7 +65,7 @@ public class SoftDelete {
         try {
             List<Post> posts = postRepository.findSoftDeletedPostsID(now.minusDays(7));
             for (Post post : posts){
-                postService.deleteAfterSoft(post);
+                postService.deletePostAfterSoft(post);
             }
         } catch (Exception e) {
             log.error(e.getMessage());

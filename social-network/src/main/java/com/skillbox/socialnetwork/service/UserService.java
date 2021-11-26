@@ -4,6 +4,7 @@ import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.entity.Person;
+import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -168,5 +169,19 @@ public class UserService {
             userRest.setBirthDate(person.getBirthday() == null ? Instant.now() : person.getBirthday().atStartOfDay().toInstant(UTC));
             conventionsFromPersonTimesToUserRest(person, userRest);
         }
+    }
+
+    public void updateAfterSoftDelete(Person person) {
+        int personId = person.getId();
+        person.setFirstName("Deleted");
+        person.setLastName("Deleted");
+        person.setBirthday(LocalDate.now());
+        person.setPhoto(deletedImage);
+        person.setDeleted(false);
+        person.setAbout("Account was deleted.");
+        person.setCity(null);
+        person.setMessagesPermission(MessagesPermission.NOBODY);
+        person.setPhone(null);
+        personRepository.save(person);
     }
 }

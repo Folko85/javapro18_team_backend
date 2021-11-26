@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -146,8 +147,4 @@ public class AccountService {
         return accountResponse;
     }
 
-    public void updateAfterSoftDelete(Person person) {
-        int personId = person.getId();
-
-    }
 }

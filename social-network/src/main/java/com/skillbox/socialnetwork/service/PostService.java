@@ -243,4 +243,10 @@ public class PostService {
         return dataResponse;
     }
 
+    public void deletePostAfterSoft(Post post) {
+        post.setTitle("Deleted");
+        post.setPostText("Deleted");
+        post.setDeleted(false);
+        postRepository.save(post);
+    }
 }
