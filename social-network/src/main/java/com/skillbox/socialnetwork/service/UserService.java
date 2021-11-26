@@ -172,7 +172,6 @@ public class UserService {
     }
 
     public void updateAfterSoftDelete(Person person) {
-        int personId = person.getId();
         person.setFirstName("Deleted");
         person.setLastName("Deleted");
         person.setBirthday(LocalDate.now());
