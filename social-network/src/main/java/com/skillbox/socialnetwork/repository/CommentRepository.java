@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<PostComment, Integer> {
-    Page<PostComment> findPostCommentsByPostIdAndParentIsNull(int post, Pageable pageable);
+    Page<PostComment> findPostCommentsByPostIdAndParentIsNullOrderByTime(int post, Pageable pageable);
 
     @Query("SELECT c FROM PostComment c" +
             "WHERE deleted_ad < :minusDays")
