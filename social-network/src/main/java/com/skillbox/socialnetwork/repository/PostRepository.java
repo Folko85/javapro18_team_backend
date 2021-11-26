@@ -78,4 +78,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "ORDER BY p.datetime DESC")
     Page<Post> findPostsByTextContainingByDateExcludingBlockersWithoutTags(String text, String author, Instant dateFrom, Instant dateTo,
                                                                            Pageable pageable, List<Integer> blockers);
+    @Query("SELECT p FROM Post p" +
+            "WHERE deleted_ad < :minusDays")
+    List<Post> findSoftDeletedPostsID(@Param("minusDays") LocalDateTime minusDays);
 }

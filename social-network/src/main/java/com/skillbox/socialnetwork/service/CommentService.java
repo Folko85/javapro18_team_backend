@@ -217,4 +217,5 @@ public class CommentService {
         return Integer.parseInt(Arrays.stream(postText.split(","))
                 .filter(text -> text.contains("id:")).findFirst().orElse("0000").substring(3));
     }
+
 }

@@ -145,4 +145,9 @@ public class AccountService {
         accountResponse.setData(dateMap);
         return accountResponse;
     }
+
+    public void updateAfterSoftDelete(Person person) {
+        int personId = person.getId();
+
+    }
 }
