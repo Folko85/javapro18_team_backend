@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
+import com.skillbox.socialnetwork.exception.ApiConnectException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -28,10 +29,12 @@ public class UserService {
 
     private final PersonRepository personRepository;
     private final FriendshipService friendshipService;
+    private final StorageService storageService;
 
-    public UserService(PersonRepository personRepository, FriendshipService friendshipService) {
+    public UserService(PersonRepository personRepository, FriendshipService friendshipService, StorageService storageService) {
         this.personRepository = personRepository;
         this.friendshipService = friendshipService;
+        this.storageService = storageService;
     }
 
     public AuthData getUserByEmail(Principal principal) {
@@ -40,7 +43,7 @@ public class UserService {
         }
         AuthData userRest = new AuthData();
         convertUserToUserRest(getPersonByEmail(principal), userRest);
-        log.info("User with email {} was received",userRest.getEMail());
+        log.info("User with email {} was received", userRest.getEMail());
         return userRest;
     }
 
@@ -55,14 +58,14 @@ public class UserService {
     public AuthData getUserById(Integer id) {
         AuthData userRest = new AuthData();
         convertUserToUserRest(getPersonById(id), userRest);
-        log.info("User with id {} was received",userRest.getId());
+        log.info("User with id {} was received", userRest.getId());
         return userRest;
     }
 
     public Person getPersonById(Integer id) {
         return personRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Get User By Id Failed in UserService Class, id: {}",id);
+                    log.error("Get User By Id Failed in UserService Class, id: {}", id);
                     return new UsernameNotFoundException("Id was not found " + id);
                 });
     }
@@ -85,7 +88,7 @@ public class UserService {
 
     public DataResponse<AuthData> getUser(int id, Principal principal) {
         AuthData current = getUserByEmail(principal);
-        log.info("Attempt to get user by Id, requester id: {}, target id: {}",current.getId(), id);
+        log.info("Attempt to get user by Id, requester id: {}, target id: {}", current.getId(), id);
         AuthData requested = getUserById(id);
         if (friendshipService.isBlockedBy(requested.getId(), current.getId()) && !requested.isDeleted()) {
             AuthData response = new AuthData();
@@ -93,7 +96,7 @@ public class UserService {
             response.setFirstName(requested.getFirstName());
             response.setLastName(requested.getLastName());
             response.setAbout("Отдыхай в чс, пыль");
-            log.warn("Requester id: {} was blocked by {}",current.getId(),id);
+            log.warn("Requester id: {} was blocked by {}", current.getId(), id);
             return createResponse(response, "BLOCKED");
         } else {
             log.info("Attempt to get user by id {} is successful", id);
@@ -102,10 +105,10 @@ public class UserService {
 
     }
 
-    public DataResponse<AuthData> updateUser(AuthData updates, Principal principal) {
+    public DataResponse<AuthData> updateUser(AuthData updates, Principal principal) throws ApiConnectException {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
-                    log.error("Update User Failed. Email was not found, email: {}",  principal.getName());
+                    log.error("Update User Failed. Email was not found, email: {}", principal.getName());
                     return new UsernameNotFoundException("Update User Failed");
                 });
         log.info("Attempt to update user, id: {}", person.getId());
@@ -115,6 +118,9 @@ public class UserService {
         person.setLastName(updatedLastName);
         person.setPhone(updates.getPhone());
         person.setAbout(updates.getAbout());
+        if (person.getPhoto() != null && person.getPhoto().contains("cloudinary") && !person.getPhoto().equals(updates.getPhoto())) {
+            storageService.deleteImageByUrl(person.getPhoto());
+        }
         person.setPhoto(updates.getPhoto());
         person.setCity(updates.getCity());
         person.setCountry(updates.getCountry());
@@ -157,7 +163,7 @@ public class UserService {
 
     public static void convertUserToUserRest(Person person, AuthData userRest) {
         if (person.isDeleted()) {
-            log.info("Getting a deleted account id: {} ",person.getId());
+            log.info("Getting a deleted account id: {} ", person.getId());
             userRest.setId(person.getId());
             userRest.setFirstName(person.getFirstName());
             userRest.setLastName(person.getLastName());

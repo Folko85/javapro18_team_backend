@@ -70,6 +70,7 @@ public class StorageService {
                             .crop("fill")
                             .width(300)
                             .height(300))
+                    .format("jpg")
                     .generate(response.get("public_id").toString());
             PostFile postFile = fileRepository.save(new PostFile().setUrl(url).setUserId(current.getId()));
             imageDTO.setId(String.valueOf(postFile.getId())).setUrl(url);
@@ -96,21 +97,25 @@ public class StorageService {
 
     public AccountResponse deleteImage(int id) throws ApiConnectException {
         String url = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла")).getUrl();
-        String publicId = (url.endsWith(".jpg")) ? url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."))
-                : url.substring(url.lastIndexOf("/") + 1);
-        try {
-            Cloudinary cloudinary = getInstance();
-            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-        } catch (IOException ex) {
-            log.error("Ошибка при удалении файла");
-            throw new ApiConnectException("Не удалось удалить файл");
-        }
-        fileRepository.removeByUrl(url);
+        deleteImageByUrl(url);
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
         Map<String, String> dateMap = new HashMap<>();
         dateMap.put("message", "file successfully deleted");
         accountResponse.setData(dateMap);
         return accountResponse;
+    }
+
+    public void deleteImageByUrl(String url) throws ApiConnectException {
+        try {
+            String publicId = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
+            Cloudinary cloudinary = getInstance();
+            Map response = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            fileRepository.delete(fileRepository.findByUrl(url));
+        } catch (IOException ex) {
+            log.error("Ошибка при удалении файла");
+            throw new ApiConnectException("Не удалось удалить файл");
+        }
+
     }
 }

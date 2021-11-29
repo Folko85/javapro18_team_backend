@@ -8,6 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface FileRepository extends JpaRepository<PostFile, Integer> {
 
     PostFile findByUrl(String url);
-
-    Long removeByUrl(String url);
 }
