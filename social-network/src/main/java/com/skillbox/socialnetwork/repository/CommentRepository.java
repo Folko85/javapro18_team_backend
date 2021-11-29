@@ -15,7 +15,7 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<PostComment, Integer> {
     Page<PostComment> findPostCommentsByPostIdAndParentIsNullOrderByTime(int post, Pageable pageable);
 
-    @Query("SELECT c FROM PostComment c" +
+    @Query("SELECT c FROM PostComment c " +
             "WHERE deleted_at < :minusDays")
     List<PostComment> findSoftDeletedCommentsID(@Param("minusDays") LocalDateTime minusDays);
 }
