@@ -8,6 +8,7 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.PostFile;
+import com.skillbox.socialnetwork.exception.ApiConnectException;
 import com.skillbox.socialnetwork.repository.FileRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -93,13 +94,18 @@ public class StorageService {
                 "api_secret", secret)));
     }
 
-    public AccountResponse deleteImage(int id) throws IOException {
-        PostFile file = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла"));
-        Cloudinary cloudinary = getInstance();
-        int from = file.getUrl().lastIndexOf("/") + 1;
-        int to = file.getUrl().lastIndexOf(".");
-        cloudinary.uploader().destroy(file.getUrl().substring(from, to), ObjectUtils.emptyMap());
-        fileRepository.delete(file);
+    public AccountResponse deleteImage(int id) throws ApiConnectException {
+        String url = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла")).getUrl();
+        String publicId = (url.endsWith(".jpg")) ? url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."))
+                : url.substring(url.lastIndexOf("/") + 1);
+        try {
+            Cloudinary cloudinary = getInstance();
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        } catch (IOException ex) {
+            log.error("Ошибка при удалении файла");
+            throw new ApiConnectException("Не удалось удалить файл");
+        }
+        fileRepository.removeByUrl(url);
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
         Map<String, String> dateMap = new HashMap<>();
