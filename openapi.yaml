@@ -28,7 +28,7 @@ components:
         is_blocked: {type: boolean}
         messages_permission:
           type: string
-          enum: [ALL, FRIENDS]
+          enum: [ALL, FRIENDS, NOBODY]
         last_online_time: {format: date-time, type: string}
         phone: {type: string}
         id: {format: int32, type: integer}
@@ -274,7 +274,7 @@ components:
         deleted: {type: boolean}
         messages_permission:
           type: string
-          enum: [ALL, FRIENDS]
+          enum: [ALL, FRIENDS, NOBODY]
         last_online_time: {format: date-time, type: string}
         phone: {type: string}
         id: {format: int32, type: integer}
