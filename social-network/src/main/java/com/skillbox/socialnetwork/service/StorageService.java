@@ -110,7 +110,7 @@ public class StorageService {
         try {
             String publicId = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
             Cloudinary cloudinary = getInstance();
-            Map response = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             fileRepository.delete(fileRepository.findByUrl(url));
         } catch (IOException ex) {
             log.error("Ошибка при удалении файла");
