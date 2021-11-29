@@ -79,6 +79,7 @@ public class Person implements UserDetails {
 
     private boolean isDeleted;
 
+    @Column(name = "deleted_at")
     private LocalDateTime deletedTimestamp;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")

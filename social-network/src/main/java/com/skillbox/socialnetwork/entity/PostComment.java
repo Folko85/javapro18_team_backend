@@ -44,6 +44,7 @@ public class PostComment {
 
     private boolean isDeleted;
 
+    @Column(name = "deleted_at")
     private LocalDateTime deletedTimestamp;
 
     @OneToMany
