@@ -102,7 +102,7 @@ public class PostService {
         Matcher images = pattern.matcher(requestBody.getPostText());
         while (images.find()) {
             PostFile file = fileRepository.findByUrl(images.group(1));
-            fileRepository.save(file.setUserId(person.getId()).setPostId(post.getId()));
+            fileRepository.save(file.setPostId(post.getId()));
         }
         return getPostDataResponse(post, person);
     }
@@ -245,7 +245,7 @@ public class PostService {
         Matcher images = pattern.matcher(postRequest.getPostText());
         while (images.find()) {
             PostFile file = fileRepository.findByUrl(images.group(1));
-            fileRepository.save(file.setUserId(person.getId()).setPostId(createdPost.getId()));
+            fileRepository.save(file.setPostId(createdPost.getId()));
         }
         DataResponse<PostData> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));

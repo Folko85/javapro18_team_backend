@@ -81,7 +81,7 @@ public class CommentService {
         postComment = commentRepository.save(postComment);
         if (commentRequest.getImages() != null) {
             int id = postComment.getId();
-            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setCommentId(id))));
+            commentRequest.getImages().forEach(image -> fileRepository.save(fileRepository.findByUrl(image.getUrl()).setCommentId(id)));
         }
 
         sendNotification(postComment);
@@ -98,7 +98,7 @@ public class CommentService {
         commentRepository.save(postComment);
         if (commentRequest.getImages() != null) {
             int id = postComment.getId();
-            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setCommentId(id))));
+            commentRequest.getImages().forEach(image -> fileRepository.save(fileRepository.findByUrl(image.getUrl()).setCommentId(id)));
         }
         return getCommentResponse(postComment, person);
     }
