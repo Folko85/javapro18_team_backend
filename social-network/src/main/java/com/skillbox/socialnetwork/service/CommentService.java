@@ -81,7 +81,7 @@ public class CommentService {
         postComment = commentRepository.save(postComment);
         if (commentRequest.getImages() != null) {
             int id = postComment.getId();
-            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setPostId(id))));
+            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setCommentId(id))));
         }
 
         sendNotification(postComment);
@@ -98,7 +98,7 @@ public class CommentService {
         commentRepository.save(postComment);
         if (commentRequest.getImages() != null) {
             int id = postComment.getId();
-            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setPostId(id))));
+            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setCommentId(id))));
         }
         return getCommentResponse(postComment, person);
     }
@@ -154,8 +154,8 @@ public class CommentService {
         commentData.setPostId(postComment.getPost().getId());
         commentData.setSubComments(new ArrayList<>());
         List<ImageDto> images = fileRepository.findAll().stream()
-                .filter(f -> f.getPostId() != null)
-                .filter(file -> file.getPostId().equals(postComment.getId()))
+                .filter(f -> f.getCommentId() != null)
+                .filter(file -> file.getCommentId().equals(postComment.getId()))
                 .map(file -> new ImageDto().setId(String.valueOf(file.getId())).setUrl(file.getUrl()))
                 .collect(Collectors.toList());
         commentData.setImages(images);
