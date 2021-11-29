@@ -56,3 +56,9 @@ databaseChangeLog:
   - include:
       file: 2021/11/11-01-changelog.xml
       relativeToChangelogFile: true
+  - include:
+      file: 2021/11/19-01-changelog.xml
+      relativeToChangelogFile: true
+  - include:
+      file: 2021/11/29-01-changelog.yml
+      relativeToChangelogFile: true

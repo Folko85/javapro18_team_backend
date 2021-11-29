@@ -6,10 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +60,9 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             @NotNull String firstName, @NotNull String lastName, LocalDate ageFrom,
             LocalDate ageTo, @NotNull String city, @NotNull String country, Pageable pageable, List<Integer> blockers);
 
+    @Query("SELECT p FROM Person p " +
+            "WHERE p.deletedTimestamp < :minusMonths")
+    List<Person> findSoftDeletedPersonsID(@Param("minusMonths") LocalDateTime minusMonths);
     @Query("SELECT p.id FROM Person p " +
             "LEFT JOIN Friendship f ON f.dstPerson.id = p.id OR f.srcPerson.id = p.id " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.status.id " +

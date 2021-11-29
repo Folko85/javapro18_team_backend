@@ -6,17 +6,11 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.postdto.IdResponse;
 import com.skillbox.socialnetwork.api.response.postdto.PostData;
 import com.skillbox.socialnetwork.api.response.postdto.PostDataResponse;
-import com.skillbox.socialnetwork.entity.Like;
-import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.entity.Tag;
+import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
-import com.skillbox.socialnetwork.repository.LikeRepository;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
-import com.skillbox.socialnetwork.repository.TagRepository;
+import com.skillbox.socialnetwork.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +22,13 @@ import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -43,15 +43,19 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final FriendshipService friendshipService;
     private final TagRepository tagRepository;
+    private final FileRepository fileRepository;
+
+    private Pattern pattern = Pattern.compile("<img\\s+[^>]*src=\"([^\"]*)\"[^>]*>");
 
     public PostService(PostRepository postRepository, PersonRepository personRepository, CommentService commentService,
-                       LikeRepository likeRepository, FriendshipService friendshipService, TagRepository tagRepository) {
+                       LikeRepository likeRepository, FriendshipService friendshipService, TagRepository tagRepository, FileRepository fileRepository) {
         this.postRepository = postRepository;
         this.personRepository = personRepository;
         this.commentService = commentService;
         this.likeRepository = likeRepository;
         this.friendshipService = friendshipService;
         this.tagRepository = tagRepository;
+        this.fileRepository = fileRepository;
     }
 
     public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, String author, String tag, Principal principal) {
@@ -96,6 +100,11 @@ public class PostService {
         }
         post.setDatetime(Instant.ofEpochMilli(publishDate == 0 ? System.currentTimeMillis() : publishDate));
         post = postRepository.saveAndFlush(post);
+        Matcher images = pattern.matcher(requestBody.getPostText());
+        while (images.find()) {
+            PostFile file = fileRepository.findByUrl(images.group(1));
+            fileRepository.save(file.setPostId(post.getId()));
+        }
         return getPostDataResponse(post, person);
     }
 
@@ -105,6 +114,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setDeleted(true);
+        post.setDeletedTimestamp(LocalDateTime.now());
         postRepository.saveAndFlush(post);
         return getPostDataResponse(post, person);
     }
@@ -234,9 +244,21 @@ public class PostService {
         }
         post.setPerson(person);
         Post createdPost = postRepository.save(post);
+        Matcher images = pattern.matcher(postRequest.getPostText());
+        while (images.find()) {
+            PostFile file = fileRepository.findByUrl(images.group(1));
+            fileRepository.save(file.setPostId(createdPost.getId()));
+        }
         DataResponse<PostData> dataResponse = new DataResponse<>();
         dataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC));
         dataResponse.setData(getPostData(createdPost, person));
         return dataResponse;
+    }
+
+    public void deletePostAfterSoft(Post post) {
+        post.setTitle("Deleted");
+        post.setPostText("Deleted");
+        post.setDeleted(false);
+        postRepository.save(post);
     }
 }

@@ -81,7 +81,7 @@ public class CommentService {
         postComment = commentRepository.save(postComment);
         if (commentRequest.getImages() != null) {
             int id = postComment.getId();
-            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setPostId(id))));
+            commentRequest.getImages().forEach(image -> fileRepository.save(fileRepository.findByUrl(image.getUrl()).setCommentId(id)));
         }
 
         sendNotification(postComment);
@@ -98,7 +98,7 @@ public class CommentService {
         commentRepository.save(postComment);
         if (commentRequest.getImages() != null) {
             int id = postComment.getId();
-            commentRequest.getImages().forEach(image -> fileRepository.findById(Integer.parseInt(image.getId())).ifPresent(file -> fileRepository.save(file.setPostId(id))));
+            commentRequest.getImages().forEach(image -> fileRepository.save(fileRepository.findByUrl(image.getUrl()).setCommentId(id)));
         }
         return getCommentResponse(postComment, person);
     }
@@ -107,6 +107,7 @@ public class CommentService {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
         postComment.setDeleted(Objects.equals(postComment.getPerson().getId(), person.getId()) || postComment.isDeleted());
+        postComment.setDeletedTimestamp(LocalDateTime.now());
         commentRepository.save(postComment);
         return getCommentResponse(postComment, person);
     }
@@ -153,8 +154,8 @@ public class CommentService {
         commentData.setPostId(postComment.getPost().getId());
         commentData.setSubComments(new ArrayList<>());
         List<ImageDto> images = fileRepository.findAll().stream()
-                .filter(f -> f.getPostId() != null)
-                .filter(file -> file.getPostId().equals(postComment.getId()))
+                .filter(f -> f.getCommentId() != null)
+                .filter(file -> file.getCommentId().equals(postComment.getId()))
                 .map(file -> new ImageDto().setId(String.valueOf(file.getId())).setUrl(file.getUrl()))
                 .collect(Collectors.toList());
         commentData.setImages(images);
@@ -215,5 +216,11 @@ public class CommentService {
     private int getIdFromPostText(String postText) {
         return Integer.parseInt(Arrays.stream(postText.split(","))
                 .filter(text -> text.contains("id:")).findFirst().orElse("0000").substring(3));
+    }
+
+    public void deleteAfterSoft(PostComment postComment) {
+        postComment.setCommentText("Deleted");
+        postComment.setDeleted(false);
+        commentRepository.save(postComment);
     }
 }

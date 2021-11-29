@@ -3,12 +3,7 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
-import com.skillbox.socialnetwork.exception.BlockingDeletedAccountException;
-import com.skillbox.socialnetwork.exception.UnBlockingDeletedAccountException;
-import com.skillbox.socialnetwork.exception.UnBlockingException;
-import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
-import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,7 +54,7 @@ public class UserController {
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Обновить профиль пользователя", security = @SecurityRequirement(name = "jwt"))
-    public DataResponse<AuthData> updateUser(@RequestBody AuthData person, Principal principal) {
+    public DataResponse<AuthData> updateUser(@RequestBody AuthData person, Principal principal) throws ApiConnectException {
         return userService.updateUser(person, principal);
     }
 

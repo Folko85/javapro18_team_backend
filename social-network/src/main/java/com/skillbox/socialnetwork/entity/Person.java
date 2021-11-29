@@ -5,6 +5,8 @@ import com.skillbox.socialnetwork.entity.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -66,7 +68,7 @@ public class Person implements UserDetails {
     private boolean isApproved;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "messages_permission", columnDefinition = "enum('ALL','FRIENDS')")
+    @Column(name = "messages_permission", columnDefinition = "enum('ALL','FRIENDS','NOBODY')")
     private MessagesPermission messagesPermission;
 
     @Column(name = "last_online_time")
@@ -76,6 +78,9 @@ public class Person implements UserDetails {
     private boolean isBlocked;
 
     private boolean isDeleted;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedTimestamp;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<Post> post;

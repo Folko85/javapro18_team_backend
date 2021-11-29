@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      author: m.gutorov
+      id: 2021112901
+      changes:
+        - renameColumn:
+            tableName: post_file
+            oldColumnName: post_id
+            newColumnName: comment_id
+            columnDataType: int
+        - addColumn:
+            tableName: post_file
+            columns:
+              - column:
+                  name: post_id
+                  type: int

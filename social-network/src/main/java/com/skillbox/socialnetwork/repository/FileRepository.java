@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FileRepository extends JpaRepository<PostFile, Integer> {
+
+    PostFile findByUrl(String url);
 }

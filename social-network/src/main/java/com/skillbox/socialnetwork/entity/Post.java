@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -44,6 +46,9 @@ public class Post {
     private boolean isBlocked;
 
     private boolean isDeleted;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedTimestamp;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<PostComment> comments;

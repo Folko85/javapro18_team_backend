@@ -29,6 +29,9 @@ public class PostFile {
     private Integer postId;
 
     @Column
+    private Integer commentId;
+
+    @Column
     private String url;
 
     @Override
