@@ -61,6 +61,6 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             LocalDate ageTo, @NotNull String city, @NotNull String country, Pageable pageable, List<Integer> blockers);
 
     @Query("SELECT p FROM Person p " +
-            "WHERE deleted_at < :minusMonths")
+            "WHERE p.deletedTimestamp < :minusMonths")
     List<Person> findSoftDeletedPersonsID(@Param("minusMonths") LocalDateTime minusMonths);
 }
