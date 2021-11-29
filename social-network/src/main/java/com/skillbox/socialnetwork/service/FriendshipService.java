@@ -150,16 +150,10 @@ public class FriendshipService {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         LocalDate startDate = null;
         LocalDate stopDate = null;
-        /**
-         * TODO
-         * Можно наверное объёдинить запросы из findBlockersIds и findPersonFriendsAndOrSubscribesAndOrRequestsIds в один
-         */
-        //Не хотим в рекомендациях блокирующих
-        List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
+
+        //Не хотим в рекомендациях блокирующих, друзей, кому отправили запросы в друзья и на кого подписан
+        List<Integer> blockers = personRepository.findPersonRelastionShips(person.getId());
         blockers.add(person.getId());
-        //Не хотим в рекомендациях друзей, кому отправили запросы в друзья и на кого подписан
-        List<Integer> personSubscribesAndOrRequestsIds = friendshipRepository.findPersonFriendsAndOrSubscribesAndOrRequestsIds(person.getId());
-        blockers.addAll(personSubscribesAndOrRequestsIds);
         if (person.getBirthday() != null) {
             //подбираем пользователей, возрост которых отличается на +-2 года
             LocalDate birthdayPerson = person.getBirthday();
@@ -173,7 +167,7 @@ public class FriendshipService {
 
         if ((int) personFirstPage.getTotalElements() < 10) {
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personFirstPage.getTotalElements()));
-            personFirstPage.get().forEach(p -> { blockers.add(p.getId());});
+            personFirstPage.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = get10Users(person.getEMail(), additionalPageable, blockers);
             List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
             List<Person> personFirstList= personFirstPage.stream().collect(Collectors.toList());
@@ -340,11 +334,6 @@ public class FriendshipService {
 
     public Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
         return personRepository.find10Person(email, pageable, blockers);
-    }
-
-    List<Integer> getBlockersId(int id) {
-        List<Integer> blockers = friendshipRepository.findBlockersIds(id);
-        return blockers.isEmpty() ? Collections.singletonList(-1) : blockers;
     }
 
     private void sendNotification(Friendship friendship) {

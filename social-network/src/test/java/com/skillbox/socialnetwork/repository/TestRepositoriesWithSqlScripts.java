@@ -5,7 +5,6 @@ import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -44,9 +43,6 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
     @Autowired
     PostRepository postRepository;
-
-    @Autowired
-    FriendshipStatusRepository friendshipStatusRepository;
 
     @Autowired
     FriendshipService friendshipService;
@@ -110,7 +106,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
     @DisplayName("Проверяем список id пользователей, которые заблокировали пользователя с почтой blockedEmail")
     public void testFindBlockersIds() {
         log.info("Target id: {}, Email: {}", target.getId(), target.getEMail());
-        List<Integer> checkingIds = friendshipRepository.findBlockersIds(target.getId());
+        List<Integer> checkingIds = personRepository.findBlockersIds(target.getId());
         Assertions.assertArrayEquals(blockersIds.toArray(), checkingIds.toArray(),"Массивы с id не равны");
         HashSet<Integer> ids = new HashSet<>(checkingIds);
         whitePersonsIds.forEach(x -> {
@@ -127,7 +123,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         });
         //Этого тестового пользователя никто не блокировал
         Person person = personRepository.findByEMail("jboner0@domainmarket.com").get();
-        Assertions.assertTrue(friendshipRepository.findBlockersIds(person.getId()).isEmpty());
+        Assertions.assertTrue(personRepository.findBlockersIds(person.getId()).isEmpty());
 
     }
 
@@ -144,7 +140,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         log.info("Проверяем получение постов для пользователя без блокировок");
 
         Person person = personRepository.findByEMail("jboner0@domainmarket.com").get();
-        List<Integer> personList = friendshipRepository.findBlockersIds(person.getId());
+        List<Integer> personList = personRepository.findBlockersIds(person.getId());
         personList.add(-1);
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Instant dateFrom = Instant.ofEpochMilli(dateF);
@@ -175,13 +171,16 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
     }
 
     @Test
-    @DisplayName("Проверяем получение списка пользователей, которым отправлена заявка или на которых подписан Target")
+    @DisplayName("Проверяем получение списка заблокировавших пользователя, пользователей, которым отправлена заявка или на которых подписан Target")
     public void findPersonSubscribesAndOrRequestsTest(){
         log.info("Target id: {}, Email: {}", target.getId(), target.getEMail());
-        List<FriendshipStatusCode> codes = Arrays.asList(FriendshipStatusCode.REQUEST, FriendshipStatusCode.SUBSCRIBED);
-        List<Integer> personsIds = friendshipRepository.findPersonFriendsAndOrSubscribesAndOrRequestsIds(target.getId());
+        List<Integer> personsIds = personRepository.findPersonRelastionShips(target.getId());
         Assertions.assertFalse(personsIds.contains(target.getId()),"Ответ тестируемого метода содержит id Target");
-        Assertions.assertArrayEquals(banlistForRecomendationsIds.toArray(), personsIds.toArray(), "Ответ тестируемого метода не равен ожидаемому");
+        List<Integer> checkRelationShip = new ArrayList<>();
+        checkRelationShip.addAll(blockersIds);
+        checkRelationShip.addAll(banlistForRecomendationsIds);
+        Collections.sort(checkRelationShip);
+        Assertions.assertArrayEquals(checkRelationShip.toArray(), personsIds.toArray(), "Ответ тестируемого метода не равен ожидаемому");
 
     }
 
@@ -223,7 +222,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         LocalDate stopDate = null;
 
         //Не хотим в рекомендациях блокирующих
-        List<Integer> blockers = friendshipRepository.findBlockersIds(personTargetMoscwich.getId());
+        List<Integer> blockers = personRepository.findBlockersIds(personTargetMoscwich.getId());
         Assertions.assertTrue(blockers.isEmpty());
 
         blockers.add(personTargetMoscwich.getId());
@@ -238,13 +237,13 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         Assertions.assertEquals(3, vseMoscvichiBezTarget.getTotalElements());
 
         List<Integer> foundMoscwichi = new ArrayList<>();
-        vseMoscvichiBezTarget.toList().forEach(p ->{ foundMoscwichi.add(p.getId()); } );
+        vseMoscvichiBezTarget.toList().forEach(p -> foundMoscwichi.add(p.getId()));
         Collections.sort(foundMoscwichi);
 
         Assertions.assertArrayEquals(idsVsehMoscvicheyBezTarget.toArray(), foundMoscwichi.toArray());
 
         //Не хотим в рекомендациях друзей, кому отправили запросы в друзья и на кого подписан
-        List<Integer> personSubscribesAndOrRequestsIds = friendshipRepository.findPersonFriendsAndOrSubscribesAndOrRequestsIds(personTargetMoscwich.getId());
+        List<Integer> personSubscribesAndOrRequestsIds = personRepository.findPersonRelastionShips(personTargetMoscwich.getId());
         List<Integer> neHotimIch = Arrays.asList(
                 personRepository.findByEMail(drugMoscwichaFurby).get().getId(),
                 personRepository.findByEMail(requestMoscwicha).get().getId(),
@@ -266,7 +265,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
                 );
         Collections.sort(idsVsehMoscvicheyBezTargetIBezUdal);
         List<Integer> foundCitizens = new ArrayList<>();
-        personsBezDr.toList().forEach(p->{ foundCitizens.add(p.getId()); });
+        personsBezDr.toList().forEach(p-> foundCitizens.add(p.getId()));
         Collections.sort(foundCitizens);
         Assertions.assertArrayEquals(idsVsehMoscvicheyBezTargetIBezUdal.toArray(), foundCitizens.toArray());
         //Пусть город не указан
@@ -302,7 +301,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
         if ((int) personFirstPage.getTotalElements() < 10) {
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personFirstPage.getTotalElements()));
-            personFirstPage.get().forEach(p -> { blockers.add(p.getId());});
+            personFirstPage.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = friendshipService.get10Users(personTargetMoscwich.getEMail(), additionalPageable, blockers);
             List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
             List<Person> personFirstList= personFirstPage.stream().collect(Collectors.toList());
@@ -314,7 +313,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
         if ((int) personsBezDr.getTotalElements() < 10) {
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personsBezDr.getTotalElements()));
-            personsBezDr.get().forEach(p -> { blockers.add(p.getId());});
+            personsBezDr.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = friendshipService.get10Users(personTargetMoscwich.getEMail(), additionalPageable, blockers);
             List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
             List<Person> personFirstList= personsBezDr.stream().collect(Collectors.toList());
@@ -330,7 +329,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
         if ((int) personsBezCity.getTotalElements() < 10) {
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personsBezCity.getTotalElements()));
-            personsBezCity.get().forEach(p -> { blockers.add(p.getId());});
+            personsBezCity.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = friendshipService.get10Users(personTargetMoscwich.getEMail(), additionalPageable, blockers);
             List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
             List<Person> personFirstList= personsBezCity.stream().collect(Collectors.toList());
@@ -344,5 +343,4 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         }
         Assertions.assertEquals(10, personsBezCity.getTotalElements());
     }
-
 }

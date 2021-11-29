@@ -58,4 +58,28 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             @NotNull String firstName, @NotNull String lastName, LocalDate ageFrom,
             LocalDate ageTo, @NotNull String city, @NotNull String country, Pageable pageable, List<Integer> blockers);
 
+    @Query("SELECT p.id FROM Person p " +
+            "LEFT JOIN Friendship f ON f.dstPerson.id = p.id OR f.srcPerson.id = p.id " +
+            "LEFT JOIN FriendshipStatus fs ON fs.id = f.status.id " +
+            "WHERE ( " +
+            "( f.srcPerson.id = :idFriend AND fs.code IN ('REQUEST', 'SUBSCRIBED', 'WASBLOCKEDBY', 'FRIEND', 'DEADLOCK' ) ) " +
+            " OR ( f.dstPerson.id = :idFriend AND fs.code IN ('FRIEND', 'DEADLOCK', 'BLOCKED') ) " +
+            ") " +
+            "AND p.isBlocked = false " +
+            "AND p.id!= :idFriend " +
+            "ORDER BY p.id ASC ")
+    List<Integer> findPersonRelastionShips(int idFriend);
+
+    @Query("SELECT p.id FROM Person p " +
+            "LEFT JOIN Friendship f ON f.dstPerson.id = p.id OR f.srcPerson.id = p.id " +
+            "LEFT JOIN FriendshipStatus fs ON fs.id = f.status.id " +
+            "WHERE ( " +
+            "( f.srcPerson.id = :idFriend AND fs.code IN ('WASBLOCKEDBY', 'DEADLOCK' ) ) " +
+            " OR ( f.dstPerson.id = :idFriend AND fs.code IN ('DEADLOCK', 'BLOCKED') ) " +
+            ") " +
+            "AND p.isBlocked = false " +
+            "AND p.id!= :idFriend " +
+            "ORDER BY p.id ASC  ")
+    List<Integer> findBlockersIds(int idFriend);
+
 }

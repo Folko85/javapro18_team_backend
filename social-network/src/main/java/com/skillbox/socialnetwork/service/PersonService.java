@@ -72,7 +72,7 @@ public class PersonService {
         Page<Person> personPage;
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
-        List<Integer> blockers = friendshipRepository.findBlockersIds(person.getId());
+        List<Integer> blockers = personRepository.findBlockersIds(person.getId());
         blockers.add(person.getId());
         LocalDate from = LocalDate.now().minusYears(ageTo);
         LocalDate to = LocalDate.now().minusYears(ageFrom);

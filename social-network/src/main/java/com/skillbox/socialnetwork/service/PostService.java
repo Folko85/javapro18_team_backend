@@ -28,11 +28,7 @@ import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -63,7 +59,8 @@ public class PostService {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
         Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateFrom);
-        List<Integer> blockers = friendshipService.getBlockersId(person.getId());
+        List<Integer> blockers = personRepository.findBlockersIds(person.getId());
+        blockers = !blockers.isEmpty() ? blockers : Collections.singletonList(-1);
         Page<Post> pageablePostList;
         if (tag.equals("")) {
             pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags(text, author,
@@ -134,7 +131,8 @@ public class PostService {
     public ListResponse<PostData> getFeeds(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        List<Integer> blockers = friendshipService.getBlockersId(person.getId());
+        List<Integer> blockers = personRepository.findBlockersIds(person.getId());
+        blockers = !blockers.isEmpty() ? blockers : Collections.singletonList(-1);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingExcludingBlockers(text, pageable, blockers);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
