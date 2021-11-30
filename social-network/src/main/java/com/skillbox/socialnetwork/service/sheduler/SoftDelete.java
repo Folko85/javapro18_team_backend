@@ -41,7 +41,6 @@ public class SoftDelete {
         this.fileRepository = fileRepository;
     }
 
-
     @Scheduled(cron = "@daily")
     public void cleanupPerson() {
 
