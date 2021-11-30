@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Collections.singletonList;
 
 @Slf4j
 @Service
@@ -64,7 +65,7 @@ public class PostService {
         Instant datetimeTo = (dateTo == -1) ? Instant.now() : Instant.ofEpochMilli(dateTo);
         Instant datetimeFrom = (dateFrom == -1) ? ZonedDateTime.now().minusYears(1).toInstant() : Instant.ofEpochMilli(dateFrom);
         List<Integer> blockers = personRepository.findBlockersIds(person.getId());
-        blockers = !blockers.isEmpty() ? blockers : Collections.singletonList(-1);
+        blockers = !blockers.isEmpty() ? blockers : singletonList(-1);
         Page<Post> pageablePostList;
         if (tag.equals("")) {
             pageablePostList = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags(text, author,
@@ -142,7 +143,7 @@ public class PostService {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         List<Integer> blockers = personRepository.findBlockersIds(person.getId());
-        blockers = !blockers.isEmpty() ? blockers : Collections.singletonList(-1);
+        blockers = !blockers.isEmpty() ? blockers : singletonList(-1);
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingExcludingBlockers(text, pageable, blockers);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }

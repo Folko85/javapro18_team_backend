@@ -5,7 +5,6 @@ import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import io.jsonwebtoken.lang.Strings;
 import lombok.extern.slf4j.Slf4j;
