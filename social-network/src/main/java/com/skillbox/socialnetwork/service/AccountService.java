@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.service;
 import com.mailjet.client.errors.MailjetException;
 import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
-import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
@@ -122,16 +122,20 @@ public class AccountService {
         return getAccountResponse();
     }
 
-    public DataResponse<NotificationSettingData> getNotificationsSetting(Principal principal) {
+    public ListResponse<NotificationSettingData> getNotificationsSetting(Principal principal) {
         Person person = findPerson(principal.getName());
-        DataResponse<NotificationSettingData> dataResponse = new DataResponse<>();
+        ListResponse<NotificationSettingData> dataResponse = new ListResponse<>();
         dataResponse.setTimestamp(Instant.now());
-        NotificationSettingData notificationSettingData = new NotificationSettingData();
-        List<NotificationType> enable = new ArrayList<>();
-        enable.add(NotificationType.MESSAGE);
-        enable.add(NotificationType.POST_COMMENT);
-        notificationSettingData.setEnable(enable);
-        dataResponse.setData(notificationSettingData);
+        List<NotificationSettingData> list = new ArrayList<>();
+        NotificationSettingData notificationSettingData1 = new NotificationSettingData();
+        notificationSettingData1.setEnable(true);
+        notificationSettingData1.setNotificationType(NotificationType.POST_COMMENT);
+        NotificationSettingData notificationSettingData2 = new NotificationSettingData();
+        notificationSettingData2.setEnable(true);
+        notificationSettingData2.setNotificationType(NotificationType.FRIEND_REQUEST);
+
+        list.add(notificationSettingData1);
+        dataResponse.setData(list);
         return dataResponse;
     }
 

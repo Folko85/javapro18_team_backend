@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.controller;
 import com.mailjet.client.errors.MailjetException;
 import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
-import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.service.AccountService;
@@ -79,7 +79,7 @@ public class ApiAccountController {
     @GetMapping("/notifications")
     @Operation(summary = "Уведомления", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<NotificationSettingData>> getNotificationsSetting(Principal principal) {
+    public ResponseEntity<ListResponse<NotificationSettingData>> getNotificationsSetting(Principal principal) {
         return new ResponseEntity<>(accountService.getNotificationsSetting(principal), HttpStatus.OK);
     }
 }
