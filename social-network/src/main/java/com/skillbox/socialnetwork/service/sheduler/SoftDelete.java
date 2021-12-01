@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.StorageService;
 import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,17 @@ public class SoftDelete {
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final FileRepository fileRepository;
+
+    @Value("${soft.person.month}")
+    private int cleanupPersonMonths;
+
+    @Value("${soft.post.day}")
+    private int cleanupPostDays;
+
+    @Value("${soft.comment.day}")
+    private int cleanupCommentDays;
+
+
 
     LocalDateTime now = LocalDateTime.now();
 
@@ -47,11 +59,12 @@ public class SoftDelete {
 
         log.info("Запустили процесс удаления усстаревших аккаунтов");
         try {
-            List<Person> persons = personRepository.findSoftDeletedPersonsID(now.minusMonths(3));
+            List<Person> persons = personRepository.findSoftDeletedPersonsID(now.minusMonths(cleanupPersonMonths));
             for (Person person : persons) {
                 userService.updateAfterSoftDelete(person); //меняем данные
                 List<Notification> notificationList =
                         notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId());
+                assert notificationList != null;
                 notificationRepository.deleteAll(notificationList); //удаляем уведомления
             }
         } catch (Exception e) {
@@ -65,7 +78,7 @@ public class SoftDelete {
 
         log.info("Запустили процесс удаления усстаревших постов");
         try {
-            List<Post> posts = postRepository.findSoftDeletedPostsID(now.minusDays(7));
+            List<Post> posts = postRepository.findSoftDeletedPostsID(now.minusDays(cleanupPostDays));
             for (Post post : posts) {
                 postService.deletePostAfterSoft(post);
                 PostFile postFile = fileRepository.findByPostId(post.getId());
@@ -83,7 +96,7 @@ public class SoftDelete {
 
         log.info("Запустили процесс удаления усстаревших комментариев");
         try {
-            List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(now.minusDays(1));
+            List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(now.minusDays(cleanupCommentDays));
             for (PostComment postComment : postComments) {
                 commentService.deleteAfterSoft(postComment);
                 PostFile commentFile = fileRepository.findByCommentId(postComment.getId());

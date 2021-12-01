@@ -117,7 +117,7 @@ class CommentControllerTest extends AbstractTest {
         this.mockMvc.perform(put("/api/v1/post/{id}/comments/{comment_id}", postId, commentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request)))
-                .andDo(print())
+//                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -127,7 +127,7 @@ class CommentControllerTest extends AbstractTest {
         String postId = post.getId().toString();
         String commentID = postComment.getId().toString();
         this.mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", postId, commentID))
-                .andDo(print())
+//                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -138,7 +138,7 @@ class CommentControllerTest extends AbstractTest {
         String commentID = postComment.getId().toString();
         postComment.setDeleted(true);
         this.mockMvc.perform(put("/api/v1/post/{id}/comments/{comment_id}/recover", postId, commentID))
-                .andDo(print())
+//                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -149,7 +149,7 @@ class CommentControllerTest extends AbstractTest {
         this.mockMvc.perform(get("/api/v1/post/{id}/comments", postId)
                 .param("offset", "0")
                 .param("itemPerPage","5"))
-                .andDo(print())
+//                .andDo(print())
                 .andExpect(status().isOk());
     }
 }
