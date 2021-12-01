@@ -3,6 +3,8 @@ package com.skillbox.socialnetwork.controller;
 import com.mailjet.client.errors.MailjetException;
 import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,7 +73,13 @@ public class ApiAccountController {
     @PutMapping("/notifications")
     @Operation(summary = "Уведомления", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<AccountResponse> notifications(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
-        return new ResponseEntity<>(accountService.setNotifications(notificationsRequest, principal), HttpStatus.OK);
+    public ResponseEntity<AccountResponse> putNotificationsSetting(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
+        return new ResponseEntity<>(accountService.setNotificationsSetting(notificationsRequest, principal), HttpStatus.OK);
+    }
+    @GetMapping("/notifications")
+    @Operation(summary = "Уведомления", security = @SecurityRequirement(name = "jwt"))
+    @PreAuthorize("hasAuthority('user:write')")
+    public ResponseEntity<DataResponse<NotificationSettingData>> getNotificationsSetting(Principal principal) {
+        return new ResponseEntity<>(accountService.getNotificationsSetting(principal), HttpStatus.OK);
     }
 }

@@ -11,7 +11,6 @@ import com.skillbox.socialnetwork.api.request.socketio.AuthRequest;
 import com.skillbox.socialnetwork.api.request.socketio.ReadMessagesData;
 import com.skillbox.socialnetwork.api.request.socketio.TypingData;
 import com.skillbox.socialnetwork.repository.SessionRepository;
-import com.skillbox.socialnetwork.repository.SessionTemplate;
 import com.skillbox.socialnetwork.service.AuthService;
 import com.skillbox.socialnetwork.service.DialogService;
 import lombok.extern.slf4j.Slf4j;

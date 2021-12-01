@@ -10,7 +10,6 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.SessionRepository;
-import com.skillbox.socialnetwork.repository.SessionTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;

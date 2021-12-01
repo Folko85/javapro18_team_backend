@@ -1,15 +1,14 @@
 package com.skillbox.socialnetwork.service;
 
 import com.mailjet.client.errors.MailjetException;
-import com.skillbox.socialnetwork.api.request.EMailChangeRequest;
-import com.skillbox.socialnetwork.api.request.NotificationsRequest;
-import com.skillbox.socialnetwork.api.request.PasswdChangeRequest;
-import com.skillbox.socialnetwork.api.request.RecoveryRequest;
-import com.skillbox.socialnetwork.api.request.RegisterRequest;
+import com.skillbox.socialnetwork.api.request.*;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
+import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.entity.enums.Role;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
@@ -22,13 +21,11 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -120,9 +117,22 @@ public class AccountService {
 
     }
 
-    public AccountResponse setNotifications(NotificationsRequest notificationsRequest, Principal principal) {
+    public AccountResponse setNotificationsSetting(NotificationsRequest notificationsRequest, Principal principal) {
         Person person = findPerson(principal.getName());
         return getAccountResponse();
+    }
+
+    public DataResponse<NotificationSettingData> getNotificationsSetting(Principal principal) {
+        Person person = findPerson(principal.getName());
+        DataResponse<NotificationSettingData> dataResponse = new DataResponse<>();
+        dataResponse.setTimestamp(Instant.now());
+        NotificationSettingData notificationSettingData = new NotificationSettingData();
+        List<NotificationType> enable = new ArrayList<>();
+        enable.add(NotificationType.MESSAGE);
+        enable.add(NotificationType.POST_COMMENT);
+        notificationSettingData.setEnable(enable);
+        dataResponse.setData(notificationSettingData);
+        return dataResponse;
     }
 
     public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {

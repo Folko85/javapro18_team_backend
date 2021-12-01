@@ -1,6 +1,9 @@
 package com.skillbox.socialnetwork.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
