@@ -44,6 +44,15 @@
     </repositories>
 
     <pluginRepositories>
+        <pluginRepository>
+            <id>Vaadin Directory</id>
+            <url>https://maven.vaadin.com/vaadin-addons</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+
+
         <!-- Main Maven repository -->
         <pluginRepository>
             <id>central</id>
@@ -55,10 +64,22 @@
     </pluginRepositories>
 
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>com.vaadin</groupId>-->
+<!--            <artifactId>vaadin-server</artifactId>-->
+<!--            <version>8.14.2</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.vaadin</groupId>-->
+<!--            <artifactId>vaadin-spring</artifactId>-->
+<!--            <version>19.0.0</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -124,37 +145,55 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vaadin</groupId>
-            <!-- Replace artifactId with vaadin-core to use only free components -->
-            <artifactId>vaadin</artifactId>
-            <exclusions>
-                <!-- Webjars are only needed when running in Vaadin 13 compatibility mode -->
-                <exclusion>
-                    <groupId>com.vaadin.webjar</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.insites</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymer</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymerelements</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.vaadin</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.webcomponents</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.liquibase.ext</groupId>
+            <artifactId>liquibase-hibernate5</artifactId>
+            <version>4.4.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.3.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.vaadin</groupId>-->
+<!--            &lt;!&ndash; Replace artifactId with vaadin-core to use only free components &ndash;&gt;-->
+<!--            <artifactId>vaadin</artifactId>-->
+<!--            <exclusions>-->
+<!--                &lt;!&ndash; Webjars are only needed when running in Vaadin 13 compatibility mode &ndash;&gt;-->
+<!--                <exclusion>-->
+<!--                    <groupId>com.vaadin.webjar</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.webjars.bowergithub.insites</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.webjars.bowergithub.polymer</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.webjars.bowergithub.polymerelements</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.webjars.bowergithub.vaadin</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.webjars.bowergithub.webcomponents</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
     </dependencies>
 
     <dependencyManagement>
@@ -190,13 +229,14 @@
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>build-frontend</goal>
+                                    <goal>prepare-frontend</goal>
                                 </goals>
-                                <phase>compile</phase>
                             </execution>
                         </executions>
                         <configuration>
-                            <productionMode>true</productionMode>
+                            <productionMode>false</productionMode>
+                            <compatibilityMode>false</compatibilityMode>
+                            <!--                            <frontendDirectory>microservice/frontend</frontendDirectory>-->
                         </configuration>
                     </plugin>
                 </plugins>
@@ -254,6 +294,18 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.2.1.v20140609</version>
+                <configuration>
+                    <httpConnector>
+                        <!--host>localhost</host-->
+                        <port>8090</port>
+                    </httpConnector>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
@@ -286,31 +338,6 @@
                 <configuration>
                     <propertyFile>src/main/resources/db/changelog/liquibase-master.yml</propertyFile>
                 </configuration>
-
-<!--                <dependencies>-->
-<!--                    <dependency>-->
-<!--                        <groupId>com.vaadin</groupId>-->
-<!--                        <artifactId>vaadin-spring-boot-starter</artifactId>-->
-<!--                    </dependency>-->
-
-<!--                    <dependency>-->
-<!--                        <groupId>org.liquibase.ext</groupId>-->
-<!--                        <artifactId>liquibase-hibernate5</artifactId>-->
-<!--                        <version>4.4.2</version>-->
-<!--                    </dependency>-->
-
-<!--                    <dependency>-->
-<!--                        <groupId>org.springframework</groupId>-->
-<!--                        <artifactId>spring-beans</artifactId>-->
-<!--                        <version>5.3.12</version>-->
-<!--                    </dependency>-->
-
-<!--                    <dependency>-->
-<!--                        <groupId>org.springframework.data</groupId>-->
-<!--                        <artifactId>spring-data-jpa</artifactId>-->
-<!--                        <version>2.5.6</version>-->
-<!--                    </dependency>-->
-<!--                </dependencies>-->
             </plugin>
         </plugins>
     </build>

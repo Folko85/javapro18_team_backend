@@ -1,25 +1,26 @@
 package com.skillbox.microservice.vaadin.view;
 
-import com.skillbox.microservice.vaadin.components.MyDialog;
 import com.skillbox.microservice.entity.Message;
+import com.skillbox.microservice.vaadin.components.MyDialog;
 import com.skillbox.microservice.vaadin.service.SomeService;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.PWA;
 
 import java.util.List;
 import java.util.Optional;
 
-@Route
+@Route("")
 @PWA(name = "Vaadin Application",
         shortName = "Vaadin App",
         description = "This is an example Vaadin application.",
         enableInstallPrompt = false)
-//@CssImport("./styles/shared-styles.css")
-//@CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
-public class MainView extends VerticalLayout {
+@CssImport("./styles/shared-styles.css")
+@CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
+public class MainView extends HorizontalLayout {
+
     private final MyDialog myDialog;
     private final SomeService someService;
 
@@ -42,7 +43,7 @@ public class MainView extends VerticalLayout {
             myDialog.open();
         });
 
-        addClassName("centered-content");
+//        addClassName("centered-content");
         add(grid);
     }
 
