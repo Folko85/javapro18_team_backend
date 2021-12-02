@@ -12,7 +12,7 @@ import com.vaadin.flow.server.PWA;
 import java.util.List;
 import java.util.Optional;
 
-@Route("")
+@Route("support/messages")
 @PWA(name = "Vaadin Application",
         shortName = "Vaadin App",
         description = "This is an example Vaadin application.",
