@@ -342,7 +342,7 @@ public class FriendshipService {
         .setSentTime(Instant.now())
         .setEventType(NotificationType.FRIEND_REQUEST)
         .setEntityAuthor(setAuthData(friendship.getSrcPerson()))
-        .setEntityId(notificationData.getEntityAuthor().getId());
+        .setEntityId(friendship.getSrcPerson().getId());
         notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
 
     }
