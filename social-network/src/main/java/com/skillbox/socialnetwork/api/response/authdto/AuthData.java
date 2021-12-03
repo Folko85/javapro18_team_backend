@@ -1,10 +1,6 @@
 package com.skillbox.socialnetwork.api.response.authdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import lombok.Data;
@@ -21,8 +17,6 @@ public class AuthData implements Dto {
     @JsonProperty("reg_date")
     private Instant regDate;
     @JsonProperty("birth_date")
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = InstantDeserializer.class)
     private Instant birthDate;
     @JsonProperty("email")
     private String eMail;
@@ -34,8 +28,6 @@ public class AuthData implements Dto {
     @JsonProperty("messages_permission")
     private MessagesPermission messagesPermission;
     @JsonProperty("last_online_time")
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = InstantDeserializer.class)
     private Instant lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
