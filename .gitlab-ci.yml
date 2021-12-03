@@ -1,4 +1,4 @@
-image: kroncosta/qmis_1101:228
+image: othernik/skillbox:1.0
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
 stages:
