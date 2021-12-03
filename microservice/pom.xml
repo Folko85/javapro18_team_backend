@@ -238,7 +238,7 @@
                             <nodeVersion>v10.16.3</nodeVersion>
                             <productionMode>false</productionMode>
                             <compatibilityMode>false</compatibilityMode>
-<!--                            <pnpmEnable>true</pnpmEnable>-->
+                            <pnpmEnable>true</pnpmEnable>
                             <!--                            <frontendDirectory>microservice/frontend</frontendDirectory>-->
                         </configuration>
                     </plugin>
