@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Slf4j
@@ -38,9 +40,6 @@ public class SoftDelete {
     private int cleanupCommentDays;
 
 
-
-    LocalDateTime now = LocalDateTime.now();
-
     public SoftDelete(PostService postService, UserService personService, CommentService commentService, StorageService storageService, PersonRepository personRepository, PostRepository postRepository, CommentRepository commentRepository, NotificationRepository notificationRepository, FileRepository fileRepository) {
         this.postService = postService;
         this.userService = personService;
@@ -56,9 +55,10 @@ public class SoftDelete {
 
     @Scheduled(cron = "@daily")
     public void cleanupPerson() {
-
+        LocalDateTime now = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime();
         log.info("Запустили процесс удаления усстаревших аккаунтов");
         try {
+
             List<Person> persons = personRepository.findSoftDeletedPersonsID(now.minusMonths(cleanupPersonMonths));
             for (Person person : persons) {
                 userService.updateAfterSoftDelete(person); //меняем данные
@@ -75,6 +75,7 @@ public class SoftDelete {
 
     @Scheduled(cron = "@daily")
     public void cleanupPost() {
+        LocalDateTime now = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime();
 
         log.info("Запустили процесс удаления усстаревших постов");
         try {
@@ -93,6 +94,7 @@ public class SoftDelete {
 
     @Scheduled(cron = "@daily")
     public void cleanupPostComment() {
+        LocalDateTime now = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime();
 
         log.info("Запустили процесс удаления усстаревших комментариев");
         try {

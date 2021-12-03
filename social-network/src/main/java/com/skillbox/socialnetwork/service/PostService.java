@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,7 +116,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setDeleted(true);
-        post.setDeletedTimestamp(LocalDateTime.now());
+        post.setDeletedTimestamp(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime());
         postRepository.saveAndFlush(post);
         return getPostDataResponse(post, person);
     }

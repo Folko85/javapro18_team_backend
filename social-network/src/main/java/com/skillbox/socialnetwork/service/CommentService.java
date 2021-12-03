@@ -22,7 +22,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,7 +109,7 @@ public class CommentService {
         Person person = findPerson(principal.getName());
         PostComment postComment = findPostComment(commentId);
         postComment.setDeleted(Objects.equals(postComment.getPerson().getId(), person.getId()) || postComment.isDeleted());
-        postComment.setDeletedTimestamp(LocalDateTime.now());
+        postComment.setDeletedTimestamp(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime());
         commentRepository.save(postComment);
         return getCommentResponse(postComment, person);
     }
