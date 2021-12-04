@@ -1,3 +1,5 @@
 package com.skillbox.socialnetwork.api.response;
 
-public interface Dto {}
+import java.io.Serializable;
+
+public interface Dto extends Serializable {}

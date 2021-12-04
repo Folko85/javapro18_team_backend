@@ -9,10 +9,13 @@ import com.skillbox.socialnetwork.exception.ApiConnectException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
 
 import java.security.Principal;
 import java.time.*;
@@ -70,6 +73,7 @@ public class UserService {
                 });
     }
 
+    @Cacheable(value="personProfileCache", key="#principal.getName")
     public DataResponse<AuthData> getUserMe(Principal principal) {
         return createResponse(getUserByEmail(principal));
     }
@@ -105,6 +109,7 @@ public class UserService {
 
     }
 
+    @CacheEvict(value="personProfileCache", key="#principal.getName")
     public DataResponse<AuthData> updateUser(AuthData updates, Principal principal) throws ApiConnectException {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
