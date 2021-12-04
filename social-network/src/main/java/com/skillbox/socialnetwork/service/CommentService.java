@@ -15,6 +15,7 @@ import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.*;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +31,7 @@ import static com.skillbox.socialnetwork.service.AuthService.*;
 import static java.time.ZoneOffset.UTC;
 
 @Service
+@AllArgsConstructor
 public class CommentService {
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
@@ -40,19 +40,6 @@ public class CommentService {
     private final FriendshipService friendshipService;
     private final FileRepository fileRepository;
     private final NotificationService notificationService;
-
-    public CommentService(PersonRepository personRepository, PostRepository postRepository,
-                          CommentRepository commentRepository, LikeRepository likeRepository,
-                          FriendshipService friendshipService, FileRepository fileRepository,
-                          NotificationService notificationService) {
-        this.personRepository = personRepository;
-        this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
-        this.likeRepository = likeRepository;
-        this.friendshipService = friendshipService;
-        this.fileRepository = fileRepository;
-        this.notificationService = notificationService;
-    }
 
     public ListResponse<CommentData> getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
         Person person = findPerson(principal.getName());

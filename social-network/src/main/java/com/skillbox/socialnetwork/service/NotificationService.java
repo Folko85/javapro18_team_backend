@@ -9,6 +9,7 @@ import com.skillbox.socialnetwork.entity.Notification;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.repository.*;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import static java.time.ZoneOffset.UTC;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class NotificationService {
     private final CommentRepository commentRepository;
     private final FriendshipRepository friendshipRepository;
@@ -35,20 +37,6 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SocketIOServer server;
     private final SessionRepository sessionRepository;
-
-
-    public NotificationService(CommentRepository commentRepository, FriendshipRepository friendshipRepository,
-                               MessageRepository messageRepository, PersonRepository personRepository,
-                               NotificationRepository notificationRepository, SocketIOServer server,
-                               SessionRepository sessionRepository) {
-        this.commentRepository = commentRepository;
-        this.friendshipRepository = friendshipRepository;
-        this.messageRepository = messageRepository;
-        this.personRepository = personRepository;
-        this.notificationRepository = notificationRepository;
-        this.server = server;
-        this.sessionRepository = sessionRepository;
-    }
 
     public ListResponse<NotificationData> getNotification(int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());

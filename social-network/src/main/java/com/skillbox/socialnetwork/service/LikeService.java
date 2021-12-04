@@ -10,6 +10,7 @@ import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.LikeRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.PostRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,21 +21,12 @@ import java.util.List;
 
 
 @Service
+@AllArgsConstructor
 public class LikeService {
     private final LikeRepository likeRepository;
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-
-    public LikeService(LikeRepository likeRepository,
-                       PersonRepository personRepository,
-                       PostRepository postRepository,
-                       CommentRepository commentRepository) {
-        this.likeRepository = likeRepository;
-        this.personRepository = personRepository;
-        this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
-    }
 
     public DataResponse<LikeData> getLikes(int itemId, String type) {
 

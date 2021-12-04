@@ -70,7 +70,7 @@ public class PlatformService {
             cities = response.getItems().stream()
                     .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).filter(x -> x.getId() != 0).collect(Collectors.toList());
         } catch (ApiException | ClientException e) {
-            log.warn(Arrays.toString(e.getStackTrace()));
+            log.warn("Ups! Error: {}", e.getMessage());
         }
         log.info("We get that cities with {} only one time at day", city);
         result.setTotal((response != null) ? response.getCount() : 0);
