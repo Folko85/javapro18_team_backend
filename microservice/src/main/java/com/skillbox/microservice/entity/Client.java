@@ -30,4 +30,9 @@ public class Client implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
     private List<Message> messages;
+
+    @Override
+    public String toString() {
+        return firstName + " " + lastName + " " + email;
+    }
 }
