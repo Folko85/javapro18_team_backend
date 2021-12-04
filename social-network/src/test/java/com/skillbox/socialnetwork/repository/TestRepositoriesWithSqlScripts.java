@@ -8,10 +8,7 @@ import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import io.jsonwebtoken.lang.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,8 +40,6 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
     @Autowired
     FriendshipService friendshipService;
 
-    //Target Person
-    private static String blockedEmail = "kburgan4@comcast.net";
     //Пользователи с этими почтами заблокировали с почтой blockedEmail
     private static final String[] blockersEmails = {
             "jboner0@domainmarket.com",
@@ -71,17 +66,13 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
             "cbuncherb@reverbnation.com"
     };
 
-    private static List<Integer> blockersIds = new ArrayList<>();
-    private static List<Integer> whitePersonsIds = new ArrayList<>();
-    private static List<Integer> banlistForRecomendationsIds = new ArrayList<>();
+    private static final List<Integer> blockersIds = new ArrayList<>();
+    private static final List<Integer> whitePersonsIds = new ArrayList<>();
+    private static final List<Integer> banlistForRecomendationsIds = new ArrayList<>();
     private static Person target;
 
-    @BeforeAll
-    /* * * *
-     * TODO
-     * А может получение параметров для теста тоже сделать тестом?
-     * * * */
-    static void setUpData(@Autowired PersonRepository personRepository ) {
+    @BeforeEach
+    public void setUpData(@Autowired PersonRepository personRepository) {
 
         for (String blockersEmail : blockersEmails) {
             blockersIds.add(personRepository.findByEMail(blockersEmail).get().getId());
@@ -91,10 +82,12 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
             whitePersonsIds.add(personRepository.findByEMail(x).get().getId());
         }
 
-        for(String banlistForRecomendations: banlistForRecomendations){
+        for (String banlistForRecomendations : banlistForRecomendations) {
             banlistForRecomendationsIds.add(personRepository.findByEMail(banlistForRecomendations).get().getId());
         }
 
+        //Target Person
+        String blockedEmail = "kburgan4@comcast.net";
         target = personRepository.findByEMail(blockedEmail).get();
     }
 
@@ -103,12 +96,12 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
     public void testFindBlockersIds() {
         log.info("Target id: {}, Email: {}", target.getId(), target.getEMail());
         List<Integer> checkingIds = personRepository.findBlockersIds(target.getId());
-        Assertions.assertArrayEquals(blockersIds.toArray(), checkingIds.toArray(),"Массивы с id не равны");
+        Assertions.assertArrayEquals(blockersIds.toArray(), checkingIds.toArray(), "Массивы с id не равны");
         HashSet<Integer> ids = new HashSet<>(checkingIds);
         whitePersonsIds.forEach(x -> {
             if (ids.contains(x)) {
                 Optional<Friendship> friendsh = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(target.getId(), x);
-                Assertions.assertFalse(friendsh.isEmpty(),"Получили Пустой Френдиш");
+                Assertions.assertFalse(friendsh.isEmpty(), "Получили Пустой Френдиш");
                 Assertions.fail("В списке блокирующих был найден недопустимый id ");
                 Friendship friendship = friendsh.get();
                 log.error("FriendShip: Src id and email : {} , {} # status: {}  # Dst id and email : {} , {} ",
@@ -124,15 +117,15 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
     }
 
 
-    String text  = "";
-    long dateF =  0;
+    String text = "";
+    long dateF = 0;
     long dateT = -1;
-    int offset =  0;
+    int offset = 0;
     int itemPerPage = 20;
 
     @Test
     @DisplayName("Проверяем получение постов")
-    public void getPosts(){
+    public void getPosts() {
         log.info("Проверяем получение постов для пользователя без блокировок");
 
         Person person = personRepository.findByEMail("jboner0@domainmarket.com").get();
@@ -141,12 +134,12 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Instant dateFrom = Instant.ofEpochMilli(dateF);
         Instant dateTo = Instant.now();
-        Page<Post> postList =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","", dateFrom, dateTo, pageable, personList);
+        Page<Post> postList = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("", "", dateFrom, dateTo, pageable, personList);
         Assertions.assertFalse(postList.isEmpty(), "Получили пустой список постов");
         Assertions.assertEquals(postList.get().count(), itemPerPage, "Получили постов меньше, чем дефолтное значение 20");
-        Page<Post> postListR =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","R", dateFrom, dateTo, pageable, personList);
+        Page<Post> postListR = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("", "R", dateFrom, dateTo, pageable, personList);
         Assertions.assertTrue(postListR.isEmpty(), "Получили не пустой список постов с автором R");
-        Page<Post> postListsG =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","G", dateFrom, dateTo, pageable, personList);
+        Page<Post> postListsG = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("", "G", dateFrom, dateTo, pageable, personList);
         Assertions.assertEquals(4L, postListsG.get().count(), "Количество постов автора G не равно 4");
 
 
@@ -154,12 +147,12 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         HashSet<Integer> blockersHashSet = new HashSet<>(blockersIds);
 
         Pageable pageable2 = PageRequest.of(offset / itemPerPage, itemPerPage);
-        Page<Post> postList2 =  postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("","", dateFrom, dateTo, pageable, blockersIds);
+        Page<Post> postList2 = postRepository.findPostsByTextContainingByDateExcludingBlockersWithoutTags("", "", dateFrom, dateTo, pageable, blockersIds);
         Assertions.assertFalse(postList2.isEmpty(), "Получили пустой список постов для Target");
         AtomicInteger countOfTargetPosts = new AtomicInteger();
         postList2.toList().forEach(post -> {
-            Assertions.assertFalse(blockersHashSet.contains(post.getPerson().getId()),"Список постов содержит пост блокера Target");
-            if(post.getPerson().getId().equals(target.getId())){
+            Assertions.assertFalse(blockersHashSet.contains(post.getPerson().getId()), "Список постов содержит пост блокера Target");
+            if (post.getPerson().getId().equals(target.getId())) {
                 countOfTargetPosts.getAndIncrement();
             }
         });
@@ -168,10 +161,10 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
     @Test
     @DisplayName("Проверяем получение списка заблокировавших пользователя, пользователей, которым отправлена заявка или на которых подписан Target")
-    public void findPersonSubscribesAndOrRequestsTest(){
+    public void findPersonSubscribesAndOrRequestsTest() {
         log.info("Target id: {}, Email: {}", target.getId(), target.getEMail());
         List<Integer> personsIds = personRepository.findPersonRelastionShips(target.getId());
-        Assertions.assertFalse(personsIds.contains(target.getId()),"Ответ тестируемого метода содержит id Target");
+        Assertions.assertFalse(personsIds.contains(target.getId()), "Ответ тестируемого метода содержит id Target");
         List<Integer> checkRelationShip = new ArrayList<>();
         checkRelationShip.addAll(blockersIds);
         checkRelationShip.addAll(banlistForRecomendationsIds);
@@ -180,37 +173,28 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
     }
 
-    //Target Person -Москвич 1979-03-13
-    private String targetMoscwich = "jboner0@domainmarket.com";
-
-    //Друг Москвича
-    private String drugMoscwichaFurby = "cfurby1@webeden.co.uk";
-
-    //Тестовые пользователи с тем же городом - Moscow
-    private String moscwichAmantri = "amantrippd@addtoany.com";
-    private String moscwichCropton = "bcroptono@cdbaby.com";
-
-    //Moscwich отправил этому заявку и он того же года рождения 1979-07-19
-    private String requestMoscwicha= "sdeavin9@booking.com";
-
-    //Этот сделал москвича своим подписчиком
-    private String subcribeMoscwicha= "cbuncherb@reverbnation.com";
-
-    //а Этот Москвич и кинул Target в подписчики
-    private String moscwichUdalilMoscwicha="lhannaf@msn.com";
-
-    private String[] personsForDrCheck = {
+    private final String[] personsForDrCheck = {
             // 1977-03-22
             "esaywardn@1688.com",
             // 1980-04-01
             "bkirkhamh@wiley.com"
     };
 
+    @AfterEach
+    public void cleanup() {
+        friendshipRepository.deleteAll();
+        postRepository.deleteAll();
+        personRepository.deleteAll();
+        blockersIds.clear();
+    }
+
 
     @Test
     @DisplayName("Проверяем рекомендации для Москвича без блокировок")
-    public void recommendedUsersTest(){
+    public void recommendedUsersTest() {
         log.debug("метод получения рекомендованных друзей");
+        //Target Person -Москвич 1979-03-13
+        String targetMoscwich = "jboner0@domainmarket.com";
         Person personTargetMoscwich = personRepository.findByEMail(targetMoscwich).get();
         log.debug("поиск рекомендованных друзей для пользователя: ".concat(personTargetMoscwich.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
@@ -224,11 +208,16 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         blockers.add(personTargetMoscwich.getId());
         Page<Person> vseMoscvichiBezTarget = personRepository.findByOptionalParametrs(
                 "", "", startDate, stopDate, personTargetMoscwich.getCity(), "", pageable, blockers);
+        //Тестовые пользователи с тем же городом - Moscow
+        String moscwichAmantri = "amantrippd@addtoany.com";
+        String moscwichCropton = "bcroptono@cdbaby.com";
+        //а Этот Москвич и кинул Target в подписчики
+        String moscwichUdalilMoscwicha = "lhannaf@msn.com";
         List<Integer> idsVsehMoscvicheyBezTarget = Arrays.asList(
                 personRepository.findByEMail(moscwichAmantri).get().getId(),
                 personRepository.findByEMail(moscwichCropton).get().getId(),
                 personRepository.findByEMail(moscwichUdalilMoscwicha).get().getId()
-                );
+        );
         Collections.sort(idsVsehMoscvicheyBezTarget);
         Assertions.assertEquals(3, vseMoscvichiBezTarget.getTotalElements());
 
@@ -240,6 +229,12 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
         //Не хотим в рекомендациях друзей, кому отправили запросы в друзья и на кого подписан
         List<Integer> personSubscribesAndOrRequestsIds = personRepository.findPersonRelastionShips(personTargetMoscwich.getId());
+        //Друг Москвича
+        String drugMoscwichaFurby = "cfurby1@webeden.co.uk";
+        //Moscwich отправил этому заявку и он того же года рождения 1979-07-19
+        String requestMoscwicha = "sdeavin9@booking.com";
+        //Этот сделал москвича своим подписчиком
+        String subcribeMoscwicha = "cbuncherb@reverbnation.com";
         List<Integer> neHotimIch = Arrays.asList(
                 personRepository.findByEMail(drugMoscwichaFurby).get().getId(),
                 personRepository.findByEMail(requestMoscwicha).get().getId(),
@@ -258,10 +253,10 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         List<Integer> idsVsehMoscvicheyBezTargetIBezUdal = Arrays.asList(
                 personRepository.findByEMail(moscwichAmantri).get().getId(),
                 personRepository.findByEMail(moscwichCropton).get().getId()
-                );
+        );
         Collections.sort(idsVsehMoscvicheyBezTargetIBezUdal);
         List<Integer> foundCitizens = new ArrayList<>();
-        personsBezDr.toList().forEach(p-> foundCitizens.add(p.getId()));
+        personsBezDr.toList().forEach(p -> foundCitizens.add(p.getId()));
         Collections.sort(foundCitizens);
         Assertions.assertArrayEquals(idsVsehMoscvicheyBezTargetIBezUdal.toArray(), foundCitizens.toArray());
         //Пусть город не указан
@@ -274,7 +269,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         }
 
         List<Integer> personsForDrCheckList = new ArrayList<>();
-        for(String p: personsForDrCheck){
+        for (String p : personsForDrCheck) {
             personsForDrCheckList.add(personRepository.findByEMail(p).get().getId());
         }
         Collections.sort(personsForDrCheckList);
@@ -284,7 +279,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         Assertions.assertEquals(2, personsBezCity.getTotalElements());
 
         List<Integer> personsBezCityList = new ArrayList<>();
-        personsBezCity.toList().forEach(p-> personsBezCityList.add(p.getId()));
+        personsBezCity.toList().forEach(p -> personsBezCityList.add(p.getId()));
         Collections.sort(personsBezCityList);
         Assertions.assertArrayEquals(personsForDrCheckList.toArray(), personsBezCityList.toArray());
 
@@ -299,8 +294,8 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personFirstPage.getTotalElements()));
             personFirstPage.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = friendshipService.get10Users(personTargetMoscwich.getEMail(), additionalPageable, blockers);
-            List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
-            List<Person> personFirstList= personFirstPage.stream().collect(Collectors.toList());
+            List<Person> additionalPersonList = additionalPersonPage.stream().toList();
+            List<Person> personFirstList = personFirstPage.stream().collect(Collectors.toList());
             personFirstList.addAll(additionalPersonList);
             personFirstPage = new PageImpl<>(personFirstList, pageable, personFirstList.size());
         }
@@ -311,8 +306,8 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personsBezDr.getTotalElements()));
             personsBezDr.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = friendshipService.get10Users(personTargetMoscwich.getEMail(), additionalPageable, blockers);
-            List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
-            List<Person> personFirstList= personsBezDr.stream().collect(Collectors.toList());
+            List<Person> additionalPersonList = additionalPersonPage.stream().toList();
+            List<Person> personFirstList = personsBezDr.stream().collect(Collectors.toList());
             personFirstList.addAll(additionalPersonList);
 
             HashSet<Integer> checkDuplicates = new HashSet<>();
@@ -327,8 +322,8 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personsBezCity.getTotalElements()));
             personsBezCity.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = friendshipService.get10Users(personTargetMoscwich.getEMail(), additionalPageable, blockers);
-            List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
-            List<Person> personFirstList= personsBezCity.stream().collect(Collectors.toList());
+            List<Person> additionalPersonList = additionalPersonPage.stream().toList();
+            List<Person> personFirstList = personsBezCity.stream().collect(Collectors.toList());
             personFirstList.addAll(additionalPersonList);
 
             HashSet<Integer> checkDuplicates = new HashSet<>();

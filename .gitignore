@@ -37,3 +37,4 @@ build/
 /scripts/grafana/
 /social-network/logs/
 /logs/
+/microservice/node_modules/

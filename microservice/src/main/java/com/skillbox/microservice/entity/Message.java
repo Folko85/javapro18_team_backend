@@ -5,14 +5,16 @@ import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "messages")
-public class Message {
+public class Message implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,5 +36,10 @@ public class Message {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Message message = (Message) o;
         return Objects.equals(id, message.id);
+    }
+
+    @Override
+    public String toString() {
+        return id + " " + dateOfApplication + " " + client + " " + message;
     }
 }

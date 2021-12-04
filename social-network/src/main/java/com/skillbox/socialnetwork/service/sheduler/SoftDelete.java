@@ -4,8 +4,10 @@ import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.repository.*;
 import com.skillbox.socialnetwork.service.CommentService;
 import com.skillbox.socialnetwork.service.PostService;
+import com.skillbox.socialnetwork.service.StorageService;
 import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,18 +21,29 @@ public class SoftDelete {
     private final PostService postService;
     private final UserService userService;
     private final CommentService commentService;
+    private final StorageService storageService;
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final FileRepository fileRepository;
+    private LocalDateTime now;
 
-    LocalDateTime now = LocalDateTime.now();
+    @Value("${soft.person.month}")
+    private int cleanupPersonMonths;
 
-    public SoftDelete(PostService postService, UserService personService, CommentService commentService, PersonRepository personRepository, PostRepository postRepository, CommentRepository commentRepository, NotificationRepository notificationRepository, FileRepository fileRepository) {
+    @Value("${soft.post.day}")
+    private int cleanupPostDays;
+
+    @Value("${soft.comment.day}")
+    private int cleanupCommentDays;
+
+
+    public SoftDelete(PostService postService, UserService personService, CommentService commentService, StorageService storageService, PersonRepository personRepository, PostRepository postRepository, CommentRepository commentRepository, NotificationRepository notificationRepository, FileRepository fileRepository) {
         this.postService = postService;
         this.userService = personService;
         this.commentService = commentService;
+        this.storageService = storageService;
         this.personRepository = personRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
@@ -38,56 +51,59 @@ public class SoftDelete {
         this.fileRepository = fileRepository;
     }
 
-
     @Scheduled(cron = "@daily")
     public void cleanupPerson() {
-
+        now = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших аккаунтов");
         try {
-            List<Person> persons = personRepository.findSoftDeletedPersonsID(now.minusMonths(3));
-            for (Person person : persons){
+
+            List<Person> persons = personRepository.findSoftDeletedPersonsID(now.minusMonths(cleanupPersonMonths));
+            for (Person person : persons) {
                 userService.updateAfterSoftDelete(person); //меняем данные
                 List<Notification> notificationList =
                         notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId());
+                assert notificationList != null;
                 notificationRepository.deleteAll(notificationList); //удаляем уведомления
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         log.info("Устаревшие аккаунты удалены" + now);
-
     }
 
     @Scheduled(cron = "@daily")
     public void cleanupPost() {
-
+        now = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших постов");
         try {
-            List<Post> posts = postRepository.findSoftDeletedPostsID(now.minusDays(7));
-            for (Post post : posts){
+            List<Post> posts = postRepository.findSoftDeletedPostsID(now.minusDays(cleanupPostDays));
+            for (Post post : posts) {
                 postService.deletePostAfterSoft(post);
+                PostFile postFile = fileRepository.findByPostId(post.getId());
+                assert postFile != null;
+                storageService.deleteImage(postFile.getId());
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         log.info("Устаревшие посты удалены" + now);
-
     }
 
     @Scheduled(cron = "@daily")
     public void cleanupPostComment() {
-
+        now = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших комментариев");
         try {
-            List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(now.minusDays(1));
-            for (PostComment postComment : postComments){
+            List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(now.minusDays(cleanupCommentDays));
+            for (PostComment postComment : postComments) {
                 commentService.deleteAfterSoft(postComment);
+                PostFile commentFile = fileRepository.findByCommentId(postComment.getId());
+                assert commentFile != null;
+                storageService.deleteImage(commentFile.getId());
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         log.info("Устаревшие комментарии удалены" + now);
-
     }
-
 }

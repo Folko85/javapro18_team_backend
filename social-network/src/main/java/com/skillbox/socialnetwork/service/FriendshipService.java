@@ -7,7 +7,8 @@ import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends.ResponseFriendsList;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends.StatusFriend;
-import com.skillbox.socialnetwork.api.response.notificationdto.NotificationData;
+import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
+import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
 import com.skillbox.socialnetwork.entity.Person;
@@ -184,7 +185,7 @@ public class FriendshipService {
             personFirstPage.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = get10Users(person.getEMail(), additionalPageable, blockers);
             List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
-            List<Person> personFirstList= personFirstPage.stream().collect(Collectors.toList());
+            List<Person> personFirstList = personFirstPage.stream().collect(Collectors.toList());
             personFirstList.addAll(additionalPersonList);
             personFirstPage = new PageImpl<>(personFirstList, pageable, personFirstList.size());
         }
@@ -363,12 +364,15 @@ public class FriendshipService {
     }
 
     private void sendNotification(Friendship friendship) {
-        NotificationData notificationData = new NotificationData();
+        SocketNotificationData notificationData = new SocketNotificationData();
         notificationData.setId(friendship.getId())
-        .setSentTime(Instant.now())
-        .setEventType(NotificationType.FRIEND_REQUEST)
-        .setEntityAuthor(setAuthData(friendship.getSrcPerson()))
-        .setEntityId(notificationData.getEntityAuthor().getId());
+                .setSentTime(Instant.now())
+                .setEventType(NotificationType.FRIEND_REQUEST)
+                .setEntityAuthor(new AuthorData().setPhoto(friendship.getSrcPerson().getPhoto())
+                        .setLastName(friendship.getSrcPerson().getLastName())
+                        .setFirstName(friendship.getSrcPerson().getFirstName())
+                        .setId(friendship.getSrcPerson().getId()))
+                .setEntityId(friendship.getSrcPerson().getId());
         notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
 
     }
