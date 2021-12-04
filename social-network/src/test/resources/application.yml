@@ -70,3 +70,10 @@ jasypt:
 
 cors:
   - http://localhost/
+soft:
+  person:
+    month: 3
+  post:
+    day: 7
+  comment:
+    day: 1
