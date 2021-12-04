@@ -140,7 +140,7 @@ public class UserService {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
         person.setDeleted(true);
-        person.setDeletedTimestamp(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime());
+        person.setDeletedTimestamp(LocalDateTime.now());
         personRepository.save(person);
         AccountResponse userDeleteResponse = new AccountResponse();
         userDeleteResponse.setTimestamp(Instant.now());

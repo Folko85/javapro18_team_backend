@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 @Slf4j
@@ -29,6 +27,7 @@ public class SoftDelete {
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final FileRepository fileRepository;
+    private LocalDateTime now;
 
     @Value("${soft.person.month}")
     private int cleanupPersonMonths;
@@ -55,7 +54,7 @@ public class SoftDelete {
 
     @Scheduled(cron = "@daily")
     public void cleanupPerson() {
-        LocalDateTime now = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        now = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших аккаунтов");
         try {
 
@@ -75,8 +74,7 @@ public class SoftDelete {
 
     @Scheduled(cron = "@daily")
     public void cleanupPost() {
-        LocalDateTime now = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-
+        now = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших постов");
         try {
             List<Post> posts = postRepository.findSoftDeletedPostsID(now.minusDays(cleanupPostDays));
@@ -94,8 +92,7 @@ public class SoftDelete {
 
     @Scheduled(cron = "@daily")
     public void cleanupPostComment() {
-        LocalDateTime now = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-
+        now = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших комментариев");
         try {
             List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(now.minusDays(cleanupCommentDays));
