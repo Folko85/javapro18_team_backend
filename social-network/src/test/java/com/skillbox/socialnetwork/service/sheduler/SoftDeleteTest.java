@@ -97,7 +97,6 @@ class SoftDeleteTest extends AbstractTest {
     private Post post;
     private PostComment postComment;
     private PostFile postFile;
-    private PostFile commentFile;
 
 
     @BeforeEach
@@ -107,7 +106,7 @@ class SoftDeleteTest extends AbstractTest {
         person.setPassword("password");
         person.setFirstName("Valera");
         person.setLastName("Jma");
-        person.setEMail("test@test.ru");
+        person.setEMail("soft@delete.ru");
         person.setPassword("password");
         person.setBirthday(LocalDate.of(1988, 1, 5));
         person.setRole(Role.USER);
@@ -138,7 +137,7 @@ class SoftDeleteTest extends AbstractTest {
         postFile.setPostId(post.getId());
         postFile.setUserId(person.getId());
 
-        commentFile = new PostFile();
+        PostFile commentFile = new PostFile();
         commentFile.setCommentId(postComment.getId());
         commentFile.setUserId(person.getId());
 
