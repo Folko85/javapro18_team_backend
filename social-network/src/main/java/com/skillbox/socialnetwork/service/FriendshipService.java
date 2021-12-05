@@ -344,7 +344,7 @@ public class FriendshipService {
                         .setFirstName(friendship.getSrcPerson().getFirstName())
                         .setId(friendship.getSrcPerson().getId()))
                 .setEntityId(friendship.getSrcPerson().getId());
-        notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
+        notificationService.sendEvent("friend-notification-response", notificationData, friendship.getDstPerson().getId());
 
     }
 

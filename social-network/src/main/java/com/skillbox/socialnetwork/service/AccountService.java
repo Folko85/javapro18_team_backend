@@ -129,7 +129,6 @@ public class AccountService {
         ListResponse<NotificationSettingData> dataResponse = new ListResponse<>();
         dataResponse.setTimestamp(Instant.now());
         List<NotificationSettingData> list = new ArrayList<>();
-
         list.add(new NotificationSettingData().setNotificationType(NotificationType.FRIEND_REQUEST)
                 .setEnable(notificationSetting.isFriendsRequest()));
         list.add(new NotificationSettingData().setNotificationType(NotificationType.POST_COMMENT)
