@@ -11,12 +11,14 @@ import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
 import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
+import com.skillbox.socialnetwork.entity.NotificationSetting;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
+import com.skillbox.socialnetwork.repository.NotificationSettingRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import io.jsonwebtoken.lang.Strings;
 import lombok.AllArgsConstructor;
@@ -44,6 +46,7 @@ import static java.time.ZoneOffset.UTC;
 @Service
 @AllArgsConstructor
 public class FriendshipService {
+    private final NotificationSettingRepository notificationSettingRepository;
     private final PersonRepository personRepository;
     private final FriendshipRepository friendshipRepository;
     private final PersonService personService;
@@ -120,8 +123,11 @@ public class FriendshipService {
                     .setDstPerson(dstPerson);
             friendshipRepository.save(newFriendship);
             //Notification
-            notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
-            sendNotification(newFriendship);
+            if (notificationSettingRepository.findNotificationSettingByPersonId(newFriendship.getDstPerson().getId())
+                    .orElse(new NotificationSetting().setFriendsRequest(true)).isFriendsRequest()) {
+                notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
+                sendNotification(newFriendship);
+            }
             //Notification
         }
         return getFriendResponse200("Adding to friends");
