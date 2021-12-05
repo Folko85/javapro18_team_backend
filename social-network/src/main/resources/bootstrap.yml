@@ -10,9 +10,23 @@ spring:
         max-attempts: 10
         initial-interval: 10000
         max-interval: 5000
+    bus:
+      enabled: true
+    stream:
+      kafka:
+        binder:
+          zkNodes: ${profile.config.zkNodes.${spring.profiles.active}}
+          brokers: ${profile.config.brokers.${spring.profiles.active}}
+
 profile:
   config:
     url:
       default: http://localhost:8888
       prod: http://cloud-config:8888
+    zkNodes:
+      default: http://localhost:2181
+      prod: http://zookeeper:2181
+    brokers:
+      default: http://localhost:29092
+      prod: http://kafka:29092
 
