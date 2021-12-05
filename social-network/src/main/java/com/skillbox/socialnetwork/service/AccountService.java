@@ -130,11 +130,11 @@ public class AccountService {
         dataResponse.setTimestamp(Instant.now());
         List<NotificationSettingData> list = new ArrayList<>();
         if (notificationSetting.isFriendsRequest())
-            list.add(new NotificationSettingData().setNotificationType(NotificationType.FRIEND_REQUEST));
+            list.add(new NotificationSettingData().setNotificationType(NotificationType.FRIEND_REQUEST).setEnable(true));
         if (notificationSetting.isPostComment())
-            list.add(new NotificationSettingData().setNotificationType(NotificationType.POST_COMMENT));
+            list.add(new NotificationSettingData().setNotificationType(NotificationType.POST_COMMENT).setEnable(true));
         if (notificationSetting.isCommentComment())
-            list.add(new NotificationSettingData().setNotificationType(NotificationType.COMMENT_COMMENT));
+            list.add(new NotificationSettingData().setNotificationType(NotificationType.COMMENT_COMMENT).setEnable(true));
         dataResponse.setData(list);
         return dataResponse;
     }
