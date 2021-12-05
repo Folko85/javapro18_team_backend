@@ -1,6 +1,8 @@
 package com.skillbox.microservice.vaadin.components;
 
+import com.mailjet.client.errors.MailjetException;
 import com.skillbox.microservice.entity.Message;
+import com.skillbox.microservice.vaadin.service.SendMailService;
 import com.skillbox.microservice.vaadin.service.SomeService;
 import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
@@ -15,6 +17,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.Lumo;
+import org.json.JSONException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Component;
 public class MyDialog extends Dialog implements KeyNotifier {
 
     private final SomeService someService;
+    private final SendMailService mailService;
     //Сообщение по которому клинкули
     private Message mess;
 
@@ -42,8 +46,9 @@ public class MyDialog extends Dialog implements KeyNotifier {
     private final VerticalLayout content;
     private final Footer footer;
 
-    public MyDialog(SomeService someService) {
+    public MyDialog(SomeService someService, SendMailService mailService) {
         this.someService = someService;
+        this.mailService = mailService;
         setDraggable(true);
         setModal(false);
         setResizable(true);
@@ -111,6 +116,14 @@ public class MyDialog extends Dialog implements KeyNotifier {
     }
 
     private void send(Message mess) {
+        String responseMassage = response.getValue();
+        if (!responseMassage.isEmpty()) {
+            try {
+                mailService.send(mess.getClient().getEmail(), response.getValue());
+            } catch (MailjetException | JSONException e) {
+                e.printStackTrace();
+            }
+        }
         this.close();
     }
 
