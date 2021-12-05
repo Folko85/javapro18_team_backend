@@ -11,6 +11,7 @@ import com.skillbox.socialnetwork.entity.Person2Dialog;
 import com.skillbox.socialnetwork.repository.MessageRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,21 +29,12 @@ import java.util.Map;
 import static java.time.ZoneOffset.UTC;
 
 @Service
+@AllArgsConstructor
 public class MessageService {
     private final PersonRepository personRepository;
     private final MessageRepository messageRepository;
     private final Person2DialogRepository person2DialogRepository;
     private final NotificationService notificationService;
-
-    public MessageService(PersonRepository personRepository,
-                          MessageRepository messageRepository,
-                          Person2DialogRepository person2DialogRepository,
-                          NotificationService notificationService) {
-        this.personRepository = personRepository;
-        this.messageRepository = messageRepository;
-        this.person2DialogRepository = person2DialogRepository;
-        this.notificationService = notificationService;
-    }
 
     public ListResponse<MessageData> getMessages(int id, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
@@ -65,9 +57,9 @@ public class MessageService {
         dataResponse.setTimestamp(Instant.now());
         Message message = new Message();
         message.setAuthor(person)
-        .setDialog(person2Dialog.getDialog())
-        .setTime(LocalDateTime.now())
-        .setText(messageRequest.getMessageText());
+                .setDialog(person2Dialog.getDialog())
+                .setTime(LocalDateTime.now())
+                .setText(messageRequest.getMessageText());
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
 
@@ -75,7 +67,7 @@ public class MessageService {
 //        Message finalMessage = message;
         message.getDialog().getPersons().forEach(dialogPerson -> {
             if (dialogPerson != person) {
-              //  notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
+                //  notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
                 notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
                 notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(dialogPerson.getId()).orElse(0).toString(), dialogPerson.getId());
             }

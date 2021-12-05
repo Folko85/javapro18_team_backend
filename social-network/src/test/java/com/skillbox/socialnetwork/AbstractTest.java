@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork;
 
 import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.corundumstudio.socketio.SocketIOServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnetwork.repository.SessionRepository;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
@@ -35,6 +36,9 @@ public abstract class AbstractTest {
 
     @MockBean
     private QueueMessagingTemplate queueMessagingTemplate;
+
+    @MockBean
+    private SocketIOServer server;
 
     /**
      * Object mapper.

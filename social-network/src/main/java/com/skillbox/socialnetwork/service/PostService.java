@@ -11,6 +11,7 @@ import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.exception.UserAndAuthorEqualsException;
 import com.skillbox.socialnetwork.repository.*;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -33,6 +35,7 @@ import static java.util.Collections.singletonList;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
     private final PersonRepository personRepository;
@@ -42,18 +45,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final FileRepository fileRepository;
 
-    private Pattern pattern = Pattern.compile("<img\\s+[^>]*src=\"([^\"]*)\"[^>]*>");
-
-    public PostService(PostRepository postRepository, PersonRepository personRepository, CommentService commentService,
-                       LikeRepository likeRepository, FriendshipService friendshipService, TagRepository tagRepository, FileRepository fileRepository) {
-        this.postRepository = postRepository;
-        this.personRepository = personRepository;
-        this.commentService = commentService;
-        this.likeRepository = likeRepository;
-        this.friendshipService = friendshipService;
-        this.tagRepository = tagRepository;
-        this.fileRepository = fileRepository;
-    }
+    private static final Pattern pattern = Pattern.compile("<img\\s+[^>]*src=\"([^\"]*)\"[^>]*>");
 
     public ListResponse<PostData> getPosts(String text, long dateFrom, long dateTo, int offset, int itemPerPage, String author, String tag, Principal principal) {
         Person person = findPerson(principal.getName());

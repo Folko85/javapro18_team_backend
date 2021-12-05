@@ -7,14 +7,12 @@ import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
 import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
-import com.skillbox.socialnetwork.entity.Like;
-import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.entity.PostComment;
+import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.CommentNotFoundException;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
 import com.skillbox.socialnetwork.repository.*;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +28,9 @@ import static com.skillbox.socialnetwork.service.AuthService.*;
 import static java.time.ZoneOffset.UTC;
 
 @Service
+@AllArgsConstructor
 public class CommentService {
+    private final NotificationSettingRepository notificationSettingRepository;
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
@@ -38,19 +38,6 @@ public class CommentService {
     private final FriendshipService friendshipService;
     private final FileRepository fileRepository;
     private final NotificationService notificationService;
-
-    public CommentService(PersonRepository personRepository, PostRepository postRepository,
-                          CommentRepository commentRepository, LikeRepository likeRepository,
-                          FriendshipService friendshipService, FileRepository fileRepository,
-                          NotificationService notificationService) {
-        this.personRepository = personRepository;
-        this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
-        this.likeRepository = likeRepository;
-        this.friendshipService = friendshipService;
-        this.fileRepository = fileRepository;
-        this.notificationService = notificationService;
-    }
 
     public ListResponse<CommentData> getPostComments(int offset, int itemPerPage, int id, Principal principal) throws PostNotFoundException {
         Person person = findPerson(principal.getName());
@@ -201,21 +188,26 @@ public class CommentService {
             commentNotificationData.setParentId(postComment.getId())
                     .setEventType(NotificationType.POST_COMMENT);
         }
-        commentNotificationData.setEntityId(postComment.getPost().getId())
-                .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
-                        .setLastName(postComment.getPerson().getLastName())
-                        .setId(postComment.getPerson().getId())
-                        .setPhoto(postComment.getPerson().getPhoto()))
-                .setCurrentEntityId(postComment.getId())
-                .setId(notificationService.createNotification(person, postComment.getId(), commentNotificationData.getEventType()).getId())
-                .setSentTime(postComment.getTime().toInstant(UTC))
-                .setEventType(commentNotificationData.getEventType());
-        notificationService.sendEvent("comment-notification-response", commentNotificationData, person.getId());
+        NotificationSetting notificationSetting = notificationSettingRepository.findNotificationSettingByPersonId(person.getId())
+                .orElse(new NotificationSetting().setCommentComment(true).setPostComment(true));
+        if (commentNotificationData.getEventType().equals(NotificationType.COMMENT_COMMENT) && notificationSetting.isCommentComment()
+                || commentNotificationData.getEventType().equals(NotificationType.POST_COMMENT) && notificationSetting.isPostComment()) {
+            commentNotificationData.setEntityId(postComment.getPost().getId())
+                    .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
+                            .setLastName(postComment.getPerson().getLastName())
+                            .setId(postComment.getPerson().getId())
+                            .setPhoto(postComment.getPerson().getPhoto()))
+                    .setCurrentEntityId(postComment.getId())
+                    .setId(notificationService.createNotification(person, postComment.getId(), commentNotificationData.getEventType()).getId())
+                    .setSentTime(postComment.getTime().toInstant(UTC))
+                    .setEventType(commentNotificationData.getEventType());
+            notificationService.sendEvent("comment-notification-response", commentNotificationData, person.getId());
+        }
     }
 
     private int getIdFromPostText(String postText) {
         return Integer.parseInt(Arrays.stream(postText.split(","))
-                .filter(text -> text.contains("id:")).findFirst().orElse("0000").substring(3));
+                .filter(text -> text.contains("id:")).findFirst().orElse("id:0").substring(3));
     }
 
     public void deleteAfterSoft(PostComment postComment) {

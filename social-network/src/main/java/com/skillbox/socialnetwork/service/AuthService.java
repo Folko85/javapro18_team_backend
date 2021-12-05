@@ -10,6 +10,7 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.exception.DeletedAccountLoginException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.SessionRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,23 +28,13 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class AuthService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final SessionRepository sessionRepository;
     private final NotificationService notificationService;
-
-    public AuthService(PersonRepository accountRepository, PasswordEncoder passwordEncoder,
-                       JwtProvider jwtProvider, SessionRepository sessionRepository,
-                       NotificationService notificationService) {
-        this.personRepository = accountRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtProvider = jwtProvider;
-        this.sessionRepository = sessionRepository;
-        this.notificationService = notificationService;
-    }
-
 
     public DataResponse<AuthData> auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
         Person person = personRepository.findByEMail(loginRequest.getEMail())
