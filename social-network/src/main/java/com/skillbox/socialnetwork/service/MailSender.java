@@ -35,7 +35,7 @@ public class MailSender {
                                         .put(new JSONObject()
                                                 .put("Email", emailTo)
                                                 .put("Name", "Dear User")))
-                                .put(Emailv31.Message.SUBJECT, "Greetings from Zeronetwork.")
+                                .put(Emailv31.Message.SUBJECT, mailProperties.getTheme())
                                 .put(Emailv31.Message.TEXTPART, "Добро пожаловать в нашу соцсеть!!!")
                                 .put(Emailv31.Message.HTMLPART, message)
                                 .put(Emailv31.Message.CUSTOMID, "AppGettingStartedTest")));

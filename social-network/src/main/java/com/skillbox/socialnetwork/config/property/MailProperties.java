@@ -14,4 +14,5 @@ public class MailProperties {
     private String key;
     private String secret;
     private String from;
+    private String theme;
 }
