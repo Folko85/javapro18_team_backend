@@ -140,5 +140,11 @@ services:
       monitoring:
         aliases:
           - loki
+  rabbitmq:
+    image: rabbitmq
+    command: rabbitmq-server
+    expose:
+      - "5672"
+      - "15672"
 networks:
   monitoring:

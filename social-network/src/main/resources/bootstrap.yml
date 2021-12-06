@@ -12,6 +12,8 @@ spring:
         max-interval: 5000
     bus:
       enabled: true
+      refresh:
+        enabled: true
 
 profile:
   config:
