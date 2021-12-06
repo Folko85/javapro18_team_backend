@@ -141,8 +141,12 @@ services:
         aliases:
           - loki
   rabbitmq:
+    restart: always
+    hostname: "rabbitmq"
     image: rabbitmq:management
     command: rabbitmq-server
+    labels:
+      NAME: "rabbitmq"
     ports:
       - "5672:5672"
       - "15672:15672"
