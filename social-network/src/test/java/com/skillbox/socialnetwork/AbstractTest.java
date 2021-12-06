@@ -5,7 +5,6 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnetwork.repository.SessionRepository;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
-import org.apache.kafka.clients.NetworkClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,9 +32,6 @@ public abstract class AbstractTest {
 
     @MockBean
     private AmazonSQSAsync amazonSQSAsync;
-
-    @MockBean
-    private NetworkClient networkClient;
 
     @MockBean
     private BindingService bindingService;
