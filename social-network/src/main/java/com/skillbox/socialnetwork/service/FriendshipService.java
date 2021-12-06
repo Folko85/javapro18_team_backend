@@ -377,5 +377,15 @@ public class FriendshipService {
 
     }
 
+    public List<Integer> getFriendsAndFriendsOfFriendsAndSubscribesFiltered(int id){
+        HashSet<Integer> blockersIds= new HashSet<>(personRepository.findBlockersIds(id));
+        List<Integer> friendsAndFriendsOfFriendsAndSubscribesIds = personRepository.findFriendsAndFriendsOfFriendsAndSubscribesIds(id);
+        List<Integer> filtered = new ArrayList<>();
+        for (Integer fr : friendsAndFriendsOfFriendsAndSubscribesIds) {
+            if (!blockersIds.contains(fr)) filtered.add(fr);
+        }
+        return filtered;
+    }
+
 }
 
