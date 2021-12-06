@@ -6,15 +6,16 @@ import com.cloudinary.utils.ObjectUtils;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
+import com.skillbox.socialnetwork.config.property.CloudinaryProperties;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.PostFile;
 import com.skillbox.socialnetwork.exception.ApiConnectException;
 import com.skillbox.socialnetwork.repository.FileRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,27 +28,16 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
 @Slf4j
+@Service
+@AllArgsConstructor
 public class StorageService {
 
     private final PersonRepository personRepository;
 
     private final FileRepository fileRepository;
 
-    @Value("${external.cloudinary.cloud}")
-    private String cloud;
-
-    @Value("${external.cloudinary.key}")
-    private String key;
-
-    @Value("${external.cloudinary.secret}")
-    private String secret;
-
-    public StorageService(PersonRepository personRepository, FileRepository fileRepository) {
-        this.personRepository = personRepository;
-        this.fileRepository = fileRepository;
-    }
+    private final CloudinaryProperties cloudinaryProperties;
 
     public DataResponse<ImageDto> uploadImage(MultipartFile image, String type, Principal principal) throws IOException {
         Person current = personRepository.findByEMail(principal.getName())
@@ -90,9 +80,9 @@ public class StorageService {
 
     public Cloudinary getInstance() {
         return new Cloudinary((ObjectUtils.asMap(
-                "cloud_name", cloud,
-                "api_key", key,
-                "api_secret", secret)));
+                "cloud_name", cloudinaryProperties.getCloud(),
+                "api_key", cloudinaryProperties.getKey(),
+                "api_secret", cloudinaryProperties.getSecret())));
     }
 
     public AccountResponse deleteImage(int id) throws ApiConnectException {

@@ -15,6 +15,7 @@ import com.skillbox.socialnetwork.entity.Person2Dialog;
 import com.skillbox.socialnetwork.repository.DialogRepository;
 import com.skillbox.socialnetwork.repository.Person2DialogRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,23 +37,13 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class DialogService {
     private final PersonRepository personRepository;
     private final Person2DialogRepository person2DialogRepository;
     private final DialogRepository dialogRepository;
     private final MessageService messageService;
     private final NotificationService notificationService;
-
-    public DialogService(PersonRepository personRepository, Person2DialogRepository person2DialogRepository,
-                         DialogRepository dialogRepository, MessageService messageService,
-                         NotificationService notificationService) {
-        this.personRepository = personRepository;
-        this.person2DialogRepository = person2DialogRepository;
-        this.dialogRepository = dialogRepository;
-        this.messageService = messageService;
-        this.notificationService = notificationService;
-    }
-
 
     public ListResponse<DialogData> getDialogs(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());

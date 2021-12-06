@@ -149,6 +149,12 @@
             <artifactId>spring-data-jpa</artifactId>
             <version>2.5.6</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.mailjet</groupId>
+            <artifactId>mailjet-client</artifactId>
+            <version>5.2.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

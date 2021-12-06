@@ -11,14 +11,17 @@ import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
 import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
+import com.skillbox.socialnetwork.entity.NotificationSetting;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
+import com.skillbox.socialnetwork.repository.NotificationSettingRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import io.jsonwebtoken.lang.Strings;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -45,8 +48,9 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
-
+@AllArgsConstructor
 public class FriendshipService {
+    private final NotificationSettingRepository notificationSettingRepository;
     private final PersonRepository personRepository;
     private final FriendshipRepository friendshipRepository;
     private final PersonService personService;
@@ -55,16 +59,6 @@ public class FriendshipService {
 
     @Autowired
     CacheManager cacheManager;
-
-    public FriendshipService(PersonRepository personRepository, FriendshipRepository friendshipRepository,
-                             PersonService personService, FriendshipStatusRepository friendshipStatusRepository,
-                             NotificationService notificationService) {
-        this.personRepository = personRepository;
-        this.friendshipRepository = friendshipRepository;
-        this.personService = personService;
-        this.friendshipStatusRepository = friendshipStatusRepository;
-        this.notificationService = notificationService;
-    }
 
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
@@ -143,8 +137,11 @@ public class FriendshipService {
                 recommendations.evict(dstPerson.getEMail());
             }
             //Notification
-            notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
-            sendNotification(newFriendship);
+            if (notificationSettingRepository.findNotificationSettingByPersonId(newFriendship.getDstPerson().getId())
+                    .orElse(new NotificationSetting().setFriendsRequest(true)).isFriendsRequest()) {
+                notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
+                sendNotification(newFriendship);
+            }
             //Notification
         }
         return getFriendResponse200("Adding to friends");
@@ -184,7 +181,7 @@ public class FriendshipService {
             Pageable additionalPageable = PageRequest.of(0, (int) (10 - personFirstPage.getTotalElements()));
             personFirstPage.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = get10Users(person.getEMail(), additionalPageable, blockers);
-            List<Person> additionalPersonList = additionalPersonPage.stream().collect(Collectors.toList());
+            List<Person> additionalPersonList = additionalPersonPage.stream().toList();
             List<Person> personFirstList = personFirstPage.stream().collect(Collectors.toList());
             personFirstList.addAll(additionalPersonList);
             personFirstPage = new PageImpl<>(personFirstList, pageable, personFirstList.size());
@@ -373,7 +370,7 @@ public class FriendshipService {
                         .setFirstName(friendship.getSrcPerson().getFirstName())
                         .setId(friendship.getSrcPerson().getId()))
                 .setEntityId(friendship.getSrcPerson().getId());
-        notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
+        notificationService.sendEvent("friend-notification-response", notificationData, friendship.getDstPerson().getId());
 
     }
 

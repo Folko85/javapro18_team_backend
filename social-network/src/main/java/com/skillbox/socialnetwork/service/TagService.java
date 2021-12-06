@@ -8,6 +8,7 @@ import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.PostRepository;
 import com.skillbox.socialnetwork.repository.TagRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,16 +23,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class TagService {
 
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
-
-
-    public TagService(TagRepository tagRepository, PostRepository postRepository) {
-        this.tagRepository = tagRepository;
-        this.postRepository = postRepository;
-    }
 
     public ListResponse<TagDto> getTags(String tag, int offset, int itemPerPage) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);

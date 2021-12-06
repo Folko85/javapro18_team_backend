@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.exception.ApiConnectException;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,6 +30,7 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class UserService {
 
     public static String deletedImage = "http://res.cloudinary.com/mmm-skillbox/image/upload/c_fill,h_300,w_300/NkbgPAkUQT";
@@ -36,12 +38,6 @@ public class UserService {
     private final PersonRepository personRepository;
     private final FriendshipService friendshipService;
     private final StorageService storageService;
-
-    public UserService(PersonRepository personRepository, FriendshipService friendshipService, StorageService storageService) {
-        this.personRepository = personRepository;
-        this.friendshipService = friendshipService;
-        this.storageService = storageService;
-    }
 
     public AuthData getUserByEmail(Principal principal) {
         if (principal == null) {

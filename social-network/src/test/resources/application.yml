@@ -69,7 +69,8 @@ jasypt:
     bean: encryptorBean
 
 cors:
-  - http://localhost/
+  urls:
+    - http://localhost/
 soft:
   person:
     month: 3

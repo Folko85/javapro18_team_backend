@@ -5,6 +5,7 @@ import com.skillbox.socialnetwork.api.response.friendsdto.FriendsDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,15 +26,10 @@ import static java.time.ZoneOffset.UTC;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final FriendshipRepository friendshipRepository;
-
-    public PersonService(PersonRepository personRepository, FriendshipRepository friendshipRepository) {
-        this.personRepository = personRepository;
-        this.friendshipRepository = friendshipRepository;
-    }
 
     public FriendsDto friendsToPojo(Person source) {
         FriendsDto result = new FriendsDto();
