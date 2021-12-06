@@ -78,7 +78,6 @@ public class NotificationService {
         List<NotificationData> notificationDataList = new ArrayList<>();
         notifications.forEach(notification -> {
             NotificationData notificationData = getNotificationData(notification);
-            if (notificationData.getEntityAuthor() != null)
                 notificationDataList.add(notificationData);
         });
         return notificationDataList;
@@ -90,13 +89,14 @@ public class NotificationService {
                 .setSentTime(notification.getSendTime().toInstant(UTC))
                 .setEventType(notification.getType());
         switch (notification.getType()) {
-            case COMMENT_COMMENT, POST_COMMENT -> commentRepository.findById(notification.getEntityId()).ifPresent(comment -> notificationData.setEntityAuthor(setAuthData(comment.getPerson()))
-                    .setEntityId(comment.getPost().getId())
-                    .setParentEntityId(comment.getParent() == null ? comment.getId() : comment.getParent().getId())
-                    .setCurrentEntityId(comment.getId()));
-            case FRIEND_REQUEST -> notificationData.setEntityAuthor(friendshipRepository.findById(notification.getEntityId())
-                            .map(friendship -> setAuthData(friendship.getSrcPerson())).orElse(null))
-                    .setEntityId(notificationData.getEntityAuthor().getId());
+            case COMMENT_COMMENT, POST_COMMENT -> commentRepository.findById(notification.getEntityId())
+                    .ifPresent(comment -> notificationData.setEntityAuthor(setAuthData(comment.getPerson()))
+                            .setEntityId(comment.getPost().getId())
+                            .setParentEntityId(comment.getParent() == null ? comment.getId() : comment.getParent().getId())
+                            .setCurrentEntityId(comment.getId()));
+            case FRIEND_REQUEST -> friendshipRepository.findById(notification.getEntityId())
+                    .ifPresent(friendship -> notificationData.setEntityAuthor(setAuthData(friendship.getSrcPerson()))
+                            .setEntityId(notificationData.getEntityAuthor().getId()));
 //            case MESSAGE -> messageRepository.findById(notification.getEntityId()).ifPresent(message -> notificationData.setEntityAuthor(setAuthData(message.getAuthor()))
 //                    .setEntityId(message.getId())
 //                    .setParentEntityId(message.getDialog().getId()));

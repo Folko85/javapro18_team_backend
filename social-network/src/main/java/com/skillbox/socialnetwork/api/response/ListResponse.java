@@ -8,12 +8,13 @@ import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.skillbox.socialnetwork.api.DefaultInstantDeserializer;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ListResponse<T extends Dto> {
+public class ListResponse<T extends Dto> implements Serializable {
     private String error;
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = DefaultInstantDeserializer.class)

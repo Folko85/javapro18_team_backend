@@ -7,11 +7,13 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.config.property.RegistrationProperties;
+import com.skillbox.socialnetwork.entity.NotificationSetting;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.entity.enums.Role;
 import com.skillbox.socialnetwork.exception.UserExistException;
+import com.skillbox.socialnetwork.repository.NotificationSettingRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +38,7 @@ public class AccountService {
     private final MailSender mailSender;
     private final JwtProvider jwtProvider;
     private final RegistrationProperties registrationProperties;
+    private final NotificationSettingRepository notificationSettingRepository;
 
     public AccountResponse register(RegisterRequest registerRequest) throws UserExistException, MailjetException {
         if (personRepository.findByEMail(registerRequest.getEMail()).isPresent())
@@ -108,22 +111,30 @@ public class AccountService {
 
     public AccountResponse setNotificationsSetting(NotificationsRequest notificationsRequest, Principal principal) {
         Person person = findPerson(principal.getName());
+        NotificationSetting notificationSetting = notificationSettingRepository.findNotificationSettingByPersonId(person.getId())
+                .orElse(new NotificationSetting().setFriendsRequest(true).setCommentComment(true).setPostComment(true).setPerson(person));
+        switch (notificationsRequest.getNotificationType()) {
+            case FRIEND_REQUEST -> notificationSetting.setFriendsRequest(notificationsRequest.isEnable());
+            case POST_COMMENT -> notificationSetting.setPostComment(notificationsRequest.isEnable());
+            case COMMENT_COMMENT -> notificationSetting.setCommentComment(notificationsRequest.isEnable());
+        }
+        notificationSettingRepository.save(notificationSetting);
         return getAccountResponse();
     }
 
     public ListResponse<NotificationSettingData> getNotificationsSetting(Principal principal) {
         Person person = findPerson(principal.getName());
+        NotificationSetting notificationSetting = notificationSettingRepository.findNotificationSettingByPersonId(person.getId())
+                .orElse(new NotificationSetting().setFriendsRequest(true).setCommentComment(true).setPostComment(true));
         ListResponse<NotificationSettingData> dataResponse = new ListResponse<>();
         dataResponse.setTimestamp(Instant.now());
         List<NotificationSettingData> list = new ArrayList<>();
-        NotificationSettingData notificationSettingData1 = new NotificationSettingData();
-        notificationSettingData1.setEnable(true);
-        notificationSettingData1.setNotificationType(NotificationType.POST_COMMENT);
-        NotificationSettingData notificationSettingData2 = new NotificationSettingData();
-        notificationSettingData2.setEnable(true);
-        notificationSettingData2.setNotificationType(NotificationType.FRIEND_REQUEST);
-
-        list.add(notificationSettingData1);
+        list.add(new NotificationSettingData().setNotificationType(NotificationType.FRIEND_REQUEST)
+                .setEnable(notificationSetting.isFriendsRequest()));
+        list.add(new NotificationSettingData().setNotificationType(NotificationType.POST_COMMENT)
+                .setEnable(notificationSetting.isPostComment()));
+        list.add(new NotificationSettingData().setNotificationType(NotificationType.COMMENT_COMMENT)
+                .setEnable(notificationSetting.isCommentComment()));
         dataResponse.setData(list);
         return dataResponse;
     }

@@ -11,16 +11,22 @@ import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
 import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.FriendshipStatus;
+import com.skillbox.socialnetwork.entity.NotificationSetting;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
+import com.skillbox.socialnetwork.repository.NotificationSettingRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import io.jsonwebtoken.lang.Strings;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -44,11 +50,15 @@ import static java.time.ZoneOffset.UTC;
 @Service
 @AllArgsConstructor
 public class FriendshipService {
+    private final NotificationSettingRepository notificationSettingRepository;
     private final PersonRepository personRepository;
     private final FriendshipRepository friendshipRepository;
     private final PersonService personService;
     private final FriendshipStatusRepository friendshipStatusRepository;
     private final NotificationService notificationService;
+
+    @Autowired
+    CacheManager cacheManager;
 
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
@@ -73,11 +83,13 @@ public class FriendshipService {
         return getFriendResponse200("Stop being friends");
     }
 
+    /**
+     * CacheEvictAble(value = "recommendedPersonsCache", key = "#email")
+     */
     public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubscribingOnBlockerPersonException, AddingYourselfToFriends, FriendshipExistException, AddingOrSubscribingOnBlockedPersonException {
         log.debug("метод добавления в друзья");
 
         Person srcPerson = personService.findPersonByEmail(principal.getName());
-
 
         if (srcPerson.getId() == id) {
             throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
@@ -119,9 +131,17 @@ public class FriendshipService {
                     .setSrcPerson(srcPerson)
                     .setDstPerson(dstPerson);
             friendshipRepository.save(newFriendship);
+            Cache recommendations = cacheManager.getCache("recommendedPersonsCache");
+            if(recommendations!=null){
+                recommendations.evict(srcPerson.getEMail());
+                recommendations.evict(dstPerson.getEMail());
+            }
             //Notification
-            notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
-            sendNotification(newFriendship);
+            if (notificationSettingRepository.findNotificationSettingByPersonId(newFriendship.getDstPerson().getId())
+                    .orElse(new NotificationSetting().setFriendsRequest(true)).isFriendsRequest()) {
+                notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
+                sendNotification(newFriendship);
+            }
             //Notification
         }
         return getFriendResponse200("Adding to friends");
@@ -135,14 +155,14 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
+    @Cacheable(value = "recommendedPersonsCache", key = "#principal.getName")
     public ListResponse<AuthData> recommendedUsers(int offset, int itemPerPage, Principal principal) {
-        log.debug("метод получения рекомендованных друзей");
+        log.info("метод получения рекомендованных друзей для пользователя {} ", principal.getName());
         Person person = personService.findPersonByEmail(principal.getName());
-        log.debug("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
+        log.info("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         LocalDate startDate = null;
         LocalDate stopDate = null;
-
         //Не хотим в рекомендациях блокирующих, друзей, кому отправили запросы в друзья и на кого подписан
         List<Integer> blockers = personRepository.findPersonRelastionShips(person.getId());
         blockers.add(person.getId());
@@ -226,6 +246,8 @@ public class FriendshipService {
      * Src Person BlOCKED Dest Person or
      * Dest person WASBLOCKEDBY Src Person or
      * Src and Dest blocked Each other (DEADLOCK)
+     *
+     * CacheEvictAble(value = "recommendedPersonsCache", key = "#email")
      */
     public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         Person current = personService.findPersonByEmail(principal.getName());
@@ -236,6 +258,11 @@ public class FriendshipService {
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
             if (optional.isEmpty()) {
                 createFriendship(current, blocking, FriendshipStatusCode.BLOCKED);
+                Cache recommendations = cacheManager.getCache("recommendedPersonsCache");
+                if(recommendations!=null){
+                    recommendations.evict(blocking.getEMail());
+                    recommendations.evict(current.getEMail());
+                }
             } else {
                 Friendship friendship = optional.get();
                 FriendshipStatus friendshipStatus = friendship.getStatus();
@@ -289,6 +316,11 @@ public class FriendshipService {
                 || friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY) && current.getId().equals(friendship.getDstPerson().getId())) {
             friendshipRepository.delete(friendship);
             friendshipStatusRepository.delete(friendship.getStatus());
+            Cache recommendations = cacheManager.getCache("recommendedPersonsCache");
+            if(recommendations!=null){
+                recommendations.evict(unblocking.getEMail());
+                recommendations.evict(current.getEMail());
+            }
         } else {
             if (current.getId().equals(friendship.getSrcPerson().getId())) {
                 friendship.getStatus().setCode(FriendshipStatusCode.WASBLOCKEDBY);
@@ -338,8 +370,18 @@ public class FriendshipService {
                         .setFirstName(friendship.getSrcPerson().getFirstName())
                         .setId(friendship.getSrcPerson().getId()))
                 .setEntityId(friendship.getSrcPerson().getId());
-        notificationService.sendEvent("friend-notification-response", notificationData, notificationData.getEntityId());
+        notificationService.sendEvent("friend-notification-response", notificationData, friendship.getDstPerson().getId());
 
+    }
+
+    public List<Integer> getFriendsAndFriendsOfFriendsAndSubscribesFiltered(int id){
+        HashSet<Integer> blockersIds= new HashSet<>(personRepository.findBlockersIds(id));
+        List<Integer> friendsAndFriendsOfFriendsAndSubscribesIds = personRepository.findFriendsAndFriendsOfFriendsAndSubscribesIds(id);
+        List<Integer> filtered = new ArrayList<>();
+        for (Integer fr : friendsAndFriendsOfFriendsAndSubscribesIds) {
+            if (!blockersIds.contains(fr)) filtered.add(fr);
+        }
+        return filtered;
     }
 
 }

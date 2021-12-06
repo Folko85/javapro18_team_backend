@@ -2,14 +2,14 @@ package com.skillbox.socialnetwork.repository;
 
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface FriendshipRepository extends PagingAndSortingRepository<Friendship, Integer> {
+public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
 
     @Query("SELECT f FROM Friendship f " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.id " +

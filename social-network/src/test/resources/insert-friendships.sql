@@ -148,6 +148,56 @@ VALUES(
     (select person.id from person WHERE person.e_mail='jboner0@domainmarket.com'),
     (select person.id from person WHERE person.e_mail='lhannaf@msn.com')
 );
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'FRIEND');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='kmattussevich6@alibaba.com'),
+    (select person.id from person WHERE person.e_mail='kcranmerc@va.gov')
+);
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'FRIEND');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='jboner0@domainmarket.com'),
+    (select person.id from person WHERE person.e_mail='kmattussevich6@alibaba.com')
+);
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'FRIEND');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='cwolstencroftg@cnn.com'),
+    (select person.id from person WHERE person.e_mail='kmattussevich6@alibaba.com')
+);
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'FRIEND');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='amantrippd@addtoany.com'),
+    (select person.id from person WHERE person.e_mail='ipinar7@wisc.edu')
+);
+INSERT INTO friendship_status
+(`time`, code)
+VALUES('2021-11-22 23:34:13', 'FRIEND');
+INSERT INTO friendship
+(status_id, src_person_id, dst_person_id)
+VALUES(
+    (select MAX(id) from friendship_status),
+    (select person.id from person WHERE person.e_mail='awabee@e-recht24.de'),
+    (select person.id from person WHERE person.e_mail='ipinar7@wisc.edu')
+);
 
 
 

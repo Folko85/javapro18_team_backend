@@ -63,13 +63,12 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("SELECT p FROM Person p " +
             "WHERE p.deletedTimestamp < :minusMonths")
     List<Person> findSoftDeletedPersonsID(@Param("minusMonths") LocalDateTime minusMonths);
+
     @Query("SELECT p.id FROM Person p " +
             "LEFT JOIN Friendship f ON f.dstPerson.id = p.id OR f.srcPerson.id = p.id " +
             "LEFT JOIN FriendshipStatus fs ON fs.id = f.status.id " +
-            "WHERE ( " +
-            "( f.srcPerson.id = :idFriend AND fs.code IN ('REQUEST', 'SUBSCRIBED', 'WASBLOCKEDBY', 'FRIEND', 'DEADLOCK' ) ) " +
-            " OR ( f.dstPerson.id = :idFriend AND fs.code IN ('FRIEND', 'DEADLOCK', 'BLOCKED') ) " +
-            ") " +
+            "WHERE " +
+            "( f.srcPerson.id = :idFriend  OR f.dstPerson.id = :idFriend ) AND fs.code IS NOT NULL " +
             "AND p.isBlocked = false " +
             "AND p.id!= :idFriend " +
             "ORDER BY p.id ASC ")
@@ -86,5 +85,61 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "AND p.id!= :idFriend " +
             "ORDER BY p.id ASC  ")
     List<Integer> findBlockersIds(int idFriend);
+
+    @Query("SELECT p.id FROM Person p " +
+            "LEFT JOIN Friendship f ON f.dstPerson.id = p.id OR f.srcPerson.id = p.id " +
+            "LEFT JOIN FriendshipStatus fs ON fs.id = f.status.id " +
+            "WHERE " +
+            "( f.srcPerson.id = :id OR  f.dstPerson.id = :id ) AND fs.code='FRIEND'  " +
+            "AND p.isBlocked = false " +
+            "AND p.id!= :id " +
+            "ORDER BY p.id ASC  ")
+    List<Integer> findFriendsIds(int id);
+
+    @Query(nativeQuery = true, value =
+            "WITH " +
+                    "t1 AS ( SELECT p.id as pid FROM person p " +
+                    "LEFT JOIN friendship f ON f.src_person_id = p.id OR f.dst_person_id =p.id " +
+                    "LEFT JOIN friendship_status fs  on fs.id = f.status_id " +
+                    "WHERE  (f.src_person_id = :id or f.dst_person_id= :id) AND fs.code ='FRIEND' " +
+                    "AND p.id != :id " +
+                    "AND p.is_blocked =0 " +
+                    ") " +
+            "SELECT p2.id from person p2 " +
+            "LEFT JOIN friendship f ON f.src_person_id = p2.id OR f.dst_person_id =p2.id " +
+            "LEFT JOIN friendship_status fs  on fs.id = f.status_id " +
+            "WHERE (f.src_person_id IN (SELECT pid from t1)  OR f.dst_person_id IN (SELECT pid from t1) ) " +
+            "AND fs.code ='FRIEND' " +
+            "AND p2.id NOT IN ((SELECT pid from t1)) " +
+            "AND p2.id !=:id " + " " +
+            "ORDER BY p2.id ASC ")
+    List<Integer> findFriendsOfFriendsIds(int id);
+
+
+    @Query(nativeQuery = true, value =
+            "WITH " +
+                    "t1 AS ( SELECT p.id as pid FROM person p " +
+                    "LEFT JOIN friendship f ON f.src_person_id = p.id OR f.dst_person_id =p.id " +
+                    "LEFT JOIN friendship_status fs  on fs.id = f.status_id " +
+                    "WHERE  (f.src_person_id = :id or f.dst_person_id= :id) AND fs.code ='FRIEND' " +
+                    "AND p.id != :id " +
+                    "AND p.is_blocked =0 " +
+                    ") " +
+            "SELECT p2.id from person p2 " +
+            "LEFT JOIN friendship f ON f.src_person_id = p2.id OR f.dst_person_id =p2.id " +
+            "LEFT JOIN friendship_status fs  on fs.id = f.status_id " +
+            "WHERE (f.src_person_id IN (SELECT pid from t1)  OR f.dst_person_id IN (SELECT pid from t1) ) " +
+            "AND fs.code ='FRIEND' " +
+            "AND p2.id !=:id " +
+            "UNION " +
+            "SELECT p3.id as id from person p3 " +
+            "LEFT JOIN friendship f ON  f.dst_person_id =p3.id " +
+            "LEFT JOIN friendship_status fs  on fs.id = f.status_id " +
+            "WHERE  f.src_person_id = :id  AND fs.code ='SUBSCRIBED' " +
+            "AND p3.id !=:id " +
+            "AND p3.is_blocked =0 " +
+            "ORDER BY id ASC "
+    )
+    List<Integer> findFriendsAndFriendsOfFriendsAndSubscribesIds(int id);
 
 }

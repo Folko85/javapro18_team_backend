@@ -167,7 +167,7 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         Assertions.assertFalse(personsIds.contains(target.getId()), "Ответ тестируемого метода содержит id Target");
         List<Integer> checkRelationShip = new ArrayList<>();
         checkRelationShip.addAll(blockersIds);
-        checkRelationShip.addAll(banlistForRecomendationsIds);
+        checkRelationShip.addAll(whitePersonsIds);
         Collections.sort(checkRelationShip);
         Assertions.assertArrayEquals(checkRelationShip.toArray(), personsIds.toArray(), "Ответ тестируемого метода не равен ожидаемому");
 
@@ -239,9 +239,11 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
                 personRepository.findByEMail(drugMoscwichaFurby).get().getId(),
                 personRepository.findByEMail(requestMoscwicha).get().getId(),
                 personRepository.findByEMail(subcribeMoscwicha).get().getId(),
-                personRepository.findByEMail(moscwichUdalilMoscwicha).get().getId()
+                personRepository.findByEMail(moscwichUdalilMoscwicha).get().getId(),
+                personRepository.findByEMail("kmattussevich6@alibaba.com").get().getId(),
+                target.getId()
         );
-        Assertions.assertEquals(4, personSubscribesAndOrRequestsIds.size());
+        Assertions.assertEquals(neHotimIch.size(), personSubscribesAndOrRequestsIds.size());
         Collections.sort(neHotimIch);
         Collections.sort(personSubscribesAndOrRequestsIds);
         Assertions.assertArrayEquals(neHotimIch.toArray(), personSubscribesAndOrRequestsIds.toArray());
@@ -333,5 +335,35 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
             personsBezCity = new PageImpl<>(personFirstList, pageable, personFirstList.size());
         }
         Assertions.assertEquals(10, personsBezCity.getTotalElements());
+    }
+
+    @Test
+    public void testMethods() {
+        List<Integer> friendsIds = personRepository.findFriendsIds(target.getId());
+        List<Integer> checkFriendsIds = Arrays.asList(
+                personRepository.findByEMail("kmattussevich6@alibaba.com").get().getId(),
+                personRepository.findByEMail("ipinar7@wisc.edu").get().getId()
+        );
+        Collections.sort(checkFriendsIds);
+        Assertions.assertArrayEquals(checkFriendsIds.toArray(), friendsIds.toArray());
+        List<Integer> friendsOfFriendsIds = personRepository.findFriendsOfFriendsIds(target.getId());
+        List<Integer> checkFriendsOfFriendsIds = Arrays.asList(
+                personRepository.findByEMail("kcranmerc@va.gov").get().getId(),
+                personRepository.findByEMail("jboner0@domainmarket.com").get().getId(),
+                personRepository.findByEMail("cwolstencroftg@cnn.com").get().getId(),
+                personRepository.findByEMail("amantrippd@addtoany.com").get().getId(),
+                personRepository.findByEMail("awabee@e-recht24.de").get().getId()
+        );
+        Collections.sort(checkFriendsOfFriendsIds);
+        Assertions.assertArrayEquals(checkFriendsOfFriendsIds.toArray(), friendsOfFriendsIds.toArray());
+        List<Integer> friendsAndFriendsOfFriendsAndSubscribesIds = personRepository.findFriendsAndFriendsOfFriendsAndSubscribesIds(target.getId());
+        List<Integer> checkFriendsAndFriendsOfFriendsAndSubscribesIds = new ArrayList<>();
+        checkFriendsAndFriendsOfFriendsAndSubscribesIds.addAll(checkFriendsIds);
+        checkFriendsAndFriendsOfFriendsAndSubscribesIds.addAll(checkFriendsOfFriendsIds);
+        checkFriendsAndFriendsOfFriendsAndSubscribesIds.add(personRepository.findByEMail("cbuncherb@reverbnation.com").get().getId());
+        Collections.sort(checkFriendsAndFriendsOfFriendsAndSubscribesIds);
+        Assertions.assertArrayEquals(checkFriendsAndFriendsOfFriendsAndSubscribesIds.toArray(), friendsAndFriendsOfFriendsAndSubscribesIds.toArray());
+        List<Integer> friendsAndFriendsOfFriendsAndSubscribesFiltered = friendshipService.getFriendsAndFriendsOfFriendsAndSubscribesFiltered(target.getId());
+        Assertions.assertFalse(friendsAndFriendsOfFriendsAndSubscribesFiltered.contains(personRepository.findByEMail("jboner0@domainmarket.com").get().getId()));
     }
 }

@@ -121,3 +121,16 @@ INSERT INTO post
 VALUES('2021-08-09 23:18:09', (select person.id from person WHERE person.e_mail='awabee@e-recht24.de'), 'tempus semper', 'Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est. Donec odio justo, sollicitudin ut, suscipit a, feugiat et, eros.
 Vestibulum ac est lacinia nisi venenatis tristique. Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.
 In congue. Etiam justo. Etiam pretium iaculis justo.', 0, 0);
+INSERT INTO post
+(`time`, author_id, title, post_text, is_blocked, is_deleted)
+VALUES('2021-08-04 09:50:11', (select person.id from person WHERE person.e_mail='cwolstencroftg@cnn.com'), 'lorem vitae', 'Aenean lectus. Pellentesque eget nunc. Donec quis orci eget orci vehicula condimentum.', 0, 0);
+INSERT INTO post
+(`time`, author_id, title, post_text, is_blocked, is_deleted)
+VALUES('2021-08-13 16:02:51', (select person.id from person WHERE person.e_mail='cwolstencroftg@cnn.com'), 'vestibulum proin eu mi', 'Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.
+Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.
+Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.', 0, 0);
+
+
+
+
+

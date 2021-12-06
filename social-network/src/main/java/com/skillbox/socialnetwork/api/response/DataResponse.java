@@ -8,10 +8,11 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.Instant;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DataResponse<T extends Dto> {
+public class DataResponse<T extends Dto> implements Serializable {
     private String error;
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = InstantDeserializer.class)
