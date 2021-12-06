@@ -6,10 +6,15 @@ import com.skillbox.socialnetwork.entity.enums.Role;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -54,6 +59,7 @@ class ProfileControllerTest extends AbstractTest {
 
 
     @Test
+    @DisplayName("Поиск пользователей")
     @WithMockUser(username = "test@test.ru", authorities = "user:write")
     void search() throws Exception {
 
@@ -68,5 +74,18 @@ class ProfileControllerTest extends AbstractTest {
                 .param("itemPerPage", "20"))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Попытка входа незарегистрированного пользователя")
+    @WithMockUser(username = "not@test.ru", authorities = "user:write")
+    void testGetMe() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Пользователь не существует"));
     }
 }

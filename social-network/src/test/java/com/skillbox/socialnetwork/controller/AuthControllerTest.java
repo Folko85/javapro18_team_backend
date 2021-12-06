@@ -28,11 +28,7 @@ public class AuthControllerTest extends AbstractTest {
     @Autowired
     private PersonRepository personRepository;
 
-    private final String EMAIL = "test@test.ru";
-
-    private final String PASSWORD = "password";
-
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 
     @BeforeEach
     public void setup() {
@@ -47,9 +43,11 @@ public class AuthControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Успешный вход в аккаунт c логином и паролем")
-    void testGetTags() throws Exception {
+    void testLogin() throws Exception {
         LoginRequest request = new LoginRequest();
+        String EMAIL = "test@test.ru";
         request.setEMail(EMAIL);
+        String PASSWORD = "password";
         request.setPassword(PASSWORD);
         Person person = new Person();
         person.setEMail(EMAIL);
@@ -65,4 +63,5 @@ public class AuthControllerTest extends AbstractTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
+
 }

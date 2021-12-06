@@ -39,10 +39,8 @@ public class UserService {
     private final FriendshipService friendshipService;
     private final StorageService storageService;
 
+    @Cacheable(value = "personProfileCache", key = "#principal.getName")
     public AuthData getUserByEmail(Principal principal) {
-        if (principal == null) {
-            throw new BadCredentialsException("Доступ запрещён");
-        }
         AuthData userRest = new AuthData();
         convertUserToUserRest(getPersonByEmail(principal), userRest);
         log.info("User with email {} was received", userRest.getEMail());
@@ -72,8 +70,10 @@ public class UserService {
                 });
     }
 
-    @Cacheable(value="personProfileCache", key="#principal.getName")
     public DataResponse<AuthData> getUserMe(Principal principal) {
+        if (principal == null) {
+            throw new BadCredentialsException("Доступ запрещён");
+        }
         return createResponse(getUserByEmail(principal));
     }
 
@@ -108,7 +108,7 @@ public class UserService {
 
     }
 
-    @CacheEvict(value="personProfileCache", key="#principal.getName")
+    @CacheEvict(value = "personProfileCache", key = "#principal.getName")
     public DataResponse<AuthData> updateUser(AuthData updates, Principal principal) throws ApiConnectException {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
