@@ -30,6 +30,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static com.skillbox.socialnetwork.service.FriendshipService.getSuccessAccountResponse;
+
 @Service
 @AllArgsConstructor
 public class AccountService {
@@ -153,12 +155,7 @@ public class AccountService {
     }
 
     static AccountResponse getAccountResponse() {
-        AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
-        Map<String, String> dateMap = new HashMap<>();
-        dateMap.put("message", "ok");
-        accountResponse.setData(dateMap);
-        return accountResponse;
+        return getSuccessAccountResponse();
     }
 
 }
