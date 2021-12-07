@@ -44,11 +44,11 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p " +
             "FROM Post p " +
             "LEFT JOIN Person per ON per.id = p.person.id " +
-            "WHERE  p.person.id  NOT IN (:blockers) " +
+            "WHERE  p.person.id  IN (:friendsAndFriendsOfFriendsAndSubscribesIds) " +
             "AND p.isBlocked = false AND per.isDeleted = false AND p.postText LIKE  %:query% AND p.datetime <= CURRENT_TIMESTAMP " +
             "GROUP BY p.id " +
             "ORDER BY p.datetime DESC ")
-    Page<Post> findPostsByTextContainingExcludingBlockers(String query, Pageable pageable, List<Integer> blockers);
+    Page<Post> findPostsByTextContainingExcludingBlockers(String query, Pageable pageable, List<Integer> friendsAndFriendsOfFriendsAndSubscribesIds);
 
     @Query("SELECT p " +
             "FROM Post p " +

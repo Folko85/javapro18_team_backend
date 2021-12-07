@@ -130,9 +130,9 @@ public class PostService {
     public ListResponse<PostData> getFeeds(String text, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
-        List<Integer> blockers = personRepository.findBlockersIds(person.getId());
-        blockers = !blockers.isEmpty() ? blockers : singletonList(-1);
-        Page<Post> pageablePostList = postRepository.findPostsByTextContainingExcludingBlockers(text, pageable, blockers);
+        List<Integer> friendsAndFriendsOfFriendsAndSubscribesFilteredIds = friendshipService.getFriendsAndFriendsOfFriendsAndSubscribesFiltered(person.getId());
+        friendsAndFriendsOfFriendsAndSubscribesFilteredIds = !friendsAndFriendsOfFriendsAndSubscribesFilteredIds.isEmpty() ? friendsAndFriendsOfFriendsAndSubscribesFilteredIds : singletonList(-1);
+        Page<Post> pageablePostList = postRepository.findPostsByTextContainingExcludingBlockers(text, pageable, friendsAndFriendsOfFriendsAndSubscribesFilteredIds);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }
 
