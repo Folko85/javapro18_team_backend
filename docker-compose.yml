@@ -140,5 +140,23 @@ services:
       monitoring:
         aliases:
           - loki
+  rabbitmq:
+    restart: always
+    hostname: "rabbitmq"
+    image: rabbitmq:management
+    command: rabbitmq-server
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    container_name: rabbitmq
+    environment:
+      AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    networks:
+      monitoring:
+        aliases:
+          - rabbitmq
 networks:
   monitoring:
+    driver: bridge
