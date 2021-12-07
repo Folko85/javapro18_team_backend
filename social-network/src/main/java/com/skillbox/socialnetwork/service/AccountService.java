@@ -72,7 +72,7 @@ public class AccountService {
         personRepository.save(person);
 
         mailSender.send(recoveryRequest.getEMail(), "Enter this code:" + code);
-        return code;
+        return "Код подтверждения выслан";
     }
 
     public String recoveryComplete(String key, String eMail) throws MailjetException {

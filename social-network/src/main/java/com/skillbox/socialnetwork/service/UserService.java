@@ -191,6 +191,7 @@ public class UserService {
         person.setCity(null);
         person.setMessagesPermission(MessagesPermission.NOBODY);
         person.setPhone(null);
+        person.setDeletedTimestamp(null);
         personRepository.save(person);
     }
 }

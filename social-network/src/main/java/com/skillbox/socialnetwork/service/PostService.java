@@ -248,6 +248,7 @@ public class PostService {
         post.setTitle("Deleted");
         post.setPostText("Deleted");
         post.setDeleted(false);
+        post.setDeletedTimestamp(null);
         postRepository.save(post);
     }
 }

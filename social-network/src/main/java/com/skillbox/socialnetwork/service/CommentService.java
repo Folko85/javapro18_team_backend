@@ -213,6 +213,7 @@ public class CommentService {
     public void deleteAfterSoft(PostComment postComment) {
         postComment.setCommentText("Deleted");
         postComment.setDeleted(false);
+        postComment.setDeletedTimestamp(null);
         commentRepository.save(postComment);
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.cloud.config.server.EnableConfigServer;
 @EnableConfigServer
 public class ZeroCloudConfigServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ZeroCloudConfigServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ZeroCloudConfigServerApplication.class, args);
+    }
 
 }
