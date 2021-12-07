@@ -2,10 +2,9 @@ package Team.zerocloudconfigserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.cloud.config.server.EnableConfigServer;
 
-@SpringBootApplication(exclude = {RabbitAutoConfiguration.class})
+@SpringBootApplication
 @EnableConfigServer
 public class ZeroCloudConfigServerApplication {
 
