@@ -360,7 +360,10 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
         List<Integer> checkFriendsAndFriendsOfFriendsAndSubscribesIds = new ArrayList<>();
         checkFriendsAndFriendsOfFriendsAndSubscribesIds.addAll(checkFriendsIds);
         checkFriendsAndFriendsOfFriendsAndSubscribesIds.addAll(checkFriendsOfFriendsIds);
+        //Subcriber
         checkFriendsAndFriendsOfFriendsAndSubscribesIds.add(personRepository.findByEMail("cbuncherb@reverbnation.com").get().getId());
+        //Request
+        checkFriendsAndFriendsOfFriendsAndSubscribesIds.add(personRepository.findByEMail("sdeavin9@booking.com").get().getId());
         Collections.sort(checkFriendsAndFriendsOfFriendsAndSubscribesIds);
         Assertions.assertArrayEquals(checkFriendsAndFriendsOfFriendsAndSubscribesIds.toArray(), friendsAndFriendsOfFriendsAndSubscribesIds.toArray());
         List<Integer> friendsAndFriendsOfFriendsAndSubscribesFiltered = friendshipService.getFriendsAndFriendsOfFriendsAndSubscribesFiltered(target.getId());

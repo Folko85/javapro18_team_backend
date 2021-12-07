@@ -135,7 +135,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "SELECT p3.id as id from person p3 " +
             "LEFT JOIN friendship f ON  f.dst_person_id =p3.id " +
             "LEFT JOIN friendship_status fs  on fs.id = f.status_id " +
-            "WHERE  f.src_person_id = :id  AND fs.code ='SUBSCRIBED' " +
+            "WHERE  f.src_person_id = :id  AND  ( fs.code ='SUBSCRIBED' OR fs.code ='REQUEST' ) " +
             "AND p3.id !=:id " +
             "AND p3.is_blocked =0 " +
             "ORDER BY id ASC "
