@@ -3,12 +3,9 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.api.request.PostRequest;
-import com.skillbox.socialnetwork.entity.Person;
-import com.skillbox.socialnetwork.entity.Post;
-import com.skillbox.socialnetwork.entity.Tag;
-import com.skillbox.socialnetwork.repository.PersonRepository;
-import com.skillbox.socialnetwork.repository.PostRepository;
-import com.skillbox.socialnetwork.repository.TagRepository;
+import com.skillbox.socialnetwork.entity.*;
+import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
+import com.skillbox.socialnetwork.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +39,12 @@ public class PostControllerTest extends AbstractTest {
     @Autowired
     private PersonRepository personRepository;
 
+    @Autowired
+    FriendshipStatusRepository friendshipStatusRepository;
+
+    @Autowired
+    FriendshipRepository friendshipRepository;
+
     Person owner;
 
     @BeforeEach
@@ -52,6 +55,8 @@ public class PostControllerTest extends AbstractTest {
 
     @AfterEach
     public void cleanup() {
+        friendshipRepository.deleteAll();
+        friendshipStatusRepository.deleteAll();
         personRepository.deleteAll();
         postRepository.deleteAll();
         tagRepository.deleteAll();
@@ -88,7 +93,8 @@ public class PostControllerTest extends AbstractTest {
         post.setTitle("Title");
         post.setPostText("Some Text. hi bro");
         post.setDatetime(Instant.now());
-        post.setPerson(getPerson("newUser", "test2@test.ru", "password"));
+        Person test2 =getPerson("newUser", "test2@test.ru", "password");
+        post.setPerson(test2);
         postRepository.save(post);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/feeds")
@@ -96,7 +102,24 @@ public class PostControllerTest extends AbstractTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(0));
+
+        FriendshipStatus friendshipStatus = new FriendshipStatus();
+        friendshipStatus.setCode(FriendshipStatusCode.FRIEND);
+        FriendshipStatus saved = friendshipStatusRepository.save(friendshipStatus);
+        Friendship friendship = new Friendship();
+        friendship.setSrcPerson(owner);
+        friendship.setDstPerson(test2);
+        friendship.setStatus(saved);
+        friendshipRepository.save(friendship);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/feeds")
+                        .principal(() -> "test@test.ru")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1));
+
     }
 
     @Test
@@ -118,7 +141,7 @@ public class PostControllerTest extends AbstractTest {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/feeds")
+                        .get("/api/v1/users/{id}/wall", id)
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
