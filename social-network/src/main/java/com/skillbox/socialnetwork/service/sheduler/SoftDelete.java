@@ -27,16 +27,16 @@ public class SoftDelete {
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final FileRepository fileRepository;
-    private LocalDateTime now;
+    private LocalDateTime currentDate;
 
     @Value("${soft.person.month}")
-    private int cleanupPersonMonths;
+    private Integer cleanupPersonMonths;
 
     @Value("${soft.post.day}")
-    private int cleanupPostDays;
+    private Integer cleanupPostDays;
 
     @Value("${soft.comment.day}")
-    private int cleanupCommentDays;
+    private Integer cleanupCommentDays;
 
 
     public SoftDelete(PostService postService, UserService personService, CommentService commentService, StorageService storageService, PersonRepository personRepository, PostRepository postRepository, CommentRepository commentRepository, NotificationRepository notificationRepository, FileRepository fileRepository) {
@@ -53,11 +53,11 @@ public class SoftDelete {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupPerson() {
-        now = LocalDateTime.now();
+        currentDate = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших аккаунтов");
         try {
 
-            List<Person> persons = personRepository.findSoftDeletedPersonsID(now.minusMonths(cleanupPersonMonths));
+            List<Person> persons = personRepository.findSoftDeletedPersonsID(currentDate.minusMonths(cleanupPersonMonths));
             for (Person person : persons) {
                 userService.updateAfterSoftDelete(person); //меняем данные
                 List<Notification> notificationList =
@@ -68,15 +68,15 @@ public class SoftDelete {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        log.info("Устаревшие аккаунты удалены" + now);
+        log.info("Устаревшие аккаунты удалены {}", currentDate);
     }
 
-    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupPost() {
-        now = LocalDateTime.now();
+        currentDate = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших постов");
         try {
-            List<Post> posts = postRepository.findSoftDeletedPostsID(now.minusDays(cleanupPostDays));
+            List<Post> posts = postRepository.findSoftDeletedPostsID(currentDate.minusDays(cleanupPostDays));
             for (Post post : posts) {
                 postService.deletePostAfterSoft(post);
                 PostFile postFile = fileRepository.findByPostId(post.getId());
@@ -86,15 +86,15 @@ public class SoftDelete {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        log.info("Устаревшие посты удалены" + now);
+        log.info("Устаревшие посты удалены {}", currentDate);
     }
 
-    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupPostComment() {
-        now = LocalDateTime.now();
+        currentDate = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших комментариев");
         try {
-            List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(now.minusDays(cleanupCommentDays));
+            List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(currentDate.minusDays(cleanupCommentDays));
             for (PostComment postComment : postComments) {
                 commentService.deleteAfterSoft(postComment);
                 PostFile commentFile = fileRepository.findByCommentId(postComment.getId());
@@ -104,6 +104,6 @@ public class SoftDelete {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        log.info("Устаревшие комментарии удалены" + now);
+        log.info("Устаревшие комментарии удалены {}", currentDate);
     }
 }
