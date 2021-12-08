@@ -4,6 +4,11 @@ spring:
   application:
     name: serv
   cloud:
+    stream:
+      rabbit:
+        binder:
+          nodes: 147.78.64.57:5672
+          connection-name-prefix: serv
     config:
       uri: ${profile.config.url.${spring.profiles.active}}
       retry:
@@ -14,7 +19,6 @@ spring:
       enabled: true
       refresh:
         enabled: true
-
 profile:
   config:
     url:
