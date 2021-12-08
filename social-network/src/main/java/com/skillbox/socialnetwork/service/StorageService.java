@@ -98,7 +98,7 @@ public class StorageService {
 
     public void deleteImageByUrl(String url) throws ApiConnectException {
         try {
-            String publicId = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
+            String publicId = url.substring(url.lastIndexOf("/") + 1, url.length() - 4);
             Cloudinary cloudinary = getInstance();
             cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             fileRepository.delete(fileRepository.findByUrl(url));
