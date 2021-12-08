@@ -131,7 +131,7 @@ public class PostService {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         List<Integer> friendsAndFriendsOfFriendsAndSubscribesFilteredIds = friendshipService.getFriendsAndFriendsOfFriendsAndSubscribesFiltered(person.getId());
-        friendsAndFriendsOfFriendsAndSubscribesFilteredIds = !friendsAndFriendsOfFriendsAndSubscribesFilteredIds.isEmpty() ? friendsAndFriendsOfFriendsAndSubscribesFilteredIds : singletonList(-1);
+        friendsAndFriendsOfFriendsAndSubscribesFilteredIds.add(person.getId());
         Page<Post> pageablePostList = postRepository.findPostsByTextContainingExcludingBlockers(text, pageable, friendsAndFriendsOfFriendsAndSubscribesFilteredIds);
         return getPostResponse(offset, itemPerPage, pageablePostList, person);
     }

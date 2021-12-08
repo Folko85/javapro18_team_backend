@@ -51,7 +51,7 @@ public class SoftDelete {
         this.fileRepository = fileRepository;
     }
 
-    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupPerson() {
         now = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших аккаунтов");
