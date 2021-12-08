@@ -64,13 +64,15 @@ public class PlatformService {
         GetCitiesResponse response = null;
         List<PlaceDto> cities = new ArrayList<>();
         ListResponse<PlaceDto> result = new ListResponse<>();
-        try {
-            response = vk.database().getCities(actor, countryId).needAll(true)
-                    .q(city).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
-            cities = response.getItems().stream()
-                    .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).filter(x -> x.getId() != 0).collect(Collectors.toList());
-        } catch (ApiException | ClientException e) {
-            log.warn("Ups! Error: {}", e.getMessage());
+        if (countryId > 0) {
+            try {
+                response = vk.database().getCities(actor, countryId).needAll(true)
+                        .q(city).offset(offset).count(itemPerPage).lang(Lang.RU).execute();
+                cities = response.getItems().stream()
+                        .map(x -> new PlaceDto().setId(x.getId()).setTitle(x.getTitle())).filter(x -> x.getId() != 0).collect(Collectors.toList());
+            } catch (ApiException | ClientException e) {
+                log.warn("Ups! Error. Not found country");
+            }
         }
         log.info("We get that cities with {} only one time at day", city);
         result.setTotal((response != null) ? response.getCount() : 0);

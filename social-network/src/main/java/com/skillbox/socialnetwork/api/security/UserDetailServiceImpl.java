@@ -19,6 +19,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String eMail) {
-        return personRepository.findByEMail(eMail).orElse(null);
+        Optional<Person> person = personRepository.findByEMail(eMail);
+        person.ifPresent(value -> personRepository.save(value.setLastOnlineTime(LocalDateTime.now())));
+        return person.orElse(null);
     }
 }
