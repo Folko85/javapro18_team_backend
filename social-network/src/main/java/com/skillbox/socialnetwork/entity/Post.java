@@ -40,9 +40,6 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<PostComment> comments;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
-    private Set<BlockHistory> blocks;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "post2tag",
             joinColumns = {@JoinColumn(name = "post_id", referencedColumnName = "id")},

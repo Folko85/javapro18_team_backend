@@ -64,4 +64,20 @@ public class AuthControllerTest extends AbstractTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @Test
+    @DisplayName("Попытка входа несуществующего пользователя")
+    void testNotLogin() throws Exception {
+        LoginRequest request = new LoginRequest();
+        String EMAIL = "none@test.ru";
+        request.setEMail(EMAIL);
+        String PASSWORD = "password";
+        request.setPassword(PASSWORD);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
 }

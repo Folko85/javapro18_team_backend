@@ -2,6 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.service.FriendshipService;
@@ -21,7 +22,7 @@ import java.security.Principal;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/users")
-@Tag(name = "Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки")
+@Tag(name = "Контроллер для работы с профилем")
 public class UserController {
     private final UserService userService;
     private final FriendshipService friendshipService;
@@ -71,5 +72,24 @@ public class UserController {
     @Operation(summary = "Разблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<AccountResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         return new ResponseEntity<>(friendshipService.unBlockUser(principal, id), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('user:write')")
+    @Operation(summary = "Поиск пользователя", security = @SecurityRequirement(name = "jwt"))
+    public ResponseEntity<ListResponse<AuthData>> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
+                                                  @RequestParam(name = "last_name", defaultValue = "") String lastName,
+                                                  @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
+                                                  @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
+                                                  @RequestParam(name = "country", defaultValue = "") String country,
+                                                  @RequestParam(name = "city", defaultValue = "") String city,
+                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                  Principal principal) {
+
+        ListResponse<AuthData> listResponse = userService.searchPerson(firstName, lastName, ageFrom, ageTo,
+                country, city, offset, itemPerPage, principal);
+
+        return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 }
