@@ -39,7 +39,7 @@ public class PlatformController {
     @GetMapping("/platform/cities")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Запрос списка городов в количестве itemPerPage содержащих city", security = @SecurityRequirement(name = "jwt"))
-    public ListResponse<PlaceDto> getCities(@RequestParam int countryId,
+    public ListResponse<PlaceDto> getCities(@RequestParam(required = false, defaultValue = "1") int countryId,
                                             @RequestParam(required = false, defaultValue = "") String city,
                                             @RequestParam(required = false, defaultValue = "0") int offset,
                                             @RequestParam(required = false, defaultValue = "10") int itemPerPage) {
