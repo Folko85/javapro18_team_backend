@@ -125,14 +125,6 @@ INSERT INTO `post` VALUES (1,'2021-08-04 06:50:11',1,'lorem vitae','Aenean lectu
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Dumping data for table `block_history`
---
-
-LOCK TABLES `block_history` WRITE;
-/*!40000 ALTER TABLE `block_history` DISABLE KEYS */;
-/*!40000 ALTER TABLE `block_history` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `notification_setting`
