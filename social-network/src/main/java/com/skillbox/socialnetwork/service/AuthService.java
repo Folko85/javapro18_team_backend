@@ -52,8 +52,6 @@ public class AuthService {
         if (passwordEncoder.matches(loginRequest.getPassword(), person.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
-        person.setLastOnlineTime(LocalDateTime.now());
-        personRepository.save(person);
         DataResponse<AuthData> authResponse = new DataResponse<>();
         authResponse.setTimestamp(ZonedDateTime.now().toInstant());
         AuthData authData;
