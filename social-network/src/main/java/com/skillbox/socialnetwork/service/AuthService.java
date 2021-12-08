@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,7 +52,6 @@ public class AuthService {
         if (passwordEncoder.matches(loginRequest.getPassword(), person.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());
         } else throw new UsernameNotFoundException(loginRequest.getEMail());
-
         DataResponse<AuthData> authResponse = new DataResponse<>();
         authResponse.setTimestamp(ZonedDateTime.now().toInstant());
         AuthData authData;

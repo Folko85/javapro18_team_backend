@@ -87,9 +87,6 @@ public class Person implements UserDetails {
     private Set<PostComment> comments;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
-    private Set<BlockHistory> blockHistories;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "person")
     private Set<Notification> notifications;
 
     @Enumerated(EnumType.STRING)
