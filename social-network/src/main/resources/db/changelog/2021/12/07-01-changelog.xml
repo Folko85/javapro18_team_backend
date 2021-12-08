@@ -175,18 +175,6 @@
 
         <addUniqueConstraint columnNames="phone" constraintName="uc_person_phone" tableName="person"/>
 
-        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="block_history"
-                                 constraintName="FK_BLOCK_HISTORY_ON_COMMENT" referencedColumnNames="id"
-                                 referencedTableName="post_comment"/>
-
-        <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="block_history"
-                                 constraintName="FK_BLOCK_HISTORY_ON_PERSON" referencedColumnNames="id"
-                                 referencedTableName="person"/>
-
-        <addForeignKeyConstraint baseColumnNames="post_id" baseTableName="block_history"
-                                 constraintName="FK_BLOCK_HISTORY_ON_POST" referencedColumnNames="id"
-                                 referencedTableName="post"/>
-
         <addForeignKeyConstraint baseColumnNames="dst_person_id" baseTableName="friendship"
                                  constraintName="FK_FRIENDSHIP_ON_DST_PERSON" referencedColumnNames="id"
                                  referencedTableName="person"/>
