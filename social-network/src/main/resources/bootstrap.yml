@@ -14,7 +14,6 @@ spring:
       enabled: true
       refresh:
         enabled: true
-      id: serv-prod
 
 profile:
   config:
