@@ -75,11 +75,12 @@
             <column autoIncrement="true" name="id" type="INT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_notification"/>
             </column>
-            <column name="type" type="enum('POST','POST_COMMENT','COMMENT_COMMENT','FRIEND_REQUEST','MESSAGE')"/>
             <column name="send_time" type="DATETIME"/>
             <column name="person_id" type="INT"/>
-            <column name="entity_id" type="INT"/>
             <column name="read_status" type="BOOLEAN"/>
+            <column name="type" type="enum('POST','POST_COMMENT','COMMENT_COMMENT','FRIEND_REQUEST','MESSAGE')"/>
+            <column name="entity_id" type="INT"/>
+
         </createTable>
 
         <createTable tableName="notification_setting">
@@ -106,15 +107,15 @@
             <column name="photo" type="VARCHAR(255)"/>
             <column name="about" type="text"/>
             <column name="city" type="VARCHAR(255)"/>
-            <column name="country" type="VARCHAR(255)"/>
             <column name="confirmation_code" type="VARCHAR(50)"/>
             <column name="is_approved" type="BOOLEAN"/>
             <column name="messages_permission" type="enum('ALL','FRIENDS','NOBODY')"/>
             <column name="last_online_time" type="DATETIME"/>
             <column name="is_blocked" type="BOOLEAN"/>
             <column name="is_deleted" type="BOOLEAN"/>
-            <column name="deleted_at" type="DATETIME"/>
+            <column name="country" type="VARCHAR(255)"/>
             <column name="role" type="enum('USER', 'MODERATOR', 'ADMIN')"/>
+            <column name="deleted_at" type="DATETIME"/>
         </createTable>
 
         <createTable tableName="person2dialog">
@@ -169,8 +170,8 @@
             </column>
             <column name="user_id" type="INT"/>
             <column name="post_id" type="INT"/>
-            <column name="comment_id" type="INT"/>
             <column name="url" type="VARCHAR(255)"/>
+            <column name="comment_id" type="INT"/>
         </createTable>
 
         <createTable tableName="tag">
