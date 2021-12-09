@@ -10,12 +10,6 @@ spring:
         max-attempts: 10
         initial-interval: 10000
         max-interval: 5000
-    bus:
-      enabled: true
-      refresh:
-        enabled: true
-      id: serv-prod
-
 profile:
   config:
     url:
