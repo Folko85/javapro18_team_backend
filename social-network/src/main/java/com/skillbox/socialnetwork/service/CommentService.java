@@ -176,9 +176,13 @@ public class CommentService {
         return commentResponse;
     }
 
+    /**
+     * Отправляет нотификацию по сокету и создаёт её в базе
+     */
     private void sendNotification(PostComment postComment) {
         Person person;
         SocketNotificationData commentNotificationData = new SocketNotificationData();
+        //Кому и куда оставлен коментарий
         if (postComment.getParent() != null) {
             person = personRepository.findById(getIdFromPostText(postComment.getCommentText())).orElse(postComment.getParent().getPerson());
             commentNotificationData.setEventType(NotificationType.COMMENT_COMMENT)
@@ -190,8 +194,10 @@ public class CommentService {
         }
         NotificationSetting notificationSetting = notificationSettingRepository.findNotificationSettingByPersonId(person.getId())
                 .orElse(new NotificationSetting().setCommentComment(true).setPostComment(true));
-        if (commentNotificationData.getEventType().equals(NotificationType.COMMENT_COMMENT) && notificationSetting.isCommentComment()
-                || commentNotificationData.getEventType().equals(NotificationType.POST_COMMENT) && notificationSetting.isPostComment()) {
+        //Отправка по сокету и сохранение его в базе нотификация
+        if ((commentNotificationData.getEventType().equals(NotificationType.COMMENT_COMMENT) && notificationSetting.isCommentComment()
+                || commentNotificationData.getEventType().equals(NotificationType.POST_COMMENT) && notificationSetting.isPostComment()) &&
+                !postComment.getPerson().getId().equals(person.getId())) {
             commentNotificationData.setEntityId(postComment.getPost().getId())
                     .setEntityAuthor(new AuthorData().setFirstName(postComment.getPerson().getFirstName())
                             .setLastName(postComment.getPerson().getLastName())
@@ -205,6 +211,9 @@ public class CommentService {
         }
     }
 
+    /**
+     * Достаёт из текста комментария id человеку, кому он оставлен, если нет возвращает 0
+     */
     private int getIdFromPostText(String postText) {
         return Integer.parseInt(Arrays.stream(postText.split(","))
                 .filter(text -> text.contains("id:")).findFirst().orElse("id:0").substring(3));

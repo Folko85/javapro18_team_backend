@@ -71,7 +71,7 @@ public class ApiAccountController {
     }
 
     @PutMapping("/notifications")
-    @Operation(summary = "Уведомления", security = @SecurityRequirement(name = "jwt"))
+    @Operation(summary = "Настройка уведомлений", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<AccountResponse> putNotificationsSetting(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
         return new ResponseEntity<>(accountService.setNotificationsSetting(notificationsRequest, principal), HttpStatus.OK);

@@ -36,13 +36,18 @@ public class SocketEventHandler {
         this.dialogService = dialogService;
     }
 
-
+    /**
+     * Ивент "рукопожатия"
+     */
     @OnConnect
     public void onConnect(SocketIOClient client) {
 
         log.info("User connect on socket user {} count {}", client.getSessionId(), (long) server.getAllClients().size());
     }
 
+    /**
+     * Ивент отключения
+     */
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
         if (client != null) {
@@ -55,6 +60,9 @@ public class SocketEventHandler {
         }
     }
 
+    /**
+     * Ивент для проверки авторизации
+     */
     @OnEvent(value = "newListener")
     public void onNewListenerEvent(SocketIOClient client) {
         log.info("User listen on socket");
@@ -65,6 +73,9 @@ public class SocketEventHandler {
         }
     }
 
+    /**
+     * Ивент авторизации
+     */
     @OnEvent(value = "auth")
     public void onAuthEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
         if (client != null) {
@@ -87,6 +98,9 @@ public class SocketEventHandler {
         }
     }
 
+    /**
+     * Ивент прочтения сообщений
+     */
     @OnEvent(value = "read-messages")
     public void onReadMessagesEvent(SocketIOClient client, AckRequest request, ReadMessagesData data) {
         if (client != null) {

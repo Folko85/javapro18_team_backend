@@ -62,14 +62,11 @@ public class MessageService {
                 .setText(messageRequest.getMessageText());
         message = messageRepository.save(message);
         dataResponse.setData(getMessageData(message, person2Dialog));
-
-
-//        Message finalMessage = message;
         message.getDialog().getPersons().forEach(dialogPerson -> {
             if (dialogPerson != person) {
-                //  notificationService.createNotification(dialogPerson, finalMessage.getId(), NotificationType.MESSAGE);
                 notificationService.sendEvent("message", dataResponse, dialogPerson.getId());
-                notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(dialogPerson.getId()).orElse(0).toString(), dialogPerson.getId());
+                notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(dialogPerson.getId())
+                        .orElse(0).toString(), dialogPerson.getId());
             }
         });
 

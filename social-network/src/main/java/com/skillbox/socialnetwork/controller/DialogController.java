@@ -39,7 +39,7 @@ public class DialogController {
 
     @PostMapping("/dialogs")
     @PreAuthorize("hasAuthority('user:write')")
-    @Operation(summary = "Отправить диалог", security = @SecurityRequirement(name = "jwt"))
+    @Operation(summary = "Создать диалог", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<DataResponse<DialogData>> postDialog(@RequestBody DialogRequest dialogRequest, Principal principal) {
         return new ResponseEntity<>(dialogService.postDialog(dialogRequest, principal), HttpStatus.OK);
     }

@@ -3,7 +3,10 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationData;
 import com.skillbox.socialnetwork.service.NotificationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +19,14 @@ import java.security.Principal;
 @RestController
 @Tag(name = "Контроллер для получения уведомлений")
 @RequestMapping("/api/v1")
+@AllArgsConstructor
 public class NotificationController {
 
     private final NotificationService notificationService;
 
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
     @GetMapping("/notifications")
     @PreAuthorize("hasAuthority('user:write')")
+    @Operation(summary = "Получить уведомления", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<ListResponse<NotificationData>> notifications(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                                                         @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                                         Principal principal) {
@@ -34,6 +35,7 @@ public class NotificationController {
 
     @PutMapping("/notifications")
     @PreAuthorize("hasAuthority('user:write')")
+    @Operation(summary = "Прочитать уведомление(я)", security = @SecurityRequirement(name = "jwt"))
     public ResponseEntity<ListResponse<NotificationData>> notifications(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                                                         @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
                                                                         @RequestParam(name = "id", defaultValue = "0") int id,
