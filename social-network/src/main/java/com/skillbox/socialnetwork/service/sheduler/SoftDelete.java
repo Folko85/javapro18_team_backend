@@ -7,6 +7,7 @@ import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.StorageService;
 import com.skillbox.socialnetwork.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -56,14 +57,15 @@ public class SoftDelete {
         currentDate = LocalDateTime.now();
         log.info("Запустили процесс удаления усстаревших аккаунтов");
         try {
-
             List<Person> persons = personRepository.findSoftDeletedPersonsID(currentDate.minusMonths(cleanupPersonMonths));
-            for (Person person : persons) {
-                userService.updateAfterSoftDelete(person); //меняем данные
-                List<Notification> notificationList =
-                        notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId());
-                assert notificationList != null;
-                notificationRepository.deleteAll(notificationList); //удаляем уведомления
+            if (CollectionUtils.isNotEmpty(persons)) {
+                for (Person person : persons) {
+                    userService.updateAfterSoftDelete(person); //меняем данные
+                    List<Notification> notificationList =
+                            notificationRepository.findByPersonIdAndReadStatusIsFalse(person.getId());
+                    assert notificationList != null;
+                    notificationRepository.deleteAll(notificationList); //удаляем уведомления
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -77,11 +79,16 @@ public class SoftDelete {
         log.info("Запустили процесс удаления усстаревших постов");
         try {
             List<Post> posts = postRepository.findSoftDeletedPostsID(currentDate.minusDays(cleanupPostDays));
-            for (Post post : posts) {
-                postService.deletePostAfterSoft(post);
-                PostFile postFile = fileRepository.findByPostId(post.getId());
-                assert postFile != null;
-                storageService.deleteImage(postFile.getId());
+            if (CollectionUtils.isNotEmpty(posts)) {
+                for (Post post : posts) {
+                    postService.deletePostAfterSoft(post);
+                    List<PostFile> postFiles = fileRepository.findByPostId(post.getId());
+                    if (CollectionUtils.isNotEmpty(postFiles)) {
+                        for (PostFile postFile : postFiles) {
+                            storageService.deleteImage(postFile.getId());
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -95,11 +102,16 @@ public class SoftDelete {
         log.info("Запустили процесс удаления усстаревших комментариев");
         try {
             List<PostComment> postComments = commentRepository.findSoftDeletedCommentsID(currentDate.minusDays(cleanupCommentDays));
-            for (PostComment postComment : postComments) {
-                commentService.deleteAfterSoft(postComment);
-                PostFile commentFile = fileRepository.findByCommentId(postComment.getId());
-                assert commentFile != null;
-                storageService.deleteImage(commentFile.getId());
+            if (CollectionUtils.isNotEmpty(postComments)) {
+                for (PostComment postComment : postComments) {
+                    commentService.deleteAfterSoft(postComment);
+                    List<PostFile> commentFiles = fileRepository.findByCommentId(postComment.getId());
+                    if (CollectionUtils.isNotEmpty(commentFiles)) {
+                        for (PostFile postFile : commentFiles) {
+                            storageService.deleteImage(postFile.getId());
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
