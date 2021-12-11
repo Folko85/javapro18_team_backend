@@ -265,7 +265,9 @@ public class FriendshipService {
             } else {
                 Friendship friendship = optional.get();
                 FriendshipStatus friendshipStatus = friendship.getStatus();
-                if (friendshipStatus.getCode().equals(FriendshipStatusCode.WASBLOCKEDBY)) {
+                if (friendshipStatus.getCode().equals(FriendshipStatusCode.WASBLOCKEDBY) && friendship.getSrcPerson().getId().equals(current.getId())
+                        || friendshipStatus.getCode().equals(FriendshipStatusCode.BLOCKED) && friendship.getDstPerson().getId().equals(current.getId())
+                ) {
                     friendshipStatus.setCode(FriendshipStatusCode.DEADLOCK);
                 } else if (current.getId().equals(friendship.getSrcPerson().getId())) {
                     friendshipStatus.setCode(FriendshipStatusCode.BLOCKED);
