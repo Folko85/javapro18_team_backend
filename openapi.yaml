@@ -15,25 +15,6 @@ components:
         status:
           type: string
           enum: [REQUEST, FRIEND, BLOCKED, DECLINED, SUBSCRIBED, WASBLOCKEDBY, DEADLOCK]
-    FriendsDto:
-      type: object
-      properties:
-        country: {type: string}
-        city: {type: string}
-        birth_date: {format: date, type: string}
-        about: {type: string}
-        photo: {type: string}
-        last_name: {type: string}
-        reg_date: {format: date-time, type: string}
-        is_blocked: {type: boolean}
-        messages_permission:
-          type: string
-          enum: [ALL, FRIENDS, NOBODY]
-        last_online_time: {format: date-time, type: string}
-        phone: {type: string}
-        id: {format: int32, type: integer}
-        first_name: {type: string}
-        email: {type: string}
     DataResponseAuthData:
       type: object
       properties:
@@ -127,17 +108,6 @@ components:
           type: array
           items: {format: int32, type: integer}
         likes: {type: string}
-    ListResponseFriendsDto:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/FriendsDto'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
     DialogData:
       type: object
       properties:
@@ -145,6 +115,17 @@ components:
         last_message: {$ref: '#/components/schemas/MessageData'}
         id: {format: int32, type: integer}
         recipient_id: {$ref: '#/components/schemas/AuthData'}
+    ListResponseNotificationSettingData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/NotificationSettingData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
     ListResponseCommentData:
       type: object
       properties:
@@ -175,6 +156,13 @@ components:
       properties:
         id: {format: int32, type: integer}
         title: {type: string}
+    NotificationSettingData:
+      type: object
+      properties:
+        notification_type:
+          type: string
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+        enable: {type: boolean}
     TagDto:
       description: Список городов
       type: object
@@ -230,7 +218,9 @@ components:
     NotificationsRequest:
       type: object
       properties:
-        notification_type: {type: string}
+        notification_type:
+          type: string
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
         enable: {type: boolean}
     PlaceDto:
       description: Список городов
@@ -603,7 +593,7 @@ paths:
           content:
             '*/*':
               schema: {$ref: '#/components/schemas/DataResponseAuthData'}
-      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+      tags: [Контроллер для работы с профилем]
     delete:
       summary: Удалить профиль пользователя
       security:
@@ -615,7 +605,7 @@ paths:
           content:
             '*/*':
               schema: {$ref: '#/components/schemas/AccountResponse'}
-      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+      tags: [Контроллер для работы с профилем]
     put:
       summary: Обновить профиль пользователя
       security:
@@ -632,7 +622,7 @@ paths:
           content:
             '*/*':
               schema: {$ref: '#/components/schemas/DataResponseAuthData'}
-      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+      tags: [Контроллер для работы с профилем]
   /api/v1/platform/cities:
     get:
       summary: Запрос списка городов в количестве itemPerPage содержащих city
@@ -646,10 +636,10 @@ paths:
             '*/*':
               schema: {$ref: '#/components/schemas/ListResponsePlaceDto'}
       parameters:
-      - schema: {format: int32, type: integer}
+      - schema: {default: 1, format: int32, type: integer}
         in: query
         name: countryId
-        required: true
+        required: false
       - schema: {default: '', type: string}
         in: query
         name: city
@@ -742,7 +732,7 @@ paths:
         in: path
         name: id
         required: true
-      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+      tags: [Контроллер для работы с профилем]
   /api/v1/account/recovery_complete:
     get:
       summary: Подтверждение восстановления пароля
@@ -765,7 +755,10 @@ paths:
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/notifications:
     get:
-      operationId: notifications_2
+      summary: Получить уведомления
+      security:
+      - jwt: []
+      operationId: notifications_1
       responses:
         '200':
           description: OK
@@ -783,6 +776,9 @@ paths:
         required: false
       tags: [Контроллер для получения уведомлений]
     put:
+      summary: Прочитать уведомление(я)
+      security:
+      - jwt: []
       operationId: notifications
       responses:
         '200':
@@ -988,8 +984,20 @@ paths:
               schema: {$ref: '#/components/schemas/DataResponseLikeData'}
       tags: [Контроллер для работы с лайками]
   /api/v1/account/notifications:
-    put:
+    get:
       summary: Уведомления
+      security:
+      - jwt: []
+      operationId: getNotificationsSetting
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseNotificationSettingData'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+    put:
+      summary: Настройка уведомлений
       security:
       - jwt: []
       requestBody:
@@ -997,7 +1005,7 @@ paths:
           application/json:
             schema: {$ref: '#/components/schemas/NotificationsRequest'}
         required: true
-      operationId: notifications_1
+      operationId: putNotificationsSetting
       responses:
         '200':
           description: OK
@@ -1129,7 +1137,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/ListResponseFriendsDto'}
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
       parameters:
       - schema: {default: '', type: string}
         in: query
@@ -1163,9 +1171,12 @@ paths:
         in: query
         name: itemPerPage
         required: false
-      tags: [Профиль]
+      tags: [Контроллер для работы с профилем]
   /api/v1/dialogs/unreaded:
     get:
+      summary: Получить непрочитанные
+      security:
+      - jwt: []
       operationId: getUnread
       responses:
         '200':
@@ -1173,7 +1184,7 @@ paths:
           content:
             '*/*':
               schema: {$ref: '#/components/schemas/AccountResponse'}
-      tags: [message-controller]
+      tags: [Контроллер сообщений]
   /api/v1/tags:
     post:
       summary: Добавить тег
@@ -1254,6 +1265,9 @@ paths:
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/dialogs:
     post:
+      summary: Создать диалог
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1266,8 +1280,11 @@ paths:
           content:
             '*/*':
               schema: {$ref: '#/components/schemas/DataResponseDialogData'}
-      tags: [dialog-controller]
+      tags: [Контроллер диалогов]
     get:
+      summary: Получить диалоги
+      security:
+      - jwt: []
       operationId: getDialogs
       responses:
         '200':
@@ -1288,7 +1305,7 @@ paths:
         in: query
         name: itemPerPage
         required: false
-      tags: [dialog-controller]
+      tags: [Контроллер диалогов]
   /api/v1/account/email:
     put:
       summary: Смена email
@@ -1385,7 +1402,7 @@ paths:
         in: path
         name: id
         required: true
-      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+      tags: [Контроллер для работы с профилем]
     put:
       summary: Заблокировать пользователя
       security:
@@ -1402,7 +1419,7 @@ paths:
         in: path
         name: id
         required: true
-      tags: ['Контроллер для получения профиля пользователя, изменения профиля, блокировки/раблокировки']
+      tags: [Контроллер для работы с профилем]
   /api/v1/auth/logout:
     get:
       summary: logout
@@ -1464,6 +1481,9 @@ paths:
       tags: [Контроллер для работы с постами]
   /api/v1/dialogs/{id}/messages:
     post:
+      summary: Отправить сообщение
+      security:
+      - jwt: []
       requestBody:
         content:
           application/json:
@@ -1481,8 +1501,11 @@ paths:
         in: path
         name: id
         required: true
-      tags: [message-controller]
+      tags: [Контроллер сообщений]
     get:
+      summary: Получить сообщения
+      security:
+      - jwt: []
       operationId: getMessages
       responses:
         '200':
@@ -1511,7 +1534,7 @@ paths:
         in: query
         name: fromMessageId
         required: false
-      tags: [message-controller]
+      tags: [Контроллер сообщений]
   /api/v1/is/friends:
     post:
       summary: Являются ли пользователи друзьями
@@ -1533,5 +1556,4 @@ paths:
       tags: [Друзья]
 info: {title: Zerone Social Network API, version: v1}
 tags:
-- {name: Профиль, description: Работа с профилем и с публичной информацией пользователя}
 - {name: Друзья, description: Работа с друзьями}
