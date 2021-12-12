@@ -2,7 +2,7 @@ spring:
   application:
     name: micro
   profiles:
-    active: ${SPRING_PROFILE:default}
+    active: ${SPRING_PROFILE:prod}
   cloud:
     config:
       uri: ${profile.config.url.${spring.profiles.active}}
@@ -13,6 +13,6 @@ spring:
 profile:
   config:
     url:
-      default: http://localhost:8888
+      dev: http://localhost:8888
       prod: http://cloud-config:8888
 

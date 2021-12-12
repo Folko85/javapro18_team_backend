@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILE:default}
+    active: ${SPRING_PROFILE:prod}
   application:
     name: serv
   cloud:
@@ -13,6 +13,6 @@ spring:
 profile:
   config:
     url:
-      default: http://localhost:8888
+      dev: http://localhost:8888
       prod: http://cloud-config:8888
 

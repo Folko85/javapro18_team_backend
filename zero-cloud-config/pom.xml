@@ -8,7 +8,7 @@
         <version>2.5.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>io.18Team</groupId>
+    <groupId>com.skillbox</groupId>
     <artifactId>zero-cloud-config</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>zero-cloud-config-server</name>
