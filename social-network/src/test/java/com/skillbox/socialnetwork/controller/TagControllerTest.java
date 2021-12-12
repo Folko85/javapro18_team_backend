@@ -65,8 +65,7 @@ class TagControllerTest extends AbstractTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].tag").value("porno"))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].tag").value("porno"));
     }
 
     @Test
@@ -81,7 +80,6 @@ class TagControllerTest extends AbstractTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tag").value("ahaha"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").exists());
-//                .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
@@ -98,7 +96,6 @@ class TagControllerTest extends AbstractTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("nothing"));
-//                .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
@@ -121,7 +118,6 @@ class TagControllerTest extends AbstractTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("tag use in another posts"));
-//                .andDo(MockMvcResultHandlers.print());
     }
 
 }

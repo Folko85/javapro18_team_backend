@@ -31,7 +31,7 @@ class FriendshipControllerTest extends AbstractTest {
     private PersonRepository personRepository;
 
     @Autowired
-        private FriendshipRepository friendshipRepository;
+    private FriendshipRepository friendshipRepository;
 
     Person petr;
 
@@ -71,14 +71,6 @@ class FriendshipControllerTest extends AbstractTest {
         personRepository.deleteAll();
     }
 
-//    @Test
-//    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
-//    void findFriend() throws Exception {
-//        mockMvc.perform(get("/api/v1/friends", "", "0", "20")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
-
     @Test
     @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
     void stopBeingFriends() throws Exception {
@@ -111,11 +103,4 @@ class FriendshipControllerTest extends AbstractTest {
                 .andExpect(status().isOk());
     }
 
-//    @Test
-//    @WithMockUser(username = "ivanov@test.ru", authorities = "user:write")
-//    void isFriends() throws Exception {
-//        mockMvc.perform(post("/api/v1/is/friends")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
 }

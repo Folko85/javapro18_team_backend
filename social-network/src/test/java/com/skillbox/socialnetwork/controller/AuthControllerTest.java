@@ -60,7 +60,6 @@ public class AuthControllerTest extends AbstractTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request))
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -77,7 +76,6 @@ public class AuthControllerTest extends AbstractTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request))
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 }

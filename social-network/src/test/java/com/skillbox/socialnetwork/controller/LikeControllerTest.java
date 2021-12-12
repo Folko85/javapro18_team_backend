@@ -63,9 +63,8 @@ class LikeControllerTest extends AbstractTest {
         String json = "{\"item_id\": " + post.getId() + ", \"type\": \"Post\"}";
 
         this.mockMvc.perform(put("/api/v1//likes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andDo(print())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isOk());
     }
 
@@ -80,9 +79,8 @@ class LikeControllerTest extends AbstractTest {
                 .content(json));
 
         this.mockMvc.perform(delete("/api/v1//likes")
-                .param("item_id", id)
-                .param("type", "Post"))
-                .andDo(print())
+                        .param("item_id", id)
+                        .param("type", "Post"))
                 .andExpect(status().isOk());
     }
 
@@ -92,10 +90,9 @@ class LikeControllerTest extends AbstractTest {
         Post post = postRepository.save(new Post());
         String id = String.valueOf(post.getId());
         this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/v1//likes")
-                .param("item_id", id)
-                .param("type", "Post"))
-                .andDo(print())
+                        .get("/api/v1//likes")
+                        .param("item_id", id)
+                        .param("type", "Post"))
                 .andExpect(status().isOk());
     }
 }

@@ -72,7 +72,6 @@ class ProfileControllerTest extends AbstractTest {
                 .param("city_id", "")
                 .param("offset", "")
                 .param("itemPerPage", "20"))
-                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -84,7 +83,6 @@ class ProfileControllerTest extends AbstractTest {
                         .get("/api/v1/users/me")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error_description").value("Пользователь не существует"));
     }

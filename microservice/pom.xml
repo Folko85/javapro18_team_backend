@@ -180,6 +180,9 @@
     <profiles>
         <profile>
             <id>server-build</id>
+            <properties>
+                <vaadin.productionMode>true</vaadin.productionMode>
+            </properties>
             <build>
                 <directory>./jars/test/</directory>
                 <plugins>
@@ -209,7 +212,7 @@
     </profiles>
 
     <build>
-<!--        <defaultGoal>jetty:run</defaultGoal>-->
+        <!--        <defaultGoal>jetty:run</defaultGoal>-->
         <plugins>
             <plugin>
                 <groupId>com.vaadin</groupId>
@@ -242,7 +245,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
-                    <jvmArguments>-Dspring.profiles.active=test</jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

@@ -4,9 +4,9 @@ import com.skillbox.socialnetwork.api.request.model.SupportRequestDto;
 import com.skillbox.socialnetwork.api.request.technicalSupportDto.SendMessageDto;
 import com.skillbox.socialnetwork.api.request.technicalSupportDto.TechnicalSupportClientDto;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +18,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class PusherService {
-    private final QueueMessagingTemplate template;
-
-    @Value("${message.queue.outgoing}")
-    private String queueName;
+    private final RabbitTemplate template;
 
     public AccountResponse createAndSendMessage(SupportRequestDto requestDto) {
         LocalDateTime dateOfApplication = LocalDateTime.now();
@@ -36,7 +33,10 @@ public class PusherService {
         sendMessageDto.setClient(client);
         sendMessageDto.setMessage(requestDto.getMessage());
 
-        template.convertAndSend(queueName, sendMessageDto);
+        String exchange = "support";
+        String routingKey = "support";
+
+        template.convertAndSend(exchange, routingKey, sendMessageDto);
         log.info("Send new m: {}", sendMessageDto);
         AccountResponse response = new AccountResponse();
         response.setData(Map.of("message", "ok"));

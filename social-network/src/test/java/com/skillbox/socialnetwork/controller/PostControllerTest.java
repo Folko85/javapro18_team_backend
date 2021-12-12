@@ -81,7 +81,6 @@ public class PostControllerTest extends AbstractTest {
                         .param("author", "newUser")
                         .param("tag", "tag|tag2")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(0));
     }
@@ -116,7 +115,6 @@ public class PostControllerTest extends AbstractTest {
                         .get("/api/v1/feeds")
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1));
 
@@ -138,13 +136,11 @@ public class PostControllerTest extends AbstractTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request))
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/users/{id}/wall", id)
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].tags[0]").value("tag"));
@@ -161,7 +157,6 @@ public class PostControllerTest extends AbstractTest {
                         .get("/api/v1/post/{id}", post.getId())
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -179,7 +174,6 @@ public class PostControllerTest extends AbstractTest {
                         .content(json)
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -195,7 +189,6 @@ public class PostControllerTest extends AbstractTest {
                         .delete("/api/v1/post/{id}", post.getId())
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -211,13 +204,12 @@ public class PostControllerTest extends AbstractTest {
                         .delete("/api/v1/post/{id}", post.getId())
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/post/{id}/recover", post.getId())
                         .principal(() -> "test@test.ru")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
