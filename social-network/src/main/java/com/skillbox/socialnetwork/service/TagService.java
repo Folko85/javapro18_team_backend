@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
+import com.skillbox.socialnetwork.api.response.postdto.TagDto;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.Tag;
 import com.skillbox.socialnetwork.repository.PostRepository;

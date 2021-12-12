@@ -2,7 +2,7 @@ package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
-import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
+import com.skillbox.socialnetwork.api.response.postdto.TagDto;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.Tag;

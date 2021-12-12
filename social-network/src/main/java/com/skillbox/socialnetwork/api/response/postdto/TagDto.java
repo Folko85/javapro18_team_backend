@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.tagdto;
+package com.skillbox.socialnetwork.api.response.postdto;
 
 import com.skillbox.socialnetwork.api.response.Dto;
 import io.swagger.v3.oas.annotations.media.Schema;

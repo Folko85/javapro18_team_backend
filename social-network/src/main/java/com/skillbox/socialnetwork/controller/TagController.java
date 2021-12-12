@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.controller;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.tagdto.TagDto;
+import com.skillbox.socialnetwork.api.response.postdto.TagDto;
 import com.skillbox.socialnetwork.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

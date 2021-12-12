@@ -3,7 +3,7 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.request.CommentRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.commentdto.CommentData;
+import com.skillbox.socialnetwork.api.response.postdto.CommentData;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
 import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
