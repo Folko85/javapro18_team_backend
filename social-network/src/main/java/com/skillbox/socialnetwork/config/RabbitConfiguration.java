@@ -37,6 +37,7 @@ public class RabbitConfiguration {
         return template;
     }
 
+
     @Bean
     Queue queue() {
         return new Queue("support");
