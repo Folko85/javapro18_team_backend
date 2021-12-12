@@ -2,8 +2,8 @@
 Дипломный проект группы 18 Skillbox 
 
 Основные участники со строны бэка:
-https://github.com/Folko85
-https://github.com/Shkiller
-https://github.com/KronCosta
-https://github.com/Brosha
-https://github.com/Artemk70
+<a href="https://github.com/Folko85">Folko85</a>
+<a href="https://github.com/Shkiller">Shkiller</a>
+<a href="https://github.com/KronCosta">KronCosta</a>
+<a href="https://github.com/Brosha">Brosha</a>
+<a href="https://github.com/Artemk70">Artemk70</a>
