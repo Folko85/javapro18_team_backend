@@ -1,10 +1,9 @@
-package com.skillbox.socialnetwork.config;
+package com.skillbox.microservice.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,14 +26,6 @@ public class RabbitConfiguration {
         admin.declareQueue(queue());
         admin.declareBinding(binding(queue(), exchange()));
         return new RabbitAdmin(connectionFactory());
-    }
-
-    @Bean
-    public RabbitTemplate rabbitTemplate() {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory());
-        template.setExchange("support");
-        template.setRoutingKey("support");
-        return template;
     }
 
     @Bean

@@ -39,7 +39,7 @@
 
     <profiles>
         <profile>
-            <id>server-build</id>
+            <id>prod</id>
             <build>
                 <directory>./jars/test/</directory>
             </build>
@@ -54,7 +54,6 @@
                 <version>2.5.4</version>
                 <configuration>
                     <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
-                    <jvmArguments>-Dspring.profiles.active=test</jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -63,33 +62,6 @@
                     </excludes>
                     <outputDirectory>./jars</outputDirectory>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <configuration>
-                    <propertyFile>src/main/resources/liquibase.properties</propertyFile>
-                    <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
-                    <diffChangeLogFile>src/main/resources/db/changelog/changelog.yaml</diffChangeLogFile>
-                    <logging>info</logging>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.liquibase</groupId>
-                        <artifactId>liquibase-core</artifactId>
-                        <version>4.4.3</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.liquibase.ext</groupId>
-                        <artifactId>liquibase-hibernate5</artifactId>
-                        <version>4.4.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.data</groupId>
-                        <artifactId>spring-data-jpa</artifactId>
-                        <version>2.5.4</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,9 +1,9 @@
 package com.skillbox.microservice.service;
 
 import com.skillbox.microservice.dto.MessageDto;
-import io.awspring.cloud.messaging.listener.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class SimpleListener {
     private final MessageService messageService;
 
-    @SqsListener("${message.queue.incoming}")
+    @RabbitListener (queues = "support")
     public void getMessage(MessageDto dto) {
         log.info("получено сообщение '{}' в support", dto.getMessage());
         messageService.saveMessage(dto);

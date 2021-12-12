@@ -73,7 +73,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -96,18 +99,10 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>io.awspring.cloud</groupId>
-            <artifactId>spring-cloud-starter-aws-messaging</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-config-client</artifactId>
@@ -121,12 +116,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>2.5.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <version>3.0.4</version>
@@ -135,19 +124,16 @@
         <dependency>
             <groupId>org.liquibase.ext</groupId>
             <artifactId>liquibase-hibernate5</artifactId>
-            <version>4.4.2</version>
+            <version>4.6.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.3.12</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
-            <version>2.5.6</version>
+            <version>5.3.13</version>
         </dependency>
 
         <dependency>
@@ -179,12 +165,11 @@
 
     <profiles>
         <profile>
-            <id>server-build</id>
+            <id>prod</id>
             <properties>
                 <vaadin.productionMode>true</vaadin.productionMode>
             </properties>
             <build>
-                <directory>./jars/test/</directory>
                 <plugins>
                     <plugin>
                         <groupId>com.vaadin</groupId>
@@ -201,9 +186,8 @@
                         <configuration>
                             <nodeVersion>v10.16.3</nodeVersion>
                             <productionMode>false</productionMode>
-                            <compatibilityMode>false</compatibilityMode>
+                            <compatibilityMode>true</compatibilityMode>
                             <pnpmEnable>true</pnpmEnable>
-                            <frontendDirectory>microservice/frontend</frontendDirectory>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -245,6 +229,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
+                    <jvmArguments>-Dspring.profiles.active=prod</jvmArguments>
+                    <jvmArguments>-Pproduction</jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -265,14 +251,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>4.6.1</version>
-                <configuration>
-                    <propertyFile>src/main/resources/db/changelog/liquibase-master.yml</propertyFile>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>

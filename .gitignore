@@ -37,3 +37,6 @@ build/
 /social-network/logs/
 /logs/
 /microservice/node_modules/
+/microservice/package.json
+/microservice/webpack.config.js
+/microservice/webpack.generated.js
