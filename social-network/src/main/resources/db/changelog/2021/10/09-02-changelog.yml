@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021100901
+      author: m.gutorov
+      changes:
+        - renameColumn:
+            tableName: person
+            oldColumnName: town
+            newColumnName: city
+            columnDataType: varchar(255)

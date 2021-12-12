@@ -2,11 +2,159 @@ version: '3.7'
 services:
   mysql_db_container:
     image: mysql:latest
+    restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: w6%@AJ9n%cl5
       MYSQL_DATABASE: network_db
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: xoQu1@}j9P{p
     ports:
-      - 3306:3306
+      - "3307:3306"
+    cap_add:
+      - SYS_NICE
+  mysql_microservice:
+    image: mysql:latest
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: aj@Z|0qLY#lZ
+      MYSQL_DATABASE: technical_support
+      MYSQL_USER: user
+      MYSQL_PASSWORD: ~yzLEM9hFKxX
+    ports:
+      - "3308:3306"
+    cap_add:
+      - SYS_NICE
+  vue_js_container:
+    restart: always
+    image: nginx:latest
+    volumes:
+      - ./web/:/usr/share/nginx/html
+      - ./conf.d:/etc/nginx/conf.d
+    environment:
+      NGINX_HOST: localhost
+      NGINX_PORT: 80
+    ports:
+      - "80:80"
+  cloud-config:
+    restart: always
+    image: openjdk:16-alpine
+    volumes:
+      - ./jars:/app
+    working_dir: /app
+    command: java -jar zero-cloud-config-0.0.1-SNAPSHOT.jar
+    ports:
+      - "8888:8888"
+  microservice_back_container:
+    restart: always
+    image: openjdk:16-alpine
+    volumes:
+      - ./jars:/app
+    working_dir: /app
+    command: java -jar microservice-0.0.1-SNAPSHOT.jar
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_PROFILE
+    depends_on:
+      - cloud-config
+      - mysql_microservice
+  redis:
+    restart: always
+    container_name: "redis_container"
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--bind", "redis", "--port", "6379" ]
+  zerone_back_container:
+    restart: always
+    image: openjdk:16-alpine
+    volumes:
+      - ./jars:/app
+    working_dir: /app
+    command: java -jar social-network-0.0.1-SNAPSHOT.jar
+    ports:
+      - "8086:8086"
+      - target: 1111
+        published: 1111
+        protocol: tcp
+        mode: host
+    depends_on:
+      - cloud-config
+      - mysql_db_container
+    environment:
+      - SPRING_PROFILE
+  grafana:
+    restart: always
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./scripts/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=QMIS
+      - GF_SECURITY_ADMIN_PASSWORD=xUDtHu58mFwABmU
+    networks:
+      monitoring:
+        aliases:
+          - grafana
+  prometheus:
+    restart: always
+    image: prom/prometheus
+    user: root
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./scripts/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./scripts/prometheus:/prometheus
+    networks:
+      monitoring:
+        aliases:
+          - prometheus
+  promtail:
+    restart: always
+    image: grafana/promtail:1.4.1
+    expose:
+      - 9080
+    ports:
+      - "9080:9080"
+    volumes:
+      - ./scripts/config/promtail.yml:/etc/promtail/promtail.yml
+      - ./jars/logs:/app/logs
+    command:
+      - '-config.file=/etc/promtail/promtail.yml'
+    networks:
+      monitoring:
+        aliases:
+          - promtail
+  loki:
+    restart: always
+    image: grafana/loki:2.3.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./scripts/config/loki.yml:/etc/loki-local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      monitoring:
+        aliases:
+          - loki
+  rabbitmq:
+    restart: always
+    hostname: "rabbitmq"
+    image: rabbitmq:management
+    command: rabbitmq-server
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    container_name: rabbitmq
+    environment:
+      AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    networks:
+      - monitoring
+networks:
+  monitoring:
+    driver: bridge

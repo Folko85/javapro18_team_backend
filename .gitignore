@@ -18,11 +18,11 @@ target/
 *.iws
 *.iml
 *.ipr
+*.db
 
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
 build/
@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+/web/
+/scripts/prometheus/
+/jars/
+/scripts/grafana/
+/social-network/logs/
+/logs/
+/microservice/node_modules/

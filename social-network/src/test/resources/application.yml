@@ -1,0 +1,80 @@
+server:
+  port: 8086
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    banner-mode: 'off'
+  jmx.default-domain: test
+  datasource: # настройки источника данных (базы)
+    username: ENC(PWu0QZMimWB0juSsNBfwTQ==)
+    password: ENC(62tVsgv8KdaO7f+lI79ZF6h99njiI82z)
+    driverClassName: org.h2.Driver #драйвер для подключения к базе
+    url: jdbc:h2:mem:mydb1 #url для подключения к базе
+  liquibase:
+    change-log: /db/changelog/changelog.yml
+    enabled: false
+  jpa:
+    show-sql: false
+    hibernate:
+      dialect: org.h2.Driver
+      ddl-auto: update
+  redis:
+    host: localhost
+    port: 5000
+    password: ENC(X2BUlR94IUPOPa1D7mGtbSnP6cbaWPMT)
+
+registration:
+  confirm:
+    need: false
+    url: "http://195.234.208.58:8086/api/v1/account/registration_complete"
+
+cloud:
+  aws:
+    credentials:
+      access-key: bjwgIspnfqIQsSEvsivr
+      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
+    sns:
+      enabled: false #Amazon SNS disabling
+    s3:
+      region: ${cloud.yandex.region} #This need for run application
+    sqs:
+      endpoint: https://message-queue.api.cloud.yandex.net/ #endpoint from yandex cloud documentation
+  yandex:
+    region: ru-central1 #region from yandex.cloud documentation
+message:
+  queue:
+    outgoing: support_message_queue
+
+
+external:
+  vk:
+    id: ENC(m7rHhgvZf1a3XykimmtX9A==)
+    token: ENC(0FWZ/Ebbh5M0GV/ZD8TcXU1ISRbcusF9MrjiZsUnR4Vf4Hv8l7sp32S4w/KWqNsnLI7ppZCPy3ZztKJxXLGkhpBEkJXeEZpE6NFIDCts6BY=)
+  cloudinary:
+    cloud: ENC(Vfhff27NWtbJpMagmXDrAPdoUn5Wl0BP)
+    key: ENC(Dw9PMgrkxd0Q7YTIBowaLFI/ixt2nvHf)
+    secret: ENC(hQVnqsRAm3jW1tjWc3zDAOu19ppToSJ7czBD5CHa0E6coGq36y7wVA==)
+  mail:
+    key: ENC(cbiIlGM7COCT2LWMVF8KHGK51r+I+M2yvPUwbrQBo+FP6qYiSXqJEgIpH0DeWqet)
+    secret: ENC(ej/k4xIoS2SQYjlcvgMdMjJ5nYNkYWijRoaBtknf+UWeBB5UETd1yRO0GA9udfEg)
+    from: ENC(pJ86R3iKC6yiWVTA3UOSQXiSyFWgWQ2NcwrY6fcCEVo=)
+
+ws:
+  server:
+    host: "0.0.0.0"
+    port: 1111
+
+jasypt:
+  encryptor:
+    bean: encryptorBean
+
+cors:
+  urls:
+    - http://localhost/
+soft:
+  person:
+    month: 3
+  post:
+    day: 7
+  comment:
+    day: 1

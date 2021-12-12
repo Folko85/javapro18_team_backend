@@ -1,0 +1,1559 @@
+components:
+  schemas:
+    CommentRequest:
+      type: object
+      properties:
+        comment_text: {type: string}
+        images:
+          type: array
+          items: {$ref: '#/components/schemas/ImageDto'}
+        parent_id: {format: int32, type: integer}
+    StatusFriend:
+      type: object
+      properties:
+        user_id: {format: int32, type: integer}
+        status:
+          type: string
+          enum: [REQUEST, FRIEND, BLOCKED, DECLINED, SUBSCRIBED, WASBLOCKEDBY, DEADLOCK]
+    DataResponseAuthData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/AuthData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponsePostData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/PostData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DataResponseDialogData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    MessageRequest:
+      type: object
+      properties:
+        message_text: {type: string}
+    ListResponseDialogData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    SupportRequestDto:
+      type: object
+      properties:
+        e_mail: {type: string}
+        last_name: {type: string}
+        message: {type: string}
+        first_name: {type: string}
+    DataResponsePostData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/PostData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    CommentData:
+      type: object
+      properties:
+        comment_text: {type: string}
+        is_blocked: {type: boolean}
+        images:
+          type: array
+          items: {$ref: '#/components/schemas/ImageDto'}
+        is_deleted: {type: boolean}
+        post_id: {format: int32, type: integer}
+        my_like: {type: boolean}
+        author: {$ref: '#/components/schemas/AuthData'}
+        parent_id: {format: int32, type: integer}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        sub_comments:
+          type: array
+          items: {$ref: '#/components/schemas/CommentData'}
+        likes: {format: int32, type: integer}
+    ListResponsePlaceDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/PlaceDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    LoginRequest:
+      type: object
+      properties:
+        password: {type: string}
+        email: {type: string}
+    LikeData:
+      type: object
+      properties:
+        users:
+          type: array
+          items: {format: int32, type: integer}
+        likes: {type: string}
+    DialogData:
+      type: object
+      properties:
+        unread_count: {format: int64, type: integer}
+        last_message: {$ref: '#/components/schemas/MessageData'}
+        id: {format: int32, type: integer}
+        recipient_id: {$ref: '#/components/schemas/AuthData'}
+    ListResponseNotificationSettingData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/NotificationSettingData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseCommentData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/CommentData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    EMailChangeRequest:
+      type: object
+      properties:
+        email: {type: string}
+    DataResponseMessageData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/MessageData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    RecoveryRequest:
+      type: object
+      properties:
+        email: {type: string}
+    LanguageDto:
+      type: object
+      properties:
+        id: {format: int32, type: integer}
+        title: {type: string}
+    NotificationSettingData:
+      type: object
+      properties:
+        notification_type:
+          type: string
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+        enable: {type: boolean}
+    TagDto:
+      description: Список городов
+      type: object
+      properties:
+        id: {format: int32, description: Идентификатор тэга, type: integer}
+        tag: {description: Собственно тэг, type: string}
+    ListResponseAuthData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/AuthData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseLanguageDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/LanguageDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DialogRequest:
+      type: object
+      properties:
+        users_ids:
+          type: array
+          items: {format: int32, type: integer}
+    DataResponseCommentData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/CommentData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    NotificationData:
+      type: object
+      properties:
+        sent_time: {format: date-time, type: string}
+        event_type:
+          type: string
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+        entity_author: {$ref: '#/components/schemas/AuthData'}
+        current_entity_id: {format: int32, type: integer}
+        id: {format: int32, type: integer}
+        entity_id: {format: int32, type: integer}
+        parent_entity_id: {format: int32, type: integer}
+    NotificationsRequest:
+      type: object
+      properties:
+        notification_type:
+          type: string
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+        enable: {type: boolean}
+    PlaceDto:
+      description: Список городов
+      type: object
+      properties:
+        id: {format: int32, description: Идентификатор города/страны, type: integer}
+        title: {description: Название города/страны, type: string}
+    ResponseFriendsList:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/StatusFriend'}
+    RegisterRequest:
+      type: object
+      properties:
+        firstName: {type: string}
+        lastName: {type: string}
+        code: {type: string}
+        passwd1: {type: string}
+        email: {type: string}
+        passwd2: {type: string}
+    FriendsResponse200:
+      type: object
+      properties:
+        error: {type: string}
+        message: {type: string}
+        timestamp: {format: date-time, type: string}
+    AuthData:
+      type: object
+      properties:
+        country: {type: string}
+        city: {type: string}
+        birth_date: {format: date-time, type: string}
+        about: {type: string}
+        photo: {type: string}
+        last_name: {type: string}
+        token: {type: string}
+        reg_date: {format: date-time, type: string}
+        is_blocked: {type: boolean}
+        deleted: {type: boolean}
+        messages_permission:
+          type: string
+          enum: [ALL, FRIENDS, NOBODY]
+        last_online_time: {format: date-time, type: string}
+        phone: {type: string}
+        id: {format: int32, type: integer}
+        first_name: {type: string}
+        email: {type: string}
+    LikeRequest:
+      type: object
+      properties:
+        item_id: {format: int32, type: integer}
+        type: {type: string}
+    MessageData:
+      type: object
+      properties:
+        message_text: {type: string}
+        sendByMe: {type: boolean}
+        read_status: {type: string}
+        dialog_id: {format: int32, type: integer}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        author_id: {format: int32, type: integer}
+    DataResponseImageDto:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/ImageDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseMessageData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/MessageData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseNotificationData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/NotificationData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    PasswdChangeRequest:
+      type: object
+      properties:
+        password: {type: string}
+        token: {type: string}
+    PostRequest:
+      type: object
+      properties:
+        title: {type: string}
+        post_text: {type: string}
+        tags:
+          type: array
+          items: {type: string}
+    DataResponseLikeData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/LikeData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    IsFriends:
+      type: object
+      properties:
+        user_ids:
+          type: array
+          items: {format: int32, type: integer}
+    PostData:
+      type: object
+      properties:
+        is_blocked: {type: boolean}
+        comments: {$ref: '#/components/schemas/ListResponseCommentData'}
+        my_like: {type: boolean}
+        author: {$ref: '#/components/schemas/AuthData'}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        title: {type: string}
+        type: {type: string}
+        post_text: {type: string}
+        likes: {format: int32, type: integer}
+        tags:
+          type: array
+          items: {type: string}
+    ImageDto:
+      type: object
+      properties:
+        id: {description: Идентификатор изображения, type: string}
+        url: {description: Имя файла, type: string}
+    DataResponseTagDto:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/TagDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    AccountResponse:
+      type: object
+      properties:
+        data:
+          additionalProperties: {type: string}
+          type: object
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseTagDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/TagDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+  securitySchemes:
+    jwt: {scheme: bearer, in: header, name: Authorization, type: http}
+servers:
+- {description: Generated server url, url: 'http://localhost'}
+openapi: 3.0.1
+paths:
+  /api/v1/account/registration_complete:
+    get:
+      summary: Подтверждение регистрации
+      operationId: registrationComplete
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: string}
+      parameters:
+      - schema: {type: string}
+        in: query
+        name: key
+        required: true
+      - schema: {type: string}
+        in: query
+        name: eMail
+        required: true
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/users/{id}/wall:
+    post:
+      summary: Создать пост на стене
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PostRequest'}
+        required: true
+      operationId: getUserWall
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: 0, format: int64, type: integer}
+        in: query
+        name: publish_date
+        required: false
+      tags: [Контроллер для работы с постами]
+    get:
+      summary: Получить посты на стене
+      security:
+      - jwt: []
+      operationId: getUserWall_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/friends:
+    get:
+      summary: Список друзей
+      security:
+      - jwt: []
+      description: Получить список друзей
+      operationId: findFriend
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: name
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Друзья]
+  /api/v1/support:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SupportRequestDto'}
+        required: true
+      operationId: create
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Запросы в техническую поддержку]
+  /api/v1/friends/request:
+    get:
+      summary: Список заявок
+      security:
+      - jwt: []
+      description: Получить список заявок
+      operationId: getFriendsRequests
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: name
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Друзья]
+  /api/v1/auth/login:
+    post:
+      summary: login
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LoginRequest'}
+        required: true
+      operationId: login
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      tags: [Контроллер для авторизации]
+  /api/v1/storage/{id}:
+    delete:
+      summary: Удаление изображения
+      security:
+      - jwt: []
+      operationId: deleteImage
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для загрузки файлов]
+  /api/v1/account/recovery:
+    put:
+      summary: Восстановление пароля
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecoveryRequest'}
+        required: true
+      operationId: recoverySend
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: string}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/users/me:
+    get:
+      summary: Получение текущего пользователя
+      security:
+      - jwt: []
+      operationId: getMe
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      tags: [Контроллер для работы с профилем]
+    delete:
+      summary: Удалить профиль пользователя
+      security:
+      - jwt: []
+      operationId: deleteUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с профилем]
+    put:
+      summary: Обновить профиль пользователя
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AuthData'}
+        required: true
+      operationId: updateUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      tags: [Контроллер для работы с профилем]
+  /api/v1/platform/cities:
+    get:
+      summary: Запрос списка городов в количестве itemPerPage содержащих city
+      security:
+      - jwt: []
+      operationId: getCities
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePlaceDto'}
+      parameters:
+      - schema: {default: 1, format: int32, type: integer}
+        in: query
+        name: countryId
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: city
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для получения списка стран и подгрузки городов для страны]
+  /api/v1/storage:
+    post:
+      summary: Загрузка изображения
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: {format: binary, type: string}
+      operationId: uploadImage
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseImageDto'}
+      parameters:
+      - schema: {type: string}
+        in: query
+        name: type
+        required: true
+      tags: [Контроллер для загрузки файлов]
+  /api/v1/platform/languages:
+    get:
+      operationId: getLanguages
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseLanguageDto'}
+      tags: [Контроллер для получения списка стран и подгрузки городов для страны]
+  /api/v1/platform/countries:
+    get:
+      summary: Получение списка стран
+      security:
+      - jwt: []
+      operationId: getCountries
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePlaceDto'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: country
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 250, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для получения списка стран и подгрузки городов для страны]
+  /api/v1/users/{id}:
+    get:
+      summary: Получение пользователя по его id
+      security:
+      - jwt: []
+      operationId: getUserById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseAuthData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с профилем]
+  /api/v1/account/recovery_complete:
+    get:
+      summary: Подтверждение восстановления пароля
+      operationId: recoveryComplete
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: string}
+      parameters:
+      - schema: {type: string}
+        in: query
+        name: key
+        required: true
+      - schema: {type: string}
+        in: query
+        name: eMail
+        required: true
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/notifications:
+    get:
+      summary: Получить уведомления
+      security:
+      - jwt: []
+      operationId: notifications_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseNotificationData'}
+      parameters:
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для получения уведомлений]
+    put:
+      summary: Прочитать уведомление(я)
+      security:
+      - jwt: []
+      operationId: notifications
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseNotificationData'}
+      parameters:
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: id
+        required: false
+      - schema: {default: false, type: boolean}
+        in: query
+        name: all
+        required: false
+      tags: [Контроллер для получения уведомлений]
+  /api/v1/friends/{id}:
+    post:
+      summary: Добавление в друзья
+      security:
+      - jwt: []
+      description: Принть/добавить пользователя в друзья
+      operationId: addingToFriends
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/FriendsResponse200'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Друзья]
+    delete:
+      summary: Удаление пользователя
+      security:
+      - jwt: []
+      description: Удаление пользователя из друзей
+      operationId: stopBeingFriends
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/FriendsResponse200'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Друзья]
+  /api/v1/post/{id}/comments/{comment_id}:
+    delete:
+      summary: Удалить коментарий
+      security:
+      - jwt: []
+      operationId: deleteComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {format: int32, type: integer}
+        in: path
+        name: comment_id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+    put:
+      summary: Редактировать коментарий
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CommentRequest'}
+        required: true
+      operationId: putComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {format: int32, type: integer}
+        in: path
+        name: comment_id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+  /api/v1/account/register:
+    post:
+      summary: Регистрация
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RegisterRequest'}
+        required: true
+      operationId: register
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/post/{id}/recover:
+    put:
+      summary: Восстановить пост
+      security:
+      - jwt: []
+      operationId: putPostRecover
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {type: object}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с постами]
+  /api/v1/likes:
+    get:
+      summary: Получить лайки
+      security:
+      - jwt: []
+      operationId: getLikes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseLikeData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: item_id
+        required: true
+      - schema: {type: string}
+        in: query
+        name: type
+        required: true
+      tags: [Контроллер для работы с лайками]
+    delete:
+      summary: Удалить лайк
+      security:
+      - jwt: []
+      operationId: deleteLikes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseLikeData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: item_id
+        required: true
+      - schema: {type: string}
+        in: query
+        name: type
+        required: true
+      tags: [Контроллер для работы с лайками]
+    put:
+      summary: Поставить лайк
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LikeRequest'}
+        required: true
+      operationId: putLikes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseLikeData'}
+      tags: [Контроллер для работы с лайками]
+  /api/v1/account/notifications:
+    get:
+      summary: Уведомления
+      security:
+      - jwt: []
+      operationId: getNotificationsSetting
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseNotificationSettingData'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+    put:
+      summary: Настройка уведомлений
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NotificationsRequest'}
+        required: true
+      operationId: putNotificationsSetting
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/post/{id}/comments:
+    post:
+      summary: Написать коментарий
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CommentRequest'}
+        required: true
+      operationId: postComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+    get:
+      summary: Получить коментарии
+      security:
+      - jwt: []
+      operationId: getFeeds
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseCommentData'}
+      parameters:
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 5, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+  /api/v1/post:
+    get:
+      summary: Получить посты в поиске
+      security:
+      - jwt: []
+      operationId: getPosts
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePostData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: text
+        required: false
+      - schema: {default: -1, format: int64, type: integer}
+        in: query
+        name: date_from
+        required: false
+      - schema: {default: -1, format: int64, type: integer}
+        in: query
+        name: date_to
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: author
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: tag
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/friends/recommendations:
+    get:
+      summary: Рекомендации
+      security:
+      - jwt: []
+      description: Получить список рекомендаций
+      operationId: getRecommendedUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
+      parameters:
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Друзья]
+  /api/v1/users/search:
+    get:
+      summary: Поиск пользователя
+      security:
+      - jwt: []
+      operationId: search
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseAuthData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: first_name
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: last_name
+        required: false
+      - schema: {default: -1, format: int32, type: integer}
+        in: query
+        name: age_from
+        required: false
+      - schema: {default: -1, format: int32, type: integer}
+        in: query
+        name: age_to
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: country
+        required: false
+      - schema: {default: '', type: string}
+        in: query
+        name: city
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с профилем]
+  /api/v1/dialogs/unreaded:
+    get:
+      summary: Получить непрочитанные
+      security:
+      - jwt: []
+      operationId: getUnread
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер сообщений]
+  /api/v1/tags:
+    post:
+      summary: Добавить тег
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TagDto'}
+        required: true
+      operationId: postTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseTagDto'}
+      tags: [Контроллер для работы с тегами]
+    get:
+      summary: Получить теги
+      security:
+      - jwt: []
+      operationId: getTags
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseTagDto'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: tag
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 10, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с тегами]
+    delete:
+      summary: Удалить тег
+      security:
+      - jwt: []
+      operationId: deleteTag
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: query
+        name: id
+        required: true
+      tags: [Контроллер для работы с тегами]
+  /api/v1/account/password/set:
+    put:
+      summary: Смена пароля
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PasswdChangeRequest'}
+        required: true
+      operationId: passwdChange
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/dialogs:
+    post:
+      summary: Создать диалог
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DialogRequest'}
+        required: true
+      operationId: postDialog
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseDialogData'}
+      tags: [Контроллер диалогов]
+    get:
+      summary: Получить диалоги
+      security:
+      - jwt: []
+      operationId: getDialogs
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseDialogData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: name
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 1000, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер диалогов]
+  /api/v1/account/email:
+    put:
+      summary: Смена email
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EMailChangeRequest'}
+        required: true
+      operationId: eMailChange
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для работы с созданием учётной записи и безопасностью]
+  /api/v1/post/{id}:
+    get:
+      summary: Получить пост
+      security:
+      - jwt: []
+      operationId: getPostById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с постами]
+    delete:
+      summary: Удалить пост
+      security:
+      - jwt: []
+      operationId: deletePostById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с постами]
+    put:
+      summary: Изменить пост
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PostRequest'}
+        required: true
+      operationId: putPostById
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: 0, format: int64, type: integer}
+        in: query
+        name: publish_date
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/users/block/{id}:
+    delete:
+      summary: Разблокировать пользователя
+      security:
+      - jwt: []
+      operationId: unBlockUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с профилем]
+    put:
+      summary: Заблокировать пользователя
+      security:
+      - jwt: []
+      operationId: blockUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер для работы с профилем]
+  /api/v1/auth/logout:
+    get:
+      summary: logout
+      operationId: logout
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/AccountResponse'}
+      tags: [Контроллер для авторизации]
+  /api/v1/post/{id}/comments/{comment_id}/recover:
+    put:
+      summary: Восстановить коментарий
+      security:
+      - jwt: []
+      operationId: recoveryComment
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseCommentData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {format: int32, type: integer}
+        in: path
+        name: comment_id
+        required: true
+      tags: [Контроллер для работы с коментариями]
+  /api/v1/feeds:
+    get:
+      summary: Получить посты новостях
+      security:
+      - jwt: []
+      operationId: getFeeds_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponsePostData'}
+      parameters:
+      - schema: {default: '', type: string}
+        in: query
+        name: text
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 20, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      tags: [Контроллер для работы с постами]
+  /api/v1/dialogs/{id}/messages:
+    post:
+      summary: Отправить сообщение
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/MessageRequest'}
+        required: true
+      operationId: postMessages
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/DataResponseMessageData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      tags: [Контроллер сообщений]
+    get:
+      summary: Получить сообщения
+      security:
+      - jwt: []
+      operationId: getMessages
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ListResponseMessageData'}
+      parameters:
+      - schema: {format: int32, type: integer}
+        in: path
+        name: id
+        required: true
+      - schema: {default: '', type: string}
+        in: query
+        name: query
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: offset
+        required: false
+      - schema: {default: 1000, format: int32, type: integer}
+        in: query
+        name: itemPerPage
+        required: false
+      - schema: {default: 0, format: int32, type: integer}
+        in: query
+        name: fromMessageId
+        required: false
+      tags: [Контроллер сообщений]
+  /api/v1/is/friends:
+    post:
+      summary: Являются ли пользователи друзьями
+      security:
+      - jwt: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/IsFriends'}
+        required: true
+      description: Получить информацию является ли пользователь другом указанных пользователей
+      operationId: isFriends
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema: {$ref: '#/components/schemas/ResponseFriendsList'}
+      tags: [Друзья]
+info: {title: Zerone Social Network API, version: v1}
+tags:
+- {name: Друзья, description: Работа с друзьями}

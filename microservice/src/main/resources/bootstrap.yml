@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: micro
+  profiles:
+    active: ${SPRING_PROFILE:default}
+  cloud:
+    config:
+      uri: ${profile.config.url.${spring.profiles.active}}
+      retry:
+        max-attempts: 10
+        initial-interval: 10000
+        max-interval: 5000
+profile:
+  config:
+    url:
+      default: http://localhost:8888
+      prod: http://cloud-config:8888
+

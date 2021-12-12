@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Сообщения</title>
+</head>
+<body>
+<h1>Сообщения: <span th:text="${messagesCount}">0</span></h1>
+<div id="message-list">
+    <div th:each="message : ${messageList}">
+        <p class="message-link" th:attr="data-id=${message.id}" th:text="${message.id} +
+        '. ' +
+        ${message.client.firstName} +
+        ' ' +
+        ${message.client.lastName} +
+        ' ' +
+        ${message.client.email} +
+            ': ' +
+            ${message.message}"></p>
+    </div>
+</div>
+</body>
+</html>
