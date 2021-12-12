@@ -8,8 +8,6 @@ import com.skillbox.socialnetwork.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -26,13 +24,13 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "login")
-    public ResponseEntity<DataResponse<AuthData>> login(@RequestBody LoginRequest loginRequest) throws Exception {
-        return new ResponseEntity<>(authService.auth(loginRequest), HttpStatus.OK);
+    public DataResponse<AuthData> login(@RequestBody LoginRequest loginRequest) throws Exception {
+        return authService.auth(loginRequest);
     }
 
     @GetMapping("/logout")
     @Operation(summary = "logout")
-    public ResponseEntity<AccountResponse> logout() {
-        return new ResponseEntity<>(authService.logout(), HttpStatus.OK);
+    public AccountResponse logout() {
+        return authService.logout();
     }
 }

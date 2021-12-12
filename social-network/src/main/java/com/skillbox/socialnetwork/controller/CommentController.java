@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,47 +30,47 @@ public class CommentController {
     @PostMapping("/post/{id}/comments")
     @Operation(summary = "Написать коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<CommentData>> postComment(@PathVariable int id,
-                                                                 @RequestBody CommentRequest commentRequest,
-                                                                 Principal principal) throws PostNotFoundException, CommentNotFoundException {
-        return new ResponseEntity<>(commentService.postComment(id, commentRequest, principal), HttpStatus.OK);
+    public DataResponse<CommentData> postComment(@PathVariable int id,
+                                                 @RequestBody CommentRequest commentRequest,
+                                                 Principal principal) throws PostNotFoundException, CommentNotFoundException {
+        return commentService.postComment(id, commentRequest, principal);
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}")
     @Operation(summary = "Редактировать коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<CommentData>> putComment(@PathVariable int id,
-                                                                @PathVariable(name = "comment_id") int commentId,
-                                                                @RequestBody CommentRequest commentRequest,
-                                                                Principal principal) throws PostNotFoundException, CommentNotFoundException {
-        return new ResponseEntity<>(commentService.putComment(id, commentId, commentRequest, principal), HttpStatus.OK);
+    public DataResponse<CommentData> putComment(@PathVariable int id,
+                                                @PathVariable(name = "comment_id") int commentId,
+                                                @RequestBody CommentRequest commentRequest,
+                                                Principal principal) throws PostNotFoundException, CommentNotFoundException {
+        return commentService.putComment(id, commentId, commentRequest, principal);
     }
 
     @DeleteMapping("/post/{id}/comments/{comment_id}")
     @Operation(summary = "Удалить коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<CommentData>> deleteComment(@PathVariable int id,
-                                                                   @PathVariable(name = "comment_id") int commentId,
-                                                                   Principal principal) throws CommentNotFoundException {
-        return new ResponseEntity<>(commentService.deleteComment(commentId, principal), HttpStatus.OK);
+    public DataResponse<CommentData> deleteComment(@PathVariable int id,
+                                                   @PathVariable(name = "comment_id") int commentId,
+                                                   Principal principal) throws CommentNotFoundException {
+        return commentService.deleteComment(commentId, principal);
     }
 
     @PutMapping("/post/{id}/comments/{comment_id}/recover")
     @Operation(summary = "Восстановить коментарий", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<CommentData>> recoveryComment(@PathVariable int id,
-                                                                     @PathVariable(name = "comment_id") int commentId,
-                                                                     Principal principal) throws CommentNotFoundException {
-        return new ResponseEntity<>(commentService.recoveryComment(commentId, principal), HttpStatus.OK);
+    public DataResponse<CommentData> recoveryComment(@PathVariable int id,
+                                                     @PathVariable(name = "comment_id") int commentId,
+                                                     Principal principal) throws CommentNotFoundException {
+        return commentService.recoveryComment(commentId, principal);
     }
 
     @GetMapping("/post/{id}/comments")
     @Operation(summary = "Получить коментарии", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ListResponse<CommentData>> getFeeds(@RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                              @RequestParam(name = "itemPerPage", defaultValue = "5") int itemPerPage,
-                                                              @PathVariable int id,
-                                                              Principal principal) throws PostNotFoundException {
-        return new ResponseEntity<>(commentService.getPostComments(offset, itemPerPage, id, principal), HttpStatus.OK);
+    public ListResponse<CommentData> getFeeds(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                              @RequestParam(name = "itemPerPage", defaultValue = "5") int itemPerPage,
+                                              @PathVariable int id,
+                                              Principal principal) throws PostNotFoundException {
+        return commentService.getPostComments(offset, itemPerPage, id, principal);
     }
 }

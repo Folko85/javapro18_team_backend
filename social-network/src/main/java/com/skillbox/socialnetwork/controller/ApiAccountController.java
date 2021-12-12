@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,54 +30,55 @@ public class ApiAccountController {
 
     @PostMapping("/register")
     @Operation(summary = "Регистрация")
-    public ResponseEntity<AccountResponse> register(@RequestBody RegisterRequest registerRequest) throws UserExistException, MailjetException {
-        return new ResponseEntity<>(accountService.register(registerRequest), HttpStatus.OK);
+    public AccountResponse register(@RequestBody RegisterRequest registerRequest) throws UserExistException, MailjetException {
+        return accountService.register(registerRequest);
     }
 
     @PutMapping("/recovery")
     @Operation(summary = "Восстановление пароля")
-    public ResponseEntity<String> recoverySend(@RequestBody RecoveryRequest recoveryRequest) throws MailjetException {
-        return new ResponseEntity<>(accountService.sendRecoveryMessage(recoveryRequest), HttpStatus.OK);
+    public String recoverySend(@RequestBody RecoveryRequest recoveryRequest) throws MailjetException {
+        return accountService.sendRecoveryMessage(recoveryRequest);
     }
 
     @GetMapping("/recovery_complete")
     @Operation(summary = "Подтверждение восстановления пароля")
-    public ResponseEntity<String> recoveryComplete(@RequestParam String key,
-                                                   @RequestParam String eMail) throws MailjetException {
-        return new ResponseEntity<>(accountService.recoveryComplete(key, eMail), HttpStatus.OK);
+    public String recoveryComplete(@RequestParam String key,
+                                   @RequestParam String eMail) throws MailjetException {
+        return accountService.recoveryComplete(key, eMail);
     }
 
     @GetMapping("/registration_complete")
     @Operation(summary = "Подтверждение регистрации")
-    public ResponseEntity<String> registrationComplete(@RequestParam String key,
-                                                       @RequestParam String eMail) {
-        return new ResponseEntity<>(accountService.registrationComplete(key, eMail), HttpStatus.OK);
+    public String registrationComplete(@RequestParam String key,
+                                       @RequestParam String eMail) {
+        return accountService.registrationComplete(key, eMail);
     }
 
     @PutMapping("/email")
     @Operation(summary = "Смена email", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<AccountResponse> eMailChange(@RequestBody EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
-        return new ResponseEntity<>(accountService.changeEMail(eMailChangeRequest, principal), HttpStatus.OK);
+    public AccountResponse eMailChange(@RequestBody EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
+        return accountService.changeEMail(eMailChangeRequest, principal);
     }
 
     @PutMapping("/password/set")
     @Operation(summary = "Смена пароля", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<AccountResponse> passwdChange(@RequestBody PasswdChangeRequest passwdChangeRequest) {
-        return new ResponseEntity<>(accountService.changePasswd(passwdChangeRequest), HttpStatus.OK);
+    public AccountResponse passwdChange(@RequestBody PasswdChangeRequest passwdChangeRequest) {
+        return accountService.changePasswd(passwdChangeRequest);
     }
 
     @PutMapping("/notifications")
     @Operation(summary = "Настройка уведомлений", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<AccountResponse> putNotificationsSetting(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
-        return new ResponseEntity<>(accountService.setNotificationsSetting(notificationsRequest, principal), HttpStatus.OK);
+    public AccountResponse putNotificationsSetting(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
+        return accountService.setNotificationsSetting(notificationsRequest, principal);
     }
+
     @GetMapping("/notifications")
     @Operation(summary = "Уведомления", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ListResponse<NotificationSettingData>> getNotificationsSetting(Principal principal) {
-        return new ResponseEntity<>(accountService.getNotificationsSetting(principal), HttpStatus.OK);
+    public ListResponse<NotificationSettingData> getNotificationsSetting(Principal principal) {
+        return accountService.getNotificationsSetting(principal);
     }
 }

@@ -10,8 +10,6 @@ import com.skillbox.socialnetwork.service.FriendshipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,19 +29,19 @@ public class FriendshipController {
             description = "Получить список друзей", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ListResponse<AuthData>> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
-                                                             @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                             @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                             Principal principal) {
-        return new ResponseEntity<>(friendshipService.getFriends(name, offset, itemPerPage, principal), HttpStatus.OK);
+    public ListResponse<AuthData> findFriend(@RequestParam(name = "name", defaultValue = "") String name,
+                                             @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                             @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                             Principal principal) {
+        return friendshipService.getFriends(name, offset, itemPerPage, principal);
     }
 
     @Operation(summary = "Удаление пользователя",
             description = "Удаление пользователя из друзей", security = @SecurityRequirement(name = "jwt"))
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<FriendsResponse200> stopBeingFriends(@PathVariable int id, Principal principal) throws FriendshipNotFoundException {
-        return new ResponseEntity<>(friendshipService.stopBeingFriendsById(id, principal), HttpStatus.OK);
+    public FriendsResponse200 stopBeingFriends(@PathVariable int id, Principal principal) throws FriendshipNotFoundException {
+        return friendshipService.stopBeingFriendsById(id, principal);
 
     }
 
@@ -51,8 +49,8 @@ public class FriendshipController {
             description = "Принть/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<FriendsResponse200> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubscribingOnBlockerPersonException, DeletedAccountException, AddingOrSubscribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
-        return new ResponseEntity<>(friendshipService.addNewFriend(id, principal), HttpStatus.OK);
+    public FriendsResponse200 addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubscribingOnBlockerPersonException, DeletedAccountException, AddingOrSubscribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
+        return friendshipService.addNewFriend(id, principal);
 
     }
 
@@ -60,29 +58,29 @@ public class FriendshipController {
             description = "Получить список заявок", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/request")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ListResponse<AuthData>> getFriendsRequests(@RequestParam(name = "name", defaultValue = "") String name,
-                                                                     @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                                     @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                                     Principal principal) {
-        return new ResponseEntity<>(friendshipService.getFriendsRequests(name, offset, itemPerPage, principal), HttpStatus.OK);
+    public ListResponse<AuthData> getFriendsRequests(@RequestParam(name = "name", defaultValue = "") String name,
+                                                     @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                     @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                     Principal principal) {
+        return friendshipService.getFriendsRequests(name, offset, itemPerPage, principal);
     }
 
     @Operation(summary = "Рекомендации",
             description = "Получить список рекомендаций", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/recommendations")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ListResponse<AuthData>> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                                      @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                                      Principal principal) {
-        return new ResponseEntity<>(friendshipService.recommendedUsers(offset, itemPerPage, principal), HttpStatus.OK);
+    public ListResponse<AuthData> getRecommendedUsers(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                      @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                                      Principal principal) {
+        return friendshipService.recommendedUsers(offset, itemPerPage, principal);
     }
 
     @Operation(summary = "Являются ли пользователи друзьями",
             description = "Получить информацию является ли пользователь другом указанных пользователей", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/is/friends")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ResponseFriendsList> isFriends(@RequestBody IsFriends isFriends, Principal principal) {
-        return new ResponseEntity<>(friendshipService.isPersonsFriends(isFriends, principal), HttpStatus.OK);
+    public ResponseFriendsList isFriends(@RequestBody IsFriends isFriends, Principal principal) {
+        return friendshipService.isPersonsFriends(isFriends, principal);
     }
 
 }

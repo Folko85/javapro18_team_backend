@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.controller;
+package com.skillbox.socialnetwork.handler;
 
 import com.skillbox.socialnetwork.api.response.BadRequestResponse;
 import com.skillbox.socialnetwork.exception.*;

@@ -35,15 +35,15 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "Получение текущего пользователя", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<DataResponse<AuthData>> getMe(Principal principal) {
-        return new ResponseEntity<>(userService.getUserMe(principal), HttpStatus.OK);
+    public DataResponse<AuthData> getMe(Principal principal) {
+        return userService.getUserMe(principal);
     }
 
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получение пользователя по его id", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<DataResponse<AuthData>> getUserById(@PathVariable int id, Principal principal) {
-        return new ResponseEntity<>(userService.getUser(id, principal), HttpStatus.OK);
+    public DataResponse<AuthData> getUserById(@PathVariable int id, Principal principal) {
+        return userService.getUser(id, principal);
     }
 
     @PutMapping("/me")
@@ -56,40 +56,38 @@ public class UserController {
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Удалить профиль пользователя", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<AccountResponse> deleteUser(Principal principal) {
-        return new ResponseEntity<>(userService.deleteUser(principal), HttpStatus.OK);
+    public AccountResponse deleteUser(Principal principal) {
+        return userService.deleteUser(principal);
     }
 
     @PutMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Заблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<AccountResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
-        return new ResponseEntity<>(friendshipService.blockUser(principal, id), HttpStatus.OK);
+    public AccountResponse blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
+        return friendshipService.blockUser(principal, id);
     }
 
     @DeleteMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Разблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<AccountResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
-        return new ResponseEntity<>(friendshipService.unBlockUser(principal, id), HttpStatus.OK);
+    public AccountResponse unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
+        return friendshipService.unBlockUser(principal, id);
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Поиск пользователя", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<ListResponse<AuthData>> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
-                                                  @RequestParam(name = "last_name", defaultValue = "") String lastName,
-                                                  @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
-                                                  @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
-                                                  @RequestParam(name = "country", defaultValue = "") String country,
-                                                  @RequestParam(name = "city", defaultValue = "") String city,
-                                                  @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                  @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
-                                                  Principal principal) {
+    public ListResponse<AuthData> search(@RequestParam(name = "first_name", defaultValue = "") String firstName,
+                                         @RequestParam(name = "last_name", defaultValue = "") String lastName,
+                                         @RequestParam(name = "age_from", defaultValue = "-1") int ageFrom,
+                                         @RequestParam(name = "age_to", defaultValue = "-1") int ageTo,
+                                         @RequestParam(name = "country", defaultValue = "") String country,
+                                         @RequestParam(name = "city", defaultValue = "") String city,
+                                         @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                         @RequestParam(name = "itemPerPage", defaultValue = "20") int itemPerPage,
+                                         Principal principal) {
 
-        ListResponse<AuthData> listResponse = userService.searchPerson(firstName, lastName, ageFrom, ageTo,
+        return userService.searchPerson(firstName, lastName, ageFrom, ageTo,
                 country, city, offset, itemPerPage, principal);
-
-        return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
 }

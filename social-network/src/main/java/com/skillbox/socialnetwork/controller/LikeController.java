@@ -7,9 +7,8 @@ import com.skillbox.socialnetwork.exception.LikeNotFoundException;
 import com.skillbox.socialnetwork.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,7 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@io.swagger.v3.oas.annotations.tags.Tag(name = "Контроллер для работы с лайками")
+@Tag(name = "Контроллер для работы с лайками")
 @RequestMapping("/api/v1/")
 public class LikeController {
     private final LikeService likeService;
@@ -29,25 +28,25 @@ public class LikeController {
     @PutMapping("/likes")
     @Operation(summary = "Поставить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<LikeData>> putLikes(@RequestBody LikeRequest likeRequest,
-                                                           Principal principal) throws LikeNotFoundException {
-        return new ResponseEntity<>(likeService.putLikes(likeRequest, principal), HttpStatus.OK);
+    public DataResponse<LikeData> putLikes(@RequestBody LikeRequest likeRequest,
+                                           Principal principal) throws LikeNotFoundException {
+        return likeService.putLikes(likeRequest, principal);
     }
 
     @DeleteMapping("/likes")
     @Operation(summary = "Удалить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<LikeData>> deleteLikes(@RequestParam(name = "item_id") int itemId,
-                                                              @RequestParam(name = "type") String type,
-                                                              Principal principal) throws LikeNotFoundException {
-        return new ResponseEntity<>(likeService.deleteLike(itemId, type, principal), HttpStatus.OK);
+    public DataResponse<LikeData> deleteLikes(@RequestParam(name = "item_id") int itemId,
+                                              @RequestParam(name = "type") String type,
+                                              Principal principal) throws LikeNotFoundException {
+        return likeService.deleteLike(itemId, type, principal);
     }
 
     @GetMapping("/likes")
     @Operation(summary = "Получить лайки", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<DataResponse<LikeData>> getLikes(@RequestParam(name = "item_id") int itemId,
-                                                           @RequestParam(name = "type") String type) {
-        return new ResponseEntity<>(likeService.getLikes(itemId, type), HttpStatus.OK);
+    public DataResponse<LikeData> getLikes(@RequestParam(name = "item_id") int itemId,
+                                           @RequestParam(name = "type") String type) {
+        return likeService.getLikes(itemId, type);
     }
 }

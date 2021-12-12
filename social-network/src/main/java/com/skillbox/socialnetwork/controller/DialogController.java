@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,17 +28,17 @@ public class DialogController {
     @GetMapping("/dialogs")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получить диалоги", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<ListResponse<DialogData>> getDialogs(@RequestParam(name = "name", defaultValue = "") String name,
-                                                               @RequestParam(name = "offset", defaultValue = "0") int offset,
-                                                               @RequestParam(name = "itemPerPage", defaultValue = "1000") int itemPerPage,
-                                                               Principal principal) {
-        return new ResponseEntity<>(dialogService.getDialogs(name, offset, itemPerPage, principal), HttpStatus.OK);
+    public ListResponse<DialogData> getDialogs(@RequestParam(name = "name", defaultValue = "") String name,
+                                               @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                               @RequestParam(name = "itemPerPage", defaultValue = "1000") int itemPerPage,
+                                               Principal principal) {
+        return dialogService.getDialogs(name, offset, itemPerPage, principal);
     }
 
     @PostMapping("/dialogs")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Создать диалог", security = @SecurityRequirement(name = "jwt"))
-    public ResponseEntity<DataResponse<DialogData>> postDialog(@RequestBody DialogRequest dialogRequest, Principal principal) {
-        return new ResponseEntity<>(dialogService.postDialog(dialogRequest, principal), HttpStatus.OK);
+    public DataResponse<DialogData> postDialog(@RequestBody DialogRequest dialogRequest, Principal principal) {
+        return dialogService.postDialog(dialogRequest, principal);
     }
 }

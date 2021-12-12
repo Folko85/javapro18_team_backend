@@ -3,9 +3,7 @@ package com.skillbox.socialnetwork.service;
 import com.skillbox.socialnetwork.api.request.PostRequest;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
-import com.skillbox.socialnetwork.api.response.postdto.IdResponse;
 import com.skillbox.socialnetwork.api.response.postdto.PostData;
-import com.skillbox.socialnetwork.api.response.postdto.PostDataResponse;
 import com.skillbox.socialnetwork.entity.*;
 import com.skillbox.socialnetwork.exception.PostCreationExecption;
 import com.skillbox.socialnetwork.exception.PostNotFoundException;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -108,23 +105,14 @@ public class PostService {
         return getPostDataResponse(post, person);
     }
 
-    public PostDataResponse putPostIdRecover(int id, Principal principal) throws
+    public DataResponse<PostData> putPostIdRecover(int id, Principal principal) throws
             PostNotFoundException, UserAndAuthorEqualsException {
         Person person = findPerson(principal.getName());
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         if (!person.getId().equals(post.getPerson().getId())) throw new UserAndAuthorEqualsException();
         post.setDeleted(false);
         postRepository.saveAndFlush(post);
-
-        return getPostDataResponseForDeleted();
-    }
-
-    private PostDataResponse getPostDataResponseForDeleted() {
-        PostDataResponse postDataResponse = new PostDataResponse();
-        postDataResponse.setTimestamp(LocalDateTime.now().toInstant(UTC).toEpochMilli());
-        IdResponse idResponse = new IdResponse();
-        postDataResponse.setData(idResponse);
-        return postDataResponse;
+        return getPostDataResponse(post, person);
     }
 
     public ListResponse<PostData> getFeeds(String text, int offset, int itemPerPage, Principal principal) {
