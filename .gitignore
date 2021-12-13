@@ -41,3 +41,5 @@ build/
 /microservice/webpack.config.js
 /microservice/webpack.generated.js
 /microservice/package-lock.json
+/microservice/pnpmfile.js
+/microservice/pnpm-lock.yaml

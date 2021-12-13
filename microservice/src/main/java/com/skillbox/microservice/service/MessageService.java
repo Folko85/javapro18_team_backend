@@ -1,7 +1,6 @@
 package com.skillbox.microservice.service;
 
-import com.skillbox.microservice.dto.MessageDto;
-import com.skillbox.microservice.dto.TechnicalSupportClientDto;
+import com.skillbox.microservice.dto.SupportRequestDto;
 import com.skillbox.microservice.entity.Client;
 import com.skillbox.microservice.entity.Message;
 import com.skillbox.microservice.repository.ClientRepository;
@@ -9,6 +8,7 @@ import com.skillbox.microservice.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -27,7 +27,7 @@ public class MessageService {
         return messageList;
     }
 
-    public void saveMessage(MessageDto dto) {
+    public void saveMessage(SupportRequestDto dto) {
         Client c = getClientFromMessageDto(dto);
         Optional<Client> clientOptional = clientRepository.findByEmail(c.getEmail());
 
@@ -37,22 +37,20 @@ public class MessageService {
         messageRepository.save(messageOfSupport);
     }
 
-    private Client getClientFromMessageDto(MessageDto dto) {
+    private Client getClientFromMessageDto(SupportRequestDto dto) {
         Client client = new Client();
-        TechnicalSupportClientDto technicalSupportClientDto = dto.getClient();
-        client.setFirstName(technicalSupportClientDto.getFirstName());
-        client.setLastName(technicalSupportClientDto.getLastName());
-        client.setEmail(technicalSupportClientDto.getEMail());
+        client.setFirstName(dto.getFirstName());
+        client.setLastName(dto.getLastName());
+        client.setEmail(dto.getEmail());
         return client;
     }
 
-    private Message getMessageFromMessageDto(MessageDto dto, Client client) {
+    private Message getMessageFromMessageDto(SupportRequestDto dto, Client client) {
         Message messageOfSupport = new Message();
-        messageOfSupport.setDateOfApplication(dto.getDateOfApplication());
+        messageOfSupport.setDateOfApplication(LocalDateTime.now());
         messageOfSupport.setClient(client);
         messageOfSupport.setMessage(dto.getMessage());
         return messageOfSupport;
     }
-
 
 }

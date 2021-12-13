@@ -1,15 +1,17 @@
-package com.skillbox.socialnetwork.api.request.model;
+package com.skillbox.microservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
+@Accessors(chain = true)
 public class SupportRequestDto {
-    @JsonProperty ("e_mail")
+    @JsonProperty("e_mail")
     private String email;
     private String message;
-    @JsonProperty ("first_name")
+    @JsonProperty("first_name")
     private String firstName;
-    @JsonProperty ("last_name")
+    @JsonProperty("last_name")
     private String lastName;
 }

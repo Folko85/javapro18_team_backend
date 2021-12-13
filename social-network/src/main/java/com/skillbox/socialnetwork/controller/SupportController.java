@@ -1,6 +1,6 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.request.model.SupportRequestDto;
+import com.skillbox.socialnetwork.api.request.SupportRequestDto;
 import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.service.PusherService;
 import io.swagger.v3.oas.annotations.tags.Tag;
