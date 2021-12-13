@@ -1,6 +1,7 @@
 package com.skillbox.socialnetwork.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.skillbox.socialnetwork.config.property.RedisProperties;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +19,10 @@ import java.time.Duration;
 import java.util.UUID;
 
 @Configuration
+@AllArgsConstructor
 public class RedisConfig {
 
-    @Value("${spring.redis.host}")
-    private String host;
-    @Value("${spring.redis.port}")
-    private Integer port;
+    private final RedisProperties properties;
 
     @Bean
     public ChannelTopic topic() {
@@ -33,8 +32,8 @@ public class RedisConfig {
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-        configuration.setHostName(host);
-        configuration.setPort(port);
+        configuration.setHostName(properties.getHost());
+        configuration.setPort(properties.getPort());
         return new JedisConnectionFactory(configuration);
     }
 

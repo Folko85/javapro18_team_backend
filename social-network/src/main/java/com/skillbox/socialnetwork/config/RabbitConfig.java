@@ -3,6 +3,8 @@ package com.skillbox.socialnetwork.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.skillbox.socialnetwork.config.property.RabbitProperties;
+import lombok.AllArgsConstructor;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -14,14 +16,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitConfiguration {
+@AllArgsConstructor
+public class RabbitConfig {
+
+    private final RabbitProperties properties;
 
     @Bean
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory =
-                new CachingConnectionFactory("rabbitmq");
-        connectionFactory.setUsername("admin");
-        connectionFactory.setPassword("admin");
+                new CachingConnectionFactory(properties.getHost());
+        connectionFactory.setPort(properties.getPort());
+        connectionFactory.setUsername(properties.getUsername());
+        connectionFactory.setPassword(properties.getPassword());
         return connectionFactory;
     }
 
@@ -50,8 +56,8 @@ public class RabbitConfiguration {
     @Bean
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate template = new RabbitTemplate(connectionFactory());
-        template.setExchange("support");
-        template.setRoutingKey("support");
+        template.setExchange(properties.getExchange());
+        template.setRoutingKey(properties.getRoutingKey());
         template.setMessageConverter(commonJsonMessageConverter(defaultObjectMapper()));
         return template;
     }
@@ -59,16 +65,16 @@ public class RabbitConfiguration {
 
     @Bean
     Queue queue() {
-        return new Queue("support");
+        return new Queue(properties.getQueue());
     }
 
     @Bean
     DirectExchange exchange() {
-        return new DirectExchange("support");
+        return new DirectExchange(properties.getExchange());
     }
 
     @Bean
     Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("support");
+        return BindingBuilder.bind(queue).to(exchange).with(properties.getRoutingKey());
     }
 }
