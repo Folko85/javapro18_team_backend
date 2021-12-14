@@ -9,6 +9,12 @@
 <a href="https://github.com/Artemk70">Artemk70</a>
 
 Как это посмотреть:
-mvn clean package - чтобы сбилдить jar-файлы
-docker-compose up -d - чтобы проект поднялся 
-(P.S. Обычно поднимается не сразу, так как контейнеры зависят друг от друга)
+**mvn clean package** - чтобы сбилдить jar-файлы(модуль microservice может долго билдится, 
+так как под капотом идёт загрузка библиотек с помощью npm) 
+**docker-compose up -d** - чтобы проект поднялся 
+(P.S. Обычно поднимается долго, так как контейнеры зависят друг от друга. 
+Нужно дождаться загрузки проекта cloud-config)
+**Россыпь технологий:**
+Spring Boot, Spring Security, Spring Cloud Config, Hibernate, Liquibase, 
+RabbitMQ, Redis, SocketIO, Vaadin, Junit, Grafana, Prometheus, Loki, Promtail, 
+Lombok, Docker Compose, Maven
