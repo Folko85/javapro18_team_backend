@@ -20,6 +20,16 @@ spring:
       dialect: org.h2.Driver
       ddl-auto: update
 
+services:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: admin
+    password: admin
+    exchange: support
+    routingKey: support
+    queue: support
+
 jasypt:
   encryptor:
     bean: encryptorBean
