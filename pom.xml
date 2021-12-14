@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.18</groupId>
+    <groupId>com.skillbox</groupId>
     <artifactId>java-pro</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -29,13 +29,6 @@
         <module>zero-cloud-config</module>
         <module>microservice</module>
     </modules>
-    <dependencies>
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
-            <version>1.7.3</version>
-        </dependency>
-    </dependencies>
 
     <profiles>
         <profile>

@@ -103,8 +103,9 @@ public class AccountService {
     }
 
     public DataResponse<SuccessResponse> changeEMail(EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
-        if (personRepository.findByEMail(eMailChangeRequest.getEMail()).isPresent())
+        if (personRepository.findByEMail(eMailChangeRequest.getEMail()).isPresent()) {
             throw new UserExistException();
+        }
         Person person = findPerson(principal.getName());
         person.setEMail(eMailChangeRequest.getEMail());
         SecurityContextHolder.clearContext();

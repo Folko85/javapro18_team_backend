@@ -97,9 +97,6 @@ public class NotificationService {
             case FRIEND_REQUEST -> friendshipRepository.findById(notification.getEntityId())
                     .ifPresent(friendship -> notificationData.setEntityAuthor(setAuthData(friendship.getSrcPerson()))
                             .setEntityId(notificationData.getEntityAuthor().getId()));
-//            case MESSAGE -> messageRepository.findById(notification.getEntityId()).ifPresent(message -> notificationData.setEntityAuthor(setAuthData(message.getAuthor()))
-//                    .setEntityId(message.getId())
-//                    .setParentEntityId(message.getDialog().getId()));
         }
         return notificationData;
     }
