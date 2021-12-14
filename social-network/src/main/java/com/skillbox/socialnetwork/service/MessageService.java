@@ -1,9 +1,9 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.MessageRequest;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.dialogdto.CountData;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
 import com.skillbox.socialnetwork.entity.Message;
 import com.skillbox.socialnetwork.entity.Person;
@@ -22,9 +22,7 @@ import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -110,13 +108,10 @@ public class MessageService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
-    public AccountResponse getUnread(Principal principal) {
+    public DataResponse<CountData> getUnread(Principal principal) {
         Person person = findPerson(principal.getName());
-        AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(Instant.now());
-        Map<String, String> mapData = new HashMap<>();
-        mapData.put("count", person2DialogRepository.findUnreadMessagesCount(person.getId()).orElse(0).toString());
-        accountResponse.setData(mapData);
-        return accountResponse;
+        return new DataResponse<CountData>().setTimestamp(Instant.now())
+                .setData(new CountData()
+                        .setCount(person2DialogRepository.findUnreadMessagesCount(person.getId()).orElse(0).toString()));
     }
 }

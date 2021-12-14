@@ -2,8 +2,9 @@ package com.skillbox.socialnetwork.service;
 
 import com.mailjet.client.errors.MailjetException;
 import com.skillbox.socialnetwork.api.request.*;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.config.property.RegistrationProperties;
@@ -28,9 +29,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.*;
-
-import static com.skillbox.socialnetwork.service.FriendshipService.getSuccessAccountResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -42,7 +43,7 @@ public class AccountService {
     private final RegistrationProperties registrationProperties;
     private final NotificationSettingRepository notificationSettingRepository;
 
-    public AccountResponse register(RegisterRequest registerRequest) throws UserExistException, MailjetException {
+    public DataResponse<SuccessResponse> register(RegisterRequest registerRequest) throws UserExistException, MailjetException {
         if (personRepository.findByEMail(registerRequest.getEMail()).isPresent())
             throw new UserExistException();
         Person person = new Person();
@@ -64,7 +65,8 @@ public class AccountService {
         }
         person.setRole(Role.USER);
         personRepository.save(person);
-        return getAccountResponse();
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
+
     }
 
     public String sendRecoveryMessage(RecoveryRequest recoveryRequest) throws MailjetException {
@@ -100,18 +102,18 @@ public class AccountService {
         return "Аккаунт подтверждён";
     }
 
-    public AccountResponse changeEMail(EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
+    public DataResponse<SuccessResponse> changeEMail(EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
         if (personRepository.findByEMail(eMailChangeRequest.getEMail()).isPresent())
             throw new UserExistException();
         Person person = findPerson(principal.getName());
         person.setEMail(eMailChangeRequest.getEMail());
         SecurityContextHolder.clearContext();
         personRepository.save(person);
-        return getAccountResponse();
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
 
     }
 
-    public AccountResponse setNotificationsSetting(NotificationsRequest notificationsRequest, Principal principal) {
+    public DataResponse<SuccessResponse> setNotificationsSetting(NotificationsRequest notificationsRequest, Principal principal) {
         Person person = findPerson(principal.getName());
         NotificationSetting notificationSetting = notificationSettingRepository.findNotificationSettingByPersonId(person.getId())
                 .orElse(new NotificationSetting().setFriendsRequest(true).setCommentComment(true).setPostComment(true).setPerson(person));
@@ -121,7 +123,7 @@ public class AccountService {
             case COMMENT_COMMENT -> notificationSetting.setCommentComment(notificationsRequest.isEnable());
         }
         notificationSettingRepository.save(notificationSetting);
-        return getAccountResponse();
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
     public ListResponse<NotificationSettingData> getNotificationsSetting(Principal principal) {
@@ -141,21 +143,17 @@ public class AccountService {
         return dataResponse;
     }
 
-    public AccountResponse changePasswd(PasswdChangeRequest passwdChangeRequest) {
+    public DataResponse<SuccessResponse> changePasswd(PasswdChangeRequest passwdChangeRequest) {
         Person person = findPerson(jwtProvider.getLoginFromToken(passwdChangeRequest.getToken()));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
         person.setPassword(passwordEncoder.encode(passwdChangeRequest.getPassword()));
         personRepository.save(person);
-        return getAccountResponse();
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
     private Person findPerson(String eMail) {
         return personRepository.findByEMail(eMail)
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
-    }
-
-    static AccountResponse getAccountResponse() {
-        return getSuccessAccountResponse();
     }
 
 }

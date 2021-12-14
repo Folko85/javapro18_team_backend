@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.postdto.TagDto;
 import com.skillbox.socialnetwork.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +41,7 @@ public class TagController {
     @DeleteMapping
     @Operation(summary = "Удалить тег", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public AccountResponse deleteTag(@RequestParam Integer id) {
+    public DataResponse<SuccessResponse> deleteTag(@RequestParam Integer id) {
         return tagService.deleteTag(id);
     }
 }

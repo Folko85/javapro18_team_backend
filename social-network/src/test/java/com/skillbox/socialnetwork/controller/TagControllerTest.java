@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.Instant;
@@ -94,8 +93,7 @@ class TagControllerTest extends AbstractTest {
                         .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("nothing"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"));
     }
 
     @Test
@@ -116,8 +114,7 @@ class TagControllerTest extends AbstractTest {
                         .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("ok"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("tag use in another posts"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.message").value("tag use in another posts"));
     }
 
 }

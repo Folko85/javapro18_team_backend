@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.MessagesPermission;
@@ -29,9 +29,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.time.ZoneOffset.UTC;
@@ -145,20 +143,14 @@ public class UserService {
         return response;
     }
 
-    public AccountResponse deleteUser(Principal principal) {
+    public DataResponse<SuccessResponse> deleteUser(Principal principal) {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
         person.setDeleted(true);
         person.setDeletedTimestamp(LocalDateTime.now());
         personRepository.save(person);
-        AccountResponse userDeleteResponse = new AccountResponse();
-        userDeleteResponse.setTimestamp(Instant.now());
-        userDeleteResponse.setError("string");
-        Map<String, String> dateMap = new HashMap<>();
-        dateMap.put("message", "ok");
-        userDeleteResponse.setData(dateMap);
         SecurityContextHolder.clearContext();
-        return userDeleteResponse;
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
     public AuthData convertUserToUserRest(Person person) {

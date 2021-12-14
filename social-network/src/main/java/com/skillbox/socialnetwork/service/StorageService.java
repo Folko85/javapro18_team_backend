@@ -3,8 +3,8 @@ package com.skillbox.socialnetwork.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.config.property.CloudinaryProperties;
 import com.skillbox.socialnetwork.entity.Person;
@@ -24,8 +24,6 @@ import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -85,15 +83,10 @@ public class StorageService {
                 "api_secret", cloudinaryProperties.getSecret())));
     }
 
-    public AccountResponse deleteImage(int id) throws ApiConnectException {
+    public DataResponse<SuccessResponse> deleteImage(int id) throws ApiConnectException {
         String url = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла")).getUrl();
         deleteImageByUrl(url);
-        AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
-        Map<String, String> dateMap = new HashMap<>();
-        dateMap.put("message", "file successfully deleted");
-        accountResponse.setData(dateMap);
-        return accountResponse;
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
     public void deleteImageByUrl(String url) throws ApiConnectException {

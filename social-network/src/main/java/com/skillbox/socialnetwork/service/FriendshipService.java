@@ -1,8 +1,9 @@
 package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.IsFriends;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
 import com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends.ResponseFriendsList;
@@ -23,7 +24,6 @@ import com.skillbox.socialnetwork.repository.PersonRepository;
 import io.jsonwebtoken.lang.Strings;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,8 +40,10 @@ import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
@@ -248,7 +250,7 @@ public class FriendshipService {
      * <p>
      * CacheEvictAble(value = "recommendedPersonsCache", key = "#email")
      */
-    public AccountResponse blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
+    public DataResponse<SuccessResponse> blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         Person current = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
         if (current.getId() == id) throw new UserBlocksHimSelfException();
         Person blocking = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -279,9 +281,8 @@ public class FriendshipService {
             }
         } else {
             throw new BlockAlreadyExistsException();
-
         }
-        return getSuccessAccountResponse();
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
     public void createFriendship(Person src, Person dest, FriendshipStatusCode friendshipStatusCode) {
@@ -297,7 +298,7 @@ public class FriendshipService {
 
     }
 
-    public AccountResponse unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
+    public DataResponse<SuccessResponse> unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         Person current = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
         if (current.getId() == id) throw new UserUnBlocksHimSelfException();
         Person unblocking = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -324,19 +325,8 @@ public class FriendshipService {
             }
             friendshipStatusRepository.save(friendship.getStatus());
             friendshipRepository.save(friendship);
-
         }
-        return getSuccessAccountResponse();
-
-    }
-
-    static AccountResponse getSuccessAccountResponse() {
-        AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setTimestamp(ZonedDateTime.now().toInstant());
-        Map<String, String> dateMap = new HashMap<>();
-        dateMap.put("message", "ok");
-        accountResponse.setData(dateMap);
-        return accountResponse;
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
     /**

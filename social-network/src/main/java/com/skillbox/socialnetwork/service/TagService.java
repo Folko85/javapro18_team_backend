@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.service;
 
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.postdto.TagDto;
 import com.skillbox.socialnetwork.entity.Post;
 import com.skillbox.socialnetwork.entity.Tag;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,20 +54,16 @@ public class TagService {
     }
 
 
-    public AccountResponse deleteTag(int id) {
+    public DataResponse<SuccessResponse> deleteTag(int id) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tag is not exist"));
         Set<Post> postsWithTag = postRepository.findPostsByTag(tag.getTag());
-        AccountResponse response = new AccountResponse();
+        String response = "ok";
         if (postsWithTag.isEmpty()) {
             tagRepository.deleteById(id);
-            response.setError("nothing");
         } else {
-            response.setError("tag use in another posts");
+            response = "tag use in another posts";
         }
-        response.setData(Map.of("message", "ok"));
-        response.setTimestamp(Instant.now());
-
-        return response;
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage(response));
     }
 }

@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.service.FriendshipService;
@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,21 +54,21 @@ public class UserController {
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Удалить профиль пользователя", security = @SecurityRequirement(name = "jwt"))
-    public AccountResponse deleteUser(Principal principal) {
+    public DataResponse<SuccessResponse> deleteUser(Principal principal) {
         return userService.deleteUser(principal);
     }
 
     @PutMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Заблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
-    public AccountResponse blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
+    public DataResponse<SuccessResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         return friendshipService.blockUser(principal, id);
     }
 
     @DeleteMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Разблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
-    public AccountResponse unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
+    public DataResponse<SuccessResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         return friendshipService.unBlockUser(principal, id);
     }
 

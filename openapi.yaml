@@ -21,38 +21,10 @@ components:
         data: {$ref: '#/components/schemas/AuthData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
-    ListResponsePostData:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/PostData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    DataResponseDialogData:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/DialogData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
     MessageRequest:
       type: object
       properties:
         message_text: {type: string}
-    ListResponseDialogData:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/DialogData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
     SupportRequestDto:
       type: object
       properties:
@@ -60,31 +32,6 @@ components:
         last_name: {type: string}
         message: {type: string}
         first_name: {type: string}
-    DataResponsePostData:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/PostData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    CommentData:
-      type: object
-      properties:
-        comment_text: {type: string}
-        is_blocked: {type: boolean}
-        images:
-          type: array
-          items: {$ref: '#/components/schemas/ImageDto'}
-        is_deleted: {type: boolean}
-        post_id: {format: int32, type: integer}
-        my_like: {type: boolean}
-        author: {$ref: '#/components/schemas/AuthData'}
-        parent_id: {format: int32, type: integer}
-        id: {format: int32, type: integer}
-        time: {format: date-time, type: string}
-        sub_comments:
-          type: array
-          items: {$ref: '#/components/schemas/CommentData'}
-        likes: {format: int32, type: integer}
     ListResponsePlaceDto:
       type: object
       properties:
@@ -96,11 +43,6 @@ components:
           items: {$ref: '#/components/schemas/PlaceDto'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
-    LoginRequest:
-      type: object
-      properties:
-        password: {type: string}
-        email: {type: string}
     LikeData:
       type: object
       properties:
@@ -137,20 +79,6 @@ components:
           items: {$ref: '#/components/schemas/CommentData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
-    EMailChangeRequest:
-      type: object
-      properties:
-        email: {type: string}
-    DataResponseMessageData:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/MessageData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    RecoveryRequest:
-      type: object
-      properties:
-        email: {type: string}
     LanguageDto:
       type: object
       properties:
@@ -163,12 +91,6 @@ components:
           type: string
           enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
         enable: {type: boolean}
-    TagDto:
-      description: Список городов
-      type: object
-      properties:
-        id: {format: int32, description: Идентификатор тэга, type: integer}
-        tag: {description: Собственно тэг, type: string}
     ListResponseAuthData:
       type: object
       properties:
@@ -178,17 +100,6 @@ components:
         data:
           type: array
           items: {$ref: '#/components/schemas/AuthData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    ListResponseLanguageDto:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/LanguageDto'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
     DialogRequest:
@@ -222,27 +133,10 @@ components:
           type: string
           enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
         enable: {type: boolean}
-    PlaceDto:
-      description: Список городов
+    SuccessResponse:
       type: object
       properties:
-        id: {format: int32, description: Идентификатор города/страны, type: integer}
-        title: {description: Название города/страны, type: string}
-    ResponseFriendsList:
-      type: object
-      properties:
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/StatusFriend'}
-    RegisterRequest:
-      type: object
-      properties:
-        firstName: {type: string}
-        lastName: {type: string}
-        code: {type: string}
-        passwd1: {type: string}
-        email: {type: string}
-        passwd2: {type: string}
+        message: {type: string}
     FriendsResponse200:
       type: object
       properties:
@@ -275,22 +169,6 @@ components:
       properties:
         item_id: {format: int32, type: integer}
         type: {type: string}
-    MessageData:
-      type: object
-      properties:
-        message_text: {type: string}
-        sendByMe: {type: boolean}
-        read_status: {type: string}
-        dialog_id: {format: int32, type: integer}
-        id: {format: int32, type: integer}
-        time: {format: date-time, type: string}
-        author_id: {format: int32, type: integer}
-    DataResponseImageDto:
-      type: object
-      properties:
-        data: {$ref: '#/components/schemas/ImageDto'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
     ListResponseMessageData:
       type: object
       properties:
@@ -300,17 +178,6 @@ components:
         data:
           type: array
           items: {$ref: '#/components/schemas/MessageData'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    ListResponseNotificationData:
-      type: object
-      properties:
-        total: {format: int32, type: integer}
-        perPage: {format: int32, type: integer}
-        offset: {format: int32, type: integer}
-        data:
-          type: array
-          items: {$ref: '#/components/schemas/NotificationData'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
     PasswdChangeRequest:
@@ -330,6 +197,164 @@ components:
       type: object
       properties:
         data: {$ref: '#/components/schemas/LikeData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ImageDto:
+      type: object
+      properties:
+        id: {description: Идентификатор изображения, type: string}
+        url: {description: Имя файла, type: string}
+    DataResponseCountData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/CountData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponsePostData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/PostData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DataResponseDialogData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    CountData:
+      type: object
+      properties:
+        count: {type: string}
+    ListResponseDialogData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/DialogData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DataResponsePostData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/PostData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    CommentData:
+      type: object
+      properties:
+        comment_text: {type: string}
+        is_blocked: {type: boolean}
+        images:
+          type: array
+          items: {$ref: '#/components/schemas/ImageDto'}
+        is_deleted: {type: boolean}
+        post_id: {format: int32, type: integer}
+        my_like: {type: boolean}
+        author: {$ref: '#/components/schemas/AuthData'}
+        parent_id: {format: int32, type: integer}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        sub_comments:
+          type: array
+          items: {$ref: '#/components/schemas/CommentData'}
+        likes: {format: int32, type: integer}
+    LoginRequest:
+      type: object
+      properties:
+        password: {type: string}
+        email: {type: string}
+    EMailChangeRequest:
+      type: object
+      properties:
+        email: {type: string}
+    DataResponseMessageData:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/MessageData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    RecoveryRequest:
+      type: object
+      properties:
+        email: {type: string}
+    TagDto:
+      description: Список городов
+      type: object
+      properties:
+        id: {format: int32, description: Идентификатор тэга, type: integer}
+        tag: {description: Собственно тэг, type: string}
+    ListResponseLanguageDto:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/LanguageDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    PlaceDto:
+      description: Список городов
+      type: object
+      properties:
+        id: {format: int32, description: Идентификатор города/страны, type: integer}
+        title: {description: Название города/страны, type: string}
+    ResponseFriendsList:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/StatusFriend'}
+    RegisterRequest:
+      type: object
+      properties:
+        firstName: {type: string}
+        lastName: {type: string}
+        code: {type: string}
+        passwd1: {type: string}
+        email: {type: string}
+        passwd2: {type: string}
+    MessageData:
+      type: object
+      properties:
+        message_text: {type: string}
+        sendByMe: {type: boolean}
+        read_status: {type: string}
+        dialog_id: {format: int32, type: integer}
+        id: {format: int32, type: integer}
+        time: {format: date-time, type: string}
+        author_id: {format: int32, type: integer}
+    DataResponseImageDto:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/ImageDto'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    ListResponseNotificationData:
+      type: object
+      properties:
+        total: {format: int32, type: integer}
+        perPage: {format: int32, type: integer}
+        offset: {format: int32, type: integer}
+        data:
+          type: array
+          items: {$ref: '#/components/schemas/NotificationData'}
+        error: {type: string}
+        timestamp: {format: date-time, type: string}
+    DataResponseSuccessResponse:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/SuccessResponse'}
         error: {type: string}
         timestamp: {format: date-time, type: string}
     IsFriends:
@@ -354,23 +379,10 @@ components:
         tags:
           type: array
           items: {type: string}
-    ImageDto:
-      type: object
-      properties:
-        id: {description: Идентификатор изображения, type: string}
-        url: {description: Имя файла, type: string}
     DataResponseTagDto:
       type: object
       properties:
         data: {$ref: '#/components/schemas/TagDto'}
-        error: {type: string}
-        timestamp: {format: date-time, type: string}
-    AccountResponse:
-      type: object
-      properties:
-        data:
-          additionalProperties: {type: string}
-          type: object
         error: {type: string}
         timestamp: {format: date-time, type: string}
     ListResponseTagDto:
@@ -502,7 +514,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       tags: [Запросы в техническую поддержку]
   /api/v1/friends/request:
     get:
@@ -558,7 +570,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       parameters:
       - schema: {format: int32, type: integer}
         in: path
@@ -604,7 +616,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       tags: [Контроллер для работы с профилем]
     put:
       summary: Обновить профиль пользователя
@@ -903,7 +915,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/post/{id}/recover:
     put:
@@ -916,7 +928,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {type: object}
+              schema: {$ref: '#/components/schemas/DataResponsePostData'}
       parameters:
       - schema: {format: int32, type: integer}
         in: path
@@ -1011,7 +1023,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/post/{id}/comments:
     post:
@@ -1183,7 +1195,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseCountData'}
       tags: [Контроллер сообщений]
   /api/v1/tags:
     post:
@@ -1238,7 +1250,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       parameters:
       - schema: {format: int32, type: integer}
         in: query
@@ -1261,7 +1273,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/dialogs:
     post:
@@ -1322,7 +1334,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       tags: [Контроллер для работы с созданием учётной записи и безопасностью]
   /api/v1/post/{id}:
     get:
@@ -1396,7 +1408,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       parameters:
       - schema: {format: int32, type: integer}
         in: path
@@ -1413,7 +1425,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       parameters:
       - schema: {format: int32, type: integer}
         in: path
@@ -1429,7 +1441,7 @@ paths:
           description: OK
           content:
             '*/*':
-              schema: {$ref: '#/components/schemas/AccountResponse'}
+              schema: {$ref: '#/components/schemas/DataResponseSuccessResponse'}
       tags: [Контроллер для авторизации]
   /api/v1/post/{id}/comments/{comment_id}/recover:
     put:

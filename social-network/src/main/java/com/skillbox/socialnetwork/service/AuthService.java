@@ -2,8 +2,8 @@ package com.skillbox.socialnetwork.service;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
 import com.skillbox.socialnetwork.api.request.socketio.AuthRequest;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.security.JwtProvider;
 import com.skillbox.socialnetwork.entity.Person;
@@ -18,12 +18,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.skillbox.socialnetwork.service.AccountService.getAccountResponse;
 import static com.skillbox.socialnetwork.service.UserService.deletedImage;
 import static java.time.ZoneOffset.UTC;
 
@@ -62,9 +61,9 @@ public class AuthService {
     }
 
 
-    public AccountResponse logout() {
+    public DataResponse<SuccessResponse> logout() {
         SecurityContextHolder.clearContext();
-        return getAccountResponse();
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
 
     }
 

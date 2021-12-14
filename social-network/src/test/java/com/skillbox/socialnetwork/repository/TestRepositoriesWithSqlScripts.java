@@ -1,6 +1,6 @@
 package com.skillbox.socialnetwork.repository;
 
-import com.skillbox.socialnetwork.AbstractTestsWithSqlScripts;
+import com.skillbox.socialnetwork.AbstractTest;
 import com.skillbox.socialnetwork.NetworkApplication;
 import com.skillbox.socialnetwork.entity.Friendship;
 import com.skillbox.socialnetwork.entity.Person;
@@ -12,11 +12,16 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
@@ -26,7 +31,7 @@ import java.util.stream.Collectors;
 @SpringBootTest(classes = {NetworkApplication.class})
 @AutoConfigureMockMvc
 @Slf4j
-public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts {
+public class TestRepositoriesWithSqlScripts extends AbstractTest {
 
     @Autowired
     FriendshipRepository friendshipRepository;
@@ -39,6 +44,9 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
     @Autowired
     FriendshipService friendshipService;
+
+    @Autowired
+    DataSource dataSource;
 
     //Пользователи с этими почтами заблокировали с почтой blockedEmail
     private static final String[] blockersEmails = {
@@ -68,22 +76,23 @@ public class TestRepositoriesWithSqlScripts extends AbstractTestsWithSqlScripts 
 
     private static final List<Integer> blockersIds = new ArrayList<>();
     private static final List<Integer> whitePersonsIds = new ArrayList<>();
-    private static final List<Integer> banlistForRecomendationsIds = new ArrayList<>();
     private static Person target;
 
     @BeforeEach
-    public void setUpData(@Autowired PersonRepository personRepository) {
-
+    public void setup() {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("insert-25-persons.sql"));
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("insert-30-posts.sql"));
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("insert-friendships.sql"));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         for (String blockersEmail : blockersEmails) {
             blockersIds.add(personRepository.findByEMail(blockersEmail).get().getId());
         }
 
         for (String x : whitePersons) {
             whitePersonsIds.add(personRepository.findByEMail(x).get().getId());
-        }
-
-        for (String banlistForRecomendations : banlistForRecomendations) {
-            banlistForRecomendationsIds.add(personRepository.findByEMail(banlistForRecomendations).get().getId());
         }
 
         //Target Person

@@ -1,7 +1,7 @@
 package com.skillbox.socialnetwork.controller;
 
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.platformdto.ImageDto;
 import com.skillbox.socialnetwork.exception.ApiConnectException;
 import com.skillbox.socialnetwork.service.StorageService;
@@ -35,7 +35,7 @@ public class StorageController {
     @DeleteMapping("/api/v1/storage/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Удаление изображения", security = @SecurityRequirement(name = "jwt"))
-    public AccountResponse deleteImage(@PathVariable int id) throws ApiConnectException {
+    public DataResponse<SuccessResponse> deleteImage(@PathVariable int id) throws ApiConnectException {
         return storageService.deleteImage(id);
     }
 

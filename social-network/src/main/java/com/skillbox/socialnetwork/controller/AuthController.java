@@ -1,8 +1,8 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.LoginRequest;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +30,7 @@ public class AuthController {
 
     @GetMapping("/logout")
     @Operation(summary = "logout")
-    public AccountResponse logout() {
+    public DataResponse<SuccessResponse> logout() {
         return authService.logout();
     }
 }

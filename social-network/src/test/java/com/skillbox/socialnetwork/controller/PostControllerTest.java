@@ -92,7 +92,7 @@ public class PostControllerTest extends AbstractTest {
         post.setTitle("Title");
         post.setPostText("Some Text. hi bro");
         post.setDatetime(Instant.now());
-        Person test2 =getPerson("newUser", "test2@test.ru", "password");
+        Person test2 = getPerson("newUser", "test2@test.ru", "password");
         post.setPerson(test2);
         postRepository.save(post);
         mockMvc.perform(MockMvcRequestBuilders

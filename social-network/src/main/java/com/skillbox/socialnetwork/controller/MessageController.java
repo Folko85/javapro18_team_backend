@@ -1,9 +1,9 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.MessageRequest;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.dialogdto.CountData;
 import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
 import com.skillbox.socialnetwork.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +50,7 @@ public class MessageController {
     @GetMapping("/dialogs/unreaded")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получить непрочитанные", security = @SecurityRequirement(name = "jwt"))
-    public AccountResponse getUnread(Principal principal) {
+    public DataResponse<CountData> getUnread(Principal principal) {
         return messageService.getUnread(principal);
     }
 }

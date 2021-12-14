@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {NetworkApplication.class})
@@ -43,8 +42,6 @@ class CommentControllerTest extends AbstractTest {
     @Autowired
     private PostRepository postRepository;
 
-    private Person person;
-
     private Post post;
 
     private PostComment postComment;
@@ -53,7 +50,7 @@ class CommentControllerTest extends AbstractTest {
     @BeforeEach
     public void setup() {
         super.setup();
-        person = new Person();
+        Person person = new Person();
         person.setPassword("password");
         person.setFirstName("Valera");
         person.setLastName("Jma");

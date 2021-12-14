@@ -2,8 +2,9 @@ package com.skillbox.socialnetwork.controller;
 
 import com.mailjet.client.errors.MailjetException;
 import com.skillbox.socialnetwork.api.request.*;
-import com.skillbox.socialnetwork.api.response.AccountResponse;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData;
 import com.skillbox.socialnetwork.exception.UserExistException;
 import com.skillbox.socialnetwork.service.AccountService;
@@ -30,7 +31,7 @@ public class ApiAccountController {
 
     @PostMapping("/register")
     @Operation(summary = "Регистрация")
-    public AccountResponse register(@RequestBody RegisterRequest registerRequest) throws UserExistException, MailjetException {
+    public DataResponse<SuccessResponse> register(@RequestBody RegisterRequest registerRequest) throws UserExistException, MailjetException {
         return accountService.register(registerRequest);
     }
 
@@ -57,21 +58,21 @@ public class ApiAccountController {
     @PutMapping("/email")
     @Operation(summary = "Смена email", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public AccountResponse eMailChange(@RequestBody EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
+    public DataResponse<SuccessResponse> eMailChange(@RequestBody EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
         return accountService.changeEMail(eMailChangeRequest, principal);
     }
 
     @PutMapping("/password/set")
     @Operation(summary = "Смена пароля", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public AccountResponse passwdChange(@RequestBody PasswdChangeRequest passwdChangeRequest) {
+    public DataResponse<SuccessResponse> passwdChange(@RequestBody PasswdChangeRequest passwdChangeRequest) {
         return accountService.changePasswd(passwdChangeRequest);
     }
 
     @PutMapping("/notifications")
     @Operation(summary = "Настройка уведомлений", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public AccountResponse putNotificationsSetting(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
+    public DataResponse<SuccessResponse> putNotificationsSetting(@RequestBody NotificationsRequest notificationsRequest, Principal principal) {
         return accountService.setNotificationsSetting(notificationsRequest, principal);
     }
 
