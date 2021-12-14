@@ -36,24 +36,6 @@ registration:
     need: false
     url: "http://195.234.208.58:8086/api/v1/account/registration_complete"
 
-cloud:
-  aws:
-    credentials:
-      access-key: bjwgIspnfqIQsSEvsivr
-      secret-key: ct15ZUAOTO0ARY-_bCB4QmlR2IREqDpbGgMN7Z1b
-    sns:
-      enabled: false #Amazon SNS disabling
-    s3:
-      region: ${cloud.yandex.region} #This need for run application
-    sqs:
-      endpoint: https://message-queue.api.cloud.yandex.net/ #endpoint from yandex cloud documentation
-  yandex:
-    region: ru-central1 #region from yandex.cloud documentation
-message:
-  queue:
-    outgoing: support_message_queue
-
-
 external:
   vk:
     id: ENC(m7rHhgvZf1a3XykimmtX9A==)
