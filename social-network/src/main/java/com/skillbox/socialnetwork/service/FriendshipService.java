@@ -156,7 +156,6 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
-    @Cacheable(value = "recommendedPersonsCache", key = "#principal.getName")
     public ListResponse<AuthData> recommendedUsers(int offset, int itemPerPage, Principal principal) {
         log.info("метод получения рекомендованных друзей для пользователя {} ", principal.getName());
         Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));

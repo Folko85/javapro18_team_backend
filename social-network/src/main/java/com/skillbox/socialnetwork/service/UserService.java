@@ -112,7 +112,6 @@ public class UserService {
 
     }
 
-    @CacheEvict(value = "personProfileCache", key = "#principal.getName")
     public DataResponse<AuthData> updateUser(AuthData updates, Principal principal) throws ApiConnectException {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
