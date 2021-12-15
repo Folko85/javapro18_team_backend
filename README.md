@@ -18,3 +18,9 @@
 Spring Boot, Spring Security, Spring Cloud Config, Hibernate, Liquibase, 
 RabbitMQ, Redis, SocketIO, Vaadin, Junit, Grafana, Prometheus, Loki, Promtail, 
 Lombok, Docker Compose, Maven
+
+ToDo:
+2. Сделать инструкцию по работе с графаной.
+3. Поменять редис на другой контейнер для кэша(Ignite?) или вообще убрать
+4. Убрать вторую базу mySQL (пусть данные хранятся в mongoDB)
+5. Добавить в проект кафку для обратного ответа от микросервиса
