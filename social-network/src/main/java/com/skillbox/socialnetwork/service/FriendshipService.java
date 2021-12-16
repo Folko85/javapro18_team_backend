@@ -5,9 +5,8 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
-import com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends.ResponseFriendsList;
-import com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends.StatusFriend;
+import com.skillbox.socialnetwork.api.response.friendsdto.ResponseFriendsList;
+import com.skillbox.socialnetwork.api.response.friendsdto.StatusFriend;
 import com.skillbox.socialnetwork.api.response.socketio.AuthorData;
 import com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData;
 import com.skillbox.socialnetwork.entity.Friendship;
@@ -26,7 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -69,7 +67,7 @@ public class FriendshipService {
         return getPersonResponse(offset, itemPerPage, friendsPage);
     }
 
-    public FriendsResponse200 stopBeingFriendsById(int id, Principal principal) throws FriendshipNotFoundException {
+    public DataResponse<SuccessResponse> stopBeingFriendsById(int id, Principal principal) throws FriendshipNotFoundException {
         log.debug("метод удаления из друзей");
 
         Person srcPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
@@ -80,14 +78,10 @@ public class FriendshipService {
                 .setStatus(friendshipStatusRepository
                         .save(friendship.getStatus()).setCode(FriendshipStatusCode.SUBSCRIBED));
         friendshipRepository.save(friendship);
-
-        return getFriendResponse200("Stop being friends");
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
-    /**
-     * CacheEvictAble(value = "recommendedPersonsCache", key = "#email")
-     */
-    public FriendsResponse200 addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubscribingOnBlockerPersonException, AddingYourselfToFriends, FriendshipExistException, AddingOrSubscribingOnBlockedPersonException {
+    public DataResponse<SuccessResponse> addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubscribingOnBlockerPersonException, AddingYourselfToFriends, FriendshipExistException, AddingOrSubscribingOnBlockedPersonException {
         log.debug("метод добавления в друзья");
 
         Person srcPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
@@ -137,15 +131,13 @@ public class FriendshipService {
                 recommendations.evict(srcPerson.getEMail());
                 recommendations.evict(dstPerson.getEMail());
             }
-            //Notification
             if (notificationSettingRepository.findNotificationSettingByPersonId(newFriendship.getDstPerson().getId())
                     .orElse(new NotificationSetting().setFriendsRequest(true)).isFriendsRequest()) {
                 notificationService.createNotification(newFriendship.getDstPerson(), newFriendship.getId(), NotificationType.FRIEND_REQUEST);
                 sendNotification(newFriendship);
             }
-            //Notification
         }
-        return getFriendResponse200("Adding to friends");
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
     public ListResponse<AuthData> getFriendsRequests(String name, int offset, int itemPerPage, Principal principal) {
@@ -232,14 +224,6 @@ public class FriendshipService {
             personDataList.add(personData);
         });
         return personDataList;
-    }
-
-    private FriendsResponse200 getFriendResponse200(String message) {
-        FriendsResponse200 response = new FriendsResponse200();
-        response.setTimestamp(LocalDateTime.now());
-        response.setError("Successfully");
-        response.setMessage(message);
-        return response;
     }
 
     /**

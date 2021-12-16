@@ -1,10 +1,11 @@
 package com.skillbox.socialnetwork.controller;
 
 import com.skillbox.socialnetwork.api.request.IsFriends;
+import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.api.response.friendsdto.FriendsResponse200;
-import com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends.ResponseFriendsList;
+import com.skillbox.socialnetwork.api.response.friendsdto.ResponseFriendsList;
 import com.skillbox.socialnetwork.exception.*;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +41,7 @@ public class FriendshipController {
             description = "Удаление пользователя из друзей", security = @SecurityRequirement(name = "jwt"))
     @DeleteMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public FriendsResponse200 stopBeingFriends(@PathVariable int id, Principal principal) throws FriendshipNotFoundException {
+    public DataResponse<SuccessResponse> stopBeingFriends(@PathVariable int id, Principal principal) throws FriendshipNotFoundException {
         return friendshipService.stopBeingFriendsById(id, principal);
 
     }
@@ -49,7 +50,7 @@ public class FriendshipController {
             description = "Принть/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public FriendsResponse200 addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubscribingOnBlockerPersonException, DeletedAccountException, AddingOrSubscribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
+    public DataResponse<SuccessResponse> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubscribingOnBlockerPersonException, DeletedAccountException, AddingOrSubscribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
         return friendshipService.addNewFriend(id, principal);
 
     }

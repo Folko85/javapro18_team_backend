@@ -1,4 +1,4 @@
-package com.skillbox.socialnetwork.api.response.friendsdto.friendsornotfriends;
+package com.skillbox.socialnetwork.api.response.friendsdto;
 
 import com.skillbox.socialnetwork.api.response.Dto;
 import lombok.Data;
