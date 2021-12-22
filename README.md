@@ -8,24 +8,24 @@
 <a href="https://github.com/Brosha">Brosha</a>
 <a href="https://github.com/Artemk70">Artemk70</a>
 
-Как это посмотреть:
-**mvn clean package** - чтобы сбилдить jar-файлы(модуль microservice может долго билдится, 
-так как под капотом идёт загрузка библиотек с помощью npm) 
-**docker-compose up -d** - чтобы проект поднялся 
-(P.S. Обычно поднимается долго, так как контейнеры зависят друг от друга. 
-Нужно дождаться загрузки проекта cloud-config)
-Для полноценного использования Графаны нужно дополнительно _обработать её напильником_,
-а именно - Добавить источники данных:
-Prometheus по адресу http://prometheus:9090
-Loki по адресу http://loki:3100
-а также импортировать панели из папки scripts/dashboard 
-**Россыпь технологий:**
-Spring Boot, Spring Security, Spring Cloud Config, Hibernate, Liquibase, 
-RabbitMQ, Redis, SocketIO, Vaadin, Junit, Grafana, Prometheus, Loki, Promtail, 
-Lombok, Docker Compose, Maven
+Как это посмотреть:  
+**mvn clean package** - чтобы сбилдить jar-файлы(модуль microservice может долго билдится,  
+так как под капотом идёт загрузка библиотек с помощью npm)  
+**docker-compose up -d** - чтобы проект поднялся  
+(P.S. Обычно поднимается долго, так как контейнеры зависят друг от друга.  
+Нужно дождаться загрузки проекта cloud-config) 
+Для полноценного использования Графаны нужно дополнительно _обработать её напильником_, 
+а именно - Добавить источники данных: 
+Prometheus по адресу http://prometheus:9090 
+Loki по адресу http://loki:3100 
+а также импортировать панели из папки scripts/dashboard  
+**Россыпь технологий:** 
+Spring Boot, Spring Security, Spring Cloud Config, Hibernate, Liquibase,  
+RabbitMQ, Redis, SocketIO, Vaadin, Junit, Grafana, Prometheus, Loki, Promtail,  
+Lombok, Docker Compose, Maven  
 
 ToDo:
-1. Сделать шедулер для периодической очистки сессий в редисе
-2. Убрать вторую базу mySQL (пусть данные хранятся в mongoDB)
-3. Добавить в проект кафку для обратного ответа от микросервиса
+1. Сделать шедулер для периодической очистки сессий в редисе  
+2. Убрать вторую базу mySQL (пусть данные хранятся в mongoDB)  
+3. Добавить в проект кафку для обратного ответа от микросервиса  
 
