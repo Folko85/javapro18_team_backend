@@ -1,14 +1,21 @@
 package com.skillbox.socialnetwork.service;
 
+import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.Dto;
 import com.skillbox.socialnetwork.api.response.ListResponse;
+import com.skillbox.socialnetwork.api.response.dialogdto.MessageData;
 import com.skillbox.socialnetwork.api.response.notificationdto.NotificationData;
 import com.skillbox.socialnetwork.entity.Notification;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
-import com.skillbox.socialnetwork.repository.*;
+import com.skillbox.socialnetwork.repository.CommentRepository;
+import com.skillbox.socialnetwork.repository.FriendshipRepository;
+import com.skillbox.socialnetwork.repository.MessageRepository;
+import com.skillbox.socialnetwork.repository.NotificationRepository;
+import com.skillbox.socialnetwork.repository.PersonRepository;
+import com.skillbox.socialnetwork.repository.SessionRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
@@ -78,7 +86,7 @@ public class NotificationService {
         List<NotificationData> notificationDataList = new ArrayList<>();
         notifications.forEach(notification -> {
             NotificationData notificationData = getNotificationData(notification);
-                notificationDataList.add(notificationData);
+            notificationDataList.add(notificationData);
         });
         return notificationDataList;
     }
@@ -116,18 +124,46 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
-    public void sendEvent(String eventName, DataResponse<?> data, int personId) {
-        sessionRepository.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+    public void sendEvent(String eventName, DataResponse<MessageData> data, int personId) {
+        sessionRepository.findByUserId(personId).ifPresent(uuid ->
+                {
+                    SocketIOClient client = server.getClient(uuid);
+                    if (checkClient(client, uuid)) {
+                        client.sendEvent(eventName, data);
+                    }
+                }
+        );
         log.info("send event {} to {}", eventName, personId);
     }
 
     public void sendEvent(String eventName, Dto data, int personId) {
-        sessionRepository.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        sessionRepository.findByUserId(personId).ifPresent(uuid ->
+                {
+                    SocketIOClient client = server.getClient(uuid);
+                    if (checkClient(client, uuid)) {
+                        client.sendEvent(eventName, data);
+                    }
+                }
+        );
         log.info("send event {} to {}", eventName, personId);
     }
 
     public void sendEvent(String eventName, String data, int personId) {
-        sessionRepository.findByUserId(personId).ifPresent(uuid -> server.getClient(uuid).sendEvent(eventName, data));
+        sessionRepository.findByUserId(personId).ifPresent(uuid ->
+                {
+                    SocketIOClient client = server.getClient(uuid);
+                    if (checkClient(client, uuid)) {
+                        client.sendEvent(eventName, data);
+                    }
+                }
+        );
         log.info("send event {} to {}", eventName, personId);
+    }
+
+    private boolean checkClient(SocketIOClient client, UUID uuid) {
+        if (client == null) {
+            sessionRepository.findByUserUUID(uuid).ifPresent(sessionRepository::deleteByUserId);
+            return false;
+        } else return true;
     }
 }
