@@ -1,7 +1,6 @@
-version: '3.7'
 services:
   mysql_db_container:
-    image: mysql:latest
+    image: mysql:8.0
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -16,7 +15,7 @@ services:
     networks:
       - monitoring
   mysql_microservice:
-    image: mysql:latest
+    image: mysql:8.0
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -43,7 +42,7 @@ services:
       - "80:80"
   cloud-config:
     restart: always
-    image: openjdk:16-alpine
+    image: bellsoft/liberica-openjdk-alpine:17
     volumes:
       - ./jars:/app
     working_dir: /app
@@ -54,7 +53,7 @@ services:
       - monitoring
   microservice_back:
     restart: always
-    image: openjdk:16-alpine
+    image: bellsoft/liberica-openjdk-alpine:17
     volumes:
       - ./jars:/app
     working_dir: /app
@@ -78,7 +77,7 @@ services:
       - monitoring
   zerone_back:
     restart: always
-    image: openjdk:16-alpine
+    image: bellsoft/liberica-openjdk-alpine:17
     volumes:
       - ./jars:/app
     working_dir: /app
