@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <Bug pattern="NM_CONFUSING" />
+  </Match>
+  <Match>
+    <Bug pattern="~.*" />
+    <Package name="~generated([.].*)?" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.DefaultInstantDeserializer" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.CommentRequest" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.CommentRequest" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.DialogRequest" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.DialogRequest" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.EMailChangeRequestcom.skillbox.socialnetwork.api.request.SupportRequestDto" />
+    <Bug pattern="NM_CONFUSING" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.IsFriends" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.IsFriends" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.PostRequest" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.PostRequest" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.socketio.ReadMessagesData" />
+    <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.request.socketio.TypingData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.DataResponse" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.ListResponse" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.ListResponse" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.ListResponse" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.SuccessResponse" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.authdto.AuthData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.dialogdto.CountData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.dialogdto.DialogData" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.dialogdto.DialogData" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.dialogdto.DialogData" />
+    <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.dialogdto.DialogData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.dialogdto.MessageData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.friendsdto.ResponseFriendsList" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.friendsdto.ResponseFriendsList" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.friendsdto.ResponseFriendsList" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.friendsdto.StatusFriend" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.likedto.LikeData" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.likedto.LikeData" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.likedto.LikeData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.likedto.LikeResponse" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.likedto.LikeResponse" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.notificationdto.NotificationData" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.notificationdto.NotificationData" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.notificationdto.NotificationData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.notificationdto.NotificationSettingData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.platformdto.ImageDto" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.platformdto.LanguageDto" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.platformdto.PlaceDto" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.postdto.CommentData" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.postdto.CommentData" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.postdto.CommentData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.postdto.PostData" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.postdto.PostData" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.postdto.PostData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.postdto.TagDto" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData" />
+    <Bug pattern="SE_BAD_FIELD" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.socketio.SocketNotificationData" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.response.socketio.TypingResponse" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.api.security.JwtProvider" />
+    <Bug pattern="SS_SHOULD_BE_STATIC" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.CORSConfig" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.RabbitConfig" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.RedisConfig" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.SecurityConfig" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.SocketIOConfig" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.SocketIOConfig" />
+    <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.property.CORSProperties" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.config.property.CORSProperties" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.ApiAccountController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.CommentController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.FriendshipController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.LikeController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.NotificationController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.PostController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.StorageController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.TagController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.controller.UserController" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Dialog" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Dialog" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Friendship" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.FriendshipStatus" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Like" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Message" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Message" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Message" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Notification" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Person" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Person" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Person" />
+    <Bug pattern="SE_BAD_FIELD" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Person" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Person2Dialog" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Person2Dialog" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Person2Dialog" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Post" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Post" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.PostComment" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.PostComment" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.PostComment" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.PostComment" />
+    <Bug pattern="HE_EQUALS_USE_HASHCODE" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.PostFile" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Tag" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Tag" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.Tag" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.entity.enums.Role" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.handler.SocketEventHandler" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.repository.SessionRepository" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.AccountService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.AccountService" />
+    <Bug pattern="SF_SWITCH_NO_DEFAULT" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.AuthService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.CommentService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.DialogService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.FriendshipService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.MailSender" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.MessageService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.NotificationService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.NotificationService" />
+    <Bug pattern="SF_SWITCH_NO_DEFAULT" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.PlatformService" />
+    <Bug pattern="DM_CONVERT_CASE" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.PlatformService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.PostService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.StorageService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.SupportService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.UserService" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.UserService" />
+    <Bug pattern="MS_SHOULD_BE_FINAL" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.sheduler.LogCleaner" />
+    <Bug pattern="SS_SHOULD_BE_STATIC" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.socialnetwork.service.sheduler.SoftDelete" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Client" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Client" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Client" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Message" />
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Message" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Message" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Message" />
+    <Bug pattern="HE_EQUALS_USE_HASHCODE" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.entity.Message" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.components.MyDialog" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.components.MyDialog" />
+    <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.components.MyDialog" />
+    <Bug pattern="SE_BAD_FIELD" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.components.MyDialog" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.service.SendMailService" />
+    <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.view.MainView" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.view.MainView" />
+    <Bug pattern="SE_BAD_FIELD" />
+  </Match>
+  <Match>
+    <Class name="com.skillbox.microservice.vaadin.view.MainView" />
+    <Bug pattern="SE_NO_SERIALVERSIONID" />
+  </Match>
+</FindBugsFilter>
