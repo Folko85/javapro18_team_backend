@@ -43,3 +43,4 @@ build/
 /microservice/package-lock.json
 /microservice/pnpmfile.js
 /microservice/pnpm-lock.yaml
+/package.json

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Baseline Suppressions" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+    <description>Исключения для существующих нарушений, сгенерировано: Sun Jun 07 23:39:59 MSK 2026</description>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/NetworkApplication.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/DefaultInstantDeserializer.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/request/socketio/TypingData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/DataResponse.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/ListResponse.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/SuccessResponse.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/authdto/AuthData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/dialogdto/CountData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/dialogdto/DialogData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/dialogdto/MessageData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/friendsdto/ResponseFriendsList.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/friendsdto/StatusFriend.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/likedto/LikeData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/notificationdto/NotificationData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/notificationdto/NotificationSettingData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/platformdto/ImageDto.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/platformdto/LanguageDto.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/platformdto/PlaceDto.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/postdto/CommentData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/postdto/PostData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/postdto/TagDto.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/socketio/SocketNotificationData.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/response/socketio/TypingResponse.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/security/JwtFilter.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/security/JwtProvider.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/api/security/UserDetailServiceImpl.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/CORSConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/JasyptConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/RabbitConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/RedisConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/SecurityConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/SocketIOConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/SpringFoxConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/property/CORSProperties.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/config/property/RegistrationProperties.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/ApiAccountController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/AuthController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/CommentController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/DialogController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/FriendshipController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/LikeController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/MessageController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/NotificationController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/PlatformController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/PostController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/StorageController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/SupportController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/TagController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/controller/UserController.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/Friendship.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/FriendshipStatus.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/Like.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/Message.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/Notification.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/NotificationSetting.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/Person.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/Person2Dialog.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/PostFile.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/Tag.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/enums/Permission.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/enums/Role.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/AddingOrSubscribingOnBlockedPersonException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/AddingOrSubscribingOnBlockerPersonException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/AddingYourselfToFriends.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/ApiConnectException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/BlockAlreadyExistsException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/BlockingDeletedAccountException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/CommentNotFoundException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/DeletedAccountException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/DeletedAccountLoginException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/FriendshipExistException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/FriendshipNotFoundException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/LikeNotFoundException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/PostCreationExecption.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/PostNotFoundException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/UnBlockingDeletedAccountException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/UnBlockingException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/UserAndAuthorEqualsException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/UserBlocksHimSelfException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/UserExistException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/exception/UserUnBlocksHimSelfException.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/handler/DefaultAdvice.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/handler/SocketEventHandler.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/repository/FriendshipRepository.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/repository/PersonRepository.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/repository/PostRepository.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/repository/SessionTemplate.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/AccountService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/AuthService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/CommentService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/DialogService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/FriendshipService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/MailSender.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/MessageService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/NotificationService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/PlatformService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/PostService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/SupportService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/TagService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/sheduler/LogCleaner.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/sheduler/SoftDelete.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/entity/PostComment.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/repository/SessionRepository.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/LikeService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/StorageService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/socialnetwork/service/UserService.java</exclude-pattern>
+    <exclude-pattern>.*/Team/zerocloudconfigserver/ZeroCloudConfigServerApplication.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/MicroserviceApplication.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/config/JasyptConfig.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/config/RabbitConfiguration.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/entity/Client.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/entity/Message.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/service/MessageService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/service/SimpleListener.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/vaadin/components/MyDialog.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/vaadin/service/SendMailService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/vaadin/service/SomeService.java</exclude-pattern>
+    <exclude-pattern>.*/com/skillbox/microservice/vaadin/view/MainView.java</exclude-pattern>
+
+    <rule ref="category/java/bestpractices.xml"/>
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="LongVariable"/>
+        <exclude name="ShortVariable"/>
+        <exclude name="ShortMethodName"/>
+        <exclude name="ShortClassName"/>
+        <exclude name="UnnecessaryConstructor"/>
+        <exclude name="TooManyStaticImports"/>
+    </rule>
+    <rule ref="category/java/design.xml">
+        <exclude name="ExcessivePublicCount"/>
+        <exclude name="DataClass"/>
+        <exclude name="TooManyFields"/>
+        <exclude name="TooManyMethods"/>
+        <exclude name="LawOfDemeter"/>
+        <exclude name="ExcessiveImports"/>
+        <exclude name="CouplingBetweenObjects"/>
+        <exclude name="CyclomaticComplexity"/>
+        <exclude name="CognitiveComplexity"/>
+        <exclude name="NcssCount"/>
+    </rule>
+    <rule ref="category/java/errorprone.xml"/>
+    <rule ref="category/java/performance.xml"/>
+</ruleset>
