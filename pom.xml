@@ -6,7 +6,7 @@
 
     <groupId>com.skillbox</groupId>
     <artifactId>java-pro</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -40,6 +40,94 @@
     </profiles>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <configuration>
+                        <propertyExpansion>
+                            suppressionFile=/checkstyle/suppressions.xml
+                            suppressionXpathFile=/checkstyle/suppressions-xpath.xml
+                        </propertyExpansion>
+                        <suppressionsLocation>baselines/checkstyle-suppressions.xml</suppressionsLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <failOnViolation>true</failOnViolation>
+                        <excludes>**/main/resources/**/*</excludes>
+                        <excludes>**/generated/**/*</excludes>
+                        <excludes>**/generated-sources/**/*</excludes>
+                        <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                    </configuration>
+                    <dependencies>
+                        <!-- checkstyle -->
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>10.21.2</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>checkstyle-validate-sources</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>4.8.6.6</version>
+                    <configuration>
+                        <failOnError>true</failOnError>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                        <excludeFilterFile>baselines/spotbugs-exclude.xml</excludeFilterFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>3.26.0</version>
+                    <configuration>
+                        <verbose>true</verbose>
+                        <linkXRef>false</linkXRef>
+                        <failOnViolation>true</failOnViolation>
+                        <rulesets>
+                            <ruleset>baselines/pmd-baseline-ruleset.xml</ruleset>
+                        </rulesets>
+                        <excludes>
+                            <exclude>**/generated/*.java</exclude>
+                            <exclude>**/generated-sources/*.java</exclude>
+                        </excludes>
+                        <excludeRoots>
+                            <excludeRoot>target/classes</excludeRoot>
+                            <excludeRoot>target/generated-sources</excludeRoot>
+                        </excludeRoots>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

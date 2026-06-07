@@ -4,13 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>com.skillbox</groupId>
+        <artifactId>java-pro</artifactId>
+        <version>1.0</version>
     </parent>
 
-    <groupId>com.skillbox</groupId>
     <artifactId>microservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>microservice</name>
@@ -162,6 +160,18 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>
