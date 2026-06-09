@@ -18,6 +18,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/**
+ * Обработчик событий вебсокетов.
+ */
 @Slf4j
 @Component
 public class SocketEventHandler {
@@ -37,7 +40,7 @@ public class SocketEventHandler {
     }
 
     /**
-     * Ивент "рукопожатия"
+     * Ивент "рукопожатия".
      */
     @OnConnect
     public void onConnect(SocketIOClient client) {
@@ -46,7 +49,7 @@ public class SocketEventHandler {
     }
 
     /**
-     * Ивент отключения
+     * Ивент отключения.
      */
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
@@ -61,7 +64,7 @@ public class SocketEventHandler {
     }
 
     /**
-     * Ивент для проверки авторизации
+     * Ивент для проверки авторизации.
      */
     @OnEvent(value = "newListener")
     public void onNewListenerEvent(SocketIOClient client) {
@@ -69,12 +72,14 @@ public class SocketEventHandler {
         if (client != null) {
             if (sessionRepository.findByUserUUID(client.getSessionId()).isPresent()) {
                 client.sendEvent("auth-response", "ok");
-            } else client.sendEvent("auth-response", "not");
+            } else {
+                client.sendEvent("auth-response", "not");
+            }
         }
     }
 
     /**
-     * Ивент авторизации
+     * Ивент авторизации.
      */
     @OnEvent(value = "auth")
     public void onAuthEvent(SocketIOClient client, AckRequest request, AuthRequest data) {
@@ -83,6 +88,13 @@ public class SocketEventHandler {
         }
     }
 
+    /**
+     * Начал печатать.
+     *
+     * @param client
+     * @param request
+     * @param data
+     */
     @OnEvent(value = "start-typing")
     public void onStartTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
         if (client != null) {
@@ -90,6 +102,13 @@ public class SocketEventHandler {
         }
     }
 
+    /**
+     * Перестал печатать.
+     *
+     * @param client
+     * @param request
+     * @param data
+     */
     @OnEvent(value = "stop-typing")
     public void onStopTypingEvent(SocketIOClient client, AckRequest request, TypingData data) {
         if (client != null) {
@@ -99,7 +118,7 @@ public class SocketEventHandler {
     }
 
     /**
-     * Ивент прочтения сообщений
+     * Ивент прочтения сообщений.
      */
     @OnEvent(value = "read-messages")
     public void onReadMessagesEvent(SocketIOClient client, AckRequest request, ReadMessagesData data) {

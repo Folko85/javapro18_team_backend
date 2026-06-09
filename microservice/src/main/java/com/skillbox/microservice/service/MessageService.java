@@ -12,12 +12,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * Сервис работы с сообщениями.
+ */
 @Service
 @RequiredArgsConstructor
 public class MessageService {
     private final MessageRepository messageRepository;
     private final ClientRepository clientRepository;
 
+    /**
+     * Хз что за метод.
+     * @return
+     */
     public ArrayList<Message> messageOutput() {
         Iterable<Message> messageIterable = messageRepository.findAll();
         ArrayList<Message> messageList = new ArrayList<>();
@@ -27,6 +34,10 @@ public class MessageService {
         return messageList;
     }
 
+    /**
+     * Сохранить сообщение.
+     * @param dto - ДТО с сообщением
+     */
     public void saveMessage(SupportRequestDto dto) {
         Client c = getClientFromMessageDto(dto);
         Optional<Client> clientOptional = clientRepository.findByEmail(c.getEmail());

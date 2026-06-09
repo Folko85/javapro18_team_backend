@@ -15,7 +15,18 @@ import com.skillbox.socialnetwork.entity.NotificationSetting;
 import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
-import com.skillbox.socialnetwork.exception.*;
+import com.skillbox.socialnetwork.exception.AddingOrSubscribingOnBlockedPersonException;
+import com.skillbox.socialnetwork.exception.AddingOrSubscribingOnBlockerPersonException;
+import com.skillbox.socialnetwork.exception.AddingYourselfToFriends;
+import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
+import com.skillbox.socialnetwork.exception.BlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.DeletedAccountException;
+import com.skillbox.socialnetwork.exception.FriendshipExistException;
+import com.skillbox.socialnetwork.exception.FriendshipNotFoundException;
+import com.skillbox.socialnetwork.exception.UnBlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.UnBlockingException;
+import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
 import com.skillbox.socialnetwork.repository.FriendshipStatusRepository;
 import com.skillbox.socialnetwork.repository.NotificationSettingRepository;
@@ -48,10 +59,19 @@ import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static com.skillbox.socialnetwork.service.AuthService.setDeletedAuthData;
 import static java.time.ZoneOffset.UTC;
 
+/**
+ * Сервис дружбы.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class FriendshipService {
+
+    private static final Integer NEARBY_AGE = 2;
+    private static final Integer DEFAULT_COUNT = 10;
+    private static final String CACHE_NAME = "recommendedPersonsCache";
+    private static final String OK = "ok";
+    private static final String FORBIDDEN = "Доступ запрещён";
     private final NotificationSettingRepository notificationSettingRepository;
     private final PersonRepository personRepository;
     private final FriendshipRepository friendshipRepository;
@@ -59,32 +79,63 @@ public class FriendshipService {
     private final NotificationService notificationService;
     private final CacheManager cacheManager;
 
+    /**
+     * Получить список друзей.
+     * @param name
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     public ListResponse<AuthData> getFriends(String name, int offset, int itemPerPage, Principal principal) {
         log.debug("метод получения друзей");
-        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
+        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> friendsPage = personRepository.findFriends(name, person.getId(), pageable);
         return getPersonResponse(offset, itemPerPage, friendsPage);
     }
 
+    /**
+     * Прекратить дружбу.
+     * @param id
+     * @param principal
+     * @return
+     * @throws FriendshipNotFoundException
+     */
     public DataResponse<SuccessResponse> stopBeingFriendsById(int id, Principal principal) throws FriendshipNotFoundException {
         log.debug("метод удаления из друзей");
 
-        Person srcPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
+        Person srcPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
         Person dstPerson = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        Friendship friendship = friendshipRepository.findFriendBySrcPersonAndDstPerson(srcPerson.getId(), dstPerson.getId()).orElseThrow(FriendshipNotFoundException::new);
+        Friendship friendship = friendshipRepository.findFriendBySrcPersonAndDstPerson(srcPerson.getId(), dstPerson.getId())
+                .orElseThrow(FriendshipNotFoundException::new);
         friendship.setSrcPerson(dstPerson)
                 .setDstPerson(srcPerson)
                 .setStatus(friendshipStatusRepository
                         .save(friendship.getStatus()).setCode(FriendshipStatusCode.SUBSCRIBED));
         friendshipRepository.save(friendship);
-        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage(OK));
     }
 
-    public DataResponse<SuccessResponse> addNewFriend(int id, Principal principal) throws DeletedAccountException, AddingOrSubscribingOnBlockerPersonException, AddingYourselfToFriends, FriendshipExistException, AddingOrSubscribingOnBlockedPersonException {
+    /**
+     * Добавление друга.
+     *
+     * @param id
+     * @param principal
+     * @return
+     * @throws DeletedAccountException
+     * @throws AddingOrSubscribingOnBlockerPersonException
+     * @throws AddingYourselfToFriends
+     * @throws FriendshipExistException
+     * @throws AddingOrSubscribingOnBlockedPersonException
+     */
+    public DataResponse<SuccessResponse> addNewFriend(int id, Principal principal)
+            throws DeletedAccountException, AddingOrSubscribingOnBlockerPersonException,
+            AddingYourselfToFriends, FriendshipExistException, AddingOrSubscribingOnBlockedPersonException {
         log.debug("метод добавления в друзья");
 
-        Person srcPerson = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
+        Person srcPerson = personRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
 
         if (srcPerson.getId() == id) {
             throw new AddingYourselfToFriends("Нельзя добавить себя в друзья");
@@ -109,14 +160,17 @@ public class FriendshipService {
          */
 
         if (friendshipOptional.isPresent()) {
-            if (friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.FRIEND))
+            if (friendshipOptional.get().getStatus().getCode().equals(FriendshipStatusCode.FRIEND)) {
                 throw new FriendshipExistException();
-            if (friendshipOptional.get().getSrcPerson().getId().equals(dstPerson.getId()))
+            }
+            if (friendshipOptional.get().getSrcPerson().getId().equals(dstPerson.getId())) {
                 friendshipStatusRepository
                         .save(friendshipOptional.get().getStatus()
                                 .setTime(LocalDateTime.now())
                                 .setCode(FriendshipStatusCode.FRIEND));
-            else throw new AddingYourselfToFriends("жди подтверждения");
+            } else {
+                throw new AddingYourselfToFriends("жди подтверждения");
+            }
 
         } else {
             Friendship newFriendship = new Friendship();
@@ -126,7 +180,7 @@ public class FriendshipService {
                     .setSrcPerson(srcPerson)
                     .setDstPerson(dstPerson);
             friendshipRepository.save(newFriendship);
-            Cache recommendations = cacheManager.getCache("recommendedPersonsCache");
+            Cache recommendations = cacheManager.getCache(CACHE_NAME);
             if (recommendations != null) {
                 recommendations.evict(srcPerson.getEMail());
                 recommendations.evict(dstPerson.getEMail());
@@ -137,20 +191,37 @@ public class FriendshipService {
                 sendNotification(newFriendship);
             }
         }
-        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage(OK));
     }
 
+    /**
+     * Получить друзей.
+     *
+     * @param name
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     public ListResponse<AuthData> getFriendsRequests(String name, int offset, int itemPerPage, Principal principal) {
-        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
+        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> personByStatusCode = personRepository
                 .findPersonByStatusCode(name, person.getId(), FriendshipStatusCode.REQUEST, pageable);
         return getPersonResponse(offset, itemPerPage, personByStatusCode);
     }
 
+    /**
+     * Рекомендованные пользователи.
+     *
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     public ListResponse<AuthData> recommendedUsers(int offset, int itemPerPage, Principal principal) {
         log.info("метод получения рекомендованных друзей для пользователя {} ", principal.getName());
-        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
+        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
         log.info("поиск рекомендованных друзей для пользователя: ".concat(person.getFirstName()));
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         LocalDate startDate = null;
@@ -161,16 +232,16 @@ public class FriendshipService {
         if (person.getBirthday() != null) {
             //подбираем пользователей, возрост которых отличается на +-2 года
             LocalDate birthdayPerson = person.getBirthday();
-            startDate = birthdayPerson.minusYears(2);
-            stopDate = birthdayPerson.plusYears(2);
+            startDate = birthdayPerson.minusYears(NEARBY_AGE);
+            stopDate = birthdayPerson.plusYears(NEARBY_AGE);
         }
         // Получаем для подбора по городу
         String city = Strings.hasText(person.getCity()) ? person.getCity() : "";
         Page<Person> personFirstPage = personRepository.findByOptionalParametrs(
                 "", "", startDate, stopDate, city, "", pageable, blockers);
 
-        if ((int) personFirstPage.getTotalElements() < 10) {
-            Pageable additionalPageable = PageRequest.of(0, (int) (10 - personFirstPage.getTotalElements()));
+        if ((int) personFirstPage.getTotalElements() < DEFAULT_COUNT) {
+            Pageable additionalPageable = PageRequest.of(0, (int) (DEFAULT_COUNT - personFirstPage.getTotalElements()));
             personFirstPage.get().forEach(p -> blockers.add(p.getId()));
             Page<Person> additionalPersonPage = get10Users(person.getEMail(), additionalPageable, blockers);
             List<Person> additionalPersonList = additionalPersonPage.stream().toList();
@@ -182,17 +253,24 @@ public class FriendshipService {
 
     }
 
+    /**
+     * Является ли другом.
+     *
+     * @param isFriends
+     * @param principal
+     * @return
+     */
     public ResponseFriendsList isPersonsFriends(IsFriends isFriends, Principal principal) {
         log.debug("метод проверки являются ли переданные люди друзьями");
-        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
+        Person person = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
 
         List<StatusFriend> statusFriendList = new ArrayList<>();
 
-        for (int friendId : isFriends.getUserIds())
+        for (int friendId : isFriends.getUserIds()) {
             statusFriendList.add(new StatusFriend(friendId, friendshipRepository
                     .isMyFriend(person.getId(), friendId, FriendshipStatusCode.FRIEND)
                     .orElseThrow(() -> new UsernameNotFoundException("user not found"))));
-
+        }
 
         ResponseFriendsList responseFriendsList = new ResponseFriendsList();
         responseFriendsList.setData(statusFriendList);
@@ -227,22 +305,28 @@ public class FriendshipService {
     }
 
     /**
-     * Src Person BlOCKED Dest Person or
+     * Src Person BlOCKED Dest Person or.
      * Dest person WASBLOCKEDBY Src Person or
      * Src and Dest blocked Each other (DEADLOCK)
      * <p>
      * CacheEvictAble(value = "recommendedPersonsCache", key = "#email")
      */
-    public DataResponse<SuccessResponse> blockUser(Principal principal, int id) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
-        Person current = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
-        if (current.getId() == id) throw new UserBlocksHimSelfException();
+    public DataResponse<SuccessResponse> blockUser(Principal principal, int id)
+            throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
+        Person current = personRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
+        if (current.getId() == id) {
+            throw new UserBlocksHimSelfException();
+        }
         Person blocking = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (blocking.isDeleted()) throw new BlockingDeletedAccountException();
+        if (blocking.isDeleted()) {
+            throw new BlockingDeletedAccountException();
+        }
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(id, current.getId());
         if (!isBlockedBy(current.getId(), blocking.getId(), optional)) {
             if (optional.isEmpty()) {
                 createFriendship(current, blocking, FriendshipStatusCode.BLOCKED);
-                Cache recommendations = cacheManager.getCache("recommendedPersonsCache");
+                Cache recommendations = cacheManager.getCache(CACHE_NAME);
                 if (recommendations != null) {
                     recommendations.evict(blocking.getEMail());
                     recommendations.evict(current.getEMail());
@@ -250,8 +334,10 @@ public class FriendshipService {
             } else {
                 Friendship friendship = optional.get();
                 FriendshipStatus friendshipStatus = friendship.getStatus();
-                if (friendshipStatus.getCode().equals(FriendshipStatusCode.WASBLOCKEDBY) && friendship.getSrcPerson().getId().equals(current.getId())
-                        || friendshipStatus.getCode().equals(FriendshipStatusCode.BLOCKED) && friendship.getDstPerson().getId().equals(current.getId())
+                if (friendshipStatus.getCode().equals(FriendshipStatusCode.WASBLOCKEDBY)
+                        && friendship.getSrcPerson().getId().equals(current.getId())
+                        || friendshipStatus.getCode().equals(FriendshipStatusCode.BLOCKED)
+                        && friendship.getDstPerson().getId().equals(current.getId())
                 ) {
                     friendshipStatus.setCode(FriendshipStatusCode.DEADLOCK);
                 } else if (current.getId().equals(friendship.getSrcPerson().getId())) {
@@ -265,9 +351,16 @@ public class FriendshipService {
         } else {
             throw new BlockAlreadyExistsException();
         }
-        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage(OK));
     }
 
+    /**
+     * Создать дружбу.
+     *
+     * @param src
+     * @param dest
+     * @param friendshipStatusCode
+     */
     public void createFriendship(Person src, Person dest, FriendshipStatusCode friendshipStatusCode) {
         FriendshipStatus friendshipStatus = new FriendshipStatus();
         friendshipStatus.setTime(LocalDateTime.now());
@@ -281,21 +374,38 @@ public class FriendshipService {
 
     }
 
-    public DataResponse<SuccessResponse> unBlockUser(Principal principal, int id) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
-        Person current = personRepository.findByEMail(principal.getName()).orElseThrow(() -> new BadCredentialsException("Доступ запрещён"));
-        if (current.getId() == id) throw new UserUnBlocksHimSelfException();
+    /**
+     * Разблокировать.
+     *
+     * @param principal
+     * @param id
+     * @return
+     * @throws UnBlockingException
+     * @throws UserUnBlocksHimSelfException
+     * @throws UnBlockingDeletedAccountException
+     */
+    public DataResponse<SuccessResponse> unBlockUser(Principal principal, int id)
+            throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
+        Person current = personRepository.findByEMail(principal.getName())
+                .orElseThrow(() -> new BadCredentialsException(FORBIDDEN));
+        if (current.getId() == id) {
+            throw new UserUnBlocksHimSelfException();
+        }
         Person unblocking = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (unblocking.isDeleted()) throw new UnBlockingDeletedAccountException();
+        if (unblocking.isDeleted()) {
+            throw new UnBlockingDeletedAccountException();
+        }
         Optional<Friendship> optional = friendshipRepository.findFriendshipBySrcPersonAndDstPerson(current.getId(), id);
         if (!isBlockedBy(current.getId(), id, optional)) {
             throw new UnBlockingException();
         }
         Friendship friendship = optional.orElseThrow(EntityNotFoundException::new);
         if (friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED)
-                || friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY) && current.getId().equals(friendship.getDstPerson().getId())) {
+                || friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY)
+                && current.getId().equals(friendship.getDstPerson().getId())) {
             friendshipRepository.delete(friendship);
             friendshipStatusRepository.delete(friendship.getStatus());
-            Cache recommendations = cacheManager.getCache("recommendedPersonsCache");
+            Cache recommendations = cacheManager.getCache(CACHE_NAME);
             if (recommendations != null) {
                 recommendations.evict(unblocking.getEMail());
                 recommendations.evict(current.getEMail());
@@ -309,11 +419,11 @@ public class FriendshipService {
             friendshipStatusRepository.save(friendship.getStatus());
             friendshipRepository.save(friendship);
         }
-        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
+        return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage(OK));
     }
 
     /**
-     * Src Person BlOCKED Dest Person or
+     * Src Person BlOCKED Dest Person or.
      * Dest person WASBLOCKEDBY Src Person or
      * Src and Dest blocked Each other (DEADLOCK)
      */
@@ -323,11 +433,20 @@ public class FriendshipService {
     }
 
     private boolean isBlockedBy(int blocker, int blocked, Optional<Friendship> optional) {
-        return optional.filter(friendship -> (blocker == friendship.getSrcPerson().getId() && friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED))
+        return optional.filter(friendship -> (blocker == friendship.getSrcPerson().getId()
+                && friendship.getStatus().getCode().equals(FriendshipStatusCode.BLOCKED))
                 || (blocked == friendship.getSrcPerson().getId() && friendship.getStatus().getCode().equals(FriendshipStatusCode.WASBLOCKEDBY))
                 || friendship.getStatus().getCode().equals(FriendshipStatusCode.DEADLOCK)).isPresent();
     }
 
+    /**
+     * Получить 10 пользователей.
+     *
+     * @param email
+     * @param pageable
+     * @param blockers
+     * @return
+     */
     public Page<Person> get10Users(String email, Pageable pageable, List<Integer> blockers) {
         return personRepository.find10Person(email, pageable, blockers);
     }
@@ -346,12 +465,20 @@ public class FriendshipService {
 
     }
 
+    /**
+     * Фильтр друзей и их друзей.
+     *
+     * @param id
+     * @return
+     */
     public List<Integer> getFriendsAndFriendsOfFriendsAndSubscribesFiltered(int id) {
         HashSet<Integer> blockersIds = new HashSet<>(personRepository.findBlockersIds(id));
         List<Integer> friendsAndFriendsOfFriendsAndSubscribesIds = personRepository.findFriendsAndFriendsOfFriendsAndSubscribesIds(id);
         List<Integer> filtered = new ArrayList<>();
         for (Integer fr : friendsAndFriendsOfFriendsAndSubscribesIds) {
-            if (!blockersIds.contains(fr)) filtered.add(fr);
+            if (!blockersIds.contains(fr)) {
+                filtered.add(fr);
+            }
         }
         return filtered;
     }

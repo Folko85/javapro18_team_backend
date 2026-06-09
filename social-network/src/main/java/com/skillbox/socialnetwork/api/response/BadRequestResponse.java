@@ -3,6 +3,9 @@ package com.skillbox.socialnetwork.api.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+/**
+ * Ошибка.
+ */
 @Data
 public class BadRequestResponse {
     private String error;

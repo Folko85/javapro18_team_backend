@@ -9,7 +9,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableRabbit
 @SpringBootApplication
 public class MicroserviceApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(MicroserviceApplication.class, args);
-	}
+    /**
+     * Старт приложения.
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(MicroserviceApplication.class, args);
+    }
 }

@@ -6,6 +6,7 @@ import com.skillbox.socialnetwork.service.CommentService;
 import com.skillbox.socialnetwork.service.PostService;
 import com.skillbox.socialnetwork.service.StorageService;
 import com.skillbox.socialnetwork.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +16,12 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Сервис постепенного удаления.
+ */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class SoftDelete {
 
     private final PostService postService;
@@ -39,19 +44,9 @@ public class SoftDelete {
     @Value("${soft.comment.day}")
     private Integer cleanupCommentDays;
 
-
-    public SoftDelete(PostService postService, UserService personService, CommentService commentService, StorageService storageService, PersonRepository personRepository, PostRepository postRepository, CommentRepository commentRepository, NotificationRepository notificationRepository, FileRepository fileRepository) {
-        this.postService = postService;
-        this.userService = personService;
-        this.commentService = commentService;
-        this.storageService = storageService;
-        this.personRepository = personRepository;
-        this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
-        this.notificationRepository = notificationRepository;
-        this.fileRepository = fileRepository;
-    }
-
+    /**
+     * Удаление пользователей.
+     */
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupPerson() {
         currentDate = LocalDateTime.now();
@@ -73,6 +68,9 @@ public class SoftDelete {
         log.info("Устаревшие аккаунты удалены {}", currentDate);
     }
 
+    /**
+     * Удаление постов.
+     */
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupPost() {
         currentDate = LocalDateTime.now();
@@ -96,6 +94,9 @@ public class SoftDelete {
         log.info("Устаревшие посты удалены {}", currentDate);
     }
 
+    /**
+     * Удаление комментариев.
+     */
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanupPostComment() {
         currentDate = LocalDateTime.now();

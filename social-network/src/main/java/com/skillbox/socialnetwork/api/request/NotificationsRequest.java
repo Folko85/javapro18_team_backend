@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import lombok.Data;
 
+/**
+ * Тип уведомления.
+ */
 @Data
 public class NotificationsRequest {
     @JsonProperty("notification_type")

@@ -15,15 +15,21 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Чистка логов.
+ */
 @Slf4j
 @Component
 public class LogCleaner {
 
-    private static final String pattern = "yyyy-MM-dd";
-    private static final Pattern date = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-    private final int LOGS_KEEP_EXIST = 5;
+    private static final String PATTERN = "yyyy-MM-dd";
+    private static final Pattern DATE = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(PATTERN);
+    private static final int LOGS_KEEP_EXIST = 5;
 
+    /**
+     * Очистка логов.
+     */
     @Scheduled(cron = "0 0 4 * * *")
     public void cleanOldLogs() {
         log.info("Запустили процесс");
@@ -45,10 +51,17 @@ public class LogCleaner {
         }
     }
 
+    /**
+     * Получить дату по имени файла.
+     * @param file
+     * @return
+     */
     public static LocalDate getDateFromName(File file) {
-        Matcher matcher = date.matcher(file.getName());
+        Matcher matcher = DATE.matcher(file.getName());
         if (matcher.find()) {
-            return LocalDate.parse(matcher.group(), formatter);
-        } else return LocalDate.now();
+            return LocalDate.parse(matcher.group(), FORMATTER);
+        } else {
+            return LocalDate.now();
+        }
     }
 }

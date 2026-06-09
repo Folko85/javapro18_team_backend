@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * Сущность человека.
+ */
 @Entity
 @Table(name = "person")
 @Getter

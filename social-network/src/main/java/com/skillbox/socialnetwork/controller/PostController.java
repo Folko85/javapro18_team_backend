@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-
+/**
+ * Контроллер для работы с постами.
+ */
 @Slf4j
 @RestController
 @Tag(name = "Контроллер для работы с постами")
@@ -29,6 +31,18 @@ public class PostController {
         this.postService = postService;
     }
 
+    /**
+     * Получить посты в поиске.
+     * @param text
+     * @param dateFrom
+     * @param dateTo
+     * @param offset
+     * @param itemPerPage
+     * @param author
+     * @param tag
+     * @param principal
+     * @return
+     */
     @GetMapping("/post")
     @Operation(summary = "Получить посты в поиске", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
@@ -43,6 +57,13 @@ public class PostController {
         return postService.getPosts(text, dateFrom, dateTo, offset, itemPerPage, author, tag, principal);
     }
 
+    /**
+     * Получить пост.
+     * @param id
+     * @param principal
+     * @return
+     * @throws PostNotFoundException
+     */
     @GetMapping("/post/{id}")
     @Operation(summary = "Получить пост", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
@@ -50,6 +71,16 @@ public class PostController {
         return postService.getPostById(id, principal);
     }
 
+    /**
+     * Удалить пост.
+     * @param id
+     * @param publishDate
+     * @param requestBody
+     * @param principal
+     * @return
+     * @throws PostNotFoundException
+     * @throws UserAndAuthorEqualsException
+     */
     @PutMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Изменить пост", security = @SecurityRequirement(name = "jwt"))
@@ -60,6 +91,14 @@ public class PostController {
         return postService.putPostById(id, publishDate, requestBody, principal);
     }
 
+    /**
+     * Удалить пост.
+     * @param id
+     * @param principal
+     * @return
+     * @throws PostNotFoundException
+     * @throws UserAndAuthorEqualsException
+     */
     @DeleteMapping("/post/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Удалить пост", security = @SecurityRequirement(name = "jwt"))
@@ -69,6 +108,14 @@ public class PostController {
     }
 
 
+    /**
+     * Восстановить пост.
+     * @param id
+     * @param principal
+     * @return
+     * @throws PostNotFoundException
+     * @throws UserAndAuthorEqualsException
+     */
     @PutMapping("/post/{id}/recover")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Восстановить пост", security = @SecurityRequirement(name = "jwt"))
@@ -78,8 +125,16 @@ public class PostController {
     }
 
 
+    /**
+     * Получить посты в новостях.
+     * @param text
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @GetMapping("/feeds")
-    @Operation(summary = "Получить посты новостях", security = @SecurityRequirement(name = "jwt"))
+    @Operation(summary = "Получить посты в новостях", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
     public ListResponse<PostData> getFeeds(@RequestParam(name = "text", defaultValue = "") String text,
                                            @RequestParam(name = "offset", defaultValue = "0") int offset,
@@ -88,6 +143,14 @@ public class PostController {
         return postService.getFeeds(text, offset, itemPerPage, principal);
     }
 
+    /**
+     * Получить посты на стене.
+     * @param id
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @GetMapping("/users/{id}/wall")
     @Operation(summary = "Получить посты на стене", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
@@ -98,6 +161,15 @@ public class PostController {
         return postService.getPersonWall(id, offset, itemPerPage, principal);
     }
 
+    /**
+     * Создать пост на стене.
+     * @param id
+     * @param publishDate
+     * @param postRequest
+     * @param principal
+     * @return
+     * @throws PostCreationExecption
+     */
     @PostMapping("/users/{id}/wall")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Создать пост на стене", security = @SecurityRequirement(name = "jwt"))

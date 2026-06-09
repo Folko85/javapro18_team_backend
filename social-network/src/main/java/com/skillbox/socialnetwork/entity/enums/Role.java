@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import static java.util.Set.of;
 
+/**
+ * Роль.
+ */
 public enum Role {
     USER(of(Permission.USER)),
     MODERATOR(of(Permission.USER, Permission.MODERATE)),

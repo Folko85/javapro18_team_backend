@@ -1,5 +1,8 @@
 package com.skillbox.socialnetwork.exception;
 
-public class PostNotFoundException extends Exception{
+/**
+ * Пост не найден.
+ */
+public class PostNotFoundException extends Exception {
 }
 

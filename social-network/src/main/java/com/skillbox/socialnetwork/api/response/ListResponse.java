@@ -12,6 +12,10 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Сущность пагинации.
+ * @param <T>
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ListResponse<T extends Dto> implements Serializable {

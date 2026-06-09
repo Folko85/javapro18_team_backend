@@ -9,7 +9,9 @@ import lombok.Data;
 import java.time.Instant;
 import java.util.List;
 
-
+/**
+ * Пост.
+ */
 @Data
 public class PostData implements Dto {
     private int id;

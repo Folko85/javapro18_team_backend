@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+/**
+ * Картинка.
+ */
 @Data
 @Accessors(chain = true)
 public class ImageDto implements Dto {

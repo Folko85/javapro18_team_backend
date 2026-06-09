@@ -1,19 +1,29 @@
 package com.skillbox.socialnetwork.entity;
 
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
+/**
+ * Сущность уведомления.
+ */
 @Entity
 @Table(name = "notification")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-@ToString
 @NoArgsConstructor
 public class Notification {
 
@@ -38,17 +48,4 @@ public class Notification {
 
     @Column(name = "read_status")
     private boolean readStatus;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Notification that = (Notification) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
 }

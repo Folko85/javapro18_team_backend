@@ -11,7 +11,6 @@ import com.skillbox.socialnetwork.repository.PersonRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -34,17 +32,26 @@ import java.util.stream.Collectors;
 
 import static java.time.ZoneOffset.UTC;
 
+/**
+ * Сервис пользователей.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
 
-    public static String deletedImage = "http://res.cloudinary.com/mmm-skillbox/image/upload/c_fill,h_300,w_300/NkbgPAkUQT";
+    private static final String DELETED_IMAGE = "http://res.cloudinary.com/mmm-skillbox/image/upload/c_fill,h_300,w_300/NkbgPAkUQT";
 
     private final PersonRepository personRepository;
     private final FriendshipService friendshipService;
     private final StorageService storageService;
 
+    /**
+     * Получить пользователя по почте.
+     *
+     * @param principal
+     * @return
+     */
     @Cacheable(value = "personProfileCache", key = "#principal.getName")
     public AuthData getUserByEmail(Principal principal) {
         AuthData userRest = convertUserToUserRest(getPersonByEmail(principal));
@@ -52,6 +59,12 @@ public class UserService {
         return userRest;
     }
 
+    /**
+     * Получить пользователя по почте.
+     *
+     * @param principal
+     * @return
+     */
     public Person getPersonByEmail(Principal principal) {
         return personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
@@ -60,12 +73,24 @@ public class UserService {
                 });
     }
 
+    /**
+     * Получить данные пользователя по ИД.
+     *
+     * @param id
+     * @return
+     */
     public AuthData getUserById(Integer id) {
         AuthData userRest = convertUserToUserRest(getPersonById(id));
         log.info("User with id {} was received", userRest.getId());
         return userRest;
     }
 
+    /**
+     * Получить пользователя по ИД.
+     *
+     * @param id
+     * @return
+     */
     public Person getPersonById(Integer id) {
         return personRepository.findById(id)
                 .orElseThrow(() -> {
@@ -74,6 +99,12 @@ public class UserService {
                 });
     }
 
+    /**
+     * Получить свои данные.
+     *
+     * @param principal
+     * @return
+     */
     public DataResponse<AuthData> getUserMe(Principal principal) {
         if (principal == null) {
             throw new BadCredentialsException("Доступ запрещён");
@@ -81,6 +112,13 @@ public class UserService {
         return createResponse(getUserByEmail(principal));
     }
 
+    /**
+     * Создание ответа.
+     *
+     * @param authData
+     * @param error
+     * @return
+     */
     public DataResponse<AuthData> createResponse(AuthData authData, String error) {
         DataResponse<AuthData> userRestResponse = new DataResponse<>();
         userRestResponse.setTimestamp(Instant.now());
@@ -89,10 +127,23 @@ public class UserService {
         return userRestResponse;
     }
 
+    /**
+     * Создать ответ.
+     *
+     * @param authData
+     * @return
+     */
     public DataResponse<AuthData> createResponse(AuthData authData) {
         return createResponse(authData, "null");
     }
 
+    /**
+     * Получить пользователя.
+     *
+     * @param id
+     * @param principal
+     * @return
+     */
     public DataResponse<AuthData> getUser(int id, Principal principal) {
         AuthData current = getUserByEmail(principal);
         log.info("Attempt to get user by Id, requester id: {}, target id: {}", current.getId(), id);
@@ -112,6 +163,14 @@ public class UserService {
 
     }
 
+    /**
+     * Обновить данные пользователя.
+     *
+     * @param updates
+     * @param principal
+     * @return
+     * @throws ApiConnectException
+     */
     public DataResponse<AuthData> updateUser(AuthData updates, Principal principal) throws ApiConnectException {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> {
@@ -142,6 +201,12 @@ public class UserService {
         return response;
     }
 
+    /**
+     * Удалить пользователя.
+     *
+     * @param principal
+     * @return
+     */
     public DataResponse<SuccessResponse> deleteUser(Principal principal) {
         Person person = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
@@ -152,6 +217,12 @@ public class UserService {
         return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
+    /**
+     * Получение данных авторизации из данных пользователя.
+     *
+     * @param person
+     * @return
+     */
     public AuthData convertUserToUserRest(Person person) {
         AuthData userRest = new AuthData();
         if (person.isDeleted()) {
@@ -160,7 +231,7 @@ public class UserService {
             userRest.setFirstName(person.getFirstName());
             userRest.setLastName(person.getLastName());
             userRest.setAbout("Страница удалена");
-            userRest.setPhoto(deletedImage);
+            userRest.setPhoto(DELETED_IMAGE);
             userRest.setDeleted(true);
         } else {
             BeanUtils.copyProperties(person, userRest);
@@ -175,11 +246,16 @@ public class UserService {
         return userRest;
     }
 
+    /**
+     * Обновление после мягкого удаления.
+     *
+     * @param person
+     */
     public void updateAfterSoftDelete(Person person) {
         person.setFirstName("Deleted");
         person.setLastName("Deleted");
         person.setBirthday(LocalDate.now());
-        person.setPhoto(deletedImage);
+        person.setPhoto(DELETED_IMAGE);
         person.setDeleted(false);
         person.setAbout("Account was deleted.");
         person.setCity(null);
@@ -189,15 +265,23 @@ public class UserService {
         personRepository.save(person);
     }
 
+    /**
+     * Найти человека.
+     *
+     * @param firstName
+     * @param lastName
+     * @param ageFrom
+     * @param ageTo
+     * @param country
+     * @param encodedCity
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     public ListResponse<AuthData> searchPerson(String firstName, String lastName, int ageFrom, int ageTo, String country,
-                                               String encoded_city, int offset, int itemPerPage, Principal principal) {
-        String city;
-        try {
-            city = URLDecoder.decode(encoded_city, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            city = "";
-            log.error("Error with decoding city from URL format {}", encoded_city);
-        }
+                                               String encodedCity, int offset, int itemPerPage, Principal principal) {
+        String city = URLDecoder.decode(encodedCity, StandardCharsets.UTF_8);
         log.debug("поиск пользователя");
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Person> personPage;

@@ -31,11 +31,20 @@ public class RabbitConfig {
         return connectionFactory;
     }
 
+    /**
+     * Бин конвертера.
+     * @param defaultObjectMapper
+     * @return
+     */
     @Bean
     MessageConverter commonJsonMessageConverter(ObjectMapper defaultObjectMapper) {
         return new Jackson2JsonMessageConverter(defaultObjectMapper);
     }
 
+    /**
+     * Стандартный сериализатор.
+     * @return
+     */
     @Bean
     public ObjectMapper defaultObjectMapper() {
         final var mapper = new ObjectMapper();
@@ -44,6 +53,10 @@ public class RabbitConfig {
         return mapper;
     }
 
+    /**
+     * Бин административных функций.
+     * @return
+     */
     @Bean
     public AmqpAdmin amqpAdmin() {
         AmqpAdmin admin = new RabbitAdmin(connectionFactory());
@@ -53,6 +66,10 @@ public class RabbitConfig {
         return new RabbitAdmin(connectionFactory());
     }
 
+    /**
+     * Бин клиента для Рэббита.
+     * @return
+     */
     @Bean
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate template = new RabbitTemplate(connectionFactory());
@@ -63,16 +80,30 @@ public class RabbitConfig {
     }
 
 
+    /**
+     * Бин очереди.
+     * @return
+     */
     @Bean
     Queue queue() {
         return new Queue(properties.getQueue());
     }
 
+    /**
+     * Бин эксчейнджа.
+     * @return
+     */
     @Bean
     DirectExchange exchange() {
         return new DirectExchange(properties.getExchange());
     }
 
+    /**
+     * Бин связи эксчейнджа и очереди.
+     * @param queue
+     * @param exchange
+     * @return
+     */
     @Bean
     Binding binding(Queue queue, DirectExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with(properties.getRoutingKey());

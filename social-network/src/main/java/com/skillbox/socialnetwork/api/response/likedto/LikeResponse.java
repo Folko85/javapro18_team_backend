@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.time.Instant;
 
+/**
+ * Ответ на лайк.
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LikeResponse {

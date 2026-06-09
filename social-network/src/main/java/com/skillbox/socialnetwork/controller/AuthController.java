@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Контроллер для авторизации.
+ */
 @Slf4j
 @RestController
 @Tag(name = "Контроллер для авторизации")
@@ -22,12 +25,22 @@ public class AuthController {
         this.authService = authService;
     }
 
+    /**
+     * Вход.
+     * @param loginRequest
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/login")
     @Operation(summary = "login")
     public DataResponse<AuthData> login(@RequestBody LoginRequest loginRequest) throws Exception {
         return authService.auth(loginRequest);
     }
 
+    /**
+     * Выход.
+     * @return
+     */
     @GetMapping("/logout")
     @Operation(summary = "logout")
     public DataResponse<SuccessResponse> logout() {

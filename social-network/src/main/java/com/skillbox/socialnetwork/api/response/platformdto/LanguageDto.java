@@ -4,6 +4,9 @@ import com.skillbox.socialnetwork.api.response.Dto;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+/**
+ * Язык.
+ */
 @Data
 @Accessors(chain = true)
 public class LanguageDto implements Dto {

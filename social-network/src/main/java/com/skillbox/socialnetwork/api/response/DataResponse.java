@@ -12,6 +12,10 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.time.Instant;
 
+/**
+ * Обёртка над ответом.
+ * @param <T>
+ */
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

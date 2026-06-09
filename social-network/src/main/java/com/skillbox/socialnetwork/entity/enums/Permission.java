@@ -1,5 +1,8 @@
 package com.skillbox.socialnetwork.entity.enums;
 
+/**
+ * Разрешения.
+ */
 public enum Permission {
     USER("user:write"),
     MODERATE("user:moderate"),

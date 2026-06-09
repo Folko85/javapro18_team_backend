@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Контроллер для получения списка стран и подгрузки городов для страны.
+ */
 @Slf4j
 @RestController
 @Tag(name = "Контроллер для получения списка стран и подгрузки городов для страны")
@@ -27,6 +30,13 @@ public class PlatformController {
     }
 
 
+    /**
+     * Получение списка стран.
+     * @param country
+     * @param offset
+     * @param itemPerPage
+     * @return
+     */
     @GetMapping("/platform/countries")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получение списка стран", security = @SecurityRequirement(name = "jwt"))
@@ -36,6 +46,14 @@ public class PlatformController {
         return platformService.getCountries(country, offset, itemPerPage);
     }
 
+    /**
+     * Запрос списка городов в количестве itemPerPage содержащих city.
+     * @param countryId
+     * @param city
+     * @param offset
+     * @param itemPerPage
+     * @return
+     */
     @GetMapping("/platform/cities")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Запрос списка городов в количестве itemPerPage содержащих city", security = @SecurityRequirement(name = "jwt"))

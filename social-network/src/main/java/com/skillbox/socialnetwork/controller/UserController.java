@@ -4,7 +4,13 @@ import com.skillbox.socialnetwork.api.response.DataResponse;
 import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
-import com.skillbox.socialnetwork.exception.*;
+import com.skillbox.socialnetwork.exception.ApiConnectException;
+import com.skillbox.socialnetwork.exception.BlockAlreadyExistsException;
+import com.skillbox.socialnetwork.exception.BlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.UnBlockingDeletedAccountException;
+import com.skillbox.socialnetwork.exception.UnBlockingException;
+import com.skillbox.socialnetwork.exception.UserBlocksHimSelfException;
+import com.skillbox.socialnetwork.exception.UserUnBlocksHimSelfException;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import com.skillbox.socialnetwork.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,11 +18,20 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
-
+/**
+ * Контроллер для работы с профилем.
+ */
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/users")
@@ -31,12 +46,25 @@ public class UserController {
 
     }
 
+    /**
+     * Получение текущего пользователя.
+     *
+     * @param principal
+     * @return
+     */
     @GetMapping("/me")
     @Operation(summary = "Получение текущего пользователя", security = @SecurityRequirement(name = "jwt"))
     public DataResponse<AuthData> getMe(Principal principal) {
         return userService.getUserMe(principal);
     }
 
+    /**
+     * Получение пользователя по его id.
+     *
+     * @param id
+     * @param principal
+     * @return
+     */
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получение пользователя по его id", security = @SecurityRequirement(name = "jwt"))
@@ -44,6 +72,14 @@ public class UserController {
         return userService.getUser(id, principal);
     }
 
+    /**
+     * Обновить профиль пользователя.
+     *
+     * @param person
+     * @param principal
+     * @return
+     * @throws ApiConnectException
+     */
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Обновить профиль пользователя", security = @SecurityRequirement(name = "jwt"))
@@ -51,6 +87,12 @@ public class UserController {
         return userService.updateUser(person, principal);
     }
 
+    /**
+     * Удалить профиль пользователя.
+     *
+     * @param principal
+     * @return
+     */
     @DeleteMapping("/me")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Удалить профиль пользователя", security = @SecurityRequirement(name = "jwt"))
@@ -58,20 +100,56 @@ public class UserController {
         return userService.deleteUser(principal);
     }
 
+    /**
+     * Заблокировать пользователя.
+     *
+     * @param id
+     * @param principal
+     * @return
+     * @throws BlockAlreadyExistsException
+     * @throws UserBlocksHimSelfException
+     * @throws BlockingDeletedAccountException
+     */
     @PutMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Заблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
-    public DataResponse<SuccessResponse> blockUser(@PathVariable int id, Principal principal) throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
+    public DataResponse<SuccessResponse> blockUser(@PathVariable int id, Principal principal)
+            throws BlockAlreadyExistsException, UserBlocksHimSelfException, BlockingDeletedAccountException {
         return friendshipService.blockUser(principal, id);
     }
 
+    /**
+     * Разблокировать пользователя.
+     *
+     * @param id
+     * @param principal
+     * @return
+     * @throws UnBlockingException
+     * @throws UserUnBlocksHimSelfException
+     * @throws UnBlockingDeletedAccountException
+     */
     @DeleteMapping("/block/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Разблокировать пользователя", security = @SecurityRequirement(name = "jwt"))
-    public DataResponse<SuccessResponse> unBlockUser(@PathVariable int id, Principal principal) throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
+    public DataResponse<SuccessResponse> unBlockUser(@PathVariable int id, Principal principal)
+            throws UnBlockingException, UserUnBlocksHimSelfException, UnBlockingDeletedAccountException {
         return friendshipService.unBlockUser(principal, id);
     }
 
+    /**
+     * Поиск пользователя.
+     *
+     * @param firstName
+     * @param lastName
+     * @param ageFrom
+     * @param ageTo
+     * @param country
+     * @param city
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Поиск пользователя", security = @SecurityRequirement(name = "jwt"))

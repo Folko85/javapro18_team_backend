@@ -12,6 +12,9 @@ import lombok.experimental.Accessors;
 
 import java.time.Instant;
 
+/**
+ * Данные уведомлений.
+ */
 @Data
 @Accessors(chain = true)
 public class SocketNotificationData implements Dto {

@@ -6,16 +6,30 @@ import com.skillbox.socialnetwork.api.response.ListResponse;
 import com.skillbox.socialnetwork.api.response.SuccessResponse;
 import com.skillbox.socialnetwork.api.response.authdto.AuthData;
 import com.skillbox.socialnetwork.api.response.friendsdto.ResponseFriendsList;
-import com.skillbox.socialnetwork.exception.*;
+import com.skillbox.socialnetwork.exception.AddingOrSubscribingOnBlockedPersonException;
+import com.skillbox.socialnetwork.exception.AddingOrSubscribingOnBlockerPersonException;
+import com.skillbox.socialnetwork.exception.AddingYourselfToFriends;
+import com.skillbox.socialnetwork.exception.DeletedAccountException;
+import com.skillbox.socialnetwork.exception.FriendshipExistException;
+import com.skillbox.socialnetwork.exception.FriendshipNotFoundException;
 import com.skillbox.socialnetwork.service.FriendshipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
+/**
+ * Работа с друзьями.
+ */
 @RestController
 @Tag(name = "Друзья", description = "Работа с друзьями")
 public class FriendshipController {
@@ -26,6 +40,15 @@ public class FriendshipController {
         this.friendshipService = friendshipService;
     }
 
+    /**
+     * Получить список друзей.
+     *
+     * @param name
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @Operation(summary = "Список друзей",
             description = "Получить список друзей", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends")
@@ -37,6 +60,14 @@ public class FriendshipController {
         return friendshipService.getFriends(name, offset, itemPerPage, principal);
     }
 
+    /**
+     * Удаление пользователя из друзей.
+     *
+     * @param id
+     * @param principal
+     * @return
+     * @throws FriendshipNotFoundException
+     */
     @Operation(summary = "Удаление пользователя",
             description = "Удаление пользователя из друзей", security = @SecurityRequirement(name = "jwt"))
     @DeleteMapping("/api/v1/friends/{id}")
@@ -46,15 +77,38 @@ public class FriendshipController {
 
     }
 
+    /**
+     * Принять/добавить пользователя в друзья.
+     *
+     * @param id
+     * @param principal
+     * @return
+     * @throws AddingOrSubscribingOnBlockerPersonException
+     * @throws DeletedAccountException
+     * @throws AddingOrSubscribingOnBlockedPersonException
+     * @throws AddingYourselfToFriends
+     * @throws FriendshipExistException
+     */
     @Operation(summary = "Добавление в друзья",
-            description = "Принть/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
+            description = "Принять/добавить пользователя в друзья", security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/friends/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public DataResponse<SuccessResponse> addingToFriends(@PathVariable int id, Principal principal) throws AddingOrSubscribingOnBlockerPersonException, DeletedAccountException, AddingOrSubscribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
+    public DataResponse<SuccessResponse> addingToFriends(@PathVariable int id, Principal principal)
+            throws AddingOrSubscribingOnBlockerPersonException, DeletedAccountException,
+            AddingOrSubscribingOnBlockedPersonException, AddingYourselfToFriends, FriendshipExistException {
         return friendshipService.addNewFriend(id, principal);
 
     }
 
+    /**
+     * Получить список заявок.
+     *
+     * @param name
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @Operation(summary = "Список заявок",
             description = "Получить список заявок", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/request")
@@ -66,6 +120,14 @@ public class FriendshipController {
         return friendshipService.getFriendsRequests(name, offset, itemPerPage, principal);
     }
 
+    /**
+     * Получить список рекомендаций.
+     *
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @Operation(summary = "Рекомендации",
             description = "Получить список рекомендаций", security = @SecurityRequirement(name = "jwt"))
     @GetMapping("/api/v1/friends/recommendations")
@@ -76,8 +138,16 @@ public class FriendshipController {
         return friendshipService.recommendedUsers(offset, itemPerPage, principal);
     }
 
+    /**
+     * Являются ли пользователи друзьями.
+     *
+     * @param isFriends
+     * @param principal
+     * @return
+     */
     @Operation(summary = "Являются ли пользователи друзьями",
-            description = "Получить информацию является ли пользователь другом указанных пользователей", security = @SecurityRequirement(name = "jwt"))
+            description = "Получить информацию является ли пользователь другом указанных пользователей",
+            security = @SecurityRequirement(name = "jwt"))
     @PostMapping("/api/v1/is/friends")
     @PreAuthorize("hasAuthority('user:write')")
     public ResponseFriendsList isFriends(@RequestBody IsFriends isFriends, Principal principal) {

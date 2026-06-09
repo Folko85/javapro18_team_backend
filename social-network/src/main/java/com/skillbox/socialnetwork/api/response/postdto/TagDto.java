@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+/**
+ * Тэг.
+ */
 @Data
 @Accessors(chain = true)
 @Schema(description = "Список городов")

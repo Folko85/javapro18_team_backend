@@ -2,7 +2,10 @@ package com.skillbox.socialnetwork.api.request.socketio;
 
 import lombok.Data;
 
+/**
+ * Прочитанные сообщения.
+ */
 @Data
 public class ReadMessagesData {
-    public int dialog;
+    private int dialog;
 }

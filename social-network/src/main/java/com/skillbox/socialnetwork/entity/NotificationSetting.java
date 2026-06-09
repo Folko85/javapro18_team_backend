@@ -6,6 +6,9 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
+/**
+ * Настройки уведомлений.
+ */
 @Entity
 @Table(name = "notification_setting")
 @Getter

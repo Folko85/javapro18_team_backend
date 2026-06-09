@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
+/**
+ * Контроллер для работы с лайками.
+ */
 @Slf4j
 @RestController
 @Tag(name = "Контроллер для работы с лайками")
@@ -25,6 +28,13 @@ public class LikeController {
         this.likeService = likeService;
     }
 
+    /**
+     * Поставить лайк.
+     * @param likeRequest
+     * @param principal
+     * @return
+     * @throws LikeNotFoundException
+     */
     @PutMapping("/likes")
     @Operation(summary = "Поставить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
@@ -33,6 +43,14 @@ public class LikeController {
         return likeService.putLikes(likeRequest, principal);
     }
 
+    /**
+     * Удалить лайк.
+     * @param itemId
+     * @param type
+     * @param principal
+     * @return
+     * @throws LikeNotFoundException
+     */
     @DeleteMapping("/likes")
     @Operation(summary = "Удалить лайк", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
@@ -42,6 +60,12 @@ public class LikeController {
         return likeService.deleteLike(itemId, type, principal);
     }
 
+    /**
+     * Получить посты в поиске.
+     * @param itemId
+     * @param type
+     * @return
+     */
     @GetMapping("/likes")
     @Operation(summary = "Получить лайки", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")

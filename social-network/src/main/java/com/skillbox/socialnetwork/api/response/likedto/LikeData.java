@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Лайк.
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LikeData implements Dto {

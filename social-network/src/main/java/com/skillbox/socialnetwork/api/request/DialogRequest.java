@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
+
+/**
+ * Диалог.
+ */
 @Data
 public class DialogRequest {
     @JsonProperty("users_ids")

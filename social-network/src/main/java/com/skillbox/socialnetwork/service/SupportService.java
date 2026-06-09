@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+/**
+ * Сервис поддержки.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -18,6 +21,11 @@ public class SupportService {
     private final RabbitTemplate template;
     private final RabbitProperties properties;
 
+    /**
+     * Создать и отправить сообщение.
+     * @param requestDto
+     * @return
+     */
     public DataResponse<SuccessResponse> createAndSendMessage(SupportRequestDto requestDto) {
         template.convertAndSend(properties.getExchange(), properties.getRoutingKey(), requestDto);
         log.info("Send new m: {}", requestDto);
