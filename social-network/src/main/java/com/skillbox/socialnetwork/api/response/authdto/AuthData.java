@@ -11,6 +11,9 @@ import lombok.Data;
 
 import java.time.Instant;
 
+/**
+ * Данные авторизации.
+ */
 @Data
 public class AuthData implements Dto {
     private int id;

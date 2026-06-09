@@ -26,29 +26,43 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.Map;
 
+/**
+ * Сервис работы с хранилищем файлов.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class StorageService {
 
+    private static final Integer FOUR = 4;
+    private static final Integer PIXELS = 300;
+    private static final Integer DEFAULT_COUNT = 10;
+    private static final Integer MAX_SIZE = 5242880;
+
     private final PersonRepository personRepository;
-
     private final FileRepository fileRepository;
-
     private final CloudinaryProperties cloudinaryProperties;
 
+    /**
+     * Загрузить изображение.
+     * @param image
+     * @param type
+     * @param principal
+     * @return
+     * @throws IOException
+     */
     public DataResponse<ImageDto> uploadImage(MultipartFile image, String type, Principal principal) throws IOException {
         Person current = personRepository.findByEMail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(principal.getName()));
 
-        if (image.getSize() > 5242880) {
-            throw new FileSizeLimitExceededException("Please reduce image" + image.getOriginalFilename(), image.getSize(), 5242880);
+        if (image.getSize() > MAX_SIZE) {
+            throw new FileSizeLimitExceededException("Please reduce image" + image.getOriginalFilename(), image.getSize(), MAX_SIZE);
         }
 
         Cloudinary cloudinary = getInstance();
 
         Map response = cloudinary.uploader().upload(image.getBytes(),
-                ObjectUtils.asMap("public_id", RandomStringUtils.randomAlphabetic(10)));
+                ObjectUtils.asMap("public_id", RandomStringUtils.randomAlphabetic(DEFAULT_COUNT)));
 
 
         ImageDto imageDTO = new ImageDto();
@@ -56,8 +70,8 @@ public class StorageService {
             String url = cloudinary.url()
                     .transformation(new Transformation()
                             .crop("fill")
-                            .width(300)
-                            .height(300))
+                            .width(PIXELS)
+                            .height(PIXELS))
                     .format("jpg")
                     .generate(response.get("public_id").toString());
             PostFile postFile = fileRepository.save(new PostFile().setUrl(url).setUserId(current.getId()));
@@ -83,15 +97,26 @@ public class StorageService {
                 "api_secret", cloudinaryProperties.getSecret())));
     }
 
+    /**
+     * Удалить изображение.
+     * @param id
+     * @return
+     * @throws ApiConnectException
+     */
     public DataResponse<SuccessResponse> deleteImage(int id) throws ApiConnectException {
         String url = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Нет такого файла")).getUrl();
         deleteImageByUrl(url);
         return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
     }
 
+    /**
+     * Удалить картинку по ИД.
+     * @param url
+     * @throws ApiConnectException
+     */
     public void deleteImageByUrl(String url) throws ApiConnectException {
         try {
-            String publicId = url.substring(url.lastIndexOf("/") + 1, url.length() - 4);
+            String publicId = url.substring(url.lastIndexOf("/") + 1, url.length() - FOUR);
             Cloudinary cloudinary = getInstance();
             cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             fileRepository.delete(fileRepository.findByUrl(url));

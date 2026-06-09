@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Пост.
+ */
 @Data
 public class PostRequest {
     private String title;

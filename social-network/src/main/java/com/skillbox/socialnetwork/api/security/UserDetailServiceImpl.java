@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * Сервис пользователей Security.
+ */
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
     private final PersonRepository personRepository;

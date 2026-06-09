@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-
+/**
+ * Контроллер для работы с созданием учётной записи и безопасностью.
+ */
 @Slf4j
 @RestController
 @Tag(name = "Контроллер для работы с созданием учётной записи и безопасностью")
@@ -29,18 +31,38 @@ public class ApiAccountController {
         this.accountService = accountService;
     }
 
+    /**
+     * Регистрация.
+     * @param registerRequest
+     * @return
+     * @throws UserExistException
+     * @throws MailjetException
+     */
     @PostMapping("/register")
     @Operation(summary = "Регистрация")
     public DataResponse<SuccessResponse> register(@RequestBody RegisterRequest registerRequest) throws UserExistException, MailjetException {
         return accountService.register(registerRequest);
     }
 
+    /**
+     * Восстановление пароля.
+     * @param recoveryRequest
+     * @return
+     * @throws MailjetException
+     */
     @PutMapping("/recovery")
     @Operation(summary = "Восстановление пароля")
     public String recoverySend(@RequestBody RecoveryRequest recoveryRequest) throws MailjetException {
         return accountService.sendRecoveryMessage(recoveryRequest);
     }
 
+    /**
+     * Подтверждение восстановления пароля.
+     * @param key
+     * @param eMail
+     * @return
+     * @throws MailjetException
+     */
     @GetMapping("/recovery_complete")
     @Operation(summary = "Подтверждение восстановления пароля")
     public String recoveryComplete(@RequestParam String key,
@@ -48,6 +70,12 @@ public class ApiAccountController {
         return accountService.recoveryComplete(key, eMail);
     }
 
+    /**
+     * Подтверждение регистрации.
+     * @param key
+     * @param eMail
+     * @return
+     */
     @GetMapping("/registration_complete")
     @Operation(summary = "Подтверждение регистрации")
     public String registrationComplete(@RequestParam String key,
@@ -55,13 +83,27 @@ public class ApiAccountController {
         return accountService.registrationComplete(key, eMail);
     }
 
+    /**
+     * Смена email.
+     * @param eMailChangeRequest
+     * @param principal
+     * @return
+     * @throws UserExistException
+     */
     @PutMapping("/email")
     @Operation(summary = "Смена email", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
-    public DataResponse<SuccessResponse> eMailChange(@RequestBody EMailChangeRequest eMailChangeRequest, Principal principal) throws UserExistException {
+    public DataResponse<SuccessResponse> eMailChange(
+            @RequestBody EMailChangeRequest eMailChangeRequest, Principal principal)
+            throws UserExistException {
         return accountService.changeEMail(eMailChangeRequest, principal);
     }
 
+    /**
+     * Смена пароля.
+     * @param passwdChangeRequest
+     * @return
+     */
     @PutMapping("/password/set")
     @Operation(summary = "Смена пароля", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
@@ -69,6 +111,12 @@ public class ApiAccountController {
         return accountService.changePasswd(passwdChangeRequest);
     }
 
+    /**
+     * Настройка уведомлений.
+     * @param notificationsRequest
+     * @param principal
+     * @return
+     */
     @PutMapping("/notifications")
     @Operation(summary = "Настройка уведомлений", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")
@@ -76,6 +124,11 @@ public class ApiAccountController {
         return accountService.setNotificationsSetting(notificationsRequest, principal);
     }
 
+    /**
+     * Уведомления.
+     * @param principal
+     * @return
+     */
     @GetMapping("/notifications")
     @Operation(summary = "Уведомления", security = @SecurityRequirement(name = "jwt"))
     @PreAuthorize("hasAuthority('user:write')")

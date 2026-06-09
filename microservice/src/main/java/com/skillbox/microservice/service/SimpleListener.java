@@ -6,12 +6,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
+/**
+ * Листенер сообщений из основного приложения.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SimpleListener {
     private final MessageService messageService;
 
+    /**
+     * Слушатель сообщений из основного приложения.
+     * @param dto
+     */
     @RabbitListener(queues = "support", messageConverter = "commonJsonMessageConverter")
     public void getMessage(SupportRequestDto dto) {
         log.info("получено сообщение '{}' в support", dto.getMessage());

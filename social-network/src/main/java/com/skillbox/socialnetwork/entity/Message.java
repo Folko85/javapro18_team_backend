@@ -1,17 +1,24 @@
 package com.skillbox.socialnetwork.entity;
 
 import com.sun.istack.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
-import org.hibernate.Hibernate;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-@Getter
-@Setter
+/**
+ * Сущность сообщения.
+ */
+@Data
 @Entity
 @Accessors(chain = true)
 @Table(name = "message")
@@ -35,17 +42,4 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "dialog_id")
     private Dialog dialog;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Message message = (Message) o;
-        return Objects.equals(id, message.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
 }

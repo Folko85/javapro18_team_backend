@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
+/**
+ * Контроллер сообщений.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/")
@@ -26,6 +29,16 @@ public class MessageController {
         this.messageService = messageService;
     }
 
+    /**
+     * Получить сообщения.
+     * @param id
+     * @param query
+     * @param offset
+     * @param itemPerPage
+     * @param fromMessageId
+     * @param principal
+     * @return
+     */
     @GetMapping("/dialogs/{id}/messages")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получить сообщения", security = @SecurityRequirement(name = "jwt"))
@@ -38,6 +51,13 @@ public class MessageController {
         return messageService.getMessages(id, offset, itemPerPage, principal);
     }
 
+    /**
+     * Отправить сообщение.
+     * @param id
+     * @param messageRequest
+     * @param principal
+     * @return
+     */
     @PostMapping("/dialogs/{id}/messages")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Отправить сообщение", security = @SecurityRequirement(name = "jwt"))
@@ -47,6 +67,11 @@ public class MessageController {
         return messageService.postMessage(id, messageRequest, principal);
     }
 
+    /**
+     * Получить непрочитанные.
+     * @param principal
+     * @return
+     */
     @GetMapping("/dialogs/unreaded")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получить непрочитанные", security = @SecurityRequirement(name = "jwt"))

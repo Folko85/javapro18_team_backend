@@ -5,6 +5,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Сериализатор.
+ */
 public class DefaultInstantDeserializer extends InstantDeserializer<Instant> {
     public DefaultInstantDeserializer() {
         super(Instant.class, DateTimeFormatter.ISO_INSTANT,

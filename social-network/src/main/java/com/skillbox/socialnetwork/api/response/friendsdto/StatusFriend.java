@@ -6,6 +6,9 @@ import com.skillbox.socialnetwork.entity.enums.FriendshipStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * Статус дружбы.
+ */
 @Data
 @AllArgsConstructor
 public class StatusFriend implements Dto {

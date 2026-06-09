@@ -9,10 +9,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
+/**
+ * Контроллер для получения уведомлений.
+ */
 @Slf4j
 @RestController
 @Tag(name = "Контроллер для получения уведомлений")
@@ -22,6 +29,14 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    /**
+     * Получить уведомления.
+     *
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @GetMapping("/notifications")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получить уведомления", security = @SecurityRequirement(name = "jwt"))
@@ -31,6 +46,16 @@ public class NotificationController {
         return notificationService.getNotification(offset, itemPerPage, principal);
     }
 
+    /**
+     * Прочитать уведомление(я).
+     *
+     * @param offset
+     * @param itemPerPage
+     * @param id
+     * @param all
+     * @param principal
+     * @return
+     */
     @PutMapping("/notifications")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Прочитать уведомление(я)", security = @SecurityRequirement(name = "jwt"))

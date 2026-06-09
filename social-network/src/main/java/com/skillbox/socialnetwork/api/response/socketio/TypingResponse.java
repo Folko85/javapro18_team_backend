@@ -4,6 +4,9 @@ import com.skillbox.socialnetwork.api.response.Dto;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+/**
+ * Печатает ответ.
+ */
 @Accessors(chain = true)
 @Data
 public class TypingResponse implements Dto {

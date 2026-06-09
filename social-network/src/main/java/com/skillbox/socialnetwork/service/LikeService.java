@@ -19,7 +19,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Сервис лайков.
+ */
 @Service
 @AllArgsConstructor
 public class LikeService {
@@ -28,15 +30,28 @@ public class LikeService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
+    /**
+     * Получить лайки.
+     * @param itemId
+     * @param type
+     * @return
+     */
     public DataResponse<LikeData> getLikes(int itemId, String type) {
-
         return getLikesResponse(itemId, type);
     }
 
+    /**
+     * Положить лайки.
+     * @param likeRequest
+     * @param principal
+     * @return
+     * @throws LikeNotFoundException
+     */
     public DataResponse<LikeData> putLikes(LikeRequest likeRequest, Principal principal) throws LikeNotFoundException {
         Person person = findPerson(principal.getName());
-        if (likeRepository.findLikeByItemAndTypeAndPerson(likeRequest.getItemId(), likeRequest.getType(), person).isPresent())
+        if (likeRepository.findLikeByItemAndTypeAndPerson(likeRequest.getItemId(), likeRequest.getType(), person).isPresent()) {
             throw new LikeNotFoundException();
+        }
         checkItemId(likeRequest.getItemId(), likeRequest.getType());
         Like like = new Like();
         like.setItem(likeRequest.getItemId());
@@ -47,6 +62,15 @@ public class LikeService {
         return getLikesResponse(likeRequest.getItemId(), likeRequest.getType());
     }
 
+    /**
+     * Удалить лайк.
+     *
+     * @param itemId
+     * @param type
+     * @param principal
+     * @return
+     * @throws LikeNotFoundException
+     */
     public DataResponse<LikeData> deleteLike(int itemId, String type, Principal principal) throws LikeNotFoundException {
         Person person = findPerson(principal.getName());
         Like like = likeRepository.findLikeByItemAndTypeAndPerson(itemId, type, person)
@@ -74,10 +98,10 @@ public class LikeService {
     }
 
     private void checkItemId(int itemId, String type) throws LikeNotFoundException {
-        if (!(type.equals("Post") && postRepository.findById(itemId).isPresent()))
-            if (!(type.equals("Comment") && commentRepository.findById(itemId).isPresent()))
+        if (!(type.equals("Post") && postRepository.findById(itemId).isPresent())) {
+            if (!(type.equals("Comment") && commentRepository.findById(itemId).isPresent())) {
                 throw new LikeNotFoundException();
+            }
+        }
     }
-
-
 }

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+/**
+ * ДТО запроса в поддержку.
+ */
 @Data
 @Accessors(chain = true)
 public class SupportRequestDto {

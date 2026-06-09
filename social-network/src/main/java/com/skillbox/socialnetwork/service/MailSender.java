@@ -13,6 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+/**
+ * Отправка писем.
+ */
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -20,6 +23,12 @@ public class MailSender {
 
     private final MailProperties mailProperties;
 
+    /**
+     * Отправить письмо.
+     * @param emailTo
+     * @param message
+     * @throws MailjetException
+     */
     public void send(String emailTo, String message) throws MailjetException {
         MailjetClient client;
         MailjetRequest request;

@@ -3,6 +3,10 @@
   <Match>
     <Bug pattern="NM_CONFUSING" />
   </Match>
+    <Match>
+        <Class name="com.skillbox.microservice.controller.SupportMessagesController"/>
+        <Bug pattern="EI_EXPOSE_REP2" />
+    </Match>
   <Match>
     <Bug pattern="~.*" />
     <Package name="~generated([.].*)?" />
@@ -520,7 +524,7 @@
     <Bug pattern="SE_NO_SERIALVERSIONID" />
   </Match>
   <Match>
-    <Class name="com.skillbox.microservice.vaadin.service.SendMailService" />
+    <Class name="com.skillbox.microservice.service.SendMailService" />
     <Bug pattern="DLS_DEAD_LOCAL_STORE" />
   </Match>
   <Match>

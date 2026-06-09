@@ -7,11 +7,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+/**
+ * Список разрешённых адресов для входа.
+ */
 @Data
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "cors")
 public class CORSProperties {
 
-    Set<String> urls;
+    private Set<String> urls;
 }

@@ -11,9 +11,11 @@ import lombok.experimental.Accessors;
 
 import java.time.Instant;
 
+/**
+ * Сообщение.
+ */
 @Data
 @Accessors(chain = true)
-
 public class MessageData implements Dto {
     private int id;
     @JsonSerialize(using = InstantSerializer.class)

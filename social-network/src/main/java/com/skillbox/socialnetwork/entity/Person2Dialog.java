@@ -1,21 +1,24 @@
 package com.skillbox.socialnetwork.entity;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.hibernate.Hibernate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
+/**
+ * Связь человека с диалогом.
+ */
 @Entity
 @Table(name = "person2dialog")
-@Getter
-@Setter
-@ToString
+@Data
 @RequiredArgsConstructor
 @Accessors(chain = true)
 public class Person2Dialog {
@@ -33,17 +36,4 @@ public class Person2Dialog {
 
     @OneToOne
     private Dialog dialog;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Person2Dialog that = (Person2Dialog) o;
-        return id != null && Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

@@ -7,6 +7,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * Пост.
+ */
 @Entity
 @Table(name = "post")
 @Data

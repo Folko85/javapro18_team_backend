@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Запросы в техническую поддержку.
+ */
 @Slf4j
 @RestController
 @Tag(name = "Запросы в техническую поддержку")
@@ -21,6 +24,11 @@ public class SupportController {
         this.supportService = supportService;
     }
 
+    /**
+     * Создать запрос в поддержку.
+     * @param requestDto
+     * @return
+     */
     @PostMapping("api/v1/support")
     public DataResponse<SuccessResponse> create(@RequestBody SupportRequestDto requestDto) {
         log.info("a message has been received in support");

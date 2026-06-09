@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис тегов.
+ */
 @Service
 @AllArgsConstructor
 public class TagService {
@@ -28,6 +31,13 @@ public class TagService {
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
 
+    /**
+     * Получить теги.
+     * @param tag
+     * @param offset
+     * @param itemPerPage
+     * @return
+     */
     public ListResponse<TagDto> getTags(String tag, int offset, int itemPerPage) {
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
         Page<Tag> pagebleTagList = tagRepository.findTagsByTextContaining(tag, pageable);
@@ -41,6 +51,11 @@ public class TagService {
         return response;
     }
 
+    /**
+     * Создать тег.
+     * @param tag
+     * @return
+     */
     public DataResponse<TagDto> postTag(TagDto tag) {
         DataResponse<TagDto> response = new DataResponse<>();
 
@@ -54,6 +69,11 @@ public class TagService {
     }
 
 
+    /**
+     * Удалить тег.
+     * @param id
+     * @return
+     */
     public DataResponse<SuccessResponse> deleteTag(int id) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tag is not exist"));

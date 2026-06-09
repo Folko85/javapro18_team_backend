@@ -23,19 +23,30 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.skillbox.socialnetwork.service.UserService.deletedImage;
 import static java.time.ZoneOffset.UTC;
 
+/**
+ * Сервис авторизации.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class AuthService {
+
+    private static final String DELETED_IMAGE = "http://res.cloudinary.com/mmm-skillbox/image/upload/c_fill,h_300,w_300/NkbgPAkUQT";
+
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final SessionRepository sessionRepository;
     private final NotificationService notificationService;
 
+    /**
+     * Аутентификация.
+     * @param loginRequest
+     * @return
+     * @throws DeletedAccountLoginException
+     */
     public DataResponse<AuthData> auth(LoginRequest loginRequest) throws DeletedAccountLoginException {
         Person person = personRepository.findByEMail(loginRequest.getEMail())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getEMail()));
@@ -50,7 +61,9 @@ public class AuthService {
         String token;
         if (passwordEncoder.matches(loginRequest.getPassword(), person.getPassword())) {
             token = jwtProvider.generateToken(loginRequest.getEMail());
-        } else throw new UsernameNotFoundException(loginRequest.getEMail());
+        } else {
+            throw new UsernameNotFoundException(loginRequest.getEMail());
+        }
         DataResponse<AuthData> authResponse = new DataResponse<>();
         authResponse.setTimestamp(ZonedDateTime.now().toInstant());
         AuthData authData;
@@ -60,23 +73,36 @@ public class AuthService {
         return authResponse;
     }
 
-
+    /**
+     * Выйти.
+     *
+     * @return
+     */
     public DataResponse<SuccessResponse> logout() {
         SecurityContextHolder.clearContext();
         return new DataResponse<SuccessResponse>().setTimestamp(Instant.now()).setData(new SuccessResponse().setMessage("ok"));
 
     }
 
+    /**
+     * Авторизация видимо.
+     *
+     * @param person
+     * @return
+     */
     static AuthData setAuthData(Person person) {
         AuthData authData = new AuthData();
         authData.setEMail(person.getEMail());
         authData.setAbout(person.getAbout());
-        if (person.getBirthday() != null)
+        if (person.getBirthday() != null) {
             authData.setBirthDate(person.getBirthday().atStartOfDay().toInstant(UTC));
-        if (person.getCountry() != null)
+        }
+        if (person.getCountry() != null) {
             authData.setCountry(person.getCountry());
-        if (person.getCity() != null)
+        }
+        if (person.getCity() != null) {
             authData.setCity(person.getCity());
+        }
         authData.setFirstName(person.getFirstName());
         authData.setLastName(person.getLastName());
         authData.setId(person.getId());
@@ -85,11 +111,18 @@ public class AuthService {
         authData.setMessagesPermission(person.getMessagesPermission());
         authData.setBlocked(person.isBlocked());
         authData.setPhoto(person.getPhoto());
-        if (person.getLastOnlineTime() != null)
+        if (person.getLastOnlineTime() != null) {
             authData.setLastOnlineTime(person.getLastOnlineTime().toInstant(UTC));
+        }
         return authData;
     }
 
+    /**
+     * Блокировка пользователя.
+     *
+     * @param person
+     * @return
+     */
     static AuthData setBlockerAuthData(Person person) {
         AuthData authData = new AuthData();
         authData.setId(person.getId());
@@ -98,13 +131,25 @@ public class AuthService {
         return authData;
     }
 
+    /**
+     * удаление пользователя.
+     *
+     * @param person
+     * @return
+     */
     static AuthData setDeletedAuthData(Person person) {
         AuthData authData = setBlockerAuthData(person);
         authData.setAbout("Страница удалена");
-        authData.setPhoto(deletedImage);
+        authData.setPhoto(DELETED_IMAGE);
         return authData;
     }
 
+    /**
+     * Аутентификация.
+     *
+     * @param data
+     * @param sessionId
+     */
     public void socketAuth(AuthRequest data, UUID sessionId) {
         String token = data.getToken();
         if (token != null) {

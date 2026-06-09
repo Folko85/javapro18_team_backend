@@ -3,6 +3,9 @@ package com.skillbox.socialnetwork.api.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+/**
+ * Запрос в поддержку.
+ */
 @Data
 public class SupportRequestDto {
     @JsonProperty ("e_mail")

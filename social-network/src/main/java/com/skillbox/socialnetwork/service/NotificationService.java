@@ -12,7 +12,6 @@ import com.skillbox.socialnetwork.entity.Person;
 import com.skillbox.socialnetwork.entity.enums.NotificationType;
 import com.skillbox.socialnetwork.repository.CommentRepository;
 import com.skillbox.socialnetwork.repository.FriendshipRepository;
-import com.skillbox.socialnetwork.repository.MessageRepository;
 import com.skillbox.socialnetwork.repository.NotificationRepository;
 import com.skillbox.socialnetwork.repository.PersonRepository;
 import com.skillbox.socialnetwork.repository.SessionRepository;
@@ -21,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jmx.export.notification.UnableToSendNotificationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -34,18 +34,30 @@ import java.util.UUID;
 import static com.skillbox.socialnetwork.service.AuthService.setAuthData;
 import static java.time.ZoneOffset.UTC;
 
+/**
+ * Сервис уведомлений.
+ */
 @Service
 @Slf4j
 @AllArgsConstructor
 public class NotificationService {
+
+    private static final String SEND_EVENT = "send event {} to {}";
+
     private final CommentRepository commentRepository;
     private final FriendshipRepository friendshipRepository;
-    private final MessageRepository messageRepository;
     private final PersonRepository personRepository;
     private final NotificationRepository notificationRepository;
     private final SocketIOServer server;
     private final SessionRepository sessionRepository;
 
+    /**
+     * Получить уведомление.
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     public ListResponse<NotificationData> getNotification(int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Pageable pageable = PageRequest.of(offset / itemPerPage, itemPerPage);
@@ -53,6 +65,15 @@ public class NotificationService {
         return getNotificationResponse(offset, itemPerPage, notificationPage);
     }
 
+    /**
+     * Положить уведомление.
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @param id
+     * @param all
+     * @return
+     */
     public ListResponse<NotificationData> putNotification(int offset, int itemPerPage, Principal principal, int id, boolean all) {
         Person person = findPerson(principal.getName());
         if (all) {
@@ -105,6 +126,7 @@ public class NotificationService {
             case FRIEND_REQUEST -> friendshipRepository.findById(notification.getEntityId())
                     .ifPresent(friendship -> notificationData.setEntityAuthor(setAuthData(friendship.getSrcPerson()))
                             .setEntityId(notificationData.getEntityAuthor().getId()));
+            default -> throw new UnableToSendNotificationException("Неизвестный тип уведомления");
         }
         return notificationData;
     }
@@ -115,6 +137,14 @@ public class NotificationService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
+    /**
+     * Создать уведомление.
+     *
+     * @param person
+     * @param entityId
+     * @param notificationType
+     * @return
+     */
     public Notification createNotification(Person person, int entityId, NotificationType notificationType) {
         Notification notification = new Notification();
         notification.setPerson(person);
@@ -124,46 +154,66 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
+    /**
+     * Отправить событие.
+     *
+     * @param eventName
+     * @param data
+     * @param personId
+     */
     public void sendEvent(String eventName, DataResponse<MessageData> data, int personId) {
-        sessionRepository.findByUserId(personId).ifPresent(uuid ->
-                {
+        sessionRepository.findByUserId(personId).ifPresent(uuid -> {
                     SocketIOClient client = server.getClient(uuid);
                     if (checkClient(client, uuid)) {
                         client.sendEvent(eventName, data);
                     }
                 }
         );
-        log.info("send event {} to {}", eventName, personId);
+        log.info(SEND_EVENT, eventName, personId);
     }
 
+    /**
+     * Отправить событие.
+     *
+     * @param eventName
+     * @param data
+     * @param personId
+     */
     public void sendEvent(String eventName, Dto data, int personId) {
-        sessionRepository.findByUserId(personId).ifPresent(uuid ->
-                {
+        sessionRepository.findByUserId(personId).ifPresent(uuid -> {
                     SocketIOClient client = server.getClient(uuid);
                     if (checkClient(client, uuid)) {
                         client.sendEvent(eventName, data);
                     }
                 }
         );
-        log.info("send event {} to {}", eventName, personId);
+        log.info(SEND_EVENT, eventName, personId);
     }
 
+    /**
+     * Отправить событие.
+     *
+     * @param eventName
+     * @param data
+     * @param personId
+     */
     public void sendEvent(String eventName, String data, int personId) {
-        sessionRepository.findByUserId(personId).ifPresent(uuid ->
-                {
+        sessionRepository.findByUserId(personId).ifPresent(uuid -> {
                     SocketIOClient client = server.getClient(uuid);
                     if (checkClient(client, uuid)) {
                         client.sendEvent(eventName, data);
                     }
                 }
         );
-        log.info("send event {} to {}", eventName, personId);
+        log.info(SEND_EVENT, eventName, personId);
     }
 
     private boolean checkClient(SocketIOClient client, UUID uuid) {
         if (client == null) {
             sessionRepository.findByUserUUID(uuid).ifPresent(sessionRepository::deleteByUserId);
             return false;
-        } else return true;
+        } else {
+            return true;
+        }
     }
 }

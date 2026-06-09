@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Друзья.
+ */
 @Data
 public class IsFriends {
 

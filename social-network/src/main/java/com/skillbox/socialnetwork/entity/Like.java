@@ -1,18 +1,26 @@
 package com.skillbox.socialnetwork.entity;
 
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
+/**
+ * Сущность лайка.
+ */
 @Entity
 @Table(name = "lois")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-@ToString
 @NoArgsConstructor
 public class Like {
     @Id
@@ -31,17 +39,4 @@ public class Like {
     private Integer item;
 
     private String type;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Like like = (Like) o;
-        return Objects.equals(id, like.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
 }

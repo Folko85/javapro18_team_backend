@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Комментарий.
+ */
 @Data
 public class CommentRequest {
     @JsonProperty("parent_id")

@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Список друзей.
+ */
 @Data
 public class ResponseFriendsList implements Dto {
     private List<StatusFriend> data;

@@ -1,18 +1,23 @@
 package com.skillbox.microservice.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.Hibernate;
+import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
-@Getter
-@Setter
+/**
+ * Сущность сообщения.
+ */
 @Entity
+@Data
 @Table(name = "messages")
 public class Message implements Serializable {
 
@@ -30,16 +35,4 @@ public class Message implements Serializable {
     @Column(name = "message", nullable = false, columnDefinition = "mediumtext")
     private String message;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Message message = (Message) o;
-        return Objects.equals(id, message.id);
-    }
-
-    @Override
-    public String toString() {
-        return id + " " + dateOfApplication + " " + client + " " + message;
-    }
 }

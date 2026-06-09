@@ -26,6 +26,9 @@ import java.util.List;
 
 import static java.time.ZoneOffset.UTC;
 
+/**
+ * Сервис сообщений.
+ */
 @Service
 @AllArgsConstructor
 public class MessageService {
@@ -34,6 +37,14 @@ public class MessageService {
     private final Person2DialogRepository person2DialogRepository;
     private final NotificationService notificationService;
 
+    /**
+     * Получить сообщения.
+     * @param id
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     public ListResponse<MessageData> getMessages(int id, int offset, int itemPerPage, Principal principal) {
         Person person = findPerson(principal.getName());
         Person2Dialog person2Dialog = person2DialogRepository.findPerson2DialogByDialogIdAndPersonId(id, person.getId())
@@ -43,10 +54,18 @@ public class MessageService {
         ListResponse<MessageData> messageDataListResponse = getDialogResponse(offset, itemPerPage, messagePage, person2Dialog);
         person2Dialog.setLastCheckTime(LocalDateTime.now());
         person2DialogRepository.save(person2Dialog);
-        notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(person.getId()).orElse(0).toString(), person.getId());
+        notificationService.sendEvent("unread-response", person2DialogRepository.findUnreadMessagesCount(person.getId())
+                .orElse(0).toString(), person.getId());
         return messageDataListResponse;
     }
 
+    /**
+     * Сохранить сообщение.
+     * @param id
+     * @param messageRequest
+     * @param principal
+     * @return
+     */
     public DataResponse<MessageData> postMessage(int id, MessageRequest messageRequest, Principal principal) {
         Person person = findPerson(principal.getName());
         Person2Dialog person2Dialog = person2DialogRepository.findPerson2DialogByDialogIdAndPersonId(id, person.getId())
@@ -91,6 +110,12 @@ public class MessageService {
         return dialogDataList;
     }
 
+    /**
+     * Получить сообщение.
+     * @param message
+     * @param person2Dialog
+     * @return
+     */
     public MessageData getMessageData(Message message, Person2Dialog person2Dialog) {
         MessageData messageData = new MessageData();
         messageData.setMessageText(message.getText())
@@ -108,6 +133,11 @@ public class MessageService {
                 .orElseThrow(() -> new UsernameNotFoundException(eMail));
     }
 
+    /**
+     * Получить непрочитанные.
+     * @param principal
+     * @return
+     */
     public DataResponse<CountData> getUnread(Principal principal) {
         Person person = findPerson(principal.getName());
         return new DataResponse<CountData>().setTimestamp(Instant.now())

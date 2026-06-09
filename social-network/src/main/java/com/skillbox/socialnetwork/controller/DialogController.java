@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
+/**
+ * Контроллер диалогов.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/")
@@ -25,6 +28,14 @@ public class DialogController {
         this.dialogService = dialogService;
     }
 
+    /**
+     * Получить диалоги.
+     * @param name
+     * @param offset
+     * @param itemPerPage
+     * @param principal
+     * @return
+     */
     @GetMapping("/dialogs")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Получить диалоги", security = @SecurityRequirement(name = "jwt"))
@@ -35,6 +46,12 @@ public class DialogController {
         return dialogService.getDialogs(name, offset, itemPerPage, principal);
     }
 
+    /**
+     * Создать диалог.
+     * @param dialogRequest
+     * @param principal
+     * @return
+     */
     @PostMapping("/dialogs")
     @PreAuthorize("hasAuthority('user:write')")
     @Operation(summary = "Создать диалог", security = @SecurityRequirement(name = "jwt"))

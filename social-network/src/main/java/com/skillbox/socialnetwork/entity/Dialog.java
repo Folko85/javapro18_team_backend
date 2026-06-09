@@ -5,6 +5,9 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * Сущность Диалог.
+ */
 @Entity
 @Table(name = "dialog")
 @Data

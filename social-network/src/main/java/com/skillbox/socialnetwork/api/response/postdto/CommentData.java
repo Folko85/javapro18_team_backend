@@ -9,6 +9,9 @@ import lombok.Data;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Данные комментария.
+ */
 @Data
 public class CommentData implements Dto {
     @JsonProperty("parent_id")

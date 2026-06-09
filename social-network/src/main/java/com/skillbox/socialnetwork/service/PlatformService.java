@@ -24,6 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис получения стран.
+ */
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -31,6 +34,14 @@ public class PlatformService {
 
     private final VKProperties vkProperties;
 
+    /**
+     * Получить страны.
+     *
+     * @param country
+     * @param offset
+     * @param itemPerPage
+     * @return
+     */
     @Cacheable("countries")
     public ListResponse<PlaceDto> getCountries(String country, int offset, int itemPerPage) {
         TransportClient transportClient = new HttpTransportClient();
@@ -43,7 +54,9 @@ public class PlatformService {
                     .offset(offset).count(itemPerPage).lang(Lang.RU).execute();
             countries = response.getItems().stream()
                     .map(c -> new PlaceDto().setId(c.getId()).setTitle(c.getTitle()))
-                    .filter(c -> c.getTitle().toLowerCase().startsWith(country.toLowerCase())).filter(x -> x.getId() != 0).collect(Collectors.toList());
+                    .filter(c -> c.getTitle().toLowerCase().startsWith(country.toLowerCase()))
+                    .filter(x -> x.getId() != 0)
+                    .collect(Collectors.toList());
         } catch (ApiException | ClientException e) {
             log.warn(Arrays.toString(e.getStackTrace()));
         }
@@ -56,6 +69,15 @@ public class PlatformService {
         return result;
     }
 
+    /**
+     * Получить города.
+     *
+     * @param countryId
+     * @param city
+     * @param offset
+     * @param itemPerPage
+     * @return
+     */
     @Cacheable("cities")
     public ListResponse<PlaceDto> getCities(int countryId, String city, int offset, int itemPerPage) {
         TransportClient transportClient = new HttpTransportClient();
@@ -82,6 +104,11 @@ public class PlatformService {
         return result;
     }
 
+    /**
+     * Получить языки.
+     *
+     * @return
+     */
     @Cacheable("languages")
     public ListResponse<LanguageDto> getLanguages() {
         ListResponse<LanguageDto> listResponse = new ListResponse<>();
